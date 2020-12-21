@@ -1,0 +1,31 @@
+From 17776c75f3e640b512bcc5fe89980d47db8ae17d Mon Sep 17 00:00:00 2001
+From: Alexey Andreyev <aa13q@ya.ru>
+Date: Mon, 30 Mar 2020 11:03:22 +0300
+Subject: [PATCH] [lipstick] Update plugin registerTypes logic to Qt 5.14 API
+
+---
+ plugin/lipstickplugin.cpp | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/plugin/lipstickplugin.cpp b/plugin/lipstickplugin.cpp
+index 524d7a4a..b9946097 100644
+--- a/plugin/lipstickplugin.cpp
++++ b/plugin/lipstickplugin.cpp
+@@ -69,10 +69,10 @@ void LipstickPlugin::registerTypes(const char *uri)
+     qmlRegisterType<WindowPixmapItem>("org.nemomobile.lipstick", 0, 1, "WindowPixmapItem");
+     qmlRegisterSingletonType<LipstickApi>("org.nemomobile.lipstick", 0, 1, "Lipstick", lipstickApi_callback);
+ 
+-    qmlRegisterType<LipstickCompositorWindow>();
+-    qmlRegisterType<QObjectListModel>();
+-    qmlRegisterType<WindowPropertyMap>();
+-    qmlRegisterType<QWaylandKeymap>();
++    qmlRegisterAnonymousType<LipstickCompositorWindow>("org.nemomobile.lipstick", 0);
++    qmlRegisterAnonymousType<QObjectListModel>("org.nemomobile.lipstick", 0);
++    qmlRegisterAnonymousType<WindowPropertyMap>("org.nemomobile.lipstick", 0);
++    qmlRegisterAnonymousType<QWaylandKeymap>("org.nemomobile.lipstick", 0);
+ 
+     qmlRegisterRevision<QQuickWindow,1>("org.nemomobile.lipstick", 0, 1);
+ }
+-- 
+2.23.0
+

@@ -1,0 +1,15 @@
+diff --git a/Makefile b/Makefile
+index 490f07f..0a26ea3 100644
+--- a/Makefile
++++ b/Makefile
+@@ -206,7 +206,9 @@ install ::
+ 	install -m 644 $(INSTALL_PC) $(DESTDIR)$(_LIBDIR)/pkgconfig
+ 	# symlinks for dynamic linking
+ 	for f in $(TARGETS_DSO); do \
+-	  ln -sf $$(basename $$f $(SOVERS))$(SONAME) \
++	  ln -sf $$(basename $$f) \
++	    $(DESTDIR)$(_LIBDIR)/$$(basename $$f $(SOVERS))$(SONAME); \
++	  ln -sf $$(basename $$f) \
+ 	    $(DESTDIR)$(_LIBDIR)/$$(basename $$f $(SOVERS))$(SOLINK); \
+ 	done
+ 

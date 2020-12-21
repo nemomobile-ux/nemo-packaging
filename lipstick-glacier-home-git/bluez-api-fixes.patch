@@ -1,0 +1,39 @@
+commit 5bbdb235e931b720aaa06b98e68bfc7ff777af13
+Author: Alexey Andreyev <aa13q@ya.ru>
+Date:   Thu Apr 30 02:24:59 2020 +0300
+
+    Additional Bluez 5.68.0 fixes
+
+diff --git a/src/bluetooth/bluetoothagent.cpp b/src/bluetooth/bluetoothagent.cpp
+index 4eb0a88..2a42415 100644
+--- a/src/bluetooth/bluetoothagent.cpp
++++ b/src/bluetooth/bluetoothagent.cpp
+@@ -119,7 +120,7 @@ void BluetoothAgent::usableAdapterChanged(BluezQt::AdapterPtr adapter)
+         emit adapterAdded(adapter);
+         m_usableAdapter = adapter;
+ 
+-        connect(m_usableAdapter.data(), &BluezQt::Adapter::connectedChanged,
++        connect(m_usableAdapter.data(), &BluezQt::Adapter::deviceChanged,
+                 this, &BluetoothAgent::updateConnectedStatus);
+     }
+ }
+@@ -166,9 +167,17 @@ void BluetoothAgent::requestDefaultAgentFinished(BluezQt::PendingCall *call)
+ 
+ void BluetoothAgent::updateConnectedStatus()
+ {
+-    if(m_connected != m_usableAdapter->isConnected())
++    bool isSomebodyConnected = false;
++    for (const auto &device : m_usableAdapter->devices()) {
++        if (device->isConnected()) {
++            isSomebodyConnected = true;
++            break;
++        }
++    }
++    
++    if(m_connected != isSomebodyConnected)
+     {
+-        m_connected = m_usableAdapter->isConnected();
++        m_connected = isSomebodyConnected;
+         emit connectedChanged();
+     }
+ }

@@ -1,0 +1,66 @@
+diff --git a/src/plugin/plugin.cpp b/src/plugin/plugin.cpp
+index 7bc62e6..23565cb 100644
+--- a/src/plugin/plugin.cpp
++++ b/src/plugin/plugin.cpp
+@@ -42,7 +42,6 @@
+ #include "alarmtonemodel.h"
+ #include "displaysettings.h"
+ #include "aboutsettings.h"
+-#include "developermodesettings.h"
+ #include "batterystatus.h"
+ #include "diskusage.h"
+ #include "partitionmodel.h"
+@@ -84,10 +83,8 @@ public:
+         qmlRegisterType<AboutSettings>(uri, 1, 0, "AboutSettings");
+         qmlRegisterType<PartitionModel>(uri, 1, 0, "PartitionModel");
+         qRegisterMetaType<Partition>("Partition");
+-        qmlRegisterType<DeveloperModeSettings>(uri, 1, 0, "DeveloperModeSettings");
+         qmlRegisterType<CertificateModel>(uri, 1, 0, "CertificateModel");
+         qmlRegisterSingletonType<SettingsVpnModel>(uri, 1, 0, "SettingsVpnModel", api_factory<SettingsVpnModel>);
+-        qRegisterMetaType<DeveloperModeSettings::Status>("DeveloperModeSettings::Status");
+         qmlRegisterType<BatteryStatus>(uri, 1, 0, "BatteryStatus");
+         qmlRegisterType<DiskUsage>(uri, 1, 0, "DiskUsage");
+         qmlRegisterType<LocationSettings>(uri, 1, 0, "LocationSettings");
+diff --git a/src/plugin/plugin.pro b/src/plugin/plugin.pro
+index 9a05fa9..cfd58e7 100644
+--- a/src/plugin/plugin.pro
++++ b/src/plugin/plugin.pro
+@@ -6,7 +6,7 @@ CONFIG += qt plugin c++11 hide_symbols link_pkgconfig
+ QT += qml dbus network
+ QT -= gui
+ 
+-PKGCONFIG += profile usb-moded-qt5 nemomodels-qt5 libsailfishkeyprovider connman-qt5 packagekitqt5
++PKGCONFIG += profile usb-moded-qt5 nemomodels-qt5 libsailfishkeyprovider connman-qt5
+ 
+ target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
+ INSTALLS += target
+diff --git a/src/src.pro b/src/src.pro
+index ee18be2..f57a55f 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -6,8 +6,8 @@ QT += qml dbus systeminfo
+ QT -= gui
+ 
+ CONFIG += c++11 hide_symbols link_pkgconfig
+ PKGCONFIG += profile mlite5 mce timed-qt5 blkid libcrypto nemomodels-qt5 libsailfishkeyprovider connman-qt5 glib-2.0
+-PKGCONFIG += ssu-sysinfo nemodbus packagekitqt5 libsystemd sailfishusermanager sailfishaccesscontrol
++PKGCONFIG += ssu-sysinfo nemodbus libsystemd sailfishusermanager sailfishaccesscontrol
+ 
+ system(qdbusxml2cpp -p mceiface.h:mceiface.cpp mce.xml)
+ 
+@@ -23,7 +23,6 @@ SOURCES += \
+     displaysettings.cpp \
+     aboutsettings.cpp \
+     certificatemodel.cpp \
+-    developermodesettings.cpp \
+     batterystatus.cpp \
+     diskusage.cpp \
+     diskusage_impl.cpp \
+@@ -51,7 +50,6 @@ PUBLIC_HEADERS = \
+     aboutsettings.h \
+     certificatemodel.h \
+     settingsvpnmodel.h \
+-    developermodesettings.h \
+     batterystatus.h \
+     udisks2block_p.h \
+     udisks2defines.h \
