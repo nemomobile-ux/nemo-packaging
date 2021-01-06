@@ -1,17 +1,7 @@
 #!/bin/bash
 
-PROJECT_REPOS_PATH=https://github.com/nemomobile-ux/nemo-packaging/
-
-# create project directory
-mkdir -p nemo-packaging
-
-# enter the project
-cd nemo-packaging
-
-# build all the packages, add -c option to clean existing chroot
-
 # apps
-buildpkg -c -n -p tut-git
+buildpkg -n -p tut-git
 buildpkg -n -p cor-git
 
 buildpkg -n -p nemo-theme-glacier-git
