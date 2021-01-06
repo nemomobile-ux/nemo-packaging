@@ -28,7 +28,6 @@ buildpkg -n -p libiphb-git
 buildpkg -n -p nemo-keepalive-git
 buildpkg -n -p nemo-qml-plugin-dbus-git
 buildpkg -n -p ssu-sysinfo-git
-buildpkg -n -p nemo-qml-plugin-contextkit-git
 buildpkg -n -p nemo-qml-plugin-devicelock-git
 buildpkg -n -p qt5-mlite-git
 buildpkg -n -p nemo-qml-plugin-configuration-git

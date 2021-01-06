@@ -59,7 +59,6 @@ sudo buildarmpkg -k -p libiphb-git
 sudo buildarmpkg -k -p nemo-keepalive-git
 sudo buildarmpkg -k -p nemo-qml-plugin-dbus-git
 sudo buildarmpkg -k -p ssu-sysinfo-git
-sudo buildarmpkg -k -p nemo-qml-plugin-contextkit-git
 sudo buildarmpkg -k -p nemo-qml-plugin-devicelock-git
 sudo buildarmpkg -k -p qt5-mlite-git
 sudo buildarmpkg -k -p nemo-qml-plugin-configuration-git

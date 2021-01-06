@@ -38,7 +38,6 @@ git clone "$PROJECT_REPOS_PATH"libiphb-git
 git clone "$PROJECT_REPOS_PATH"nemo-keepalive-git
 git clone "$PROJECT_REPOS_PATH"nemo-qml-plugin-dbus-git
 git clone "$PROJECT_REPOS_PATH"ssu-sysinfo-git
-git clone "$PROJECT_REPOS_PATH"nemo-qml-plugin-contextkit-git
 git clone "$PROJECT_REPOS_PATH"nemo-qml-plugin-devicelock-git
 git clone "$PROJECT_REPOS_PATH"qt5-mlite-git
 git clone "$PROJECT_REPOS_PATH"nemo-qml-plugin-configuration-git
