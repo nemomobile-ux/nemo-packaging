@@ -24,7 +24,7 @@ pkgver() {
 }
 
 prepare() {
-    cd "${srcdir}/${pkgname}"
+    cd "$srcdir/${pkgname%-git}"
     git submodule update --init --recursive
 }
 
