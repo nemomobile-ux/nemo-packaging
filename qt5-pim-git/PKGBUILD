@@ -20,15 +20,10 @@ source=("git+https://code.qt.io/qt/qtpim.git" "0001-Patch-module-version.patch")
 sha512sums=('SKIP'
 '6e7d43f36bbf23dedd860727259a4bf5dfad8e8548a3d4a19c974b9afed87ebb25264cc08572bdbb0f703c95ae1a5f6a7a5ca8cd742feaf46440fe7c282535d2')
 
-pkgver() {
-  cd qtpim
-  # Upstream has one tag but it's from 2012
-  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-}
-
 prepare() {
   mkdir -p build
   cd qtpim
+  git checkout 8fec622c
   patch -p1 --input="${srcdir}/0001-Patch-module-version.patch"
 }
 
