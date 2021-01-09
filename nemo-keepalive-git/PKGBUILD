@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-keepalive-git
-pkgver=1.7.3.r0.gde8bf75
+pkgver=1.8.4.r0.g14b3654
 pkgrel=1
 pkgdesc="CPU and display keepalive and scheduling library"
 arch=('x86_64' 'aarch64')
