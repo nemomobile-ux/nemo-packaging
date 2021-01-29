@@ -6,12 +6,12 @@
 pkgname=qt5-lipstick-git
 _srcname=qt5-lipstick
 _project=neochapay # mer-core fork
-_branch=jb42170_qt5.12
-pkgver=0.34.16.r11.g0d4d35bd
+_branch=master
+pkgver=0.40
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/$_project/lipstick#branch=$_branch"
+url="https://github.com/nemomobile-ux/lipstick#branch=$_branch"
 license=('LGPL-2.1-only')
 depends=('qt5-sensors' 'qt5-wayland' 'nemo-keepalive-git' 'qt5-resource-git' 'libsystemd' 'nemo-qml-plugin-contentaction-git' 'mce-headers-git' 'qt5-ngfd-git' 'nemo-qml-plugin-devicelock-git' 'nemo-qml-plugin-systemsettings-git')
 makedepends=('git' 'qt5-tools' 'doxygen' 'graphviz')
