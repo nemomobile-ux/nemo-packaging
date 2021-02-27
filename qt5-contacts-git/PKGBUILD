@@ -16,7 +16,7 @@ pkgver=0.2.8.r0.g06adaa5
 pkgrel=1
 pkgdesc="A contact cache and various helper functions"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://$_host/$_project/$_gitname#tag=$pkgver"
 license=('BSD-3-Clause')
 depends=('qt5-declarative' 'qt5-pim-git' 'qt5-mlite-git' 'qt5-mlocale-git' 'qt5-mce-git' 'libphonenumber' 'qt5-contacts-sqlite-extensions-git')
 makedepends=('git')
