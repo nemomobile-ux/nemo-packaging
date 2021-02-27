@@ -19,8 +19,10 @@ optdepends=()
 provides=("${pkgname}-git" "${_pkgname}-git")
 conflicts=("${pkgname}-git" "${_pkgname}-git")
 source=(
-  "${_pkgname}::git+${url}")
-sha256sums=('SKIP')
+  "${_pkgname}::git+${url}"
+  "disable-werror.patch"
+  )
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${_pkgname}"
@@ -32,6 +34,7 @@ pkgver() {
 
 build() {
   cd "${srcdir}/${_pkgname}"
+  patch -p1 --input="${srcdir}/disable-werror.patch"
   mkdir -p build
   cd build
   ../configure --prefix=/usr 
