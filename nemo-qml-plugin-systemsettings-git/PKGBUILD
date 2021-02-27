@@ -8,13 +8,13 @@ pkgver=0.5.47.r0.gc6e14bf
 pkgrel=1
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings"
+url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings#tag=0.5.47"
 license=('BSD')
 depends=('qt5-systems' 'ssu-sysinfo-git' 'qt5-usb-moded-git' 'profiled-git' 'qt5-timed-git' 'libsailfishkeyprovider-git' 'nemo-qml-plugin-models-git' 'qt5-connman-git' 'qt5-mlite-git' 'sailfish-user-managerd-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings.git'
+source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings#tag=0.5.47'
         '0002-Remove-developer-mode.patch'
         '0003-Remove-broken-certificatemodel.patch'
 )

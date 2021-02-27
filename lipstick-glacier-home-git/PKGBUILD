@@ -7,11 +7,11 @@ pkgname=lipstick-glacier-home-git
 _host="github.com"
 _project=nemomobile-ux
 _branch=devel
-pkgver=0.27.8.r184.g559d595
+pkgver=0.30.r2.ga35dfe7
 pkgrel=1
 pkgdesc="A nice homescreen for Glacier experience"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/glacier-home#branch=$_branch"
+url="https://$_host/$_project/glacier-home"
 license=('BSD-3-Clause AND MIT')
 depends=('bluez-qt' 'qt5-graphicaleffects' 'qt5-multimedia' 'qt5-feedback' 'qt5-mpris-git' 'qt5-lipstick-git' 'qt5-quickcontrols-nemo-git' 'nemo-qml-plugin-configuration-git' 'nemo-qml-plugin-statusnotifier-git' 'nemo-qml-plugin-time-git' 'nemo-qml-plugin-contacts-git' 'nemo-qml-plugin-notifications-git' 'qt5-ofono-nemo-extensions-git')
 makedepends=('git' 'extra-cmake-modules' 'qt5-wayland' 'qt5-tools' 'nemo-qml-plugin-devicelock' 'bluez-qt')
