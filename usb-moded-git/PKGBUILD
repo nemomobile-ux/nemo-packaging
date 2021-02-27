@@ -23,6 +23,11 @@ pkgver() {
 	git describe --long --tags | sed 's/^mer\///;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
+prepare() {
+    cd "$srcdir/${pkgname%-git}"
+    git submodule update --init --recursive
+}
+
 build() {
 	cd "$srcdir/$_pkgname"
     ./autogen.sh

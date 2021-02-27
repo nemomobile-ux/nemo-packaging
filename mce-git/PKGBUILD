@@ -4,7 +4,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=mce-git
-pkgver=1.105.3.r0.ga087b59
+pkgver=1.106.6.r0.gf4644db
 pkgrel=1
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
@@ -25,6 +25,7 @@ pkgver() {
 prepare() {
     cd "$srcdir/${pkgname%-git}"
     sed -i "s|libsystemd-daemon|libsystemd|g" ./Makefile
+    git submodule update --init --recursive
 }
 
 build() {
