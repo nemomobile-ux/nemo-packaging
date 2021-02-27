@@ -39,13 +39,14 @@ build() {
   cd "${srcdir}/${pkgname}"
   mkdir -p build
   cd build
-  cmake ..
+  cmake -DCMAKE_INSTALL_PREFIX="$pkgdir"/usr ..
   make
 }
 
 package() {
   cd "${srcdir}/${pkgname}"
   cd build
+  mkdir -p "$pkgdir"/usr/share/glacier-music/images
   make INSTALL_ROOT="${pkgdir}" install
 }
  
