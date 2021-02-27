@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.3.1.r0.g32357d6
+pkgver=0.3.1.r3.g6ba3925
 
 pkgrel=1
 pkgdesc="Nemo calculator"
@@ -38,7 +38,7 @@ build() {
   cd "${srcdir}/${pkgname}"
   mkdir -p build
   cd build
-  qmake ..
+  cmake ..
   make
 }
 

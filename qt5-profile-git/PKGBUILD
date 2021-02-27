@@ -4,7 +4,7 @@
 
 pkgname=qt5-profile-git
 _srcname=qt5-profile
-pkgver=0.35.3.r0.gfc0c756
+pkgver=0.35.4.r0.g5da7c01
 pkgrel=1
 pkgdesc="Qt5 library for profiles"
 arch=('x86_64' 'aarch64')

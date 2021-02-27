@@ -11,7 +11,7 @@ _branch=master
 _gitname=libq${_basename}ext
 pkgname=qt5-$_basename-nemo-extensions-git
 
-pkgver=1.0.25.r0.gbd09992
+pkgver=1.0.27.r0.gebe45e0
 
 pkgrel=1
 pkgdesc="A Qt library for accessing nemomobile specific ofono extensions"

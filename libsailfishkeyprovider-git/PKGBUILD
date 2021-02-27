@@ -3,7 +3,7 @@
 # Contributor: Alexey Andreyev (aa13q) <aa13q@ya.ru>
 
 pkgname=libsailfishkeyprovider-git
-pkgver=1.0.3.r0.g86d6dcb
+pkgver=1.0.7.r0.gcef4186
 pkgrel=1
 pkgdesc="Library providing access to decoded OAuth2 keys"
 arch=('x86_64' 'aarch64')

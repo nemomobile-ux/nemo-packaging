@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libiphb-git
-pkgver=1.2.5+git1.r0.g62091c5
+pkgver=1.2.7.r0.gc7fd4ea
 pkgrel=1
 pkgdesc="C API for using IP Heartbeat service"
 arch=('x86_64' 'aarch64')

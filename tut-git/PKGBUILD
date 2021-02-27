@@ -4,7 +4,7 @@
 
 pkgname=tut-git
 _srcname=tut
-pkgver=0.0.4.r0.g70d36f0
+pkgver=0.0.5.r0.ge9ee8f0
 pkgrel=1
 pkgdesc="Sailfish C++ unit test framework"
 arch=('x86_64' 'aarch64')

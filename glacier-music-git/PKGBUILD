@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.2.1.r9.g3765f3d
+pkgver=0.2.3.r0.gfb09d18
 
 pkgrel=1
 pkgdesc="The glacier music player"
@@ -39,7 +39,7 @@ build() {
   cd "${srcdir}/${pkgname}"
   mkdir -p build
   cd build
-  qmake ..
+  cmake ..
   make
 }
 
