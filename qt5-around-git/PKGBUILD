@@ -14,8 +14,9 @@ depends=('qt5-base')
 makedepends=('git' 'cor' 'tut')
 provides=("${pkgname%-git}" "${_pkgname%-git}")
 conflicts=("${pkgname%-git}" "${_pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/qtaround.git')
-md5sums=('SKIP')
+source=('git+https://git.sailfishos.org/mer-core/qtaround.git'
+	'0001-fix-build.patch')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
 	cd "$srcdir/${_pkgname%-git}"
