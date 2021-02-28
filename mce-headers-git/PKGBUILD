@@ -3,7 +3,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=mce-headers-git
-pkgver=1.28.0.r0.g4156ad4
+pkgver=1.28.3.r0.g9d2cb2a
 pkgrel=1
 pkgdesc="Development files for mce"
 arch=('x86_64' 'aarch64')

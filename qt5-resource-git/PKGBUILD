@@ -12,7 +12,7 @@ _branch=master
 _gitname=lib${_basename//-/}qt
 pkgname=qt5-$_basename-git
 
-pkgver=1.30.4.r0.gcd0ce5a
+pkgver=1.30.5.r0.g8228f98
 
 pkgrel=1
 pkgdesc="Resource Policy Qt API"

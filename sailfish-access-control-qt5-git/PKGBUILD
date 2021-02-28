@@ -4,7 +4,7 @@
 
 pkgname=sailfish-access-control-qt5-git
 _pkgname=sailfish-access-control
-pkgver=0.0.3.r0.g3926546
+pkgver=0.0.5.r0.gf858fed
 pkgrel=1
 pkgdesc="Sailfish Access Control QML plugin"
 arch=('x86_64' 'aarch64')

@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.2.2.r1.g64faa12
+pkgver=0.3.r3.ga500bf2
 
 pkgrel=1
 pkgdesc="The Glacier file manager"
@@ -39,7 +39,7 @@ build() {
   cd "${srcdir}/${pkgname}"
   mkdir -p build
   cd build
-  qmake ..
+  cmake -DCMAKE_INSTALL_PREFIX="$pkgdir"/usr ..
   make
 }
 

@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=1.0.3.r0.gccedcd0
+pkgver=1.0.4.r0.gdcda58f
 
 pkgrel=1
 pkgdesc="Thumbnail provider plugin for Nemo Mobile"

@@ -4,7 +4,7 @@
 
 pkgname=qt5-around-git
 _pkgname=qtaround-git
-pkgver=0.2.10.r0.ga1722f7
+pkgver=0.2.11.r0.g41126fa
 pkgrel=1
 pkgdesc="QtAround library used to port the-vault to C++"
 arch=('x86_64' 'aarch64')
@@ -14,8 +14,9 @@ depends=('qt5-base')
 makedepends=('git' 'cor' 'tut')
 provides=("${pkgname%-git}" "${_pkgname%-git}")
 conflicts=("${pkgname%-git}" "${_pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/qtaround.git')
-md5sums=('SKIP')
+source=('git+https://git.sailfishos.org/mer-core/qtaround.git'
+	'0001-fix-build.patch')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
 	cd "$srcdir/${_pkgname%-git}"

@@ -4,7 +4,7 @@
 
 pkgname=qt5-mlocale-git
 _pkgname=qt-mlocale-git
-pkgver=0.7.2.r0.g3b0686ab
+pkgver=0.7.3.r0.g5de5b558
 pkgrel=1
 _project=mer-core
 _branch=master
@@ -19,8 +19,10 @@ optdepends=()
 provides=("${pkgname}-git" "${_pkgname}-git")
 conflicts=("${pkgname}-git" "${_pkgname}-git")
 source=(
-  "${_pkgname}::git+${url}")
-sha256sums=('SKIP')
+  "${_pkgname}::git+${url}"
+  "disable-werror.patch"
+  )
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${_pkgname}"
@@ -32,6 +34,7 @@ pkgver() {
 
 build() {
   cd "${srcdir}/${_pkgname}"
+  patch -p1 --input="${srcdir}/disable-werror.patch"
   mkdir -p build
   cd build
   ../configure --prefix=/usr 

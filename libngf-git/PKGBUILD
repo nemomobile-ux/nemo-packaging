@@ -3,7 +3,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libngf-git
-pkgver=0.27.r0.g30f7d6a
+pkgver=0.28.r0.g05ea200
 pkgrel=1
 pkgdesc="Non-graphic feedback C-based client library"
 arch=('x86_64' 'aarch64')

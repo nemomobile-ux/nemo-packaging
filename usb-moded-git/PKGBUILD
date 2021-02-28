@@ -5,7 +5,7 @@
 
 _pkgname=usb-moded
 pkgname=usb-moded-git
-pkgver=0.86.0+mer40.r2.gb6c50d4
+pkgver=0.86.0+mer53.r0.g9c83acd
 pkgrel=1
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
@@ -21,6 +21,11 @@ md5sums=('SKIP')
 pkgver() {
 	cd "$srcdir/$_pkgname"
 	git describe --long --tags | sed 's/^mer\///;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+    cd "$srcdir/${pkgname%-git}"
+    git submodule update --init --recursive
 }
 
 build() {

@@ -11,12 +11,11 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=1.2.0.r0.g6ed10f6
-
+pkgver=1.2.12
 pkgrel=1
 pkgdesc="Nemo QML notifications plugin"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://$_host/$_project/$_gitname#tag=1.2.12"
 license=('BSD-3-Clause')
 depends=('qt5-declarative')
 makedepends=('git')

@@ -12,7 +12,7 @@ _branch=master
 _gitname=lib${_basename//-/}
 pkgname=meego-$_basename-git
 
-pkgver=0.23.2.r0.g1c5a189
+pkgver=0.24.1.r0.g7d2e812
 
 pkgrel=1
 pkgdesc="MeeGo resource management low level C API libraries"

@@ -3,7 +3,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=cor-git
-pkgver=0.1.20.r0.g505408a
+pkgver=0.1.21.r0.g9b06f7b
 pkgrel=1
 pkgdesc="another C++/C library. Contains useful utilities which are not a part of any other library"
 arch=('x86_64' 'aarch64')

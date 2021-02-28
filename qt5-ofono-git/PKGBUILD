@@ -11,7 +11,7 @@ _branch=master
 _gitname=libq${_basename}
 pkgname=qt5-$_basename-git
 
-pkgver=0.99.r0.g5e74475
+pkgver=0.103.r0.g047b667
 
 pkgrel=1
 pkgdesc="A library of Qt 5 bindings for ofono. Sailfish implementation"
