@@ -1,0 +1,50 @@
+# $Id$
+# Contributor: TheKit <nekit1000 at gmail.com>
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+_host="github.com"
+_project=nemomobile-ux
+_basename=glacier-settings
+_branch=master
+
+_gitname=$_basename
+pkgname=$_basename-git
+
+pkgver=0.1.3.r9.g35e0e2d
+
+pkgrel=1
+pkgdesc="QML based settings application for nemomobile"
+arch=('x86_64' 'aarch64')
+url="https://$_host/$_project/$_gitname#branch=$_branch"
+license=('BSD-3-Clause')
+depends=('qt5-glacier-app-git' 'qt5-location' 'qt5-ofono-nemo-extensions-git' 'nemo-qml-plugin-devicelock-git' 'nemo-qml-plugin-settings-git' 'qt5-connman-git' 'qt5-mce-git' 'nemo-qml-plugin-connectivity-git')
+makedepends=('git')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  ( set -o pipefail
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  ) 2>/dev/null
+}
+
+build() {
+  cd "${srcdir}/${pkgname}"
+  mkdir -p build
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX="$pkgdir"/usr ..
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  cd build
+  make INSTALL_ROOT="${pkgdir}" install
+}
+ 
