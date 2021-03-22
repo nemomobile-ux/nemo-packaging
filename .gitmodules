@@ -1,0 +1,3 @@
+[submodule "glacier-wayland-session"]
+	path = glacier-wayland-session
+	url = https://github.com/nemomobile-ux/glacier-wayland-session.git
