@@ -6,8 +6,8 @@
 pkgname=lipstick-glacier-home-git
 _host="github.com"
 _project=nemomobile-ux
-_branch=devel
-pkgver=0.30.r2.ga35dfe7
+_branch=master
+pkgver=0.31
 pkgrel=1
 pkgdesc="A nice homescreen for Glacier experience"
 arch=('x86_64' 'aarch64')
@@ -18,11 +18,8 @@ makedepends=('git' 'extra-cmake-modules' 'qt5-wayland' 'qt5-tools' 'nemo-qml-plu
 optdepends=()
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "fix-compilation-errors.patch" "cmake-support.patch" "bluez-api-fixes.patch")
-sha512sums=('SKIP'
-'929fb46bee14f1464c21df5f466cf88598bc1273ef61d446aad176d1a114e5f0c158189aaa0e6a4e74bcb34ae3f29f07dd8bb41314203bb3cbb4777045e4e169'
-'f775c560500c72f8fd88d5393d2e077af026c94886c47bded615765711ea86dc19756249157a9f89fc12cf882e4c552e9902bd16a370a7028b962fb944d3e67f'
-'894ad07a0276bee59e41d12c9f7ca0bc49221f48d33769e4786923e48c6999055f208368e7bd8188ecde8db0af8b7f9215abefdbdc9591dc44297cef5ac245a2')
+source=("${pkgname}::git+${url}")
+sha512sums=('SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -34,9 +31,6 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
-    patch -p1 --input="${srcdir}/fix-compilation-errors.patch"
-    patch -p1 --input="${srcdir}/cmake-support.patch"
-    patch -p1 --input="${srcdir}/bluez-api-fixes.patch"
 }
 
 build() {
