@@ -1,0 +1,39 @@
+## $Id$
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+pkgname=dsme-git
+pkgver=0.83.0.r0.g4cc8501
+pkgrel=1
+pkgdesc="Device State Management Entity"
+arch=('x86_64' 'aarch64')
+url="https://git.sailfishos.org/mer-core/dsme"
+license=('GPL')
+depends=('libngf-git' 'libiphb-git' 'mce-git' 'cryptsetup' 'libsystemd')
+makedepends=('git' 'autoconf' 'automake')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=('git+https://git.sailfishos.org/mer-core/dsme.git')
+md5sums=('SKIP')
+
+pkgver() {
+    cd "$srcdir/${pkgname%-git}"
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+    cd "$srcdir/${pkgname%-git}"
+#    sed -i "s|libsystemd-daemon|libsystemd|g" ./Makefile
+    git submodule update --init --recursive
+}
+
+build() {
+    cd "$srcdir/${pkgname%-git}"
+    ./autogen.sh
+    ./configure --prefix=/usr --disable-poweron-timer
+    make
+}
+
+package() {
+    cd "$srcdir/${pkgname%-git}"
+    make DESTDIR="$pkgdir/" install
+}
