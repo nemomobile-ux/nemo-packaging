@@ -5,7 +5,7 @@
 
 _pkgname=usb-moded
 pkgname=usb-moded-git
-pkgver=0.86.0+mer53.r0.g9c83acd
+pkgver=0.86.0+mer55.r0.g10c2f53
 pkgrel=1
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
