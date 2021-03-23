@@ -7,7 +7,7 @@ pkgname=qt5-lipstick-git
 _srcname=qt5-lipstick
 _project=neochapay # mer-core fork
 _branch=master
-pkgver=0.34.17.r10.g602a76c9
+pkgver=0.34.17.r11.g94f438a3
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
@@ -18,8 +18,8 @@ makedepends=('git' 'qt5-tools' 'doxygen' 'graphviz')
 optdepends=()
 provides=("${_srcname}")
 conflicts=()
-source=("${pkgname}::git+${url}" "update-plugin-registertypes-to-qt5.14.patch")
-sha256sums=('SKIP' 'fbfb364e8f808f05bd923553de735e92f5a908c3a62b4be71d84d32b899d8176')
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -31,7 +31,6 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
-    patch -p1 --input="${srcdir}/update-plugin-registertypes-to-qt5.14.patch"
 }
 
 build() {
