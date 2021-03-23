@@ -1,0 +1,13 @@
+diff --git a/dsme/dsme-wdd.c b/dsme/dsme-wdd.c
+index 73cee78..9a96a46 100644
+--- a/dsme/dsme-wdd.c
++++ b/dsme/dsme-wdd.c
+@@ -58,7 +58,7 @@
+ #define STRINGIFY(x)  STRINGIFY2(x)
+ #define STRINGIFY2(x) #x
+ 
+-#define DSME_SERVER_PATH DSME_SBIN_PATH"/dsme-server"
++#define DSME_SERVER_PATH "/usr/bin/dsme-server"
+ #define DSME_PID_FILE    "/tmp/dsme.pid" // TODO: is this needed?
+ 
+ #define DSME_NICE         (-20)      /* least niceness */

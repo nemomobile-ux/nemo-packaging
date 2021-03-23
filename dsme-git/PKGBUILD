@@ -12,8 +12,8 @@ depends=('libngf-git' 'libiphb-git' 'mce-git' 'cryptsetup' 'libsystemd')
 makedepends=('git' 'autoconf' 'automake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/dsme.git')
-md5sums=('SKIP')
+source=('git+https://git.sailfishos.org/mer-core/dsme.git' 'fix-dsme_server_path.patch')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname%-git}"
@@ -22,8 +22,8 @@ pkgver() {
 
 prepare() {
     cd "$srcdir/${pkgname%-git}"
-#    sed -i "s|libsystemd-daemon|libsystemd|g" ./Makefile
     git submodule update --init --recursive
+    patch -p1 --input="${srcdir}/fix-dsme_server_path.patch"
 }
 
 build() {
