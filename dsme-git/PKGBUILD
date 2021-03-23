@@ -3,7 +3,7 @@
 
 pkgname=dsme-git
 pkgver=0.83.0.r0.g4cc8501
-pkgrel=1
+pkgrel=2
 pkgdesc="Device State Management Entity"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/dsme"
@@ -36,4 +36,7 @@ build() {
 package() {
     cd "$srcdir/${pkgname%-git}"
     make DESTDIR="$pkgdir/" install
+
+    mv $pkgdir/usr/etc $pkgdir/etc
+    mv $pkgdir/usr/sbin $pkgdir/usr/bin
 }
