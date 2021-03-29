@@ -6,7 +6,7 @@
 _pkgname=usb-moded
 pkgname=usb-moded-git
 pkgver=0.86.0+mer55.r0.g10c2f53
-pkgrel=1
+pkgrel=2
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/usb-moded"
@@ -31,7 +31,14 @@ prepare() {
 build() {
 	cd "$srcdir/$_pkgname"
     ./autogen.sh
-    ./configure --prefix=/usr --enable-app-sync --enable-meegodevlock --enable-debug --enable-connman --enable-systemd --enable-mer-ssu --enable-sailfish-access-control
+    ./configure --prefix=/usr \
+	--enable-app-sync \
+	--enable-meegodevlock \
+	--enable-debug \
+	--enable-connman \
+	--enable-systemd \
+	--enable-mer-ssu \
+	--enable-sailfish-access-control
     make
 }
 
@@ -40,10 +47,13 @@ package() {
 	make DESTDIR="$pkgdir/" install
 	mv "$pkgdir/usr/sbin" "$pkgdir/usr/bin"
 
-    install -m 644 -D src/usb_moded-dbus.h "$pkgdir/usr/include/$_pkgname/usb_moded-dbus.h"
-    install -m 644 -D src/usb_moded-modes.h "$pkgdir/usr/include/$_pkgname/usb_moded-modes.h"
-    install -m 644 -D src/usb_moded-appsync-dbus.h "$pkgdir/usr/include/$_pkgname/usb_moded-appsync-dbus.h"
-    install -m 644 -D src/com.meego.usb_moded.xml "$pkgdir/usr/include/$_pkgname/com.meego.usb_moded.xml"
-    install -m 644 -D usb_moded.pc "$pkgdir/usr/lib/pkgconfig/usb_moded.pc"
-	
+	install -m 644 -D src/usb_moded-dbus.h "$pkgdir/usr/include/$_pkgname/usb_moded-dbus.h"
+	install -m 644 -D src/usb_moded-modes.h "$pkgdir/usr/include/$_pkgname/usb_moded-modes.h"
+	install -m 644 -D src/usb_moded-appsync-dbus.h "$pkgdir/usr/include/$_pkgname/usb_moded-appsync-dbus.h"
+	install -m 644 -D src/com.meego.usb_moded.xml "$pkgdir/usr/include/$_pkgname/com.meego.usb_moded.xml"
+	install -m 644 -D usb_moded.pc "$pkgdir/usr/lib/pkgconfig/usb_moded.pc"
+
+	mkdir -p $pkgdir/usr/lib/systemd/system/basic.target.wants/
+	install -m 644 -D $srcdir/usb-moded/systemd/usb-moded.service $pkgdir/usr/lib/systemd/system/
+	ln -s ../usb-moded.service $pkgdir/usr/lib/systemd/system/basic.target.wants/
 }
