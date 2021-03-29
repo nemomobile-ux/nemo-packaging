@@ -7,11 +7,11 @@ pkgname=qt5-lipstick-git
 _srcname=qt5-lipstick
 _project=neochapay # mer-core fork
 _branch=master
-pkgver=0.34.17.r11.g94f438a3
+pkgver=0.40
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/lipstick#branch=$_branch"
+url="https://github.com/neochapay/lipstick-1.git"
 license=('LGPL-2.1-only')
 depends=('qt5-sensors' 'qt5-wayland' 'nemo-keepalive-git' 'qt5-resource-git' 'libsystemd' 'nemo-qml-plugin-contentaction-git' 'mce-headers-git' 'qt5-ngfd-git' 'nemo-qml-plugin-devicelock-git' 'nemo-qml-plugin-systemsettings-git')
 makedepends=('git' 'qt5-tools' 'doxygen' 'graphviz')
@@ -21,13 +21,6 @@ conflicts=()
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
 
 prepare() {
     cd "${srcdir}/${pkgname}"
