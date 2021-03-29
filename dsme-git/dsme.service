@@ -1,0 +1,40 @@
+[Unit]
+Description=DSME
+DefaultDependencies=no
+Requires=dbus.service
+After=local-fs.target dbus.service
+Conflicts=shutdown.target
+
+[Service]
+Type=notify
+# When starting dsme gets initial runlevel from the bootstate file
+# If it doesn't exist, we default to USER
+# This works because EnvironmentFile overrides Environment
+Environment=BOOTSTATE=USER
+EnvironmentFile=-/run/systemd/boot-status/bootstate
+EnvironmentFile=-/var/lib/environment/dsme/*.conf
+ExecStart=/usr/bin/dsme -- $DSME_MODULES_PRE -p /usr/lib/dsme/startup.so $DSME_MODULES_POST --systemd
+Restart=always
+RestartSec=1
+StartLimitInterval=600
+StartLimitBurst=3
+StartLimitAction=reboot
+# Sandboxing
+CapabilityBoundingSet=CAP_BLOCK_SUSPEND CAP_DAC_OVERRIDE CAP_DAC_READ_SEARCH CAP_FOWNER CAP_IPC_LOCK CAP_SYS_NICE CAP_SYS_RESOURCE CAP_SYS_TIME CAP_WAKE_ALARM
+# System update uses /tmp/os-update-running which should be relocated
+PrivateTmp=no
+PrivateNetwork=true
+ProtectHome=yes
+ProtectSystem=full
+DevicePolicy=closed
+DeviceAllow=char-rtc rw
+DeviceAllow=/dev/alarm rw
+DeviceAllow=char-input r
+DeviceAllow=/dev/watchdog rw
+DeviceAllow=/dev/watchdog0 rw
+DeviceAllow=/dev/watchdog1 rw
+DeviceAllow=/dev/twl4030_wdt rw
+DeviceAllow=/dev/console rw
+
+[Install]
+WantedBy=multi-user.target
