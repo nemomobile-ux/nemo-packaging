@@ -1,0 +1,22 @@
+[Unit]
+Description=Sensor daemon for sensor framework
+After=dbus.socket
+After=oneshot-root.service
+Requires=dbus.service
+Conflicts=actdead.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/sensorfwd -c=/etc/sensorfw/primaryuse.conf --systemd --log-level=warning --no-magnetometer-bg-calibration
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=1
+# Sandboxing
+CapabilityBoundingSet=CAP_BLOCK_SUSPEND CAP_DAC_OVERRIDE CAP_FOWNER
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=graphical.target
+

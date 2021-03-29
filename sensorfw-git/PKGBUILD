@@ -10,7 +10,7 @@ _gitname=$_basename
 pkgname=$_basename-git
 
 pkgver=0.12.2.r0.g08ce125
-pkgrel=1
+pkgrel=2
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
@@ -19,8 +19,8 @@ depends=('libngf-git' 'libiphb-git' 'qt5-mlite-git' 'ssu-sysinfo-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
+source=("${pkgname}::git+${url}" "sensorfwd.service")
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
     cd "${srcdir}/${pkgname}"
@@ -47,4 +47,10 @@ build() {
 package() {
     cd "${srcdir}/${pkgname}"
     make INSTALL_ROOT="$pkgdir/" install
+    mv $pkgdir/usr/sbin/* $pkgdir/usr/bin/
+    rm -rf $pkgdir/usr/sbin/
+
+    mkdir -p $pkgdir/usr/lib/systemd/system/graphical.target.wants
+    cp ${srcdir}/sensorfwd.service $pkgdir/usr/lib/systemd/system/
+    ln -s ../sensorfwd.service $pkgdir/usr/lib/systemd/system/graphical.target.wants
 }
