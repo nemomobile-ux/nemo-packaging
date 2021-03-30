@@ -1,0 +1,28 @@
+From 1120868cf1f1bd5d54fb60834f8b5252df9a9bb5 Mon Sep 17 00:00:00 2001
+From: Adam Pigg <adam@piggz.co.uk>
+Date: Fri, 20 Mar 2020 15:34:39 +0000
+Subject: [PATCH] [charger] Add pinephone charger detection. Fixes JB#49693
+
+---
+ modules/battery-udev.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/modules/battery-udev.c b/modules/battery-udev.c
+index 09ca56a..6e947be 100644
+--- a/modules/battery-udev.c
++++ b/modules/battery-udev.c
+@@ -1122,6 +1122,11 @@ udevdevice_lookup_charger_type(const char *name)
+         { "WIRELESS",    CHARGER_TYPE_WIRELESS },
+         { "AC",          CHARGER_TYPE_DCP      },
+ 
++        /* Pinephone chargers
++         */
++        { "axp813-ac",    CHARGER_TYPE_DCP },
++        { "axp20x-usb",   CHARGER_TYPE_USB },
++        
+         /* To make connect/disconnect transitions
+          * cleaner, ignore "Unknown" reporting
+          */
+-- 
+2.31.0
+

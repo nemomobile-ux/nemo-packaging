@@ -5,7 +5,7 @@
 
 pkgname=mce-git
 pkgver=1.106.6.r0.gf4644db
-pkgrel=1
+pkgrel=2
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/mce"
@@ -14,8 +14,8 @@ depends=('libngf-git' 'libiphb-git')
 makedepends=('git' 'doxygen' 'libdsme' 'libsystemd' 'usb-moded')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/mce.git')
-md5sums=('SKIP')
+source=('git+https://git.sailfishos.org/mer-core/mce.git' '0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname%-git}"
@@ -26,6 +26,7 @@ prepare() {
     cd "$srcdir/${pkgname%-git}"
     sed -i "s|libsystemd-daemon|libsystemd|g" ./Makefile
     git submodule update --init --recursive
+    patch -p1 --input="${srcdir}/0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch"
 }
 
 build() {
