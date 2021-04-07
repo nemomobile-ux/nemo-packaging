@@ -9,6 +9,7 @@ buildpkg -n -p qt5-quickcontrols-nemo-git
 buildpkg -n -p qt5-glacier-app-git
 buildpkg -n -p glacier-calc-git
 buildpkg -n -p nemo-qml-plugin-settings-git
+buildpkf -n -p nemo-qml-plugin-sortfiltermodel-git
 buildpkg -n -p glacier-camera-git
 buildpkg -n -p nemo-qml-plugin-folderlistmodel-git
 buildpkg -n -p glacier-filemuncher-git
@@ -41,6 +42,8 @@ buildpkg -n -p qt5-mlocale-git
 buildpkg -n -p libngf-git
 buildpkg -n -p usb-moded-git
 buildpkg -n -p mce-git
+buildpkg -n -p mce-dsme
+buildpkg -n -p sensorfw-git
 buildpkg -n -p qt5-mce-git
 buildpkg -n -p qt5-contacts-sqlite-extensions-git
 buildpkg -n -p qt5-contacts-git
@@ -62,6 +65,7 @@ buildpkg -n -p nemo-qml-plugin-systemsettings-git
 buildpkg -n -p qt5-lipstick-git
 buildpkg -n -p lipstick-glacier-home-git
 buildpkg -n -p glacier-wayland-session
+buildpkg -n -p google-opensans-fonts
 
 # need to be clarified
 
