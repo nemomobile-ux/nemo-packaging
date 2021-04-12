@@ -23,7 +23,6 @@ buildpkg -n -p glacier-music-git
 # glacier-pinquery-git after qt5-ofono-git
 
 # homescreen/de
-
 buildpkg -n -p mce-headers-git
 buildpkg -n -p libiphb-git
 buildpkg -n -p nemo-keepalive-git
@@ -67,8 +66,10 @@ buildpkg -n -p lipstick-glacier-home-git
 buildpkg -n -p glacier-wayland-session
 buildpkg -n -p google-opensans-fonts
 
-# need to be clarified
+#messages pim voicecalls
+buildpkg -n -p libcommhistory-git
 
+# need to be clarified
 buildpkg -n -p qt5-profile-git
 buildpkg -n -p qt5-around-git
 buildpkg -n -p sailfish-access-control-qt5-git
