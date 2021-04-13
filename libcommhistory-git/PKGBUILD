@@ -33,13 +33,14 @@ pkgver() {
 prepare() {
   cd "${srcdir}/${pkgname}"
   patch -p1 --input="${srcdir}/0001-fix_warnings_and_api.patch"
+  
 }
 
 build() {
   cd "${srcdir}/${pkgname}"
   mkdir -p build
   cd build
-  qmake .. PKGCONFIG_LIB=/usr/lib
+  qmake .. PKGCONFIG_LIB=lib
   make
 }
 
