@@ -16,7 +16,7 @@ pkgver=0.3.13.r0.gb89ddca
 pkgrel=1
 pkgdesc="SQLite-based plugin for QtPIM Contacts"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#tag=$pkgver"
+url="https://$_host/$_project/$_gitname"
 license=('BSD-3-Clause')
 depends=('qt5-pim-git' 'qt5-mlite-git')
 makedepends=('git')
