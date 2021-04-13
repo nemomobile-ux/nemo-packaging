@@ -11,7 +11,7 @@ _branch=master
 _gitname=${_basename}
 pkgname=qt5-$_basename-git
 
-pkgver=0.3.5.r0.ge9bacd8
+pkgver=0.3.6.r0.g7c99d9c
 
 pkgrel=1
 pkgdesc="Useful classes originating from MeeGo Touch"
