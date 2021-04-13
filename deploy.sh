@@ -61,6 +61,8 @@ buildpkg -n -p sailfish-user-managerd-git
 buildpkg -n -p profiled-git
 buildpkg -n -p libsailfishkeyprovider-git
 buildpkg -n -p nemo-qml-plugin-systemsettings-git
+buildpkg -n -p mapplauncherd-git
+buildpkg -n -p mapplauncherd-qt-git
 buildpkg -n -p qt5-lipstick-git
 buildpkg -n -p lipstick-glacier-home-git
 buildpkg -n -p glacier-wayland-session

@@ -1,0 +1,46 @@
+# $Id$
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+_host="git.sailfishos.org"
+_project=mer-core
+_basename=mapplauncherd-qt
+_branch=master
+
+pkgname=$_basename-git
+
+pkgver=1.1.17.r0.g944f07e
+
+pkgrel=1
+pkgdesc="Application launch boosters for Qt5"
+arch=('x86_64' 'aarch64')
+url="https://$_host/$_project/$_basename#branch=$_branch"
+license=('LGPL-2.1-only AND Apache-2.0')
+depends=('mapplauncherd' 'qt5-base')
+makedepends=('git')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=("${pkgname}::git+${url}")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  ( set -o pipefail
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  ) 2>/dev/null
+}
+
+prepare() {
+  cd "${srcdir}/${pkgname}"
+}
+
+build() {
+  cd "${srcdir}/${pkgname}"
+  qmake
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  make INSTALL_ROOT="${pkgdir}" install
+}
