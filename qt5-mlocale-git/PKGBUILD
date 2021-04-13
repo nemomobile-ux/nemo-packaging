@@ -4,7 +4,7 @@
 
 pkgname=qt5-mlocale-git
 _pkgname=qt-mlocale-git
-pkgver=0.7.3.r0.g5de5b558
+pkgver=0.7.4.r0.gfcb7a926
 pkgrel=1
 _project=mer-core
 _branch=master
