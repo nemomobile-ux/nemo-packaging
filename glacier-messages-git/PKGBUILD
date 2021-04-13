@@ -12,14 +12,14 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.2.2
+pkgver=0.2.2.r7.gbec06da
 
 pkgrel=1
 pkgdesc="QML based messages application for nemomobile"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('qt5-glacier-app-git' 'nemo-qml-plugin-contacts-git' 'nemo-qml-plugin-dbus-git' 'commhistory-daemon-git' 'libcommhistory-git' 'nemo-qml-plugin-messages-git')
+depends=('qt5-glacier-app-git' 'nemo-qml-plugin-contacts-git' 'nemo-qml-plugin-dbus' 'commhistory-daemon-git' 'libcommhistory-git' 'nemo-qml-plugin-messages-git' 'telepathy-mission-control')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -38,7 +38,7 @@ build() {
   cd "${srcdir}/${pkgname}"
   mkdir -p build
   cd build
-  cmake -DCMAKE_INSTALL_PREFIX="$pkgdir"/usr ..
+  qmake ..
   make
 }
 
@@ -46,5 +46,8 @@ package() {
   cd "${srcdir}/${pkgname}"
   cd build
   make INSTALL_ROOT="${pkgdir}" install
+  
+  mkdir -p ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
+  cd ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
+  ln -s /usr/share/glacier-messages/glacier-messages.png icon-lock-sms.png
 }
- 
