@@ -12,7 +12,7 @@ _branch=master
 _gitname=${_basename}
 pkgname=qt5-$_basename-git
 
-pkgver=3.6.11.r0.g5b45ae6
+pkgver=3.6.12.r0.gd136e84
 
 pkgrel=1
 pkgdesc="Mer time daemon"
