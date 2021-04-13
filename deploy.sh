@@ -69,6 +69,7 @@ buildpkg -n -p glacier-wayland-session
 buildpkg -n -p google-opensans-fonts
 
 #messages pim voicecalls
+buildpkg -n -p buteo-syncfw
 buildpkg -n -p libcommhistory-git
 
 # need to be clarified
