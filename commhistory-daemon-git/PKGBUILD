@@ -1,0 +1,51 @@
+# $Id$
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+_host="git.sailfishos.org"
+_project=mer-core
+_basename=commhistory-daemon
+_branch=master
+
+pkgname=$_basename-git
+
+pkgver=0.8.37
+
+pkgrel=1
+pkgdesc="Communications event history database daemon"
+arch=('x86_64' 'aarch64')
+url="https://$_host/$_project/$_basename#branch=$_branch"
+license=('LGPLv2')
+depends=('qt5-base' 'libcommhistory-git' 'qt5-contacts-sqlite-extensions-git' 'qt5-mlite-git' 'qt5-mce-git' 'qt5-mlocale-git')
+makedepends=('git')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=("${pkgname}::git+${url}")
+md5sums=('SKIP' 'SKIP')
+
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  ( set -o pipefail
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  ) 2>/dev/null
+}
+
+prepare() {
+  cd "${srcdir}/${pkgname}"
+}
+
+build() {
+  cd "${srcdir}/${pkgname}"
+  mkdir -p build
+  cd build
+  qmake ..
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  cd build
+  make INSTALL_ROOT="${pkgdir}" install
+  mkdir -p ${pkgdir}/usr/share/mapplauncherd/privileges.d
+  install -m 644 -p ${srcdir}/${pkgname}/rpm/libcommhistory-qt5.privileges ${pkgdir}/usr/share/mapplauncherd/privileges.d
+}
