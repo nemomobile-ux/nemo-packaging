@@ -11,14 +11,14 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.2.25.r0.g3d0a59b
+pkgver=0.3.19.r0.geb9db01
 
 pkgrel=1
 pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#tag=0.2.25"
+url="https://$_host/$_project/$_gitname"
 license=('BSD-3-Clause')
-depends=('qt5-contacts')
+depends=('libphonenumber' 'qt5-mlocale-git' 'mce-git' 'mce-headers-git' 'qt5-contacts-sqlite-extensions-git' 'buteo-sync-plugin-carddav')
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -35,7 +35,7 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
-    patch -p1 --input="${srcdir}/update-api-for-qtpim-5.9.patch"
+#    patch -p1 --input="${srcdir}/update-api-for-qtpim-5.9.patch"
 }
 
 build() {
