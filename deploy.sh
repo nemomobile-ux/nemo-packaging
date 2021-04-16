@@ -9,7 +9,7 @@ buildpkg -n -p qt5-quickcontrols-nemo-git
 buildpkg -n -p qt5-glacier-app-git
 buildpkg -n -p glacier-calc-git
 buildpkg -n -p nemo-qml-plugin-settings-git
-buildpkf -n -p nemo-qml-plugin-sortfiltermodel-git
+buildpkg -n -p nemo-qml-plugin-sortfiltermodel-git
 buildpkg -n -p glacier-camera-git
 buildpkg -n -p nemo-qml-plugin-folderlistmodel-git
 buildpkg -n -p glacier-filemuncher-git
