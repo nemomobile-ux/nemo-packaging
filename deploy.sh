@@ -4,12 +4,13 @@
 buildpkg -n -p tut-git
 buildpkg -n -p cor-git
 
+buildpkg -n -p google-opensans-fonts
 buildpkg -n -p nemo-theme-glacier-git
 buildpkg -n -p qt5-quickcontrols-nemo-git
 buildpkg -n -p qt5-glacier-app-git
 buildpkg -n -p glacier-calc-git
 buildpkg -n -p nemo-qml-plugin-settings-git
-buildpkf -n -p nemo-qml-plugin-sortfiltermodel-git
+buildpkg -n -p nemo-qml-plugin-sortfiltermodel-git
 buildpkg -n -p glacier-camera-git
 buildpkg -n -p nemo-qml-plugin-folderlistmodel-git
 buildpkg -n -p glacier-filemuncher-git
@@ -66,7 +67,6 @@ buildpkg -n -p mapplauncherd-qt-git
 buildpkg -n -p qt5-lipstick-git
 buildpkg -n -p lipstick-glacier-home-git
 buildpkg -n -p glacier-wayland-session
-buildpkg -n -p google-opensans-fonts
 
 #messages pim voicecalls
 buildpkg -n -p buteo-syncfw
