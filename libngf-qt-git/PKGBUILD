@@ -3,24 +3,24 @@
 
 _host="git.sailfishos.org"
 _project=mer-core
-_basename=libcommhistory
+_basename=libngf-qt
 _branch=master
 
 pkgname=$_basename-git
 
-pkgver=1.11.7.r0.g251c21d
+pkgver=0.6.5.r0.gaabfd51
 
 pkgrel=1
-pkgdesc="Nemomobile Qt Quick Controls"
+pkgdesc="Qt-based client library for Non-Graphic Feedback daemon"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
-license=('LGPL-2.1-only AND Apache-2.0')
-depends=('libphonenumber' 'qt5-base' 'qt5-contacts-sqlite-extensions-git')
+license=('LGPLv2')
+depends=('qt5-base')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0001-fix_warnings_and_api.patch")
-md5sums=('SKIP' 'SKIP')
+source=("${pkgname}::git+${url}")
+md5sums=('SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -32,15 +32,15 @@ pkgver() {
 
 prepare() {
   cd "${srcdir}/${pkgname}"
-  patch -p1 --input="${srcdir}/0001-fix_warnings_and_api.patch"
-  
+  #don't build tests
+  sed -i 's/tests//' libngf-qt.pro
 }
 
 build() {
   cd "${srcdir}/${pkgname}"
   mkdir -p build
   cd build
-  qmake .. PKGCONFIG_LIB=lib
+  qmake ..
   make
 }
 
@@ -48,6 +48,4 @@ package() {
   cd "${srcdir}/${pkgname}"
   cd build
   make INSTALL_ROOT="${pkgdir}" install
-  mkdir -p ${pkgdir}/usr/share/mapplauncherd/privileges.d
-  install -m 644 -p ${srcdir}/${pkgname}/rpm/libcommhistory-qt5.privileges ${pkgdir}/usr/share/mapplauncherd/privileges.d
 }
