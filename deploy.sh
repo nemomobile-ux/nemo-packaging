@@ -68,6 +68,9 @@ buildpkg -n -p qt5-lipstick-git
 buildpkg -n -p lipstick-glacier-home-git
 buildpkg -n -p glacier-wayland-session
 
+buildpkg -n -p nemo-qml-plugin-messages-git
+buildpkg -n -p glacier-messages-git
+
 #messages pim voicecalls
 buildpkg -n -p buteo-syncfw
 buildpkg -n -p libcommhistory-git

@@ -94,6 +94,8 @@ sudo buildarmpkg -k -p qt5-lipstick-git
 sudo buildarmpkg -k -p lipstick-glacier-home-git
 sudo buildarmpkg -k -p glacier-wayland-session
 
+sudo buildarmpkg -k -p nemo-qml-plugin-messages-git
+sudo buildarmpkg -k -p glacier-messages-git
 
 # need to be clarified
 
