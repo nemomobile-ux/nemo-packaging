@@ -73,6 +73,7 @@ buildpkg -n -p glacier-messages-git
 
 #messages pim voicecalls
 buildpkg -n -p buteo-syncfw
+buildpkg -n -p buteo-sync-plugin-carddav-git
 buildpkg -n -p libcommhistory-git
 
 # need to be clarified
