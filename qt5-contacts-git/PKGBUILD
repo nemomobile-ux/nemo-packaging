@@ -11,7 +11,7 @@ _branch=master
 _gitname=lib${_basename}
 pkgname=qt5-$_basename-git
 
-pkgver=0.2.8.r0.g06adaa5
+pkgver=0.2.8
 
 pkgrel=1
 pkgdesc="A contact cache and various helper functions"
@@ -22,17 +22,12 @@ depends=('qt5-declarative' 'qt5-pim-git' 'qt5-mlite-git' 'qt5-mlocale-git' 'qt5-
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "update-api-for-qtpim-5.9.patch")
-md5sums=('SKIP' '62ba203d84f402c3179c5a7d6a679b8a')
-
-pkgver() {
-    cd "${srcdir}/${pkgname}"
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
+source=("${pkgname}::git+${url}" "update-api-for-qtpim-5.9-v2.patch")
+md5sums=('SKIP' 'SKIP')
 
 prepare() {
     cd "${srcdir}/${pkgname}"
-    patch -p1 --input="${srcdir}/update-api-for-qtpim-5.9.patch"
+    patch -p1 --input="${srcdir}/update-api-for-qtpim-5.9-v2.patch"
 }
 
 build() {
