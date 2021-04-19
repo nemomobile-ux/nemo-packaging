@@ -45,8 +45,5 @@ build() {
 
 package() {
   cd "${srcdir}/${pkgname}"
-  cd build
-  mkdir -p "$pkgdir"/usr/share/glacier-music/images
-  make INSTALL_ROOT="${pkgdir}" install
+  make -C build DESTDIR="$pkgdir" install
 }
- 

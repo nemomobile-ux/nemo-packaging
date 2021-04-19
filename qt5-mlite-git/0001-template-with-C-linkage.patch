@@ -1,0 +1,26 @@
+From 85393876483c444d849dce884d75d73fe7dd3745 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 18 Apr 2021 18:39:21 +0200
+Subject: [PATCH] template with C linkage
+
+---
+ src/mgconfitem.cpp | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/mgconfitem.cpp b/src/mgconfitem.cpp
+index 8a8fc29..69fa5b8 100644
+--- a/src/mgconfitem.cpp
++++ b/src/mgconfitem.cpp
+@@ -17,9 +17,7 @@
+ ****************************************************************************/
+ 
+ // This has to be the first include otherwise gdbusintrospection.h causes an error.
+-extern "C" {
+ #include <dconf.h>
+-};
+ 
+ #include <QCoreApplication>
+ #include <QString>
+-- 
+2.31.1
+

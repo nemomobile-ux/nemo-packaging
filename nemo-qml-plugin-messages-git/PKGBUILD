@@ -1,0 +1,37 @@
+## $Id$
+
+pkgname=nemo-qml-plugin-messages-git
+pkgver=0.1.29.r0.gb97641e
+pkgrel=1
+pkgdesc="Messages plugin for Nemo Mobile"
+arch=('x86_64' 'aarch64')
+url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-messages"
+license=('BSD')
+depends=('telepathy-qt' 'libcommhistory-git' 'qt5-contacts-sqlite-extensions-git' 'qt5-contacts-git' 'qt5-base' 'qt5-declarative' 'nemo-qml-plugin-dbus')
+makedepends=('git')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-messages.git')
+md5sums=('SKIP')
+
+pkgver() {
+    cd "$srcdir/${pkgname%-git}"
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+    cd "$srcdir/${pkgname%-git}"
+}
+
+build() {
+    cd "$srcdir/${pkgname%-git}"
+    qmake
+    make
+}
+
+package() {
+    cd "$srcdir/${pkgname%-git}"
+    make INSTALL_ROOT="$pkgdir/" install
+    cd "$pkgdir"
+    rm -rf opt
+}

@@ -1,15 +1,15 @@
-From 96628d329085ff2d9df9a1341045246868cc2bd5 Mon Sep 17 00:00:00 2001
-From: Sergey Chupligin <s.chupligin@omprussia.ru>
-Date: Tue, 15 Oct 2019 12:18:12 +0300
+From e1e46b74ae4cabe2e0478f1bef50817aa8d2e04b Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 18 Apr 2021 22:36:46 +0200
 Subject: [PATCH] [libcontacts] Update API for QtPim 5.9
 
 ---
  rpm/libcontacts-qt5.spec       | 11 +++++++----
- src/seasidecache.cpp           | 24 +++++++++---------------
+ src/seasidecache.cpp           | 28 +++++++++++-----------------
  src/seasidecontactbuilder.cpp  |  2 ++
  src/seasideimport.cpp          |  2 ++
  src/seasidepropertyhandler.cpp |  1 +
- 5 files changed, 21 insertions(+), 19 deletions(-)
+ 5 files changed, 23 insertions(+), 21 deletions(-)
 
 diff --git a/rpm/libcontacts-qt5.spec b/rpm/libcontacts-qt5.spec
 index e174ef1..e111b77 100644
@@ -66,9 +66,27 @@ index e174ef1..e111b77 100644
 +%{_libdir}/libcontactcache-qt5.so
  %{_libdir}/pkgconfig/contactcache-qt5.pc
 diff --git a/src/seasidecache.cpp b/src/seasidecache.cpp
-index 035ab44..6a347b8 100644
+index 035ab44..1873acc 100644
 --- a/src/seasidecache.cpp
 +++ b/src/seasidecache.cpp
+@@ -512,7 +512,7 @@ QContactId SeasideCache::apiId(const QContact &contact)
+ 
+ QContactId SeasideCache::apiId(quint32 iid)
+ {
+-    return QtContactsSqliteExtensions::apiContactId(iid);
++    return QtContactsSqliteExtensions::apiContactId(iid, managerName());
+ }
+ 
+ bool SeasideCache::validId(const QContactId &id)
+@@ -1311,7 +1311,7 @@ static bool avatarUrlWithMetadata(const QContact &contact, QUrl &matchingUrl, co
+     for (int i = 0; i < avatarDetails.size(); ++i) {
+         const QContactAvatar &av(avatarDetails[i]);
+ 
+-        const QString metadata(av.value(QContactAvatar__FieldAvatarMetadata).toString());
++        const QString metadata(av.value(QContactAvatar::FieldMetaData).toString());
+         if (!metadataFragment.isEmpty() && !metadata.startsWith(metadataFragment)) {
+             // this avatar doesn't match the metadata requirement.  ignore it.
+             continue;
 @@ -1717,11 +1717,7 @@ void SeasideCache::startRequest(bool *idleProcessing)
              requestPending = true;
          } else {
@@ -172,3 +190,6 @@ index 8bf0a12..0ddc128 100644
  
  #include <qtcontacts-extensions.h>
  
+-- 
+2.31.1
+

@@ -25,6 +25,7 @@ pkgver() {
 
 prepare() {
 	cd "$srcdir/${_pkgname%-git}"
+    patch -p1 --input="${srcdir}/0001-fix-build.patch"
     sed -i "s|tut>=0.0.3|tut>=0.0.0|g" ./tests/CMakeLists.txt
     sed -i "s|#include <QMap>|#include <QMap>\n#include <cmath>|g" ./src/util.cpp
 }
