@@ -35,7 +35,7 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
-#    patch -p1 --input="${srcdir}/update-api-for-qtpim-5.9.patch"
+    patch -p1 --input="${srcdir}/update-api-for-qtpim-5.9.patch"
 }
 
 build() {
