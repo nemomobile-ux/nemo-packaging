@@ -45,7 +45,7 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   cd build
-  make INSTALL_ROOT="${pkgdir}" install
+  make DESTDIR="${pkgdir}" install
   
   mkdir -p ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
   cd ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/

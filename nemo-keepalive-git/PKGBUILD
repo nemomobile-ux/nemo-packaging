@@ -33,7 +33,7 @@ build() {
 
 package() {
     cd "$srcdir/${pkgname%-git}"
-    make INSTALL_ROOT="$pkgdir/" install
+    make DESTDIR="$pkgdir/" install
 #    make -C lib-glib install ROOT="$pkgdir/"
 #    make -C tools install ROOT="$pkgdir/"
     

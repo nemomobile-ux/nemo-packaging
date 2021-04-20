@@ -47,7 +47,7 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   cd build
-  make INSTALL_ROOT="${pkgdir}" install
+  make DESTDIR="${pkgdir}" install
   mkdir -p ${pkgdir}/usr/share/mapplauncherd/privileges.d
   install -m 644 -p ${srcdir}/${pkgname}/rpm/libcommhistory-qt5.privileges ${pkgdir}/usr/share/mapplauncherd/privileges.d
 }
