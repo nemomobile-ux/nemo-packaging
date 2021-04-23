@@ -38,7 +38,7 @@ build() {
 
 package() {
     cd "${srcdir}/${pkgname}"
-    make DESTDIR="$pkgdir/" install
+    make INSTALL_ROOT="$pkgdir/" install
     
     # Remove installed tests
     rm -r "$pkgdir"/opt

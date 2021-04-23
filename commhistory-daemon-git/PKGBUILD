@@ -52,7 +52,7 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   cd build
-  make DESTDIR="${pkgdir}" install
+  make INSTALL_ROOT="${pkgdir}" install
   mkdir -p ${pkgdir}/usr/share/mapplauncherd/privileges.d
   install -m 644 -p ${srcdir}/${pkgname}/rpm/commhistory-daemon.privileges ${pkgdir}/usr/share/mapplauncherd/privileges.d
 }

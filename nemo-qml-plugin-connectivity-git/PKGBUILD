@@ -32,7 +32,7 @@ build() {
 
 package() {
     cd "$srcdir/${pkgname%-git}"
-    make DESTDIR="$pkgdir/" install
+    make INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     rm -rf opt
     mkdir -p usr/lib/${pkgname}

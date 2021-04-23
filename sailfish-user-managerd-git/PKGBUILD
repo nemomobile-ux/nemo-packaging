@@ -38,7 +38,7 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   cd build
-  make DESTDIR="${pkgdir}" install
+  make INSTALL_ROOT="${pkgdir}" install
   cd "${pkgdir}"
   # TODO: specify via qmake/make veriable
   mv lib/systemd usr/lib
