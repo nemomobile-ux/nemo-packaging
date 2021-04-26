@@ -1,0 +1,64 @@
+diff --git a/plugins/defaultinvitationplugin/defaultinvitationplugin.pro b/plugins/defaultinvitationplugin/defaultinvitationplugin.pro
+index 145e9fb..20a16f0 100644
+--- a/plugins/defaultinvitationplugin/defaultinvitationplugin.pro
++++ b/plugins/defaultinvitationplugin/defaultinvitationplugin.pro
+@@ -12,8 +12,9 @@ QMAKE_CLEAN += *.so* .obj/* .moc/*
+ 
+ LIBS += -L../../src/ -lmkcal-qt5
+ CONFIG += link_pkgconfig
+-PKGCONFIG += QmfClient \
+-    KF5CalendarCore
++PKGCONFIG += QmfClient -lKF5CalendarCore
++
++INCLUDEPATH += /usr/include/KF5/KCalendarCore/
+ 
+ QT -= gui
+ 
+diff --git a/src/src.pro b/src/src.pro
+index f3994a2..68d9089 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -10,9 +10,11 @@ DEFINES += TIMED_SUPPORT
+ 
+ CONFIG += link_pkgconfig create_pc create_prl no_install_prl c++11
+ PKGCONFIG += sqlite3 \
+-    KF5CalendarCore \
+     timed-qt5
+ 
++LIBS += -L/usr/lib -lKF5CalendarCore
++INCLUDEPATH += /usr/include/KF5/KCalendarCore/
++
+ QT += dbus
+ QT -= gui
+ 
+diff --git a/tests/tests.pro b/tests/tests.pro
+index 25f17a4..d44c48d 100644
+--- a/tests/tests.pro
++++ b/tests/tests.pro
+@@ -9,8 +9,9 @@ DEFINES += TIMED_SUPPORT
+ INCLUDEPATH +=  ../src
+ QMAKE_LIBDIR += ../src
+ 
+-LIBS += -lmkcal-qt5
+-PKGCONFIG += KF5CalendarCore sqlite3 timed-qt5
++LIBS += -lmkcal-qt5 -lKF5CalendarCore
++PKGCONFIG += sqlite3 timed-qt5
++INCLUDEPATH += /usr/include/KF5/KCalendarCore/
+ 
+ HEADERS += \
+     tst_storage.h
+diff --git a/tools/mkcaltool/mkcaltool.pro b/tools/mkcaltool/mkcaltool.pro
+index 31f47a0..b5f66ff 100644
+--- a/tools/mkcaltool/mkcaltool.pro
++++ b/tools/mkcaltool/mkcaltool.pro
+@@ -8,8 +8,8 @@ CONFIG += link_pkgconfig
+ INCLUDEPATH +=  ../../src
+ QMAKE_LIBDIR += ../../src
+ 
+-LIBS += -lmkcal-qt5
+-PKGCONFIG += KF5CalendarCore
++LIBS += -lmkcal-qt5 -lKF5CalendarCore
++INCLUDEPATH += /usr/include/KF5/KCalendarCore/
+ 
+ 
+ SOURCES += main.cpp \
