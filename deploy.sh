@@ -71,6 +71,7 @@ buildpkg -n -p glacier-wayland-session
 buildpkg -n -p buteo-syncfw
 buildpkg -n -p buteo-sync-plugin-carddav-git
 buildpkg -n -p libcommhistory-git
+buildpkg -n -p commhistory-daemon-git
 buildpkg -n -p nemo-qml-plugin-contacts-git
 
 buildpkg -n -p nemo-qml-plugin-messages-git
