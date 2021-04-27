@@ -1,0 +1,27 @@
+diff --git a/src/plugins/messageservices/imap/imap.pro b/src/plugins/messageservices/imap/imap.pro
+index e4897df9..7cd14c83 100644
+--- a/src/plugins/messageservices/imap/imap.pro
++++ b/src/plugins/messageservices/imap/imap.pro
+@@ -58,17 +58,9 @@ SOURCES += imapclient.cpp \
+     RESOURCES += imap.qrc
+ }
+ 
+-!contains(QT_CONFIG, system-zlib) {
+-    INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
+-    DEFINES += QT_QMF_HAVE_ZLIB
+-} else:packagesExist(zlib) {
+-    CONFIG += link_pkgconfig
+-    PKGCONFIG += zlib
+-    DEFINES += QT_QMF_HAVE_ZLIB
+-} else:macx:exists("/usr/include/zlib.h") {
+-    LIBS += -lz
+-    DEFINES += QT_QMF_HAVE_ZLIB
+-} else {
+-    warning("IMAP COMPRESS capability requires zlib")
+-}
++CONFIG += link_pkgconfig
++PKGCONFIG += zlib
++DEFINES += QT_QMF_HAVE_ZLIB
++LIBS += -lz
++
+ 

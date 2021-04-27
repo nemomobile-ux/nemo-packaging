@@ -1,0 +1,73 @@
+diff --git a/src/tools/messageserver/servicehandler.cpp b/src/tools/messageserver/servicehandler.cpp
+index 71b88367..9637a72c 100644
+--- a/src/tools/messageserver/servicehandler.cpp
++++ b/src/tools/messageserver/servicehandler.cpp
+@@ -1172,12 +1172,12 @@ void ServiceHandler::dispatchRequest()
+         if ((this->*request->servicer)(request->action, request->data)) {
+             // This action is now underway
+ 
+-            if (mActionExpiry.isEmpty()) {
++            if (mActionExpiry.empty()) {
+                 // Start the expiry timer. Convert to miliseconds, and avoid shooting too early
+                 const int expiryMs = ExpirySeconds * 1000;
+                 QTimer::singleShot(expiryMs + 50, this, SLOT(expireAction()));
+             }
+-            mActionExpiry.append(request->action);
++            mActionExpiry.push_back(request->action);
+         } else {
+             mActiveActions.remove(request->action);
+ 
+@@ -1194,11 +1194,11 @@ void ServiceHandler::dispatchRequest()
+ 
+ void ServiceHandler::updateAction(quint64 action)
+ {
+-    QLinkedList<quint64>::iterator it = std::find(mActionExpiry.begin(), mActionExpiry.end(), action);
++    std::list<quint64>::iterator it = std::find(mActionExpiry.begin(), mActionExpiry.end(), action);
+     if (it != mActionExpiry.end()) {
+         // Move this action to the end of the list
+         mActionExpiry.erase(it);
+-        mActionExpiry.append(action);
++        mActionExpiry.push_back(action);
+ 
+         // Update the expiry time for this action
+         mActiveActions[action].unixTimeExpiry = QDateTime::currentDateTime().toTime_t() + ExpirySeconds;
+@@ -1209,7 +1209,7 @@ void ServiceHandler::expireAction()
+ {
+     uint now(QDateTime::currentDateTime().toTime_t());
+ 
+-    if (!mActionExpiry.isEmpty()) {
++    if (!mActionExpiry.empty()) {
+         quint64 action = *mActionExpiry.begin();
+ 
+         QMap<quint64, ActionData>::iterator it = mActiveActions.find(action);
+@@ -1264,7 +1264,7 @@ void ServiceHandler::expireAction()
+                     mActiveActions.erase(it);
+                 }
+ 
+-                mActionExpiry.removeFirst();
++                mActionExpiry.pop_front();
+ 
+                 // Restart the service(s) for each of these accounts
+                 QMailAccountIdList ids(serviceAccounts.toList());
+@@ -1277,7 +1277,7 @@ void ServiceHandler::expireAction()
+         }
+     }
+ 
+-    QLinkedList<quint64>::iterator expiryIt(mActionExpiry.begin());
++    std::list<quint64>::iterator expiryIt(mActionExpiry.begin());
+     while (expiryIt != mActionExpiry.end()) {
+         if (mActiveActions.contains(*expiryIt)) {
+             uint nextExpiry(mActiveActions.value(*expiryIt).unixTimeExpiry);
+diff --git a/src/tools/messageserver/servicehandler.h b/src/tools/messageserver/servicehandler.h
+index b2c67dca..39e6d78c 100644
+--- a/src/tools/messageserver/servicehandler.h
++++ b/src/tools/messageserver/servicehandler.h
+@@ -304,7 +304,7 @@ private:
+     };
+     
+     QMap<quint64, ActionData> mActiveActions;
+-    QLinkedList<quint64> mActionExpiry;
++    std::list<quint64> mActionExpiry;
+ 
+     QMap<QPointer<QMailMessageService>, quint64> mServiceAction;
+ 
