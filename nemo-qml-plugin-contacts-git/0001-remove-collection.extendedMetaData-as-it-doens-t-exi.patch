@@ -1,0 +1,25 @@
+From c945c08552c1df1921ad50c3e77925dc8f08415f Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.como>
+Date: Tue, 27 Apr 2021 19:15:50 +0000
+Subject: [PATCH] remove collection.extendedMetaData as it doens't exists in
+ qtpim
+
+---
+ src/seasideaddressbook.cpp | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/seasideaddressbook.cpp b/src/seasideaddressbook.cpp
+index 23ff2f0..6b41a01 100644
+--- a/src/seasideaddressbook.cpp
++++ b/src/seasideaddressbook.cpp
+@@ -63,7 +63,6 @@ SeasideAddressBook SeasideAddressBook::fromCollectionId(const QContactCollection
+ 
+     SeasideAddressBook addressBook;
+     addressBook.collectionId = collectionId;
+-    addressBook.extendedMetaData = collection.extendedMetaData();
+     addressBook.name = collection.metaData(QContactCollection::KeyName).toString();
+     addressBook.color = collection.metaData(QContactCollection::KeyColor).value<QColor>();
+     addressBook.secondaryColor = collection.metaData(QContactCollection::KeySecondaryColor).value<QColor>();
+-- 
+2.31.1
+
