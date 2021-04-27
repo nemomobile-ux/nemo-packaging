@@ -81,3 +81,4 @@ buildpkg -n -p glacier-messages-git
 buildpkg -n -p qt5-profile-git
 buildpkg -n -p qt5-around-git
 buildpkg -n -p sailfish-access-control-qt5-git
+buildpkg -n -p mkcal-git
