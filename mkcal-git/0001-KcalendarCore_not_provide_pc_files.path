@@ -1,14 +1,30 @@
+diff --git a/mkcal.pro b/mkcal.pro
+index 4842fd8..79e71f6 100644
+--- a/mkcal.pro
++++ b/mkcal.pro
+@@ -6,8 +6,6 @@ SUBDIRS = src tests tools
+ SUBDIRS += plugins
+ plugins.depends = src
+ 
+-include(doc/doc.pro)
+-
+ CONFIG += ordered
+ 
+ OTHER_FILES += rpm/*.spec
 diff --git a/plugins/defaultinvitationplugin/defaultinvitationplugin.pro b/plugins/defaultinvitationplugin/defaultinvitationplugin.pro
-index 145e9fb..20a16f0 100644
+index 145e9fb..4364441 100644
 --- a/plugins/defaultinvitationplugin/defaultinvitationplugin.pro
 +++ b/plugins/defaultinvitationplugin/defaultinvitationplugin.pro
-@@ -12,8 +12,9 @@ QMAKE_CLEAN += *.so* .obj/* .moc/*
+@@ -10,10 +10,11 @@ INCLUDEPATH +=  . \
+ QMAKE_LIBDIR += ../../src
+ QMAKE_CLEAN += *.so* .obj/* .moc/*
  
- LIBS += -L../../src/ -lmkcal-qt5
+-LIBS += -L../../src/ -lmkcal-qt5
++LIBS += -L../../src/ -lmkcal-qt5  -lKF5CalendarCore
  CONFIG += link_pkgconfig
 -PKGCONFIG += QmfClient \
 -    KF5CalendarCore
-+PKGCONFIG += QmfClient -lKF5CalendarCore
++PKGCONFIG += QmfClient
 +
 +INCLUDEPATH += /usr/include/KF5/KCalendarCore/
  
