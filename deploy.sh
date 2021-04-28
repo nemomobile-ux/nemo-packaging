@@ -1,18 +1,18 @@
 #!/bin/bash
-if ! [ `whoami` == "root" ]
-then
-    echo "This script must be run with root priveleges"
-    exit
+
+if [[ "$(whoami)" != "${BUILD_USER-root}" ]]; then
+    echo "Error: This script must be run with ${BUILD_USER-root} priveleges" >&2
+    exit 1
 fi
 
 
 if [ "$BUILDARCH" == "aarch64" ] 
 then
     echo "Build for arm64 arch"
-    BUILD="buildarmpkg -k -p"
+    BUILD="${BUILD-buildarmpkg -k -p}"
 else
     echo 'Build for x86_64 arch'
-    BUILD="buildpkg -n -p"
+    BUILD="${BUILD-buildpkg -n -p}"
 fi
 
 # apps
