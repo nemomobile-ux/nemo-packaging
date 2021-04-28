@@ -97,3 +97,6 @@ eval "$BUILD  qt5-around-git"
 eval "$BUILD  sailfish-access-control-qt5-git"
 eval "$BUILD  qmf-qt5"
 eval "$BUILD  mkcal-git"
+
+eval "$BUILD  usb-tethering"
+eval "$BUILD  devices/nemo-device-pinephone"
