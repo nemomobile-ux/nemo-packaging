@@ -5,18 +5,18 @@
 
 _pkgname=usb-moded
 pkgname=usb-moded-git
-pkgver=0.86.0+mer55.r0.g10c2f53
-pkgrel=3
+pkgver=0.86.0+mer55.r2.g66317b7
+pkgrel=1
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/usb-moded"
 license=('GPL')
-depends=('libdsme' 'dbus-glib' 'udev' 'kmod' 'ssu-sysinfo' 'sailfish-access-control')
+depends=('libdsme' 'dbus-glib' 'udev' 'kmod' 'ssu-sysinfo' 'sailfish-access-control' 'dhcp' 'net-tools')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/usb-moded.git')
-md5sums=('SKIP')
+source=('git+https://git.sailfishos.org/mer-core/usb-moded.git' 'dhcpd.conf')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
 	cd "$srcdir/$_pkgname"
@@ -65,6 +65,7 @@ package() {
 	install -m 644 -D config/run-diag/* $pkgdir/etc/usb-moded/run-diag/
 	install -m 644 -D config/mass-storage-jolla.ini $pkgdir/etc/usb-moded/
 	install -m 644 -D config/10-usb-moded-defaults.ini $pkgdir/etc/usb-moded/
+	install -m 644 -D "$srcdir"/dhcpd.conf "$pkgdir"/etc/usb-moded/
 
 #install systemd stuff
 	mkdir -p $pkgdir/usr/lib/systemd/system/basic.target.wants/

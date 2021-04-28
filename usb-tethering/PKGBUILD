@@ -1,0 +1,29 @@
+pkgname=usb-tethering
+pkgver=0.1
+pkgrel=1
+pkgdesc="USB control for usb-moded"
+arch=('any')
+url=""
+license=('custom')
+provides=()
+depends=('usb-moded')
+options=()
+source=('usb-tethering'
+    'usb-tethering.service'
+    'tmpfiles.d.hybris-usb.conf')
+md5sums=('SKIP'
+         'SKIP'
+         'SKIP')
+
+package() {
+  # usb tethering
+  mkdir -p ${pkgdir}/usr/bin
+  install -m755 "$srcdir"/usb-tethering "$pkgdir"/usr/bin/
+
+  mkdir -p ${pkgdir}/usr/lib/systemd/system/
+  install -m644 "$srcdir"/usb-tethering.service "$pkgdir"/usr/lib/systemd/system/
+
+  # dhcpd configuration
+  mkdir -p ${pkgdir}/usr/lib/tmpfiles.d/
+  install -m644 "$srcdir"/tmpfiles.d.hybris-usb.conf "$pkgdir"/usr/lib/tmpfiles.d/hybris-usb.conf
+}

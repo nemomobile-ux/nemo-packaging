@@ -1,0 +1,15 @@
+# systemd service file for usb-tethering
+
+[Unit]
+Wants=local-fs.target
+After=local-fs.target
+Description=USB Tethering
+ConditionPathExists=|/sys/class/android_usb/android0
+ConditionPathExists=|/sys/kernel/config/usb_gadget
+
+[Service]
+Type=notify
+ExecStart=/bin/bash /usr/bin/usb-tethering
+
+[Install]
+WantedBy=multi-user.target
