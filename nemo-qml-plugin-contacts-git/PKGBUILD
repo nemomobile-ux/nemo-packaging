@@ -22,8 +22,8 @@ depends=('libphonenumber' 'qt5-mlocale-git' 'mce-git' 'mce-headers-git' 'qt5-con
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "update-api-for-qtpim-5.9.patch")
-md5sums=('SKIP' '4b5d9e896ef12d7039ecd3d233efe432')
+source=("${pkgname}::git+${url}" "0001-remove-collection.extendedMetaData-as-it-doens-t-exi.patch")
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -35,7 +35,7 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
-#    patch -p1 --input="${srcdir}/update-api-for-qtpim-5.9.patch"
+    patch -p1 --input="${srcdir}/0001-remove-collection.extendedMetaData-as-it-doens-t-exi.patch"
 }
 
 build() {

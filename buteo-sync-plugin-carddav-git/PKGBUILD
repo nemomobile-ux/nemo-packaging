@@ -22,8 +22,8 @@ depends=('libphonenumber' 'qt5-mlocale-git' 'libsailfishkeyprovider-git' 'buteo-
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
+source=("${pkgname}::git+${url}" "0001-remove-obsolete-QContact-IgnoreAccessConstraints.patch")
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -36,6 +36,7 @@ pkgver() {
 prepare() {
     cd "${srcdir}/${pkgname}"
 #    patch -p1 --input="${srcdir}/update-api-for-qtpim-5.9.patch"
+    patch -p1 --input="${srcdir}/0001-remove-obsolete-QContact-IgnoreAccessConstraints.patch"
 }
 
 build() {

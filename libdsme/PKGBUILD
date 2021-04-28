@@ -2,7 +2,7 @@
 # Maintainer: Felix Yan <felixonmars@archlinux.org>
 
 pkgname=libdsme
-pkgver=0.66.6
+pkgver=0.66.6.r0.g3633f59
 pkgrel=1
 pkgdesc="DSME dsmesock dynamic library"
 arch=('x86_64')
@@ -10,13 +10,17 @@ url="https://git.merproject.org/mer-core/libdsme"
 license=('LGPL')
 depends=('glib2')
 makedepends=('git' 'check')
-source=("git+https://git.merproject.org/mer-core/libdsme.git#tag=$pkgver" libdsme-uio.patch)
-sha512sums=('SKIP'
-            '342b2343d622b180a7e1d52b0827f2eccd0cce23d650962889cbfe579514c02a2d0fec82f26b0bb3bd91cc8f22ce6717388686948987fa4b035d5cc5b0e1ea64')
+source=("git+https://git.merproject.org/mer-core/libdsme.git")
+sha512sums=('SKIP')
+
+pkgver() {
+        cd "$srcdir/${pkgname%-git}"
+        git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
 
 prepare() {
   cd libdsme
-  patch -p1 -i ../libdsme-uio.patch # Fix build
+#  patch -p1 -i ../libdsme-uio.patch # Fix build
 }
 
 build() {

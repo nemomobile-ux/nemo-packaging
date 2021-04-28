@@ -1,0 +1,122 @@
+From b08a263a58c4bd4dcc701d37cec3f7f58408f1d5 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.como>
+Date: Tue, 27 Apr 2021 18:47:49 +0000
+Subject: [PATCH] remove obsolete QContact::IgnoreAccessConstraints
+
+---
+ src/carddav.cpp     | 16 ++++++++--------
+ src/replyparser.cpp |  8 ++++----
+ 2 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/src/carddav.cpp b/src/carddav.cpp
+index e4ab598..af07cbd 100644
+--- a/src/carddav.cpp
++++ b/src/carddav.cpp
+@@ -175,14 +175,14 @@ QPair<QContact, QStringList> CardDavVCardConverter::convertVCardToContact(const
+                 // duplicated REV field seen from vCard.
+                 // remove this duplicate, else save will fail.
+                 QContactTimestamp dupRev(d);
+-                importedContact.removeDetail(&dupRev, QContact::IgnoreAccessConstraints);
++                importedContact.removeDetail(&dupRev);
+                 LOG_DEBUG("Removed duplicate REV detail:" << dupRev);
+                 QContactTimestamp firstRev = importedContact.detail<QContactTimestamp>();
+                 if (dupRev.lastModified().isValid()
+                         && (!firstRev.lastModified().isValid()
+                             || dupRev.lastModified() > firstRev.lastModified())) {
+                     firstRev.setLastModified(dupRev.lastModified());
+-                    importedContact.saveDetail(&firstRev, QContact::IgnoreAccessConstraints);
++                    importedContact.saveDetail(&firstRev);
+                 }
+             } else {
+                 seenUniqueDetailTypes.insert(QContactDetail::TypeTimestamp);
+@@ -217,11 +217,11 @@ QPair<QContact, QStringList> CardDavVCardConverter::convertVCardToContact(const
+             if (nameDetail.isEmpty()) {
+                 nameDetail.setCustomLabel(displaylabelField);
+             }
+-            importedContact.saveDetail(&nameDetail, QContact::IgnoreAccessConstraints);
++            importedContact.saveDetail(&nameDetail);
+             LOG_DEBUG("Decomposed vCard display name into structured name:" << nameDetail);
+         } else if (!nicknameField.isEmpty()) {
+             SeasideCache::decomposeDisplayLabel(nicknameField, &nameDetail);
+-            importedContact.saveDetail(&nameDetail, QContact::IgnoreAccessConstraints);
++            importedContact.saveDetail(&nameDetail);
+             LOG_DEBUG("Decomposed vCard nickname into structured name:" << nameDetail);
+         } else {
+             LOG_WARNING("No structured name data exists in the vCard, contact will be unnamed!");
+@@ -234,7 +234,7 @@ QPair<QContact, QStringList> CardDavVCardConverter::convertVCardToContact(const
+     // mark each detail of the contact as modifiable
+     Q_FOREACH (QContactDetail det, importedContact.details()) {
+         det.setValue(QContactDetail__FieldModifiable, true);
+-        importedContact.saveDetail(&det, QContact::IgnoreAccessConstraints);
++        importedContact.saveDetail(&det);
+     }
+ 
+     *ok = true;
+@@ -1032,7 +1032,7 @@ static void setContactGuid(QContact *c, const QString &uid)
+ {
+     QContactGuid newGuid = c->detail<QContactGuid>();
+     newGuid.setGuid(uid);
+-    c->saveDetail(&newGuid, QContact::IgnoreAccessConstraints);
++    c->saveDetail(&newGuid);
+ }
+ 
+ bool CardDav::upsyncUpdates(const QString &addressbookUrl, const QList<QContact> &added, const QList<QContact> &modified, const QList<QContact> &removed)
+@@ -1062,7 +1062,7 @@ bool CardDav::upsyncUpdates(const QString &addressbookUrl, const QList<QContact>
+         const QString uri = addressbookUrl + (addressbookUrl.endsWith('/') ? QString() : QStringLiteral("/")) + uid + QStringLiteral(".vcf");
+         QContactSyncTarget st = c.detail<QContactSyncTarget>();
+         st.setSyncTarget(uri);
+-        c.saveDetail(&st, QContact::IgnoreAccessConstraints);
++        c.saveDetail(&st);
+ 
+         // ensure that we haven't already upsynced this one previously, i.e. partial upsync artifact
+         if (q->m_remoteAdditions[addressbookUrl].contains(uri)
+@@ -1246,7 +1246,7 @@ void CardDav::upsyncResponse()
+                         }
+                         etagDetail.setName(KEY_ETAG);
+                         etagDetail.setData(etag);
+-                        upsynced[i].saveDetail(&etagDetail, QContact::IgnoreAccessConstraints);
++                        upsynced[i].saveDetail(&etagDetail);
+                         break;
+                     }
+                 }
+diff --git a/src/replyparser.cpp b/src/replyparser.cpp
+index 457f6cf..55f8b07 100644
+--- a/src/replyparser.cpp
++++ b/src/replyparser.cpp
+@@ -738,13 +738,13 @@ QHash<QString, QContact> ReplyParser::parseContactData(const QByteArray &contact
+             // RFC6352 only requires that the UID be unique within a single collection (addressbook).
+             // So, we set the guid to be a compound of the accountId, addressbook URI and the UID.
+             guid.setGuid(QStringLiteral("%1:AB:%2:%3").arg(QString::number(q->m_accountId), addressbookUrl, uid));
+-            importedContact.saveDetail(&guid, QContact::IgnoreAccessConstraints);
++            importedContact.saveDetail(&guid);
+         }
+ 
+         // store the sync target of the contact
+         QContactSyncTarget syncTarget = importedContact.detail<QContactSyncTarget>();
+         syncTarget.setSyncTarget(uri);
+-        importedContact.saveDetail(&syncTarget, QContact::IgnoreAccessConstraints);
++        importedContact.saveDetail(&syncTarget);
+ 
+         // store the etag into the contact
+         QContactExtendedDetail etagDetail;
+@@ -756,7 +756,7 @@ QHash<QString, QContact> ReplyParser::parseContactData(const QByteArray &contact
+         }
+         etagDetail.setName(KEY_ETAG);
+         etagDetail.setData(etag);
+-        importedContact.saveDetail(&etagDetail, QContact::IgnoreAccessConstraints);
++        importedContact.saveDetail(&etagDetail);
+ 
+         // store unsupported properties into the contact.
+         QContactExtendedDetail unsupportedPropertiesDetail;
+@@ -768,7 +768,7 @@ QHash<QString, QContact> ReplyParser::parseContactData(const QByteArray &contact
+         }
+         unsupportedPropertiesDetail.setName(KEY_UNSUPPORTEDPROPERTIES);
+         unsupportedPropertiesDetail.setData(result.second);
+-        importedContact.saveDetail(&unsupportedPropertiesDetail, QContact::IgnoreAccessConstraints);
++        importedContact.saveDetail(&unsupportedPropertiesDetail);
+ 
+         // and insert into the return map.
+         uriToContactData.insert(uri, importedContact);
+-- 
+2.31.1
+
