@@ -15,7 +15,7 @@ pkgdesc="Telepathy <> QtContacts bridge for contacts"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('telepathy-qt' 'qt5-mlite-git' 'qt5-mlocale-git' 'libqofono-qt5' 'mapplauncherd-qt-git' 'qt5-contacts-sqlite-extensions-git' 'buteo-syncfw' 'kcalendarcore' 'mkcal-git')
+depends=('telepathy-qt' 'qt5-mlite-git' 'qt5-mlocale-git' 'libqofono-qt5' 'mapplauncherd-qt-git' 'qt5-contacts-sqlite-extensions-git' 'buteo-syncfw' 'kcalendarcore' 'mkcal-git' 'qt5-contacts-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")

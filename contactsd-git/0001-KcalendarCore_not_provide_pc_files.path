@@ -1,21 +1,36 @@
+diff --git a/contactsd.pro b/contactsd.pro
+index 7848386..8e216c4 100644
+--- a/contactsd.pro
++++ b/contactsd.pro
+@@ -1,9 +1,8 @@
+ TEMPLATE = subdirs
+ 
+-SUBDIRS += lib src plugins tests translations
++SUBDIRS += lib src plugins translations
+ src.depends = lib
+ plugins.depends = src
+-tests.depends = src
+ 
+ PACKAGENAME=contactsd
+ 
 diff --git a/plugins/birthday/birthday.pro b/plugins/birthday/birthday.pro
-index 6537dd2..f59909e 100644
+index 6537dd2..964bb67 100644
 --- a/plugins/birthday/birthday.pro
 +++ b/plugins/birthday/birthday.pro
-@@ -28,9 +28,12 @@ QT -= gui
+@@ -28,8 +28,11 @@ QT -= gui
  CONFIG += plugin
  
  CONFIG += link_pkgconfig
 -PKGCONFIG += mlocale5 libmkcal-qt5 KF5CalendarCore
+-PKGCONFIG += Qt5Contacts contactcache-qt5
 +PKGCONFIG += mlocale5 libmkcal-qt5
- PKGCONFIG += Qt5Contacts contactcache-qt5
- 
++PKGCONFIG += Qt5Contacts contactcache-qt5 qtcontacts-sqlite-qt5-extensions
++
 +LIBS += -lmkcal-qt5 -lKF5CalendarCore
 +INCLUDEPATH += /usr/include/KF5/KCalendarCore/
-+
+ 
  CONFIG(coverage):{
  QMAKE_CXXFLAGS += -c -g  --coverage -ftest-coverage -fprofile-arcs
- LIBS += -lgcov
 diff --git a/plugins/calendar/calendar.pro b/plugins/calendar/calendar.pro
 index 70fb0ac..a5a970c 100644
 --- a/plugins/calendar/calendar.pro
