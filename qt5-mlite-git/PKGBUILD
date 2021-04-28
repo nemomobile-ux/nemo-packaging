@@ -22,8 +22,8 @@ depends=('qt5-base' 'dconf')
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" '0001-template-with-C-linkage.patch')
-md5sums=('SKIP' 'SKIP')
+source=("${pkgname}::git+${url}")
+md5sums=('SKIP')
 
 pkgver() {
     cd "${srcdir}/${pkgname}"
@@ -36,7 +36,6 @@ prepare() {
       tools/mliteremoteaction/mliteremoteaction.pro \
       tools/mliteremoteaction/main.cpp \
       src/mremoteaction.cpp
-    patch -p1 --input="${srcdir}/0001-template-with-C-linkage.patch"
 }
 
 

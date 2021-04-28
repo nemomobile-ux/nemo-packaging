@@ -47,7 +47,6 @@ buildpkg -n -p sensorfw-git
 buildpkg -n -p qt5-mce-git
 buildpkg -n -p qt5-contacts-sqlite-extensions-git
 buildpkg -n -p qt5-contacts-git
-buildpkg -n -p nemo-qml-plugin-contacts-git
 buildpkg -n -p nemo-qml-plugin-notifications-git
 buildpkg -n -p qt5-ofono-git
 buildpkg -n -p glacier-pinquery-git # additional app
@@ -68,15 +67,18 @@ buildpkg -n -p qt5-lipstick-git
 buildpkg -n -p lipstick-glacier-home-git
 buildpkg -n -p glacier-wayland-session
 
-buildpkg -n -p nemo-qml-plugin-messages-git
-buildpkg -n -p glacier-messages-git
-
 #messages pim voicecalls
 buildpkg -n -p buteo-syncfw
 buildpkg -n -p buteo-sync-plugin-carddav-git
 buildpkg -n -p libcommhistory-git
+buildpkg -n -p commhistory-daemon-git
+buildpkg -n -p nemo-qml-plugin-contacts-git
+
+buildpkg -n -p nemo-qml-plugin-messages-git
+buildpkg -n -p glacier-messages-git
 
 # need to be clarified
 buildpkg -n -p qt5-profile-git
 buildpkg -n -p qt5-around-git
 buildpkg -n -p sailfish-access-control-qt5-git
+buildpkg -n -p mkcal-git

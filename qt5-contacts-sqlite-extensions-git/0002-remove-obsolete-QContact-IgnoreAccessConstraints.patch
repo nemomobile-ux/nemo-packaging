@@ -1,0 +1,251 @@
+From 38bf03626a829a06715dee2519de7c1516cd06e8 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Tue, 27 Apr 2021 12:02:23 +0000
+Subject: [PATCH 2/2] remove obsolete QContact::IgnoreAccessConstraints
+
+---
+ src/extensions/twowaycontactsyncadaptor_impl.h   | 10 +++++-----
+ tests/auto/aggregation/tst_aggregation.cpp       | 10 +++++-----
+ tests/auto/synctransactions/testsyncadaptor.cpp  | 16 ++++++++--------
+ .../synctransactions/tst_synctransactions.cpp    | 12 ++++++------
+ tests/benchmarks/fetchtimes/main.cpp             |  6 +++---
+ 5 files changed, 27 insertions(+), 27 deletions(-)
+
+diff --git a/src/extensions/twowaycontactsyncadaptor_impl.h b/src/extensions/twowaycontactsyncadaptor_impl.h
+index b483bac..9dbf814 100644
+--- a/src/extensions/twowaycontactsyncadaptor_impl.h
++++ b/src/extensions/twowaycontactsyncadaptor_impl.h
+@@ -1019,7 +1019,7 @@ static void setContactChangeFlags(QContact &c, QContactStatusFlags::Flag flag)
+         flags.setFlag(QContactStatusFlags::IsModified, false);
+         flags.setFlag(QContactStatusFlags::IsDeleted, true);
+     }
+-    c.saveDetail(&flags, QContact::IgnoreAccessConstraints);
++    c.saveDetail(&flags);
+ }
+ 
+ void TwoWayContactSyncAdaptor::remoteContactChangesDetermined(
+@@ -1374,14 +1374,14 @@ QContact TwoWayContactSyncAdaptor::resolveConflictingChanges(
+         const quint32 localDetailDbId = ldet.value(QContactDetail__FieldDatabaseId).toUInt();
+         const int localDetailChangeFlag = ldet.value(QContactDetail__FieldChangeFlags).toInt();
+         if ((localDetailChangeFlag & QContactDetail__ChangeFlag_IsDeleted) == 0) {
+-            localWithoutDeletedDetails.saveDetail(&ldet, QContact::IgnoreAccessConstraints);
++            localWithoutDeletedDetails.saveDetail(&ldet);
+         }
+ 
+         // apply detail additions directly.
+         if (((localDetailChangeFlag & QContactDetail__ChangeFlag_IsAdded) > 0)
+                 && ((localDetailChangeFlag & QContactDetail__ChangeFlag_IsDeleted) == 0)) {
+             ldet.removeValue(QContactDetail__FieldChangeFlags);
+-            resolved.saveDetail(&ldet, QContact::IgnoreAccessConstraints);
++            resolved.saveDetail(&ldet);
+             continue;
+         }
+ 
+@@ -1423,9 +1423,9 @@ QContact TwoWayContactSyncAdaptor::resolveConflictingChanges(
+         if (uniqueDetailTypes.contains(rdet.type()) && resolved.details(rdet.type()).size()) {
+             QContactDetail existing = resolved.detail(rdet.type());
+             existing.setValues(rdet.values());
+-            resolved.saveDetail(&existing, QContact::IgnoreAccessConstraints);
++            resolved.saveDetail(&existing);
+         } else {
+-            resolved.saveDetail(&rdet, QContact::IgnoreAccessConstraints);
++            resolved.saveDetail(&rdet);
+         }
+     }
+ 
+diff --git a/tests/auto/aggregation/tst_aggregation.cpp b/tests/auto/aggregation/tst_aggregation.cpp
+index fde095a..a463322 100644
+--- a/tests/auto/aggregation/tst_aggregation.cpp
++++ b/tests/auto/aggregation/tst_aggregation.cpp
+@@ -1577,7 +1577,7 @@ void tst_Aggregation::compositionPrefersLocal()
+     abContact3.saveDetail(&n4);
+     QContactStatusFlags flags;
+     flags.setFlag(QContactStatusFlags::IsAdded, true);
+-    abContact3.saveDetail(&flags, QContact::IgnoreAccessConstraints);
++    abContact3.saveDetail(&flags);
+     QtContactsSqliteExtensions::ContactManagerEngine::ConflictResolutionPolicy policy(QtContactsSqliteExtensions::ContactManagerEngine::PreserveLocalChanges);
+     QContactManager::Error err;
+     QHash<QContactCollection*, QList<QContact> *> additions;
+@@ -1699,7 +1699,7 @@ void tst_Aggregation::compositionPrefersLocal()
+     // mark the contact as modified for the sync operation.
+     flags = modified.detail<QContactStatusFlags>();
+     flags.setFlag(QContactStatusFlags::IsModified, true);
+-    modified.saveDetail(&flags, QContact::IgnoreAccessConstraints);
++    modified.saveDetail(&flags);
+ 
+     modifications.clear();
+     modifiedContacts.clear();
+@@ -3739,7 +3739,7 @@ void tst_Aggregation::deactivationSingle()
+ 
+     // Reactivate
+     deactivated = syncAlice.detail<QContactDeactivated>();
+-    syncAlice.removeDetail(&deactivated, QContact::IgnoreAccessConstraints);
++    syncAlice.removeDetail(&deactivated);
+     QVERIFY(m_cm->saveContact(&syncAlice));
+ 
+     syncAlice = aggregateAlice = QContact();
+@@ -4084,7 +4084,7 @@ void tst_Aggregation::deletionSingle()
+     // Undelete alice.
+     alice.clearDetails();
+     QContactUndelete undelete;
+-    alice.saveDetail(&undelete, QContact::IgnoreAccessConstraints);
++    alice.saveDetail(&undelete);
+     alice.setId(aliceId);
+     QVERIFY(m_cm->saveContact(&alice));
+ 
+@@ -4133,7 +4133,7 @@ void tst_Aggregation::deletionSingle()
+     // Verify that we cannot undelete the purged contact.
+     alice.clearDetails();
+     QContactUndelete undelete2;
+-    alice.saveDetail(&undelete2, QContact::IgnoreAccessConstraints);
++    alice.saveDetail(&undelete2);
+     alice.setId(aliceId);
+     QVERIFY(!m_cm->saveContact(&alice));
+ }
+diff --git a/tests/auto/synctransactions/testsyncadaptor.cpp b/tests/auto/synctransactions/testsyncadaptor.cpp
+index be934c4..f424165 100644
+--- a/tests/auto/synctransactions/testsyncadaptor.cpp
++++ b/tests/auto/synctransactions/testsyncadaptor.cpp
+@@ -63,7 +63,7 @@ QContact updateContactEtag(const QContact &c)
+             QContactExtendedDetail updatedEtag = ed;
+             updatedEtag.setData(QUuid::createUuid().toString());
+             QContact ret = c;
+-            ret.saveDetail(&updatedEtag, QContact::IgnoreAccessConstraints);
++            ret.saveDetail(&updatedEtag);
+             return ret;
+         }
+     }
+@@ -71,7 +71,7 @@ QContact updateContactEtag(const QContact &c)
+     QContactExtendedDetail etag;
+     etag.setData(QUuid::createUuid().toString());
+     QContact ret = c;
+-    ret.saveDetail(&etag, QContact::IgnoreAccessConstraints);
++    ret.saveDetail(&etag);
+     return ret;
+ }
+ 
+@@ -225,7 +225,7 @@ void TestSyncAdaptor::removeRemoteContact(const QString &fname, const QString &l
+     rfl.setFlag(QContactStatusFlags::IsAdded, false);
+     rfl.setFlag(QContactStatusFlags::IsModified, false);
+     rfl.setFlag(QContactStatusFlags::IsDeleted, true);
+-    remContact.saveDetail(&rfl, QContact::IgnoreAccessConstraints);
++    remContact.saveDetail(&rfl);
+ 
+     // stop tracking the contact if we are currently tracking it.
+     m_remoteAdditions.remove(contactGuidStr);
+@@ -245,11 +245,11 @@ QContact TestSyncAdaptor::setRemoteContact(const QString &fname, const QString &
+ 
+     QContactGuid sguid = setContact.detail<QContactGuid>();
+     sguid.setGuid(contactGuidStr);
+-    setContact.saveDetail(&sguid, QContact::IgnoreAccessConstraints);
++    setContact.saveDetail(&sguid);
+ 
+     QContactOriginMetadata somd = setContact.detail<QContactOriginMetadata>();
+     somd.setGroupId(setContact.id().toString());
+-    setContact.saveDetail(&somd, QContact::IgnoreAccessConstraints);
++    setContact.saveDetail(&somd);
+ 
+     const QContact newContact = updateContactEtag(setContact);
+     m_remoteServerContacts[contactGuidStr] = newContact;
+@@ -271,7 +271,7 @@ void TestSyncAdaptor::changeRemoteContactPhone(const QString &fname, const QStri
+ 
+     QContactStatusFlags flags = modContact.detail<QContactStatusFlags>();
+     flags.setFlag(QContactStatusFlags::IsModified, true);
+-    modContact.saveDetail(&flags, QContact::IgnoreAccessConstraints);
++    modContact.saveDetail(&flags);
+ 
+     m_remoteServerContacts[contactGuidStr] = modContact;
+     m_remoteModifications.insert(contactGuidStr);
+@@ -292,7 +292,7 @@ void TestSyncAdaptor::changeRemoteContactEmail(const QString &fname, const QStri
+ 
+     QContactStatusFlags flags = modContact.detail<QContactStatusFlags>();
+     flags.setFlag(QContactStatusFlags::IsModified, true);
+-    modContact.saveDetail(&flags, QContact::IgnoreAccessConstraints);
++    modContact.saveDetail(&flags);
+ 
+     m_remoteServerContacts[contactGuidStr] = modContact;
+     m_remoteModifications.insert(contactGuidStr);
+@@ -318,7 +318,7 @@ void TestSyncAdaptor::changeRemoteContactName(const QString &fname, const QStrin
+ 
+     QContactStatusFlags flags = modContact.detail<QContactStatusFlags>();
+     flags.setFlag(QContactStatusFlags::IsModified, true);
+-    modContact.saveDetail(&flags, QContact::IgnoreAccessConstraints);
++    modContact.saveDetail(&flags);
+ 
+     const QString modContactGuidStr(TSA_GUID_STRING(m_accountId, m_applicationName, modfname, modlname));
+     m_remoteServerContacts.remove(contactGuidStr);
+diff --git a/tests/auto/synctransactions/tst_synctransactions.cpp b/tests/auto/synctransactions/tst_synctransactions.cpp
+index db62f70..2595192 100644
+--- a/tests/auto/synctransactions/tst_synctransactions.cpp
++++ b/tests/auto/synctransactions/tst_synctransactions.cpp
+@@ -555,12 +555,12 @@ void tst_synctransactions::singleCollection_multipleCycles()
+     syncAlice.saveDetail(&ah);
+     af = syncAlice.detail<QContactStatusFlags>();
+     af.setFlag(QContactStatusFlags::IsModified, true);
+-    syncAlice.saveDetail(&af, QContact::IgnoreAccessConstraints);
++    syncAlice.saveDetail(&af);
+ 
+     syncCharlie = addedContacts.first();
+     QContactStatusFlags cf = syncCharlie.detail<QContactStatusFlags>();
+     cf.setFlag(QContactStatusFlags::IsDeleted, true);
+-    syncCharlie.saveDetail(&cf, QContact::IgnoreAccessConstraints);
++    syncCharlie.saveDetail(&cf);
+ 
+     // specify an updated ctag for the addressbook.
+     remoteAddressbook.setExtendedMetaData(QStringLiteral("SyncToken"), "synctoken-two");
+@@ -791,7 +791,7 @@ void tst_synctransactions::singleCollection_unhandledChanges()
+     bf = syncBob.detail<QContactStatusFlags>();
+     bf.setFlag(QContactStatusFlags::IsAdded, false);
+     bf.setFlag(QContactStatusFlags::IsDeleted, true);
+-    syncBob.saveDetail(&bf, QContact::IgnoreAccessConstraints);
++    syncBob.saveDetail(&bf);
+ 
+     // write the remote changes to the local database.
+     additions.clear();
+@@ -1142,7 +1142,7 @@ void tst_synctransactions::multipleCollections()
+     af = syncAlice.detail<QContactStatusFlags>();
+     af.setFlag(QContactStatusFlags::IsAdded, false);
+     af.setFlag(QContactStatusFlags::IsModified, true);
+-    QVERIFY(syncAlice.saveDetail(&af, QContact::IgnoreAccessConstraints));
++    QVERIFY(syncAlice.saveDetail(&af));
+ 
+     additions.clear();
+     modifications.clear();
+@@ -1333,12 +1333,12 @@ void tst_synctransactions::syncRequests()
+         syncAlice.saveDetail(&ah);
+         QContactStatusFlags af = syncAlice.detail<QContactStatusFlags>();
+         af.setFlag(QContactStatusFlags::IsModified, true);
+-        syncAlice.saveDetail(&af, QContact::IgnoreAccessConstraints);
++        syncAlice.saveDetail(&af);
+ 
+         QContact syncCharlie = cfr->addedContacts().first();
+         QContactStatusFlags cf = syncCharlie.detail<QContactStatusFlags>();
+         cf.setFlag(QContactStatusFlags::IsDeleted, true);
+-        syncCharlie.saveDetail(&cf, QContact::IgnoreAccessConstraints);
++        syncCharlie.saveDetail(&cf);
+ 
+         QContactCollection remoteAddressbook = m_cm->collection(remoteAddressbookId);
+         QHash<QContactCollection, QList<QContact> > modifications;
+diff --git a/tests/benchmarks/fetchtimes/main.cpp b/tests/benchmarks/fetchtimes/main.cpp
+index 4dfae0e..b153047 100644
+--- a/tests/benchmarks/fetchtimes/main.cpp
++++ b/tests/benchmarks/fetchtimes/main.cpp
+@@ -1470,12 +1470,12 @@ void generateQueryPlanTestDataContacts(
+             // set modified flag.
+             QContact mod = contacts.at(i);
+             QContactPhoneNumber extraph; extraph.setNumber(mod.detail<QContactPhoneNumber>().number() + QStringLiteral("1232123%1").arg(i));
+-            mod.saveDetail(&extraph, QContact::IgnoreAccessConstraints);
++            mod.saveDetail(&extraph);
+             QContactEmailAddress extraem; extraem.setEmailAddress(QStringLiteral("extra.email.%1@server.tld.%2")
+                     .arg(i).arg(col.extendedMetaData(COLLECTION_EXTENDEDMETADATA_KEY_APPLICATIONNAME).toString()));
+-            mod.saveDetail(&extraem, QContact::IgnoreAccessConstraints);
++            mod.saveDetail(&extraem);
+             QContactGuid guid; guid.setGuid(QUuid::createUuid().toString());
+-            mod.saveDetail(&guid, QContact::IgnoreAccessConstraints);
++            mod.saveDetail(&guid);
+             if (!manager.saveContact(&mod)) {
+                 qWarning() << "Failed to save contact modification at index: " << i << " into collection: "
+                            << col.metaData(QContactCollection::KeyName)
+-- 
+2.31.1
+

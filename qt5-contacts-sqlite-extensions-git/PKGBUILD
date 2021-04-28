@@ -22,8 +22,8 @@ depends=('qt5-pim-git' 'qt5-mlite-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0001-fix-build-with-newer-qt.patch")
-sha512sums=('SKIP' 'SKIP')
+source=("${pkgname}::git+${url}" "0001-fix-build-with-newer-qt.patch" "0002-remove-obsolete-QContact-IgnoreAccessConstraints.patch")
+sha512sums=('SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
     cd "${srcdir}/${pkgname}"
@@ -33,6 +33,7 @@ pkgver() {
 prepare() {
     cd "${srcdir}/${pkgname}"
     patch -p1 --input="${srcdir}/0001-fix-build-with-newer-qt.patch"
+    patch -p1 --input="${srcdir}/0002-remove-obsolete-QContact-IgnoreAccessConstraints.patch"
 }
 
 build() {
