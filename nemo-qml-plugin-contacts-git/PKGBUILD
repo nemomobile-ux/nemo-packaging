@@ -11,7 +11,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.3.19.r0.geb9db01
+pkgver=0.3.20.r0.gdfdedb9
 
 pkgrel=1
 pkgdesc="Nemo QML contacts plugin"
