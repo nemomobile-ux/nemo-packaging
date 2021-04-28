@@ -60,7 +60,6 @@ eval "$BUILD  mce-dsme"
 eval "$BUILD  sensorfw-git"
 eval "$BUILD  qt5-mce-git"
 eval "$BUILD  qt5-contacts-sqlite-extensions-git"
-eval "$BUILD  qt5-contacts-git"
 eval "$BUILD  nemo-qml-plugin-notifications-git"
 eval "$BUILD  qt5-ofono-git"
 eval "$BUILD  glacier-pinquery-git" # additional app
