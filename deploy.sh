@@ -88,7 +88,10 @@ eval "$BUILD  commhistory-daemon-git"
 eval "$BUILD  nemo-qml-plugin-contacts-git"
 
 eval "$BUILD  nemo-qml-plugin-messages-git"
+eval "$BUILD  mkcal"
+eval "$BUILD  contactd"
 eval "$BUILD  glacier-messages-git"
+eval "$BUILD  glacier-contacts-git"
 
 # need to be clarified
 eval "$BUILD  qt5-profile-git"
