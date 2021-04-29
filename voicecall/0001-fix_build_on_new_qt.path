@@ -1,0 +1,17 @@
+diff --git a/plugins/providers/telepathy/src/callchannelhandler.cpp b/plugins/providers/telepathy/src/callchannelhandler.cpp
+index aff299b65b9e0a0e8079acf72e5b1eb7ef2c728f..8ae459f3f7bb301a707e34e9248a6bd98baa065a 100644
+--- a/plugins/providers/telepathy/src/callchannelhandler.cpp
++++ b/plugins/providers/telepathy/src/callchannelhandler.cpp
+@@ -323,10 +323,10 @@ void CallChannelHandler::onCallChannelChannelReady(Tp::PendingOperation *op)
+             DEBUG_T("Call Content");
+             Tp::CallStreams streams = content->streams();
+             foreach (const Tp::CallStreamPtr &stream, streams) {
+-                DEBUG_T("  Call stream: localSendingState=%1", qPrintable(stream->localSendingState()));
++                DEBUG_T("  Call stream: localSendingState=%1", stream->localSendingState());
+                 DEBUG_T("      members: %u", stream.data()->remoteMembers().size());
+                 foreach(const Tp::ContactPtr contact, stream.data()->remoteMembers()) {
+-                    DEBUG_T("        member %s remoteSendingState=%s", qPrintable(contact->id()), qPrintable(stream->remoteSendingState(contact)));
++                    DEBUG_T("        member %s remoteSendingState=%s", qPrintable(contact->id()), stream->remoteSendingState(contact));
+                 }
+                 //onStreamAdded(stream);
+             }
