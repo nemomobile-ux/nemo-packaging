@@ -13,6 +13,13 @@ function build_directory() {
 
     cd "$1"
     makepkg -f --syncdeps --noconfirm &> "$log_name"
+    ret="$?"
+    if [ "$ret" -eq 0 ]; then
+        status="OK"
+    else
+        status="FAIL"
+    fi
+    mv "$log_name" "$log_name.${status}"
     find . -name '*zst' -exec sudo pacman --noconfirm -U {} \;
     find . -name '*zst' -exec cp {} "$results_dir" \;
     sudo chmod -R uga=rwX "$results_dir"
