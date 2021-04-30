@@ -16,8 +16,12 @@ function build_directory() {
     # install dependencies (and avoid sudo inside of makepkg command)
     (
         source ./PKGBUILD
-        pacman -S --noconfirm ${makedepends[@]}
-        pacman -S --noconfirm ${depends[@]}
+        if [ -n "${makedepends[*]}" ]; then
+            pacman -Syu --noconfirm ${makedepends[*]}
+        fi
+        if [ -n "${depends[*]}" ]; then
+            pacman -Syu --noconfirm ${depends[*]}
+        fi
     )
 
     su builder -c 'makepkg -f'  &> "$log_name"
