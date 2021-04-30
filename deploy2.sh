@@ -17,6 +17,7 @@ function build_directory() {
     (
         source ./PKGBUILD
         pacman -S --noconfirm ${makedepends[@]}
+        pacman -S --noconfirm ${depends[@]}
     )
 
     su builder -c 'makepkg -f'  &> "$log_name"
