@@ -44,4 +44,5 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make INSTALL_ROOT="${pkgdir}" install
+  mv ${pkgdir}/usr/lib/pkgconfig/mkcal-qt5.pc ${pkgdir}/usr/lib/pkgconfig/libmkcal-qt5.pc
 }
