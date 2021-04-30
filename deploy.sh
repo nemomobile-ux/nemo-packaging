@@ -17,7 +17,7 @@ if [ "$BUILDARCH" == "aarch64" ]; then
     echo "Build for arm64 arch"
     BUILD="${BUILD-build_aarch64_fn}"
 else
-    echo 'Build for x86_64 arch'
+    echo "Build for $(uname -m) arch"
     BUILD="${BUILD-buildpkg -n -p}"
 fi
 
