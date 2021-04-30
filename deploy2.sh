@@ -12,29 +12,36 @@ function build_directory() {
     log_name=$(printf "%s/%02d-%s.log" "$log_dir" "$build_id" "$1")
 
     cd "$1"
-
     # install dependencies (and avoid sudo inside of makepkg command)
     (
+        set -x
         source ./PKGBUILD
-        if [ -n "${makedepends[*]}" ]; then
-            pacman -Syu --noconfirm ${makedepends[*]}
+        if [[ -n "${makedepends[*]}" ]]; then
+            for dep in ${makedepends[@]}; do
+                pacman -Sy --asdeps --needed --noconfirm $dep
+            done
         fi
-        if [ -n "${depends[*]}" ]; then
-            pacman -Syu --noconfirm ${depends[*]}
+        if [[ -n "${depends[*]}" ]]; then
+            for dep in ${depends[@]}; do
+                pacman -Sy --asdeps --needed --noconfirm $dep
+            done
         fi
-    )
+    ) &> "$log_name"
 
-    su builder -c 'makepkg -f'  &> "$log_name"
+    su builder -c 'makepkg -f'  &>> "$log_name"
     ret="$?"
     if [ "$ret" -eq 0 ]; then
         status="OK"
+        for pkg in $(find . -name '*zst'); do
+            pacman --noconfirm -U "$pkg"
+            chmod uga=rwX "$pkg"
+            cp "$pkg" "$results_dir"
+        done
     else
         status="FAIL"
     fi
+    echo $status
     mv "$log_name" "$log_name.${status}"
-    find . -name '*zst' -exec pacman --noconfirm -U {} \;
-    find . -name '*zst' -exec cp {} "$results_dir" \;
-    chmod -R uga=rwX "$results_dir"
     cd "$OLDPWD"
 
     build_id=$(( build_id + 1 ))
