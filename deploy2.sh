@@ -12,7 +12,14 @@ function build_directory() {
     log_name=$(printf "%s/%02d-%s.log" "$log_dir" "$build_id" "$1")
 
     cd "$1"
-    makepkg -f --syncdeps --noconfirm &> "$log_name"
+
+    # install dependencies (and avoid sudo inside of makepkg command)
+    (
+        source ./PKGBUILD
+        pacman -S --noconfirm ${makedepends[@]}
+    )
+
+    su builder -c 'makepkg -f'  &> "$log_name"
     ret="$?"
     if [ "$ret" -eq 0 ]; then
         status="OK"
@@ -20,9 +27,9 @@ function build_directory() {
         status="FAIL"
     fi
     mv "$log_name" "$log_name.${status}"
-    find . -name '*zst' -exec sudo pacman --noconfirm -U {} \;
+    find . -name '*zst' -exec pacman --noconfirm -U {} \;
     find . -name '*zst' -exec cp {} "$results_dir" \;
-    sudo chmod -R uga=rwX "$results_dir"
+    chmod -R uga=rwX "$results_dir"
     cd "$OLDPWD"
 
     build_id=$(( build_id + 1 ))
