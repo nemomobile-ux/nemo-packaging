@@ -3,16 +3,23 @@
 # Maintainer: Thomas Dziedzic < gostrc at gmail >
 
 pkgname=libuser
-pkgver=0.62
-pkgrel=2
+pkgver=0.63
+pkgrel=1
 pkgdesc='A standardized interface for manipulating and administering user and group accounts.'
 arch=('x86_64' 'aarch64')
 license=('LGPL')
 url='https://pagure.io/libuser/'
 depends=('python2' 'glib2' 'popt' 'pam')
+makedepends=('gtk-doc')
 backup=('etc/libuser.conf')
 source=("https://releases.pagure.org/libuser/libuser-${pkgver}.tar.xz")
-sha256sums=('a58ff4fabb01a25043b142185a33eeea961109dd60d4b40b6a9df4fa3cace20b')
+sha256sums=('SKIP')
+
+prepare() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    ./autogen.sh
+}
+
 
 build() {
   cd ${pkgname}-${pkgver}
