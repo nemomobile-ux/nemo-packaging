@@ -84,13 +84,13 @@ eval "$BUILD mapplauncherd-qt-git"
 eval "$BUILD qt5-lipstick-git"
 eval "$BUILD nemo-qml-plugin-connectivity-git"
 eval "$BUILD glacier-settings-git"
+
+eval "$BUILD buteo-syncfw"
+eval "$BUILD buteo-sync-plugin-carddav-git"
 eval "$BUILD nemo-qml-plugin-contacts-git"
 eval "$BUILD lipstick-glacier-home-git"
 eval "$BUILD glacier-wayland-session"
 
-#messages pim voicecalls
-eval "$BUILD buteo-syncfw"
-eval "$BUILD buteo-sync-plugin-carddav-git"
 eval "$BUILD libcommhistory-git"
 eval "$BUILD commhistory-daemon-git"
 eval "$BUILD nemo-qml-plugin-messages-git"
