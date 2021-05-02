@@ -28,7 +28,7 @@ prepare() {
 build() {
     cd "$srcdir/${pkgname%-git}"
     qmake
-    make
+    make -j1 # disable parallel build as a workaround
 }
 
 package() {
