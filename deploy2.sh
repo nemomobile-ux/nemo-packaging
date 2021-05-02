@@ -26,7 +26,8 @@ function build_directory() {
         status="FAIL"
     fi
     echo $status
-    mv "$log_name" "$log_name.${status}"
+    mv "$log_name" "${$log_name%.log}.${status}.log"
+
     cd "$OLDPWD"
 
     build_id=$(( build_id + 1 ))
