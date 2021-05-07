@@ -1,17 +1,24 @@
 #!/bin/bash
-if ! [ `whoami` == "root" ]
-then
-    echo "This script must be run with root priveleges"
-    exit
+
+if [[ "$(whoami)" != "${BUILD_USER-root}" ]]; then
+    echo "Error: This script must be run with ${BUILD_USER-root} priveleges" >&2
+    exit 1
 fi
 
-if [ "$BUILDARCH" == "aarch64" ]
-then
+function build_aarch64_fn() {
+    rsync /var/cache/manjaro-arm-tools/pkg/aarch64/ /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/ -r & \
+    rm -rf /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.* & \
+    repo-add /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.db.tar.xz /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/*.zst & \
+    pacman -Syyu & \
+    buildarmpkg -k -p $*
+}
+
+if [ "$BUILDARCH" == "aarch64" ]; then
     echo "Build for arm64 arch"
-    BUILD="rsync /var/cache/manjaro-arm-tools/pkg/aarch64/ /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/ -r & rm -rf /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.* & repo-add /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.db.tar.xz /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/*.zst & pacman -Syyu & buildarmpkg -k -p "
+    BUILD="${BUILD-build_aarch64_fn}"
 else
-    echo 'Build for x86_64 arch'
-    BUILD="buildpkg -n -p"
+    echo "Build for $(uname -m) arch"
+    BUILD="${BUILD-buildpkg -n -p}"
 fi
 
 # apps
@@ -31,6 +38,7 @@ eval "$BUILD glacier-filemuncher-git"
 eval "$BUILD meego-resource-git"
 eval "$BUILD qt5-resource-git"
 eval "$BUILD nemo-qml-plugin-thumbnailer-git"
+eval "$BUILD qtdocgallery-git"
 eval "$BUILD glacier-gallery-git"
 eval "$BUILD qt5-dbus-extended-git"
 eval "$BUILD qt5-mpris-git"
@@ -55,7 +63,6 @@ eval "$BUILD qt5-mlocale-git"
 eval "$BUILD libngf-git"
 eval "$BUILD usb-moded-git"
 eval "$BUILD mce-git"
-eval "$BUILD mce-dsme"
 eval "$BUILD sensorfw-git"
 eval "$BUILD qt5-mce-git"
 eval "$BUILD qt5-contacts-sqlite-extensions-git"
@@ -76,18 +83,21 @@ eval "$BUILD nemo-qml-plugin-systemsettings-git"
 eval "$BUILD mapplauncherd-git"
 eval "$BUILD mapplauncherd-qt-git"
 eval "$BUILD qt5-lipstick-git"
+eval "$BUILD nemo-qml-plugin-connectivity-git"
+eval "$BUILD glacier-settings-git"
+
+eval "$BUILD buteo-syncfw"
+eval "$BUILD buteo-sync-plugin-carddav-git"
+eval "$BUILD nemo-qml-plugin-contacts-git"
 eval "$BUILD lipstick-glacier-home-git"
 eval "$BUILD glacier-wayland-session"
 
-#messages pim voicecalls
-eval "$BUILD buteo-syncfw"
-eval "$BUILD buteo-sync-plugin-carddav-git"
 eval "$BUILD libcommhistory-git"
 eval "$BUILD commhistory-daemon-git"
-eval "$BUILD nemo-qml-plugin-contacts-git"
+eval "$BUILD qmf-qt5"
 eval "$BUILD nemo-qml-plugin-messages-git"
-eval "$BUILD mkcal"
-eval "$BUILD contactd"
+eval "$BUILD mkcal-git"
+eval "$BUILD contactsd-git"
 eval "$BUILD glacier-messages-git"
 eval "$BUILD glacier-contacts-git"
 eval "$BUILD voicecall"
@@ -97,4 +107,6 @@ eval "$BUILD glacier-dialer-git"
 eval "$BUILD qt5-profile-git"
 eval "$BUILD qt5-around-git"
 eval "$BUILD sailfish-access-control-qt5-git"
-eval "$BUILD mkcal-git"
+
+eval "$BUILD usb-tethering"
+eval "$BUILD devices/nemo-device-pinephone"
