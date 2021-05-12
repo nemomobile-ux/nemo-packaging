@@ -12,7 +12,7 @@ _branch=master
 _gitname=lib${_basename//nemo-qml-plugin-/}
 pkgname=$_basename-git
 
-pkgver=0.3.17.r0.g988b5d3
+pkgver=0.3.18.r0.g8ae69f3
 
 pkgrel=1
 pkgdesc="Library for associating content with actions"

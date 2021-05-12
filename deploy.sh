@@ -6,11 +6,11 @@ if [[ "$(whoami)" != "${BUILD_USER-root}" ]]; then
 fi
 
 function build_aarch64_fn() {
-    rsync /var/cache/manjaro-arm-tools/pkg/aarch64/ /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/ -r & \
-    rm -rf /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.* & \
-    repo-add /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.db.tar.xz /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/*.zst & \
-    pacman -Syyu & \
     buildarmpkg -k -p $*
+    rsync /var/cache/manjaro-arm-tools/pkg/aarch64/ /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/ -r
+    rm -rf /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.*
+    repo-add /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.db.tar.xz /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/*.zst
+    pacman -Syyu
 }
 
 if [ "$BUILDARCH" == "aarch64" ]; then
@@ -109,4 +109,8 @@ eval "$BUILD qt5-around-git"
 eval "$BUILD sailfish-access-control-qt5-git"
 
 eval "$BUILD usb-tethering"
-eval "$BUILD devices/nemo-device-pinephone"
+
+# arm specific packages
+if [ "$BUILDARCH" == "aarch64" ]; then
+    eval "$BUILD devices/nemo-device-pinephone"
+fi
