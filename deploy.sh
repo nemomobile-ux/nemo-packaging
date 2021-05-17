@@ -8,6 +8,7 @@ fi
 function build_aarch64_fn() {
     buildarmpkg -k -p $*
     rsync /var/cache/manjaro-arm-tools/pkg/aarch64/ /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/ -r
+    rm /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.db.tar.xz
     repo-add /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.db.tar.xz /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/*.zst
     manjaro-chroot /var/lib/manjaro-arm-tools/pkg/aarch64/ pacman -Syyu
 }
