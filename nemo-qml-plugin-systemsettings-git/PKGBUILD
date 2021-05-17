@@ -10,7 +10,7 @@ pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings#tag=0.5.47"
 license=('BSD')
-depends=('qt5-systems' 'ssu-sysinfo-git' 'qt5-usb-moded-git' 'profiled-git' 'qt5-timed-git' 'libsailfishkeyprovider-git' 'nemo-qml-plugin-models-git' 'qt5-connman-git' 'qt5-mlite-git' 'sailfish-user-managerd-git' 'mce-git' 'nemo-qml-plugin-dbus-git' 'sailfish-access-control-git')
+depends=('qt5-systems' 'ssu-sysinfo-git' 'qt5-usb-moded-git' 'profiled-git' 'qt5-timed-git' 'libsailfishkeyprovider-git' 'nemo-qml-plugin-models-git' 'qt5-connman-git' 'qt5-mlite-git' 'sailfish-user-managerd-git' 'mce-git' 'nemo-qml-plugin-dbus' 'sailfish-access-control-git')
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
