@@ -13,7 +13,7 @@ pkgname=qt5-$_basename-extensions-git
 
 pkgver=0.3.13.r0.gb89ddca
 
-pkgrel=1
+pkgrel=2
 pkgdesc="SQLite-based plugin for QtPIM Contacts"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname"
