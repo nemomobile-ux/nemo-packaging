@@ -11,7 +11,7 @@ pkgdesc="CPU and display keepalive and scheduling library"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/nemo-keepalive"
 license=('LGPL-2.1-or-later')
-depends=('qt5-declarative' 'libiphb')
+depends=('qt5-declarative' 'libiphb' 'mce-headers-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -33,10 +33,11 @@ build() {
 
 package() {
     cd "$srcdir/${pkgname%-git}"
+    mkdir -p $pkgdir/usr/lib/pkgconfig/
     make INSTALL_ROOT="$pkgdir/" install
 #    make -C lib-glib install ROOT="$pkgdir/"
 #    make -C tools install ROOT="$pkgdir/"
-    
+
     # Remove tests
     rm -rf "$pkgdir"/opt
 
