@@ -12,7 +12,7 @@ _branch=master
 _gitname=${_basename}
 pkgname=qt5-$_basename-git
 
-pkgver=3.6.12.r0.gd136e84
+pkgver=3.6.13.r0.g19cbb69
 
 pkgrel=1
 pkgdesc="Mer time daemon"
@@ -24,7 +24,7 @@ makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}" "0001-Fixes-build.patch")
-md5sums=('SKIP' '24ee6dc76b93a0d95d1dfc9c4857a149')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
