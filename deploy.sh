@@ -6,6 +6,7 @@ if [[ "$(whoami)" != "${BUILD_USER-root}" ]]; then
 fi
 
 function build_aarch64_fn() {
+    rm /var/lib/manjaro-arm-tools/pkg/aarch64/var/cache/pacman/pkg/*
     buildarmpkg -k -p $*
     rsync /var/cache/manjaro-arm-tools/pkg/aarch64/ /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/ -r
     rm /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.db.tar.xz
