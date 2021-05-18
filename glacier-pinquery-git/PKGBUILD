@@ -21,7 +21,7 @@ url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
 # https://github.com/TelepathyIM/telepathy-qt/wiki/Connection-Managers#fragmentation-story-s01e03
 depends=('qt5-glacier-app-git' 'libqofono-qt5')
-makedepends=('git')
+makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
