@@ -2,17 +2,14 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=pulseaudio-module-keepalive
-pkgver=1.0.1
+pkgver=1.0.1.r0.g3102ee5
 pkgrel=1
 pkgdesc="PulseAudio keepalive module"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/pulseaudio-module-keepalive.git"
 license=('LGPLv2+')
-depends=('pulseaudio')
-makedepends=('git' 'automake' 'autoconf')
-optdepends=()
-provides=("${_srcname}")
-conflicts=()
+depends=('libpulse')
+makedepends=('git' 'automake' 'autoconf' 'pulsecore-headers')
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
