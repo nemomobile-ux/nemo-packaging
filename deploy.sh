@@ -114,6 +114,7 @@ eval "$BUILD usb-tethering"
 #multimedia stuff
 eval "$BUILD pulsecore-headers"
 eval "$BUILD pulseaudio-module-keepalive"
+eval "$BUILD pulseaudio-modules-nemo"
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then

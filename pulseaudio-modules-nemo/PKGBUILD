@@ -1,0 +1,53 @@
+## $Id$
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+pkgname=pulseaudio-modules-nemo
+pkgver=14.2.30.r0.gd0dfdc3
+pkgrel=1
+pkgdesc="PulseAudio modules for Nemo"
+arch=('x86_64' 'aarch64')
+url="https://git.sailfishos.org/mer-core/pulseaudio-modules-nemo.git"
+license=('LGPLv2+')
+depends=('libpulse' 'alsa-lib')
+makedepends=('git' 'automake' 'autoconf' 'pulsecore-headers')
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  ( set -o pipefail
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  ) 2>/dev/null
+}
+
+prepare() {
+    cd "${srcdir}/${pkgname}"
+    ./bootstrap.sh
+}
+
+build() {
+  cd "${srcdir}/${pkgname}"
+  ./configure --prefix=/usr \
+    --sysconfdir=/etc \
+    --sbindir=/usr/bin \
+    --disable-static
+    make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  make DESTDIR="${pkgdir}" install
+
+  install -d ${pkgdir}/usr/include/pulsecore/modules/meego
+  install -m 644 src/common/include/meego/*.h ${pkgdir}/usr/include/pulsecore/modules/meego
+  install -m 644 src/voice/module-voice-api.h ${pkgdir}/usr/include/pulsecore/modules/meego
+  install -m 644 src/music/module-music-api.h ${pkgdir}/usr/include/pulsecore/modules/meego
+  install -m 644 src/record/module-record-api.h ${pkgdir}/usr/include/pulsecore/modules/meego
+  install -d ${pkgdir}/usr/include/pulsecore/modules/sailfishos
+  install -m 644 src/common/include/sailfishos/*.h ${pkgdir}/usr/include/pulsecore/modules/sailfishos
+  install -d ${pkgdir}/%{_libdir}/pkgconfig
+  install -m 644 src/common/*.pc ${pkgdir}/%{_libdir}/pkgconfig
+
+}
+ 
