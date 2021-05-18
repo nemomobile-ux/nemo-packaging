@@ -111,6 +111,7 @@ eval "$BUILD sailfish-access-control-qt5-git"
 
 eval "$BUILD usb-tethering"
 
+eval "$BUILD pulsecore-headers"
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
     eval "$BUILD devices/nemo-device-pinephone"
