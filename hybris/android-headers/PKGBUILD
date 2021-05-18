@@ -1,0 +1,18 @@
+# Contributor: Bhushan Shah < bshah at kde dot org >
+pkgname=android-headers
+pkgver=9.0.0
+pkgrel=1
+pkgdesc="Android headers extracted through libhybris"
+arch=('any')
+url="https://github.com/gemian/android-headers"
+license=('Apache')
+makedepends=('git' 'libffi')
+source=('android-headers::git+https://github.com/gemian/android-headers.git#branch=android-9')
+md5sums=('SKIP')
+
+package() {
+    cd android-headers
+    make PREFIX="/usr" DESTDIR="$pkgdir/" install
+}
+
+
