@@ -6,11 +6,12 @@ if [[ "$(whoami)" != "${BUILD_USER-root}" ]]; then
 fi
 
 function build_aarch64_fn() {
+    rm /var/lib/manjaro-arm-tools/pkg/aarch64/var/cache/pacman/pkg/*
     buildarmpkg -k -p $*
     rsync /var/cache/manjaro-arm-tools/pkg/aarch64/ /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/ -r
-    rm -rf /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.*
+    rm /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.db.tar.xz
     repo-add /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/selfbuild.db.tar.xz /var/lib/manjaro-arm-tools/pkg/aarch64/srv/repo/*.zst
-    pacman -Syyu
+    manjaro-chroot /var/lib/manjaro-arm-tools/pkg/aarch64/ pacman -Syyu
 }
 
 if [ "$BUILDARCH" == "aarch64" ]; then
@@ -109,6 +110,11 @@ eval "$BUILD qt5-around-git"
 eval "$BUILD sailfish-access-control-qt5-git"
 
 eval "$BUILD usb-tethering"
+
+#multimedia stuff
+eval "$BUILD pulsecore-headers"
+eval "$BUILD pulseaudio-module-keepalive"
+eval "$BUILD pulseaudio-modules-nemo"
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then

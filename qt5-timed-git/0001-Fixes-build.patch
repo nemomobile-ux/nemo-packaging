@@ -32,18 +32,6 @@ Subject: [PATCH] Fixes build
  create mode 100644 src/server/tzdata.type.cpp
  create mode 100644 src/server/tzdata.type.h
 
-diff --git a/src/server/adaptor.h b/src/server/adaptor.h
-index 76faa2c..65fa2cc 100644
---- a/src/server/adaptor.h
-+++ b/src/server/adaptor.h
-@@ -35,6 +35,7 @@
- #include <QString>
- #include <QDBusAbstractAdaptor>
- #include <QDBusMessage>
-+#include <QDateTime>
- 
- #include "../lib/event-io.h"
- #include "../lib/wall-info.h"
 diff --git a/src/server/config.type.cpp b/src/server/config.type.cpp
 new file mode 100644
 index 0000000..790a2c3

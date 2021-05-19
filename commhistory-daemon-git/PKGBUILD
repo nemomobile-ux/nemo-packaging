@@ -8,7 +8,7 @@ _branch=master
 
 pkgname=$_basename-git
 
-pkgver=0.8.37.r0.gd5a8e20
+pkgver=0.8.38.r0.g7e00f4a
 
 pkgrel=1
 pkgdesc="Communications event history database daemon"
