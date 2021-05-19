@@ -4,11 +4,12 @@
 
 pkgname=libqofono-qt5
 pkgver=0.103
-pkgrel=1
+pkgrel=2
 pkgdesc="A library for accessing the ofono daemon, and a declarative plugin for it. This allows accessing ofono in qtquick and friends."
 arch=('aarch64' 'x86_64')
 url="https://git.merproject.org/mer-core/libqofono"
 license=('LGPL')
+provides=('libqofono')
 depends=('qt5-declarative' 'qt5-xmlpatterns')
 source=("https://git.merproject.org/mer-core/libqofono/-/archive/${pkgver}/libqofono-${pkgver}.tar.gz"
         "0001-add-support-for-reset-contexts.patch"
