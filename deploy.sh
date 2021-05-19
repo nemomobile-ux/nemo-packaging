@@ -115,16 +115,8 @@ eval "$BUILD pulsecore-headers"
 eval "$BUILD pulseaudio-module-keepalive"
 eval "$BUILD pulseaudio-modules-nemo"
 
-# arm specific packages
-if [ "$BUILDARCH" == "aarch64" ]; then
-    eval "$BUILD devices/nemo-device-pinephone"
-fi
-
 eval "$BUILD dsme-git"
 eval "$BUILD libdsme"
-eval "$BUILD hybris/libhybris"
-eval "$BUILD hybris/android-headers"
-eval "$BUILD hybris/qt5-qpa-hwcomposer-plugin"
 eval "$BUILD libprolog"
 eval "$BUILD libngf-qt-git"
 eval "$BUILD libtrace-ohm"
@@ -134,3 +126,12 @@ eval "$BUILD ohm"
 eval "$BUILD ohm-rule-engine"
 eval "$BUILD libdres-ohm"
 eval "$BUILD policy-settings-common"
+
+# arm specific packages
+if [ "$BUILDARCH" == "aarch64" ]; then
+    eval "$BUILD hybris/libhybris"
+    eval "$BUILD hybris/android-headers"
+    eval "$BUILD hybris/qt5-qpa-hwcomposer-plugin"
+
+    eval "$BUILD devices/nemo-device-pinephone"
+fi
