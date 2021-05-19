@@ -8,7 +8,7 @@ _branch=master
 
 pkgname=$_basename-git
 
-pkgver=1.11.9.r0.g9fe0cd4
+pkgver=1.11.10.r0.g334caec
 
 pkgrel=1
 pkgdesc="Nemomobile Qt Quick Controls"
@@ -19,8 +19,8 @@ depends=('libphonenumber' 'qt5-base' 'qt5-contacts-sqlite-extensions-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
+source=("${pkgname}::git+${url}" "0001-fix-warnings-and-api.patch")
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -28,6 +28,11 @@ pkgver() {
     git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
     printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
   ) 2>/dev/null
+}
+
+prepare() {
+  cd "${srcdir}/${pkgname}"
+  patch -p1 --input="${srcdir}/0001-fix-warnings-and-api.patch"
 }
 
 build() {
