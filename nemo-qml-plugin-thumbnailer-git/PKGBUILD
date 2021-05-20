@@ -46,4 +46,9 @@ package() {
   cd "${srcdir}/${pkgname}"
   cd build
   make INSTALL_ROOT="${pkgdir}" install
+
+    mkdir -p ${pkgdir}/usr/lib/qt/qml/org/nemomobile/thumbnailer/
+    ln -sf /usr/lib/qt/qml/Nemo/Thumbnailer/libnemothumbnailer.so ${pkgdir}/usr/lib/qt/qml/org/nemomobile/thumbnailer/
+    sed 's/Nemo.Thumbnailer/org.nemomobile.thumbnailer/' < ${pkgdir}/usr/lib/qt/qml/Nemo/Thumbnailer/qmldir > ${pkgdir}/usr/lib/qt/qml/org/nemomobile/thumbnailer/qmldir
+
 }
