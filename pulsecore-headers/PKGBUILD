@@ -12,18 +12,12 @@ _commit=6a487c5244563f49a025088de3510c80824fc99e  # tags/v14.2^0
 source=("${pkgname}::git+https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git#commit=$_commit" "pulsecore.pc")
 sha256sums=('SKIP' 'SKIP')
 
-build() {
-  cd "${srcdir}/${pkgname}"
+package() {
   mkdir -p ${pkgdir}/usr/include/pulsecore/filter
   mkdir -p ${pkgdir}/usr/lib/pkgconfig/
-}
-
-
-package() {
   cd ${srcdir}/${pkgname}/src/pulsecore
   cp *.h ${pkgdir}/usr/include/pulsecore/
   cd filter
   cp *.h ${pkgdir}/usr/include/pulsecore/filter
-  
   cp "${srcdir}/pulsecore.pc" ${pkgdir}/usr/lib/pkgconfig/
 }

@@ -4,13 +4,13 @@
 pkgname=policy-settings-common
 _srcname=policy-settings-common
 _branch=master
-pkgver=0.11.0
+pkgver=common.0.11.1.r0.ga565292
 pkgrel=1
 pkgdesc="Common policy settings"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/policy-settings-common.git"
 license=('LGPL-2.1-only')
-depends=('glib2' 'libprolog' 'swi-prolog' 'libdres')
+depends=('glib2' 'libprolog' 'swi-prolog' 'libdres-ohm')
 makedepends=('git' 'automake' 'autoconf')
 optdepends=()
 provides=("${_srcname}")
@@ -21,7 +21,7 @@ sha256sums=('SKIP')
 pkgver() {
   cd "${srcdir}/${pkgname}"
   ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/\//./' ||
     printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
   ) 2>/dev/null
 }

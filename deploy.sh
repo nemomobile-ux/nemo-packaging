@@ -121,10 +121,10 @@ eval "$BUILD libprolog"
 eval "$BUILD libngf-qt-git"
 eval "$BUILD libtrace-ohm"
 eval "$BUILD mce-plugin-libhybris-nondroid-git"
-eval "$BUILD ohm-plugins-misc"
 eval "$BUILD ohm"
 eval "$BUILD ohm-rule-engine"
 eval "$BUILD libdres-ohm"
+eval "$BUILD ohm-plugins-misc"
 eval "$BUILD policy-settings-common"
 
 # arm specific packages
