@@ -1,8 +1,4 @@
 # $Id$
-# Contributor: TheKit <nekit1000 at gmail.com>
-# Contributor: Bart Ribbers <bribbers@disroot.org>
-# Contributor: Alexey Andreyev <aa13q@ya.ru>
-# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 _host="git.sailfishos.org"
 _project=mer-core
@@ -15,7 +11,7 @@ pkgname=$_basename-git
 pkgver=1.4.2.r0.gebcdb39
 
 pkgrel=1
-pkgdesc="Nemo calculator"
+pkgdesc="fingerterm is a terminal emulator designed for touch-based interaction, specifically for (but not limited to) use on the Nokia N9 and Jolla's Jolla device."
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
