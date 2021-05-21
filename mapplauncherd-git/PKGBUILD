@@ -11,7 +11,7 @@ pkgname=$_basename-git
 
 pkgver=4.1.43.r0.g9970c11
 
-pkgrel=1
+pkgrel=4
 pkgdesc="Application launcher for fast startup"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
@@ -44,5 +44,18 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make DESTDIR="$pkgdir" install
+#enable booster service
+  mkdir -p $pkgdir/usr/lib/systemd/user/user-session.target.wants/
+  ln -s ../booster-generic.service $pkgdir/usr/lib/systemd/user/user-session.target.wants/
+#cgroup mount screept stuff
+  install -D -m 0755 scripts/booster-cgroup-mount $pkgdir/usr/lib/startup/booster-cgroup-mount
+  install -D -m 0755 rpm/booster-cgroup-mount.service $pkgdir/usr/lib/systemd/system/booster-cgroup-mount.service
+  sed -i "s|privileged|manjaro|g" $pkgdir/usr/lib/startup/booster-cgroup-mount
+
+  mkdir -p $pkgdir/usr/lib/systemd/system/multi-user.target.wants
+  ln -s ../booster-cgroup-mount.service $pkgdir/usr/lib/systemd/system/multi-user.target.wants/
 }
- 
+
+post_install() {
+  /usr/bin/setcap cap_sys_ptrace+pe /usr/libexec/mapplauncherd/booster-generic || :
+}
