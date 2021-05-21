@@ -126,6 +126,8 @@ eval "$BUILD libdres-ohm"
 eval "$BUILD ohm-plugins-misc"
 eval "$BUILD policy-settings-common"
 
+eval "$BUILD fingerterm-git"
+
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
     eval "$BUILD hybris/libhybris"
