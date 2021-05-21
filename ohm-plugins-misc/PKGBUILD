@@ -4,7 +4,7 @@
 pkgname=ohm-plugins-misc
 _srcname=ohm-plugins-misc
 _branch=master
-pkgver=1.6.0.r0.g7ed96e9
+pkgver=1.7.0.r0.gef2c89c
 pkgrel=1
 pkgdesc="A miscallaneous set of OHM plugins"
 arch=('x86_64' 'aarch64')
