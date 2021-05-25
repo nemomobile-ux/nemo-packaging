@@ -1,0 +1,26 @@
+From 8c10c0b75a67881c9643fd4043591fe27cda7021 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Tue, 25 May 2021 17:50:38 +0200
+Subject: [PATCH] dummy implementation of isReady function until is
+ https://git.sailfishos.org/mer-core/voicecall/issues/1 solved
+
+---
+ plugins/declarative/src/voicecallhandler.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/plugins/declarative/src/voicecallhandler.cpp b/plugins/declarative/src/voicecallhandler.cpp
+index f203576..05f2c3d 100644
+--- a/plugins/declarative/src/voicecallhandler.cpp
++++ b/plugins/declarative/src/voicecallhandler.cpp
+@@ -452,3 +452,8 @@ void VoiceCallHandler::onPendingCallFinished(QDBusPendingCallWatcher *watcher)
+         DEBUG_T("Received successful reply for member: %s", qPrintable(reply.reply().member()));
+     }
+ }
++
++bool VoiceCallHandler::isReady() const
++{
++    return false;
++}
+-- 
+2.31.1
+
