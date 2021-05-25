@@ -25,6 +25,7 @@ index f203576..05f2c3d 100644
 +
 +bool VoiceCallHandler::isReady() const
 +{
++    qWarning() << "TODO missing implementation";
 +    return false;
 +}
 diff --git a/plugins/providers/ofono/src/ofonovoicecallprovider.cpp b/plugins/providers/ofono/src/ofonovoicecallprovider.cpp
