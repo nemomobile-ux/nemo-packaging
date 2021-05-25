@@ -1,4 +1,4 @@
-From bef8918ebf9c19377c2bb0d17e5d893a60e1b455 Mon Sep 17 00:00:00 2001
+From 749fbee32eeb91a511c65b78aec55e10bb46d00a Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Tue, 25 May 2021 17:50:38 +0200
 Subject: [PATCH] Empty implementation of some functions:
@@ -9,23 +9,23 @@ void CallChannelHandler::onCallChannelCallLocalHoldStateChanged(Tp::LocalHoldSta
 
 upstream tracker https://git.sailfishos.org/mer-core/voicecall/issues/1
 ---
- plugins/declarative/src/voicecallhandler.cpp           | 5 +++++
+ plugins/declarative/src/voicecallhandler.cpp           | 6 ++++++
  plugins/providers/ofono/src/ofonovoicecallprovider.cpp | 5 +++++
  plugins/providers/telepathy/src/callchannelhandler.cpp | 5 +++++
- 3 files changed, 15 insertions(+)
+ 3 files changed, 16 insertions(+)
 
 diff --git a/plugins/declarative/src/voicecallhandler.cpp b/plugins/declarative/src/voicecallhandler.cpp
-index f203576..05f2c3d 100644
+index f203576..79a35e0 100644
 --- a/plugins/declarative/src/voicecallhandler.cpp
 +++ b/plugins/declarative/src/voicecallhandler.cpp
-@@ -452,3 +452,8 @@ void VoiceCallHandler::onPendingCallFinished(QDBusPendingCallWatcher *watcher)
+@@ -452,3 +452,9 @@ void VoiceCallHandler::onPendingCallFinished(QDBusPendingCallWatcher *watcher)
          DEBUG_T("Received successful reply for member: %s", qPrintable(reply.reply().member()));
      }
  }
 +
 +bool VoiceCallHandler::isReady() const
 +{
-+    qWarning() << "TODO missing implementation";
++    qWarning() << "TODO: missing implementation";
 +    return false;
 +}
 diff --git a/plugins/providers/ofono/src/ofonovoicecallprovider.cpp b/plugins/providers/ofono/src/ofonovoicecallprovider.cpp
