@@ -8,8 +8,8 @@ pkgdesc="PulseAudio modules for Nemo"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/pulseaudio-modules-nemo.git"
 license=('LGPLv2+')
-depends=('libpulse' 'alsa-lib')
-makedepends=('git' 'automake' 'autoconf' 'pulsecore-headers')
+depends=('libpulse' 'alsa-lib' 'pulseaudio')
+makedepends=('git' 'automake' 'autoconf' 'pulsecore-headers' 'check')
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
