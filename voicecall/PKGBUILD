@@ -10,7 +10,7 @@ pkgname=$_basename-git
 
 pkgver=0.7.11.r0.ga188e61
 
-pkgrel=3
+pkgrel=4
 pkgdesc="Dialer engine for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
@@ -19,7 +19,7 @@ depends=('mapplauncherd-qt' 'libpulse' 'nemo-qml-plugin-devicelock-git' 'qt5-res
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0001-fix_build_on_new_qt.path" '0002-dummy-implementation-of-isReady-function-until-is-ht.patch')
+source=("${pkgname}::git+${url}" "0001-fix_build_on_new_qt.path" '0002-Empty-implementation-of-some-functions.patch')
 md5sums=('SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
@@ -33,7 +33,7 @@ pkgver() {
 prepare() {
   cd "${srcdir}/${pkgname}"
   patch -p1 --input "${srcdir}/0001-fix_build_on_new_qt.path"
-  patch -p1 --input "${srcdir}/0002-dummy-implementation-of-isReady-function-until-is-ht.patch"
+  patch -p1 --input "${srcdir}/0002-Empty-implementation-of-some-functions.patch"
 }
 
 build() {
