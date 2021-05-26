@@ -11,12 +11,11 @@ license=('GPL3' 'LGPL' 'custom')
 pkgdesc='Qt QPA plugin for Android hwcomposer'
 depends=('qt5-base' 'qt5-wayland' 'qt5-sensors' 'android-headers' 'libhybris')
 makedepends=()
-source=(${_pkgname}::git+https://github.com/neochapay/qt5-qpa-hwcomposer-plugin.git)
+source=(${_pkgname}::git+https://github.com/nemomobile-ux/qt5-qpa-hwcomposer-plugin.git)
 md5sums=('SKIP')
 
 prepare() {
   cd "${srcdir}/${pkgname}"
-  git checkout qt-5.15
   mkdir -p build
 }
 
