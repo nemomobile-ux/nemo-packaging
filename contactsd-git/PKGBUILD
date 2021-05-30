@@ -37,6 +37,7 @@ prepare() {
 
 build() {
   cd "${srcdir}/${pkgname}"
+  ./configure
   qmake
   make
 }
