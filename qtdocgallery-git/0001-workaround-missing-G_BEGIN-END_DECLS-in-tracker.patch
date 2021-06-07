@@ -1,0 +1,1708 @@
+From 966f9ffd181e01ba18a29944b847e49f5a75b5ed Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 4 Jun 2021 22:00:00 +0200
+Subject: [PATCH] workaround missing G_BEGIN/END_DECLS in tracker
+
+upstream fix wasn't released yet
+see https://gitlab.gnome.org/GNOME/tracker/-/commit/a11eb47ee19cc9849e790aa6331f242f9fa480a9
+---
+ .../tracker/qdocumentgallery_tracker.cpp      |   2 +-
+ .../tracker/qgallerytrackerchangenotifier_p.h |   2 +-
+ .../tracker/qgallerytrackerlistcolumn.cpp     |   2 +-
+ .../tracker/qgallerytrackermetadataedit_p.h   |   2 +-
+ .../tracker/qgallerytrackerresultset.cpp      |   2 +-
+ src/gallery/tracker/qgallerytrackerschema.cpp |   2 +-
+ src/gallery/tracker/tracker-batch.h           |  74 ++++++
+ src/gallery/tracker/tracker-connection.h      | 217 ++++++++++++++++++
+ src/gallery/tracker/tracker-cursor.h          | 121 ++++++++++
+ src/gallery/tracker/tracker-endpoint-dbus.h   |  62 +++++
+ src/gallery/tracker/tracker-endpoint-http.h   |  61 +++++
+ src/gallery/tracker/tracker-endpoint.h        |  50 ++++
+ src/gallery/tracker/tracker-error.h           |  82 +++++++
+ .../tracker/tracker-namespace-manager.h       |  68 ++++++
+ src/gallery/tracker/tracker-notifier.h        |  89 +++++++
+ src/gallery/tracker/tracker-ontologies.h      | 136 +++++++++++
+ src/gallery/tracker/tracker-resource.h        | 122 ++++++++++
+ .../tracker/tracker-sparql-enum-types.h       |  27 +++
+ src/gallery/tracker/tracker-sparql.h          |  44 ++++
+ src/gallery/tracker/tracker-statement.h       |  95 ++++++++
+ src/gallery/tracker/tracker-utils.h           |  48 ++++
+ .../tracker/tracker-version-generated.h       |  28 +++
+ src/gallery/tracker/tracker-version.h         | 152 ++++++++++++
+ 23 files changed, 1482 insertions(+), 6 deletions(-)
+ create mode 100644 src/gallery/tracker/tracker-batch.h
+ create mode 100644 src/gallery/tracker/tracker-connection.h
+ create mode 100644 src/gallery/tracker/tracker-cursor.h
+ create mode 100644 src/gallery/tracker/tracker-endpoint-dbus.h
+ create mode 100644 src/gallery/tracker/tracker-endpoint-http.h
+ create mode 100644 src/gallery/tracker/tracker-endpoint.h
+ create mode 100644 src/gallery/tracker/tracker-error.h
+ create mode 100644 src/gallery/tracker/tracker-namespace-manager.h
+ create mode 100644 src/gallery/tracker/tracker-notifier.h
+ create mode 100644 src/gallery/tracker/tracker-ontologies.h
+ create mode 100644 src/gallery/tracker/tracker-resource.h
+ create mode 100644 src/gallery/tracker/tracker-sparql-enum-types.h
+ create mode 100644 src/gallery/tracker/tracker-sparql.h
+ create mode 100644 src/gallery/tracker/tracker-statement.h
+ create mode 100644 src/gallery/tracker/tracker-utils.h
+ create mode 100644 src/gallery/tracker/tracker-version-generated.h
+ create mode 100644 src/gallery/tracker/tracker-version.h
+
+diff --git a/src/gallery/tracker/qdocumentgallery_tracker.cpp b/src/gallery/tracker/qdocumentgallery_tracker.cpp
+index 558ab8a..f1e1ea7 100644
+--- a/src/gallery/tracker/qdocumentgallery_tracker.cpp
++++ b/src/gallery/tracker/qdocumentgallery_tracker.cpp
+@@ -39,7 +39,7 @@
+ **
+ ****************************************************************************/
+
+-#include <tracker-sparql.h>
++#include "tracker-sparql.h"
+
+ #include "qdocumentgallery.h"
+
+diff --git a/src/gallery/tracker/qgallerytrackerchangenotifier_p.h b/src/gallery/tracker/qgallerytrackerchangenotifier_p.h
+index a1e6f7d..d0f576f 100644
+--- a/src/gallery/tracker/qgallerytrackerchangenotifier_p.h
++++ b/src/gallery/tracker/qgallerytrackerchangenotifier_p.h
+@@ -57,7 +57,7 @@
+
+ #include <QtCore/qobject.h>
+
+-#include <libtracker-sparql/tracker-sparql.h>
++#include "tracker-sparql.h"
+
+ QT_BEGIN_NAMESPACE_DOCGALLERY
+
+diff --git a/src/gallery/tracker/qgallerytrackerlistcolumn.cpp b/src/gallery/tracker/qgallerytrackerlistcolumn.cpp
+index 73f619d..83897e4 100644
+--- a/src/gallery/tracker/qgallerytrackerlistcolumn.cpp
++++ b/src/gallery/tracker/qgallerytrackerlistcolumn.cpp
+@@ -39,7 +39,7 @@
+ **
+ ****************************************************************************/
+
+-#include <tracker-sparql.h>
++#include "tracker-sparql.h"
+
+ #include "qgallerytrackerlistcolumn_p.h"
+
+diff --git a/src/gallery/tracker/qgallerytrackermetadataedit_p.h b/src/gallery/tracker/qgallerytrackermetadataedit_p.h
+index 5a93689..2154c8a 100644
+--- a/src/gallery/tracker/qgallerytrackermetadataedit_p.h
++++ b/src/gallery/tracker/qgallerytrackermetadataedit_p.h
+@@ -59,7 +59,7 @@
+ #include <QObject>
+ #include <QMap>
+
+-#include <tracker-sparql.h>
++#include "tracker-sparql.h"
+
+ QT_BEGIN_NAMESPACE_DOCGALLERY
+
+diff --git a/src/gallery/tracker/qgallerytrackerresultset.cpp b/src/gallery/tracker/qgallerytrackerresultset.cpp
+index 4b35818..db50ee7 100644
+--- a/src/gallery/tracker/qgallerytrackerresultset.cpp
++++ b/src/gallery/tracker/qgallerytrackerresultset.cpp
+@@ -39,7 +39,7 @@
+ **
+ ****************************************************************************/
+
+-#include <tracker-sparql.h>
++#include "tracker-sparql.h"
+
+ #include "qgallerytrackerresultset_p_p.h"
+
+diff --git a/src/gallery/tracker/qgallerytrackerschema.cpp b/src/gallery/tracker/qgallerytrackerschema.cpp
+index 351f703..ea455ad 100644
+--- a/src/gallery/tracker/qgallerytrackerschema.cpp
++++ b/src/gallery/tracker/qgallerytrackerschema.cpp
+@@ -39,7 +39,7 @@
+ **
+ ****************************************************************************/
+
+-#include <tracker-sparql.h>
++#include "tracker-sparql.h"
+
+ #include "qgallerytrackerschema_p.h"
+
+diff --git a/src/gallery/tracker/tracker-batch.h b/src/gallery/tracker/tracker-batch.h
+new file mode 100644
+index 0000000..3527716
+--- /dev/null
++++ b/src/gallery/tracker/tracker-batch.h
+@@ -0,0 +1,74 @@
++/*
++ * Copyright (C) 2020 Red Hat Ltd
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ *
++ * Author: Carlos Garnacho
++ */
++#ifndef __TRACKER_BATCH_H__
++#define __TRACKER_BATCH_H__
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <libtracker-sparql/tracker-sparql.h> must be included directly."
++#endif
++
++#include <libtracker-sparql/tracker-version.h>
++#include <libtracker-sparql/tracker-resource.h>
++#include <gio/gio.h>
++
++G_BEGIN_DECLS
++
++#define TRACKER_TYPE_BATCH tracker_batch_get_type ()
++
++TRACKER_AVAILABLE_IN_ALL
++G_DECLARE_DERIVABLE_TYPE (TrackerBatch,
++                          tracker_batch,
++                          TRACKER, BATCH,
++                          GObject)
++
++#include "tracker-connection.h"
++
++TRACKER_AVAILABLE_IN_3_1
++TrackerSparqlConnection * tracker_batch_get_connection (TrackerBatch *batch);
++
++TRACKER_AVAILABLE_IN_3_1
++void tracker_batch_add_sparql (TrackerBatch *batch,
++                               const gchar  *sparql);
++
++TRACKER_AVAILABLE_IN_3_1
++void tracker_batch_add_resource (TrackerBatch    *batch,
++                                 const gchar     *graph,
++                                 TrackerResource *resource);
++
++TRACKER_AVAILABLE_IN_3_1
++gboolean tracker_batch_execute (TrackerBatch  *batch,
++                                GCancellable  *cancellable,
++                                GError       **error);
++
++TRACKER_AVAILABLE_IN_3_1
++void tracker_batch_execute_async (TrackerBatch        *batch,
++                                  GCancellable        *cancellable,
++                                  GAsyncReadyCallback  callback,
++                                  gpointer             user_data);
++
++TRACKER_AVAILABLE_IN_3_1
++gboolean tracker_batch_execute_finish (TrackerBatch  *batch,
++                                       GAsyncResult  *res,
++                                       GError       **error);
++
++G_END_DECLS
++
++#endif /* __TRACKER_BATCH_H__ */
+diff --git a/src/gallery/tracker/tracker-connection.h b/src/gallery/tracker/tracker-connection.h
+new file mode 100644
+index 0000000..e749935
+--- /dev/null
++++ b/src/gallery/tracker/tracker-connection.h
+@@ -0,0 +1,217 @@
++/*
++ * Copyright (C) 2010, Nokia <ivan.frade@nokia.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++#ifndef __TRACKER_SPARQL_CONNECTION_H__
++#define __TRACKER_SPARQL_CONNECTION_H__
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <tracker-sparql.h> must be included directly."
++#endif
++
++#include "tracker-error.h"
++#include "tracker-notifier.h"
++#include "tracker-resource.h"
++#include "tracker-version.h"
++#include <gio/gio.h>
++
++G_BEGIN_DECLS
++
++/**
++ * TrackerSparqlConnectionFlags:
++ * @TRACKER_SPARQL_CONNECTION_FLAGS_NONE: No flags.
++ * @TRACKER_SPARQL_CONNECTION_FLAGS_READONLY: Connection is readonly.
++ * @TRACKER_SPARQL_CONNECTION_FLAGS_FTS_ENABLE_STEMMER: Word stemming is applied to FTS search terms.
++ * @TRACKER_SPARQL_CONNECTION_FLAGS_FTS_ENABLE_UNACCENT: Unaccenting is applied to FTS search terms.
++ * @TRACKER_SPARQL_CONNECTION_FLAGS_FTS_ENABLE_STOP_WORDS: FTS Search terms are filtered through a stop word list.
++ * @TRACKER_SPARQL_CONNECTION_FLAGS_FTS_IGNORE_NUMBERS: Ignore numbers in FTS search terms.
++ *
++ * Connection flags to modify #TrackerSparqlConnection behavior.
++ */
++typedef enum {
++	TRACKER_SPARQL_CONNECTION_FLAGS_NONE                  = 0,
++	TRACKER_SPARQL_CONNECTION_FLAGS_READONLY              = 1 << 0,
++	TRACKER_SPARQL_CONNECTION_FLAGS_FTS_ENABLE_STEMMER    = 1 << 1,
++	TRACKER_SPARQL_CONNECTION_FLAGS_FTS_ENABLE_UNACCENT   = 1 << 2,
++	TRACKER_SPARQL_CONNECTION_FLAGS_FTS_ENABLE_STOP_WORDS = 1 << 3,
++	TRACKER_SPARQL_CONNECTION_FLAGS_FTS_IGNORE_NUMBERS    = 1 << 4,
++} TrackerSparqlConnectionFlags;
++
++/**
++ * TrackerSparqlConnection:
++ *
++ * The <structname>TrackerSparqlConnection</structname> object represents a
++ * SPARQL connection.
++ */
++#define TRACKER_TYPE_SPARQL_CONNECTION tracker_sparql_connection_get_type ()
++#define TRACKER_SPARQL_TYPE_CONNECTION TRACKER_TYPE_SPARQL_CONNECTION
++
++TRACKER_AVAILABLE_IN_ALL
++G_DECLARE_DERIVABLE_TYPE (TrackerSparqlConnection,
++                          tracker_sparql_connection,
++                          TRACKER, SPARQL_CONNECTION,
++                          GObject)
++
++#include "tracker-batch.h"
++#include "tracker-cursor.h"
++#include "tracker-statement.h"
++#include "tracker-namespace-manager.h"
++
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlConnection * tracker_sparql_connection_new (TrackerSparqlConnectionFlags   flags,
++                                                         GFile                         *store,
++                                                         GFile                         *ontology,
++                                                         GCancellable                  *cancellable,
++                                                         GError                       **error);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_connection_new_async (TrackerSparqlConnectionFlags   flags,
++                                          GFile                         *store,
++                                          GFile                         *ontology,
++                                          GCancellable                  *cancellable,
++                                          GAsyncReadyCallback            callback,
++                                          gpointer                       user_data);
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlConnection * tracker_sparql_connection_new_finish (GAsyncResult  *result,
++                                                                GError       **error);
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlConnection * tracker_sparql_connection_bus_new (const gchar      *service_name,
++                                                             const gchar      *object_path,
++                                                             GDBusConnection  *dbus_connection,
++                                                             GError          **error);
++TRACKER_AVAILABLE_IN_3_1
++void tracker_sparql_connection_bus_new_async (const gchar         *service_name,
++                                              const gchar         *object_path,
++                                              GDBusConnection     *dbus_connection,
++                                              GCancellable        *cancellable,
++                                              GAsyncReadyCallback  callback,
++                                              gpointer             user_data);
++TRACKER_AVAILABLE_IN_3_1
++TrackerSparqlConnection * tracker_sparql_connection_bus_new_finish (GAsyncResult  *result,
++                                                                    GError       **error);
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlConnection * tracker_sparql_connection_remote_new (const gchar *uri_base);
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlCursor * tracker_sparql_connection_query (TrackerSparqlConnection  *connection,
++                                                       const gchar              *sparql,
++                                                       GCancellable             *cancellable,
++                                                       GError                  **error);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_connection_query_async (TrackerSparqlConnection *connection,
++                                            const gchar             *sparql,
++                                            GCancellable            *cancellable,
++                                            GAsyncReadyCallback      callback,
++                                            gpointer                 user_data);
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlCursor * tracker_sparql_connection_query_finish (TrackerSparqlConnection  *connection,
++                                                              GAsyncResult             *res,
++                                                              GError                  **error);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_connection_update (TrackerSparqlConnection  *connection,
++                                       const gchar              *sparql,
++                                       GCancellable             *cancellable,
++                                       GError                  **error);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_connection_update_async (TrackerSparqlConnection *connection,
++                                             const gchar             *sparql,
++                                             GCancellable            *cancellable,
++                                             GAsyncReadyCallback      callback,
++                                             gpointer                 user_data);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_connection_update_finish (TrackerSparqlConnection  *connection,
++                                              GAsyncResult             *res,
++                                              GError                  **error);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_connection_update_array_async (TrackerSparqlConnection  *connection,
++                                                   gchar                   **sparql,
++                                                   gint                      sparql_length,
++                                                   GCancellable             *cancellable,
++                                                   GAsyncReadyCallback       callback,
++                                                   gpointer                  user_data);
++TRACKER_AVAILABLE_IN_ALL
++gboolean tracker_sparql_connection_update_array_finish (TrackerSparqlConnection  *connection,
++                                                        GAsyncResult             *res,
++                                                        GError                  **error);
++TRACKER_AVAILABLE_IN_3_1
++gboolean tracker_sparql_connection_update_resource (TrackerSparqlConnection  *connection,
++                                                    const gchar              *graph,
++                                                    TrackerResource          *resource,
++                                                    GCancellable             *cancellable,
++                                                    GError                  **error);
++TRACKER_AVAILABLE_IN_3_1
++void tracker_sparql_connection_update_resource_async (TrackerSparqlConnection *connection,
++                                                      const gchar             *graph,
++                                                      TrackerResource         *resource,
++                                                      GCancellable            *cancellable,
++                                                      GAsyncReadyCallback      callback,
++                                                      gpointer                 user_data);
++TRACKER_AVAILABLE_IN_3_1
++gboolean tracker_sparql_connection_update_resource_finish (TrackerSparqlConnection  *connection,
++                                                           GAsyncResult             *res,
++                                                           GError                  **error);
++TRACKER_AVAILABLE_IN_3_1
++TrackerBatch * tracker_sparql_connection_create_batch (TrackerSparqlConnection *connection);
++
++TRACKER_AVAILABLE_IN_ALL
++GVariant * tracker_sparql_connection_update_blank (TrackerSparqlConnection  *connection,
++                                                   const gchar              *sparql,
++                                                   GCancellable             *cancellable,
++                                                   GError                  **error);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_connection_update_blank_async (TrackerSparqlConnection *connection,
++                                                   const gchar             *sparql,
++                                                   GCancellable            *cancellable,
++                                                   GAsyncReadyCallback      callback,
++                                                   gpointer                 user_data);
++TRACKER_AVAILABLE_IN_ALL
++GVariant * tracker_sparql_connection_update_blank_finish (TrackerSparqlConnection  *connection,
++                                                          GAsyncResult             *res,
++                                                          GError                  **error);
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerNamespaceManager * tracker_sparql_connection_get_namespace_manager (TrackerSparqlConnection *connection);
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlStatement * tracker_sparql_connection_query_statement (TrackerSparqlConnection  *connection,
++                                                                    const gchar              *sparql,
++                                                                    GCancellable             *cancellable,
++                                                                    GError                  **error);
++TRACKER_AVAILABLE_IN_ALL
++TrackerNotifier * tracker_sparql_connection_create_notifier (TrackerSparqlConnection *connection);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_connection_close (TrackerSparqlConnection *connection);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_connection_close_async (TrackerSparqlConnection *connection,
++                                            GCancellable            *cancellable,
++                                            GAsyncReadyCallback      callback,
++                                            gpointer                 user_data);
++
++TRACKER_AVAILABLE_IN_ALL
++gboolean tracker_sparql_connection_close_finish (TrackerSparqlConnection  *connection,
++                                                 GAsyncResult             *res,
++                                                 GError                  **error);
++
++G_END_DECLS
++
++#endif /* __TRACKER_SPARQL_CONNECTION_H__ */
+diff --git a/src/gallery/tracker/tracker-cursor.h b/src/gallery/tracker/tracker-cursor.h
+new file mode 100644
+index 0000000..213f4f1
+--- /dev/null
++++ b/src/gallery/tracker/tracker-cursor.h
+@@ -0,0 +1,121 @@
++/*
++ * Copyright (C) 2010, Nokia <ivan.frade@nokia.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++#ifndef __TRACKER_SPARQL_CURSOR_H__
++#define __TRACKER_SPARQL_CURSOR_H__
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <libtracker-sparql/tracker-sparql.h> must be included directly."
++#endif
++
++#include <gio/gio.h>
++#include "tracker-version.h"
++
++G_BEGIN_DECLS
++
++/**
++ * TrackerSparqlCursor:
++ *
++ * The <structname>TrackerSparqlCursor</structname> object represents an
++ * iterator of results.
++ */
++#define TRACKER_TYPE_SPARQL_CURSOR tracker_sparql_cursor_get_type ()
++#define TRACKER_SPARQL_TYPE_CURSOR TRACKER_TYPE_SPARQL_CURSOR
++TRACKER_AVAILABLE_IN_ALL
++G_DECLARE_DERIVABLE_TYPE (TrackerSparqlCursor, tracker_sparql_cursor,
++                          TRACKER, SPARQL_CURSOR, GObject)
++
++#include "tracker-connection.h"
++
++/**
++ * TrackerSparqlValueType:
++ * @TRACKER_SPARQL_VALUE_TYPE_UNBOUND: Unbound value type
++ * @TRACKER_SPARQL_VALUE_TYPE_URI: Uri value type, rdfs:Resource
++ * @TRACKER_SPARQL_VALUE_TYPE_STRING: String value type, xsd:string
++ * @TRACKER_SPARQL_VALUE_TYPE_INTEGER: Integer value type, xsd:integer
++ * @TRACKER_SPARQL_VALUE_TYPE_DOUBLE: Double value type, xsd:double
++ * @TRACKER_SPARQL_VALUE_TYPE_DATETIME: Datetime value type, xsd:dateTime
++ * @TRACKER_SPARQL_VALUE_TYPE_BLANK_NODE: Blank node value type
++ * @TRACKER_SPARQL_VALUE_TYPE_BOOLEAN: Boolean value type, xsd:boolean
++ *
++ * Enumeration with the possible types of the cursor's cells
++ */
++typedef enum {
++	TRACKER_SPARQL_VALUE_TYPE_UNBOUND,
++	TRACKER_SPARQL_VALUE_TYPE_URI,
++	TRACKER_SPARQL_VALUE_TYPE_STRING,
++	TRACKER_SPARQL_VALUE_TYPE_INTEGER,
++	TRACKER_SPARQL_VALUE_TYPE_DOUBLE,
++	TRACKER_SPARQL_VALUE_TYPE_DATETIME,
++	TRACKER_SPARQL_VALUE_TYPE_BLANK_NODE,
++	TRACKER_SPARQL_VALUE_TYPE_BOOLEAN,
++} TrackerSparqlValueType;
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlConnection * tracker_sparql_cursor_get_connection (TrackerSparqlCursor *cursor);
++TRACKER_AVAILABLE_IN_ALL
++gint tracker_sparql_cursor_get_n_columns (TrackerSparqlCursor *cursor);
++
++TRACKER_AVAILABLE_IN_ALL
++const gchar * tracker_sparql_cursor_get_string (TrackerSparqlCursor *cursor,
++                                                gint                 column,
++                                                glong               *length);
++TRACKER_AVAILABLE_IN_ALL
++gboolean tracker_sparql_cursor_get_boolean (TrackerSparqlCursor *cursor,
++                                            gint                 column);
++TRACKER_AVAILABLE_IN_ALL
++gdouble tracker_sparql_cursor_get_double (TrackerSparqlCursor *cursor,
++                                          gint                 column);
++TRACKER_AVAILABLE_IN_ALL
++gint64 tracker_sparql_cursor_get_integer (TrackerSparqlCursor *cursor,
++                                          gint                 column);
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlValueType tracker_sparql_cursor_get_value_type (TrackerSparqlCursor *cursor,
++                                                             gint                 column);
++TRACKER_AVAILABLE_IN_ALL
++const gchar * tracker_sparql_cursor_get_variable_name (TrackerSparqlCursor *cursor,
++                                                       gint                 column);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_cursor_close (TrackerSparqlCursor *cursor);
++
++TRACKER_AVAILABLE_IN_ALL
++gboolean tracker_sparql_cursor_is_bound (TrackerSparqlCursor *cursor,
++                                         gint                 column);
++
++TRACKER_AVAILABLE_IN_ALL
++gboolean tracker_sparql_cursor_next (TrackerSparqlCursor  *cursor,
++                                     GCancellable         *cancellable,
++                                     GError              **error);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_cursor_next_async (TrackerSparqlCursor  *cursor,
++                                       GCancellable         *cancellable,
++                                       GAsyncReadyCallback   callback,
++                                       gpointer              user_data);
++
++TRACKER_AVAILABLE_IN_ALL
++gboolean tracker_sparql_cursor_next_finish (TrackerSparqlCursor  *cursor,
++                                            GAsyncResult         *res,
++                                            GError              **error);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_cursor_rewind (TrackerSparqlCursor *cursor);
++
++G_END_DECLS
++
++#endif /* __TRACKER_SPARQL_CURSOR_H__ */
+diff --git a/src/gallery/tracker/tracker-endpoint-dbus.h b/src/gallery/tracker/tracker-endpoint-dbus.h
+new file mode 100644
+index 0000000..8d33d9a
+--- /dev/null
++++ b/src/gallery/tracker/tracker-endpoint-dbus.h
+@@ -0,0 +1,62 @@
++/*
++ * Copyright (C) 2019, Red Hat, Inc
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ *
++ * Author: Carlos Garnacho <carlosg@gnome.org>
++ */
++
++#ifndef __TRACKER_ENDPOINT_DBUS_H__
++#define __TRACKER_ENDPOINT_DBUS_H__
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <libtracker-sparql/tracker-sparql.h> must be included directly."
++#endif
++
++#include "tracker-endpoint.h"
++#include "tracker-version.h"
++
++G_BEGIN_DECLS
++
++#define TRACKER_TYPE_ENDPOINT_DBUS         (tracker_endpoint_dbus_get_type())
++#define TRACKER_ENDPOINT_DBUS(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TRACKER_TYPE_ENDPOINT_DBUS, TrackerEndpointDBus))
++#define TRACKER_ENDPOINT_DBUS_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), TRACKER_TYPE_ENDPOINT_DBUS, TrackerEndpointDBusClass))
++#define TRACKER_IS_ENDPOINT_DBUS(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TRACKER_TYPE_ENDPOINT_DBUS))
++#define TRACKER_IS_ENDPOINT_DBUS_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c),  TRACKER_TYPE_ENDPOINT_DBUS))
++#define TRACKER_ENDPOINT_DBUS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TRACKER_TYPE_ENDPOINT_DBUS, TrackerEndpointDBusClass))
++
++/**
++ * TrackerEndpointDBus:
++ *
++ * The <structname>TrackerEndpointDBus</structname> object represents a public
++ * connection to a #TrackerSparqlConnection on a DBus object path.
++ */
++typedef struct _TrackerEndpointDBus TrackerEndpointDBus;
++
++TRACKER_AVAILABLE_IN_ALL
++GType tracker_endpoint_dbus_get_type (void) G_GNUC_CONST;
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerEndpointDBus *
++tracker_endpoint_dbus_new (TrackerSparqlConnection  *sparql_connection,
++                           GDBusConnection          *dbus_connection,
++                           const gchar              *object_path,
++                           GCancellable             *cancellable,
++                           GError                  **error);
++
++G_END_DECLS
++
++#endif /* __TRACKER_ENDPOINT_DBUS_H__ */
+diff --git a/src/gallery/tracker/tracker-endpoint-http.h b/src/gallery/tracker/tracker-endpoint-http.h
+new file mode 100644
+index 0000000..7d7a2b1
+--- /dev/null
++++ b/src/gallery/tracker/tracker-endpoint-http.h
+@@ -0,0 +1,61 @@
++/*
++ * Copyright (C) 2020, Red Hat, Inc
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ *
++ * Author: Carlos Garnacho <carlosg@gnome.org>
++ */
++
++#ifndef TRACKER_ENDPOINT_HTTP_H
++#define TRACKER_ENDPOINT_HTTP_H
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <libtracker-sparql/tracker-sparql.h> must be included directly."
++#endif
++
++#include "tracker-endpoint.h"
++#include "tracker-version.h"
++
++G_BEGIN_DECLS
++
++#define TRACKER_TYPE_ENDPOINT_HTTP         (tracker_endpoint_http_get_type())
++#define TRACKER_ENDPOINT_HTTP(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), TRACKER_TYPE_ENDPOINT_HTTP, TrackerEndpointHttp))
++#define TRACKER_ENDPOINT_HTTP_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), TRACKER_TYPE_ENDPOINT_HTTP, TrackerEndpointHttpClass))
++#define TRACKER_IS_ENDPOINT_HTTP(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), TRACKER_TYPE_ENDPOINT_HTTP))
++#define TRACKER_IS_ENDPOINT_HTTP_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c),  TRACKER_TYPE_ENDPOINT_HTTP))
++#define TRACKER_ENDPOINT_HTTP_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), TRACKER_TYPE_ENDPOINT_HTTP, TrackerEndpointHttpClass))
++
++/**
++ * TrackerEndpointHttp:
++ *
++ * The <structname>TrackerEndpointHttp</structname> object represents a public
++ * connection to a #TrackerSparqlConnection on a HTTP port.
++ */
++typedef struct _TrackerEndpointHttp TrackerEndpointHttp;
++
++TRACKER_AVAILABLE_IN_3_1
++GType tracker_endpoint_http_get_type (void) G_GNUC_CONST;
++
++TRACKER_AVAILABLE_IN_3_1
++TrackerEndpointHttp * tracker_endpoint_http_new (TrackerSparqlConnection  *sparql_connection,
++                                                 guint                     port,
++                                                 GTlsCertificate          *certificate,
++                                                 GCancellable             *cancellable,
++                                                 GError                  **error);
++
++G_END_DECLS
++
++#endif /* TRACKER_ENDPOINT_HTTP_H */
+diff --git a/src/gallery/tracker/tracker-endpoint.h b/src/gallery/tracker/tracker-endpoint.h
+new file mode 100644
+index 0000000..b986c09
+--- /dev/null
++++ b/src/gallery/tracker/tracker-endpoint.h
+@@ -0,0 +1,50 @@
++/*
++ * Copyright (C) 2019, Red Hat, Inc
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ *
++ * Author: Carlos Garnacho <carlosg@gnome.org>
++ */
++
++#ifndef __TRACKER_ENDPOINT_H__
++#define __TRACKER_ENDPOINT_H__
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <libtracker-sparql/tracker-sparql.h> must be included directly."
++#endif
++
++#include <glib-object.h>
++#include "tracker-connection.h"
++#include "tracker-version.h"
++
++G_BEGIN_DECLS
++
++/**
++ * TrackerEndpoint:
++ *
++ * The <structname>TrackerEndpoint</structname> object represents a public
++ * connection to a #TrackerSparqlConnection.
++ */
++#define TRACKER_TYPE_ENDPOINT tracker_endpoint_get_type()
++TRACKER_AVAILABLE_IN_ALL
++G_DECLARE_DERIVABLE_TYPE (TrackerEndpoint, tracker_endpoint, TRACKER, ENDPOINT, GObject)
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlConnection * tracker_endpoint_get_sparql_connection (TrackerEndpoint *endpoint);
++
++G_END_DECLS
++
++#endif /* __TRACKER_ENDPOINT_H__ */
+diff --git a/src/gallery/tracker/tracker-error.h b/src/gallery/tracker/tracker-error.h
+new file mode 100644
+index 0000000..5438898
+--- /dev/null
++++ b/src/gallery/tracker/tracker-error.h
+@@ -0,0 +1,82 @@
++/*
++ * Copyright (C) 2010, Nokia <ivan.frade@nokia.com>
++ * Copyright (C) 2020, Sam Thursfield <sam@afuera.me.uk>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++
++#ifndef __TRACKER_ERROR_H__
++#define __TRACKER_ERROR_H__
++
++#include <gio/gio.h>
++#include "tracker-version.h"
++
++G_BEGIN_DECLS
++
++/**
++ * SECTION: tracker-sparql-error
++ * @short_description: Error codes
++ * @title: TrackerSparqlError
++ * @stability: Stable
++ * @include: tracker-sparql.h
++ */
++
++/**
++ * TrackerSparqlError:
++ * @TRACKER_SPARQL_ERROR_CONSTRAINT: Subject is not in the domain of a property or
++ *                             trying to set multiple values for a single valued
++ *                             property.
++ * @TRACKER_SPARQL_ERROR_INTERNAL: Internal error.
++ * @TRACKER_SPARQL_ERROR_NO_SPACE: There was no disk space available to perform the request.
++ * @TRACKER_SPARQL_ERROR_ONTOLOGY_NOT_FOUND: The specified ontology wasn't found.
++ * @TRACKER_SPARQL_ERROR_OPEN_ERROR: Problem encounted while opening the database.
++ * @TRACKER_SPARQL_ERROR_PARSE: Error parsing the SPARQL string.
++ * @TRACKER_SPARQL_ERROR_QUERY_FAILED: Problem while executing the query.
++ * @TRACKER_SPARQL_ERROR_TYPE: Type constraint failed when trying to insert data.
++ * @TRACKER_SPARQL_ERROR_UNKNOWN_CLASS: Unknown class.
++ * @TRACKER_SPARQL_ERROR_UNKNOWN_GRAPH: Unknown graph.
++ * @TRACKER_SPARQL_ERROR_UNKNOWN_PROPERTY: Unknown property.
++ * @TRACKER_SPARQL_ERROR_UNSUPPORTED: Unsupported feature or method.
++ * @TRACKER_SPARQL_N_ERRORS: The total number of error codes.
++ *
++ * Error domain for Tracker Sparql. Errors in this domain will be from the
++ * #TrackerSparqlError enumeration. See #GError for more information on error
++ * domains.
++ */
++typedef enum {
++	TRACKER_SPARQL_ERROR_CONSTRAINT,
++	TRACKER_SPARQL_ERROR_INTERNAL,
++	TRACKER_SPARQL_ERROR_NO_SPACE,
++	TRACKER_SPARQL_ERROR_ONTOLOGY_NOT_FOUND,
++	TRACKER_SPARQL_ERROR_OPEN_ERROR,
++	TRACKER_SPARQL_ERROR_PARSE,
++	TRACKER_SPARQL_ERROR_QUERY_FAILED,
++	TRACKER_SPARQL_ERROR_TYPE,
++	TRACKER_SPARQL_ERROR_UNKNOWN_CLASS,
++	TRACKER_SPARQL_ERROR_UNKNOWN_GRAPH,
++	TRACKER_SPARQL_ERROR_UNKNOWN_PROPERTY,
++	TRACKER_SPARQL_ERROR_UNSUPPORTED,
++	TRACKER_SPARQL_N_ERRORS,
++} TrackerSparqlError;
++
++#define TRACKER_SPARQL_ERROR tracker_sparql_error_quark ()
++
++TRACKER_AVAILABLE_IN_ALL
++GQuark tracker_sparql_error_quark (void);
++
++G_END_DECLS
++
++#endif
+diff --git a/src/gallery/tracker/tracker-namespace-manager.h b/src/gallery/tracker/tracker-namespace-manager.h
+new file mode 100644
+index 0000000..bc44494
+--- /dev/null
++++ b/src/gallery/tracker/tracker-namespace-manager.h
+@@ -0,0 +1,68 @@
++/*
++ * Copyright (C) 2016, Sam Thursfield <sam@afuera.me.uk>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++
++#ifndef __LIBTRACKER_SPARQL_NAMESPACE_MANAGER_H__
++#define __LIBTRACKER_SPARQL_NAMESPACE_MANAGER_H__
++
++#include <glib-object.h>
++
++G_BEGIN_DECLS
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <libtracker-sparql/tracker-sparql.h> must be included directly."
++#endif
++
++#include "tracker-version.h"
++
++/**
++ * TrackerNamespaceManager:
++ *
++ * The <structname>TrackerNamespaceManager</structname> object represents a
++ * mapping of prefixes and namespaces.
++ */
++#define TRACKER_TYPE_NAMESPACE_MANAGER (tracker_namespace_manager_get_type())
++TRACKER_AVAILABLE_IN_ALL
++G_DECLARE_FINAL_TYPE (TrackerNamespaceManager, tracker_namespace_manager, TRACKER, NAMESPACE_MANAGER, GObject)
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerNamespaceManager *tracker_namespace_manager_new (void);
++TRACKER_AVAILABLE_IN_ALL
++TrackerNamespaceManager *tracker_namespace_manager_get_default (void);
++
++TRACKER_AVAILABLE_IN_ALL
++char *tracker_namespace_manager_expand_uri (TrackerNamespaceManager *self, const char *compact_uri);
++
++TRACKER_AVAILABLE_IN_ALL
++gboolean tracker_namespace_manager_has_prefix (TrackerNamespaceManager *self, const char *prefix);
++TRACKER_AVAILABLE_IN_ALL
++const char *tracker_namespace_manager_lookup_prefix (TrackerNamespaceManager *self, const char *prefix);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_namespace_manager_add_prefix (TrackerNamespaceManager *self, const char *prefix, const char *ns);
++
++TRACKER_AVAILABLE_IN_ALL
++char *tracker_namespace_manager_print_turtle (TrackerNamespaceManager *self);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_namespace_manager_foreach (TrackerNamespaceManager *self, GHFunc func, gpointer user_data);
++
++G_END_DECLS
++
++#endif /* __LIBTRACKER_SPARQL_NAMESPACE_MANAGER_H__ */
++
+diff --git a/src/gallery/tracker/tracker-notifier.h b/src/gallery/tracker/tracker-notifier.h
+new file mode 100644
+index 0000000..a887572
+--- /dev/null
++++ b/src/gallery/tracker/tracker-notifier.h
+@@ -0,0 +1,89 @@
++/*
++ * Copyright (C) 2016 Red Hat Inc.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++
++#ifndef __TRACKER_NOTIFIER_H__
++#define __TRACKER_NOTIFIER_H__
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <tracker-sparql.h> must be included directly."
++#endif
++
++#include <gio/gio.h>
++#include "tracker-version.h"
++
++G_BEGIN_DECLS
++
++#define TRACKER_TYPE_NOTIFIER (tracker_notifier_get_type ())
++#define TRACKER_TYPE_NOTIFIER_EVENT (tracker_notifier_event_get_type ())
++
++/**
++ * TrackerNotifier:
++ *
++ * The <structname>TrackerNotifier</structname> object allows subscribing
++ * to changes in the stored data.
++ */
++TRACKER_AVAILABLE_IN_ALL
++G_DECLARE_DERIVABLE_TYPE (TrackerNotifier, tracker_notifier, TRACKER, NOTIFIER, GObject)
++
++/**
++ * TrackerNotifierEvent:
++ *
++ * The <structname>TrackerNotifierEvent</structname> struct represents a
++ * change event in the stored data.
++ */
++typedef struct _TrackerNotifierEvent TrackerNotifierEvent;
++
++/**
++ * TrackerNotifierEventType:
++ * @TRACKER_NOTIFIER_EVENT_CREATE: An element was created.
++ * @TRACKER_NOTIFIER_EVENT_DELETE: An element was deleted.
++ * @TRACKER_NOTIFIER_EVENT_UPDATE: An element was updated.
++ *
++ * Notifier event types.
++ */
++typedef enum {
++	TRACKER_NOTIFIER_EVENT_CREATE,
++	TRACKER_NOTIFIER_EVENT_DELETE,
++	TRACKER_NOTIFIER_EVENT_UPDATE
++} TrackerNotifierEventType;
++
++TRACKER_AVAILABLE_IN_ALL
++guint tracker_notifier_signal_subscribe   (TrackerNotifier *notifier,
++                                           GDBusConnection *connection,
++                                           const gchar     *service,
++                                           const gchar     *object_path,
++                                           const gchar     *graph);
++TRACKER_AVAILABLE_IN_ALL
++void  tracker_notifier_signal_unsubscribe (TrackerNotifier *notifier,
++                                           guint            handler_id);
++
++TRACKER_AVAILABLE_IN_ALL
++GType tracker_notifier_event_get_type (void) G_GNUC_CONST;
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerNotifierEventType
++              tracker_notifier_event_get_event_type (TrackerNotifierEvent *event);
++TRACKER_AVAILABLE_IN_ALL
++gint64        tracker_notifier_event_get_id         (TrackerNotifierEvent *event);
++TRACKER_AVAILABLE_IN_ALL
++const gchar * tracker_notifier_event_get_urn        (TrackerNotifierEvent *event);
++
++G_END_DECLS
++
++#endif /* __TRACKER_NOTIFIER_H__ */
+diff --git a/src/gallery/tracker/tracker-ontologies.h b/src/gallery/tracker/tracker-ontologies.h
+new file mode 100644
+index 0000000..bb678b6
+--- /dev/null
++++ b/src/gallery/tracker/tracker-ontologies.h
+@@ -0,0 +1,136 @@
++/*
++ * Copyright (C) 2006, Jamie McCracken <jamiemcc@gnome.org>
++ * Copyright (C) 2008, Nokia <ivan.frade@nokia.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++
++#ifndef __LIBTRACKER_SPARQL_ONTOLOGIES_H__
++#define __LIBTRACKER_SPARQL_ONTOLOGIES_H__
++
++G_BEGIN_DECLS
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <libtracker-sparql/tracker-sparql.h> must be included directly."
++#endif
++
++/* Core: resources, data types */
++
++/**
++ * TRACKER_PREFIX_RDF:
++ *
++ * The Prefix of the RDF namespace
++ */
++#define TRACKER_PREFIX_RDF      "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
++
++/**
++ * TRACKER_PREFIX_RDFS:
++ *
++ * The Prefix of the RDFS namespace
++ */
++#define TRACKER_PREFIX_RDFS     "http://www.w3.org/2000/01/rdf-schema#"
++
++/**
++ * TRACKER_PREFIX_XSD:
++ *
++ * The Prefix of the XSD namespace
++ */
++#define TRACKER_PREFIX_XSD      "http://www.w3.org/2001/XMLSchema#"
++
++/**
++ * TRACKER_PREFIX_TRACKER:
++ *
++ * The Prefix of the Tracker namespace
++ */
++#define TRACKER_PREFIX_TRACKER  "http://tracker.api.gnome.org/ontology/v3/tracker#"
++
++/**
++ * TRACKER_PREFIX_DC:
++ *
++ * The Prefix of the DC (Dublin Core) namespace
++ */
++#define TRACKER_PREFIX_DC       "http://purl.org/dc/elements/1.1/"
++
++/* Our Nepomuk selection */
++
++/**
++ * TRACKER_PREFIX_NRL:
++ *
++ * The Prefix of the NRL namespace
++ */
++#define TRACKER_PREFIX_NRL      "http://tracker.api.gnome.org/ontology/v3/nrl#"
++
++/**
++ * TRACKER_PREFIX_NIE:
++ *
++ * The Prefix of the NIE namespace
++ */
++#define TRACKER_PREFIX_NIE      "http://tracker.api.gnome.org/ontology/v3/nie#"
++
++/**
++ * TRACKER_PREFIX_NCO:
++ *
++ * The Prefix of the NCO namespace
++ */
++#define TRACKER_PREFIX_NCO      "http://tracker.api.gnome.org/ontology/v3/nco#"
++
++/**
++ * TRACKER_PREFIX_NAO:
++ *
++ * The Prefix of the NAO namespace
++ */
++#define TRACKER_PREFIX_NAO      "http://tracker.api.gnome.org/ontology/v3/nao#"
++
++/**
++ * TRACKER_PREFIX_NFO:
++ *
++ * The Prefix of the NFO namespace
++ */
++#define TRACKER_PREFIX_NFO      "http://tracker.api.gnome.org/ontology/v3/nfo#"
++
++/**
++ * TRACKER_PREFIX_NMM:
++ *
++ * The Prefix of the RDF namespace
++ */
++#define TRACKER_PREFIX_NMM      "http://tracker.api.gnome.org/ontology/v3/nmm#"
++
++/* Additional ontologies used by tracker-miners */
++
++/**
++ * TRACKER_PREFIX_MFO:
++ *
++ * The Prefix of the MFO namespace
++ */
++#define TRACKER_PREFIX_MFO      "http://tracker.api.gnome.org/ontology/v3/mfo#"
++
++/**
++ * TRACKER_PREFIX_SLO:
++ *
++ * The Prefix of the SLO namespace
++ */
++#define TRACKER_PREFIX_SLO      "http://tracker.api.gnome.org/ontology/v3/slo#"
++
++/**
++ * TRACKER_PREFIX_OSINFO:
++ *
++ * The Prefix of the Osinfo namespace
++ */
++#define TRACKER_PREFIX_OSINFO   "http://tracker.api.gnome.org/ontology/v3/osinfo#"
++
++G_END_DECLS
++
++#endif /* __LIBTRACKER_SPARQL_ONTOLOGY_H__ */
+diff --git a/src/gallery/tracker/tracker-resource.h b/src/gallery/tracker/tracker-resource.h
+new file mode 100644
+index 0000000..7374c6f
+--- /dev/null
++++ b/src/gallery/tracker/tracker-resource.h
+@@ -0,0 +1,122 @@
++/*
++ * Copyright (C) 2016, Sam Thursfield <sam@afuera.me.uk>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++
++#ifndef __LIBTRACKER_RESOURCE_H__
++#define __LIBTRACKER_RESOURCE_H__
++
++#include <glib-object.h>
++#include "tracker-version.h"
++#include "tracker-namespace-manager.h"
++
++G_BEGIN_DECLS
++
++#define TRACKER_TYPE_RESOURCE tracker_resource_get_type()
++TRACKER_AVAILABLE_IN_ALL
++G_DECLARE_DERIVABLE_TYPE (TrackerResource, tracker_resource, TRACKER, RESOURCE, GObject)
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerResource *tracker_resource_new (const char *identifier);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_gvalue (TrackerResource *self, const char *property_uri, const GValue *value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_boolean (TrackerResource *self, const char *property_uri, gboolean value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_double (TrackerResource *self, const char *property_uri, double value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_int (TrackerResource *self, const char *property_uri, int value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_int64 (TrackerResource *self, const char *property_uri, gint64 value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_relation (TrackerResource *self, const char *property_uri, TrackerResource *resource);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_take_relation (TrackerResource *self, const char *property_uri, TrackerResource *resource);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_string (TrackerResource *self, const char *property_uri, const char *value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_uri (TrackerResource *self, const char *property_uri, const char *value);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_add_gvalue (TrackerResource *self, const char *property_uri, const GValue *value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_add_boolean (TrackerResource *self, const char *property_uri, gboolean value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_add_double (TrackerResource *self, const char *property_uri, double value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_add_int (TrackerResource *self, const char *property_uri, int value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_add_int64 (TrackerResource *self, const char *property_uri, gint64 value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_add_relation (TrackerResource *self, const char *property_uri, TrackerResource *resource);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_add_take_relation (TrackerResource *self, const char *property_uri, TrackerResource *resource);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_add_string (TrackerResource *self, const char *property_uri, const char *value);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_add_uri (TrackerResource *self, const char *property_uri, const char *value);
++
++TRACKER_AVAILABLE_IN_ALL
++GList *tracker_resource_get_values (TrackerResource *self, const char *property_uri);
++
++TRACKER_AVAILABLE_IN_ALL
++gboolean tracker_resource_get_first_boolean (TrackerResource *self, const char *property_uri);
++TRACKER_AVAILABLE_IN_ALL
++double tracker_resource_get_first_double (TrackerResource *self, const char *property_uri);
++TRACKER_AVAILABLE_IN_ALL
++int tracker_resource_get_first_int (TrackerResource *self, const char *property_uri);
++TRACKER_AVAILABLE_IN_ALL
++gint64 tracker_resource_get_first_int64 (TrackerResource *self, const char *property_uri);
++TRACKER_AVAILABLE_IN_ALL
++TrackerResource *tracker_resource_get_first_relation (TrackerResource *self, const char *property_uri);
++TRACKER_AVAILABLE_IN_ALL
++const char *tracker_resource_get_first_string (TrackerResource *self, const char *property_uri);
++TRACKER_AVAILABLE_IN_ALL
++const char *tracker_resource_get_first_uri (TrackerResource *self, const char *property_uri);
++
++TRACKER_AVAILABLE_IN_ALL
++const char *tracker_resource_get_identifier (TrackerResource *self);
++TRACKER_AVAILABLE_IN_ALL
++void tracker_resource_set_identifier (TrackerResource *self, const char *identifier);
++TRACKER_AVAILABLE_IN_ALL
++gint tracker_resource_identifier_compare_func (TrackerResource *resource, const char *identifier);
++
++TRACKER_AVAILABLE_IN_ALL
++GList *tracker_resource_get_properties (TrackerResource *resource);
++
++TRACKER_AVAILABLE_IN_ALL
++char *tracker_resource_print_turtle(TrackerResource *self, TrackerNamespaceManager *namespaces);
++
++TRACKER_AVAILABLE_IN_ALL
++char *tracker_resource_print_sparql_update (TrackerResource *self, TrackerNamespaceManager *namespaces, const char *graph_id);
++
++TRACKER_AVAILABLE_IN_ALL
++char *tracker_resource_print_jsonld (TrackerResource *self, TrackerNamespaceManager *namespaces);
++
++TRACKER_AVAILABLE_IN_ALL
++GVariant * tracker_resource_serialize (TrackerResource *resource);
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerResource * tracker_resource_deserialize (GVariant *variant);
++
++TRACKER_AVAILABLE_IN_3_1
++gboolean tracker_resource_get_property_overwrite (TrackerResource *resource, const gchar *property_uri);
++
++G_END_DECLS
++
++#endif /* __LIBTRACKER_RESOURCE_H__ */
+diff --git a/src/gallery/tracker/tracker-sparql-enum-types.h b/src/gallery/tracker/tracker-sparql-enum-types.h
+new file mode 100644
+index 0000000..f987d65
+--- /dev/null
++++ b/src/gallery/tracker/tracker-sparql-enum-types.h
+@@ -0,0 +1,27 @@
++
++/* This file is generated by glib-mkenums, do not modify it. This code is licensed under the same license as the containing project. Note that it links to GLib, so must comply with the LGPL linking clauses. */
++
++
++#ifndef __TRACKER_NOTIFY_ENUM_TYPES_H__
++#define __TRACKER_NOTIFY_ENUM_TYPES_H__
++
++#include <glib-object.h>
++#include "tracker-version.h"
++
++G_BEGIN_DECLS
++
++/* enumerations from "tracker-connection.h" */
++TRACKER_AVAILABLE_IN_ALL
++GType tracker_sparql_connection_flags_get_type (void) G_GNUC_CONST;
++#define TRACKER_TYPE_SPARQL_CONNECTION_FLAGS (tracker_sparql_connection_flags_get_type ())
++
++/* enumerations from "tracker-notifier.h" */
++TRACKER_AVAILABLE_IN_ALL
++GType tracker_notifier_event_type_get_type (void) G_GNUC_CONST;
++#define TRACKER_TYPE_NOTIFIER_EVENT_TYPE (tracker_notifier_event_type_get_type ())
++G_END_DECLS
++
++#endif /* __TRACKER_ENUMS_TYPES_H__ */
++
++/* Generated data ends here */
++
+diff --git a/src/gallery/tracker/tracker-sparql.h b/src/gallery/tracker/tracker-sparql.h
+new file mode 100644
+index 0000000..a342d1c
+--- /dev/null
++++ b/src/gallery/tracker/tracker-sparql.h
+@@ -0,0 +1,44 @@
++/*
++ * Copyright (C) 2011, Nokia <ivan.frade@nokia.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++
++#ifndef __LIBTRACKER_SPARQL_H__
++#define __LIBTRACKER_SPARQL_H__
++
++#define __LIBTRACKER_SPARQL_INSIDE__
++
++#include "tracker-version-generated.h"
++#include "tracker-version.h"
++#include "tracker-error.h"
++#include "tracker-connection.h"
++#include "tracker-batch.h"
++#include "tracker-cursor.h"
++#include "tracker-endpoint.h"
++#include "tracker-endpoint-dbus.h"
++#include "tracker-endpoint-http.h"
++#include "tracker-version.h"
++#include "tracker-ontologies.h"
++#include "tracker-resource.h"
++#include "tracker-statement.h"
++#include "tracker-notifier.h"
++#include "tracker-sparql-enum-types.h"
++#include "tracker-utils.h"
++
++#undef __LIBTRACKER_SPARQL_INSIDE__
++
++#endif /* __LIBTRACKER_SPARQL_H__ */
+diff --git a/src/gallery/tracker/tracker-statement.h b/src/gallery/tracker/tracker-statement.h
+new file mode 100644
+index 0000000..4380520
+--- /dev/null
++++ b/src/gallery/tracker/tracker-statement.h
+@@ -0,0 +1,95 @@
++/*
++ * Copyright (C) 2018, Red Hat Ltd.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++#ifndef __TRACKER_SPARQL_STATEMENT_H__
++#define __TRACKER_SPARQL_STATEMENT_H__
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <libtracker-sparql/tracker-sparql.h> must be included directly."
++#endif
++
++#include <gio/gio.h>
++#include "tracker-version.h"
++
++G_BEGIN_DECLS
++
++/**
++ * TrackerSparqlStatement:
++ *
++ * The <structname>TrackerSparqlStatement</structname> object represents
++ * a prepared query statement.
++ */
++#define TRACKER_TYPE_SPARQL_STATEMENT tracker_sparql_statement_get_type ()
++#define TRACKER_SPARQL_TYPE_STATEMENT TRACKER_TYPE_SPARQL_STATEMENT
++TRACKER_AVAILABLE_IN_ALL
++G_DECLARE_DERIVABLE_TYPE (TrackerSparqlStatement,
++                          tracker_sparql_statement,
++                          TRACKER, SPARQL_STATEMENT,
++                          GObject)
++
++#include "tracker-connection.h"
++#include "tracker-cursor.h"
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlConnection * tracker_sparql_statement_get_connection (TrackerSparqlStatement *stmt);
++
++TRACKER_AVAILABLE_IN_ALL
++const gchar * tracker_sparql_statement_get_sparql (TrackerSparqlStatement *stmt);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_statement_bind_boolean (TrackerSparqlStatement *stmt,
++                                            const gchar            *name,
++                                            gboolean                value);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_statement_bind_int (TrackerSparqlStatement *stmt,
++                                        const gchar            *name,
++                                        gint64                  value);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_statement_bind_double (TrackerSparqlStatement *stmt,
++                                           const gchar            *name,
++                                           gdouble                 value);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_statement_bind_string (TrackerSparqlStatement *stmt,
++                                           const gchar            *name,
++                                           const gchar            *value);
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlCursor * tracker_sparql_statement_execute (TrackerSparqlStatement  *stmt,
++                                                        GCancellable            *cancellable,
++                                                        GError                 **error);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_statement_execute_async (TrackerSparqlStatement *stmt,
++                                             GCancellable           *cancellable,
++                                             GAsyncReadyCallback     callback,
++                                             gpointer                user_data);
++
++TRACKER_AVAILABLE_IN_ALL
++TrackerSparqlCursor * tracker_sparql_statement_execute_finish (TrackerSparqlStatement  *stmt,
++                                                               GAsyncResult            *res,
++                                                               GError                 **error);
++
++TRACKER_AVAILABLE_IN_ALL
++void tracker_sparql_statement_clear_bindings (TrackerSparqlStatement *stmt);
++
++G_END_DECLS
++
++#endif /* __TRACKER_SPARQL_STATEMENT_H__ */
+diff --git a/src/gallery/tracker/tracker-utils.h b/src/gallery/tracker/tracker-utils.h
+new file mode 100644
+index 0000000..9baaa8c
+--- /dev/null
++++ b/src/gallery/tracker/tracker-utils.h
+@@ -0,0 +1,48 @@
++/*
++ * Copyright (C) 2010, Nokia <ivan.frade@nokia.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++#ifndef __TRACKER_UTILS_H__
++#define __TRACKER_UTILS_H__
++
++#include <glib.h>
++#include <gio/gio.h>
++#include "tracker-version.h"
++
++G_BEGIN_DECLS
++
++TRACKER_AVAILABLE_IN_ALL
++gchar * tracker_sparql_escape_uri_vprintf (const gchar *format,
++                                           va_list      args);
++TRACKER_AVAILABLE_IN_ALL
++gchar * tracker_sparql_escape_uri_printf  (const gchar* format,
++                                           ...);
++TRACKER_AVAILABLE_IN_ALL
++gchar * tracker_sparql_escape_uri         (const gchar *uri);
++
++TRACKER_AVAILABLE_IN_ALL
++gchar* tracker_sparql_escape_string (const gchar* literal);
++TRACKER_AVAILABLE_IN_ALL
++gchar* tracker_sparql_get_uuid_urn (void);
++
++TRACKER_AVAILABLE_IN_ALL
++GFile *
++tracker_sparql_get_ontology_nepomuk (void);
++
++G_END_DECLS
++
++#endif /* __TRACKER_UTILS_H__ */
+diff --git a/src/gallery/tracker/tracker-version-generated.h b/src/gallery/tracker/tracker-version-generated.h
+new file mode 100644
+index 0000000..676561d
+--- /dev/null
++++ b/src/gallery/tracker/tracker-version-generated.h
+@@ -0,0 +1,28 @@
++/* Generated by meson */
++
++/**
++ * TRACKER_MAJOR_VERSION:
++ *
++ * The major version of the Tracker library.
++ *
++ * Like #tracker_major_version, but intended to be used at application compile time.
++ */
++#define TRACKER_MAJOR_VERSION 3
++
++/**
++ * TRACKER_MINOR_VERSION:
++ *
++ * The minor version of the Tracker library.
++ *
++ * Like #tracker_minor_version, but intended to be used at application compile time.
++ */
++#define TRACKER_MINOR_VERSION 1
++
++/**
++ * TRACKER_MICRO_VERSION:
++ *
++ * The micro version of the Tracker library.
++ *
++ * Like #tracker_micro_version, but intended to be used at application compile time.
++ */
++#define TRACKER_MICRO_VERSION 1
+diff --git a/src/gallery/tracker/tracker-version.h b/src/gallery/tracker/tracker-version.h
+new file mode 100644
+index 0000000..cb730fb
+--- /dev/null
++++ b/src/gallery/tracker/tracker-version.h
+@@ -0,0 +1,152 @@
++/*
++ * Copyright (C) 2006, Jamie McCracken <jamiemcc@gnome.org>
++ * Copyright (C) 2008, Nokia <ivan.frade@nokia.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA.
++ */
++
++#ifndef __LIBTRACKER_SPARQL_VERSION_H__
++#define __LIBTRACKER_SPARQL_VERSION_H__
++
++#include <glib.h>
++
++G_BEGIN_DECLS
++
++#if !defined (__LIBTRACKER_SPARQL_INSIDE__) && !defined (TRACKER_COMPILATION)
++#error "only <libtracker-sparql/tracker-sparql.h> must be included directly."
++#endif
++
++#ifndef _TRACKER_EXTERN
++#define _TRACKER_EXTERN __attribute__((visibility("default"))) extern
++#endif
++
++#define _TRACKER_UNAVAILABLE(maj, min) G_UNAVAILABLE(maj, min) _TRACKER_EXTERN
++#define _TRACKER_DEPRECATED G_DEPRECATED _TRACKER_EXTERN
++#define _TRACKER_DEPRECATED_FOR(f) G_DEPRECATED_FOR(f) _TRACKER_EXTERN
++
++#define TRACKER_VERSION_3_0 G_ENCODE_VERSION (3, 0)
++#define TRACKER_VERSION_3_1 G_ENCODE_VERSION (3, 1)
++#define TRACKER_VERSION_CUR G_ENCODE_VERSION (TRACKER_MAJOR_VERSION, TRACKER_MINOR_VERSION)
++
++#ifndef TRACKER_VERSION_MIN_REQUIRED
++#define TRACKER_VERSION_MIN_REQUIRED TRACKER_VERSION_CUR
++#endif
++
++#ifndef TRACKER_VERSION_MAX_ALLOWED
++#define TRACKER_VERSION_MAX_ALLOWED TRACKER_VERSION_CUR
++#endif
++
++#if TRACKER_VERSION_MIN_REQUIRED > TRACKER_VERSION_MAX_ALLOWED
++#error "TRACKER_VERSION_MAX_ALLOWED must be >= TRACKER_VERSION_MIN_REQUIRED"
++#endif
++
++#define TRACKER_AVAILABLE_IN_ALL _TRACKER_EXTERN
++
++#if TRACKER_VERSION_MIN_REQUIRED >= TRACKER_VERSION_3_1
++#define TRACKER_DEPRECATED_IN_3_1 _TRACKER_DEPRECATED
++#define TRACKER_DEPRECATED_IN_3_1_FOR(f) _TRACKER_DEPRECATED_FOR(f)
++#else
++#define TRACKER_DEPRECATED_IN_3_1 _TRACKER_EXTERN
++#define TRACKER_DEPRECATED_IN_3_1_FOR(f) _TRACKER_EXTERN
++#endif
++
++#if TRACKER_VERSION_MAX_ALLOWED < TRACKER_VERSION_3_1
++#define TRACKER_AVAILABLE_IN_3_1 _TRACKER_UNAVAILABLE(3, 1)
++#else
++#define TRACKER_AVAILABLE_IN_3_1 _TRACKER_EXTERN
++#endif
++
++/**
++ * tracker_major_version:
++ *
++ * The major version of the Tracker library.
++ *
++ * An integer variable exported from the library linked against at application run time.
++ */
++GLIB_VAR const guint tracker_major_version;
++
++/**
++ * tracker_minor_version:
++ *
++ * The minor version of the Tracker library.
++ *
++ * An integer variable exported from the library linked against at application run time.
++ */
++GLIB_VAR const guint tracker_minor_version;
++
++/**
++ * tracker_micro_version:
++ *
++ * The micro version of the Tracker library.
++ *
++ * An integer variable exported from the library linked against at application run time.
++ */
++GLIB_VAR const guint tracker_micro_version;
++
++/**
++ * tracker_interface_age:
++ *
++ * The interface age of the Tracker library. Defines how far back the API has last been extended.
++ *
++ * An integer variable exported from the library linked against at application run time.
++ */
++GLIB_VAR const guint tracker_interface_age;
++
++/**
++ * tracker_binary_age:
++ *
++ * The binary age of the Tracker library. Defines how far back backwards compatibility reaches.
++ *
++ * An integer variable exported from the library linked against at application run time.
++ */
++GLIB_VAR const guint tracker_binary_age;
++
++/**
++ * TRACKER_CHECK_VERSION:
++ * @major: the required major version.
++ * @minor: the required minor version.
++ * @micro: the required micro version.
++ *
++ * This macro essentially does the same thing as
++ * tracker_check_version() but as a pre-processor operation rather
++ * than a run-time operation. It will evaluate true or false based the
++ * version passed in and the version available.
++ *
++ * <example>
++ * <title>Simple version check example</title>
++ * An example of how to make sure you have the version of Tracker
++ * installed to run your code.
++ * <programlisting>
++ * if (!TRACKER_CHECK_VERSION (0, 10, 7)) {
++ *         g_error ("Tracker version 0.10.7 or above is needed");
++ * }
++ * </programlisting>
++ * </example>
++ **/
++#define TRACKER_CHECK_VERSION(major,minor,micro)    \
++    (TRACKER_MAJOR_VERSION > (major) || \
++     (TRACKER_MAJOR_VERSION == (major) && TRACKER_MINOR_VERSION > (minor)) || \
++     (TRACKER_MAJOR_VERSION == (major) && TRACKER_MINOR_VERSION == (minor) && \
++      TRACKER_MICRO_VERSION >= (micro)))
++
++TRACKER_AVAILABLE_IN_ALL
++const gchar * tracker_check_version (guint required_major,
++                                     guint required_minor,
++                                     guint required_micro);
++
++G_END_DECLS
++
++#endif /* __LIBTRACKER_SPARQL_VERSION_H__ */
+--
+2.31.1
