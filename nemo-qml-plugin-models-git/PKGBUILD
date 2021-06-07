@@ -3,7 +3,7 @@
 # Contributor: Alexey Andreyev (aa13q) <aa13q@ya.ru>
 
 pkgname=nemo-qml-plugin-models-git
-pkgver=0.2.0.r0.gd255f9c
+pkgver=0.2.1.r0.g9409819
 pkgrel=1
 pkgdesc="Nemo QML models plugin"
 arch=('x86_64' 'aarch64')
