@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.5.40.r0.g3e1c44f
+pkgver=0.5.42.r0.g7dbd0f3
 
 pkgrel=1
 pkgdesc="Telepathy <> QtContacts bridge for contacts"
