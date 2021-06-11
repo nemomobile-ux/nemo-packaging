@@ -103,6 +103,8 @@ eval "$BUILD glacier-contacts-git"
 eval "$BUILD voicecall"
 eval "$BUILD glacier-dialer-git"
 
+eval "$BUILD glacier-browser-git"
+
 # need to be clarified
 eval "$BUILD qt5-profile-git"
 eval "$BUILD qt5-around-git"
