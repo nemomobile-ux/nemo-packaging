@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=r20.8a7a7c3
+pkgver=r21.4f89156
 
 pkgrel=1
 pkgdesc="Nemo browser"
@@ -16,7 +16,7 @@ arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
 depends=('qt5-glacier-app-git' 'qt5-webengine')
-makedepends=('git')
+makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
