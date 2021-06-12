@@ -10,25 +10,32 @@ arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/cor"
 license=('GPL')
 depends=('systemd-libs' 'libudev0-shim')
-makedepends=('git' 'cmake' 'check' 'tut')
+makedepends=('git' 'cmake' 'check' 'tut' 'systemd' 'systemd-libs')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/cor.git')
-md5sums=('SKIP')
+source=('git+https://git.sailfishos.org/mer-core/cor.git' '0001-avoid-warning-Compatibility-with-CMake-2.8.12-will-b.patch')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
 	cd "$srcdir/${pkgname%-git}"
 	git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
+prepare() {
+	cd "$srcdir/${pkgname%-git}"
+	patch -p1 --input="${srcdir}/0001-avoid-warning-Compatibility-with-CMake-2.8.12-will-b.patch"
+}
+
 build() {
 	cd "$srcdir/${pkgname%-git}"
-	cmake -DCMAKE_INSTALL_PREFIX=/usr -DVERSION=$pkgver
+	mkdir -p build
+	cd build
+	cmake -DCMAKE_INSTALL_PREFIX=/usr -DVERSION=$pkgver ..
 	make
 }
 
 package() {
-	cd "$srcdir/${pkgname%-git}"
+	cd "$srcdir/${pkgname%-git}/build"
 	make DESTDIR="$pkgdir/" install
         # Remove tests
         rm -rf "$pkgdir"/opt
