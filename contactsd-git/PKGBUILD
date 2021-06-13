@@ -16,7 +16,7 @@ arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
 depends=('telepathy-qt' 'qt5-mlite-git' 'qt5-mlocale-git' 'libqofono-qt5' 'mapplauncherd-qt-git' 'qt5-contacts-sqlite-extensions-git' 'buteo-syncfw' 'kcalendarcore' 'mkcal-git' 'nemo-qml-plugin-contacts-git' 'qt5-ofono-nemo-extensions-git')
-makedepends=('git')
+makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}" "0001-KcalendarCore_not_provide_pc_files.path")
