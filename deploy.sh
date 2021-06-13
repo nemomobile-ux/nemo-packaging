@@ -90,7 +90,6 @@ eval "$BUILD buteo-syncfw"
 eval "$BUILD buteo-sync-plugin-carddav-git"
 eval "$BUILD nemo-qml-plugin-contacts-git"
 eval "$BUILD lipstick-glacier-home-git"
-eval "$BUILD glacier-wayland-session"
 
 eval "$BUILD libcommhistory-git"
 eval "$BUILD commhistory-daemon-git"
