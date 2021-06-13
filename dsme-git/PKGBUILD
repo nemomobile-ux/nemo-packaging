@@ -2,8 +2,8 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=dsme-git
-pkgver=0.83.0.r0.g4cc8501
-pkgrel=3
+pkgver=0.83.1.r0.gd9c5940
+pkgrel=1
 pkgdesc="Device State Management Entity"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/dsme"

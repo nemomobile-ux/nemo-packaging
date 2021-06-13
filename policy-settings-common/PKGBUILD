@@ -4,7 +4,7 @@
 pkgname=policy-settings-common
 _srcname=policy-settings-common
 _branch=master
-pkgver=common.0.11.1.r0.ga565292
+pkgver=common.0.11.2.r0.g7a0e6fa
 pkgrel=1
 pkgdesc="Common policy settings"
 arch=('x86_64' 'aarch64')

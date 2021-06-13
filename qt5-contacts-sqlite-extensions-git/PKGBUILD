@@ -11,9 +11,9 @@ _branch=master
 _gitname=qt${_basename}
 pkgname=qt5-$_basename-extensions-git
 
-pkgver=0.3.13.r0.gb89ddca
+pkgver=0.3.14.r0.gcff793e
 
-pkgrel=2
+pkgrel=1
 pkgdesc="SQLite-based plugin for QtPIM Contacts"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname"
