@@ -131,8 +131,8 @@ eval "$BUILD fingerterm-git"
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
-    eval "$BUILD hybris/libhybris"
     eval "$BUILD hybris/android-headers"
+    eval "$BUILD hybris/libhybris"
     eval "$BUILD hybris/qt5-qpa-hwcomposer-plugin"
 
     eval "$BUILD devices/nemo-device-pinephone"
