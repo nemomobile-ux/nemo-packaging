@@ -126,6 +126,8 @@ eval "$BUILD ohm-rule-engine"
 eval "$BUILD libdres-ohm"
 eval "$BUILD ohm-plugins-misc"
 eval "$BUILD policy-settings-common"
+eval "$BUILD maliit-nemo-keyboard-git"
+
 
 eval "$BUILD fingerterm-git"
 
