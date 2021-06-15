@@ -1,8 +1,8 @@
 # $Id$
 # Maintainer: Chupligin Sergey (Neochapay) <neochapay@gmail.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
+_host="github.com"
+_project=sailfishos
 _basename=mapplauncherd
 _branch=master
 
@@ -11,7 +11,7 @@ pkgname=$_basename-git
 
 pkgver=4.2.1.r5.g254e3d1
 
-pkgrel=1
+pkgrel=2
 pkgdesc="Application launcher for fast startup"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
@@ -50,7 +50,7 @@ package() {
 #cgroup mount screept stuff
   install -D -m 0755 scripts/booster-cgroup-mount $pkgdir/usr/lib/startup/booster-cgroup-mount
   install -D -m 0755 rpm/booster-cgroup-mount.service $pkgdir/usr/lib/systemd/system/booster-cgroup-mount.service
-  sed -i "s|privileged|manjaro|g" $pkgdir/usr/lib/startup/booster-cgroup-mount
+  sed -i "s|root\:privileged|manjaro\:manjaro|g" $pkgdir/usr/lib/startup/booster-cgroup-mount
 
   mkdir -p $pkgdir/usr/lib/systemd/system/multi-user.target.wants
   ln -s ../booster-cgroup-mount.service $pkgdir/usr/lib/systemd/system/multi-user.target.wants/
