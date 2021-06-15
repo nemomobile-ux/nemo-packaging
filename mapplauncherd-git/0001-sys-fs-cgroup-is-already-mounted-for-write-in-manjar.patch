@@ -1,0 +1,44 @@
+From 9ba8c6ebc0f0ac18dd866f8c7b1b2545d0d1fd17 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Tue, 15 Jun 2021 17:46:04 +0200
+Subject: [PATCH] /sys/fs/cgroup is already mounted for write in manjaro,
+ remounting into ro causing other services failure
+
+---
+ scripts/booster-cgroup-mount | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
+
+diff --git a/scripts/booster-cgroup-mount b/scripts/booster-cgroup-mount
+index e8a2389..fbabfb9 100755
+--- a/scripts/booster-cgroup-mount
++++ b/scripts/booster-cgroup-mount
+@@ -7,16 +7,9 @@ mountpoint -q $CGDIR || exit 1
+ 
+ # create booster directory
+ if [ ! -d $CGDIR/booster ]; then
+-  FAIL=1
+-  if mount -o remount,rw $CGDIR; then
+-    if mkdir $CGDIR/booster; then
+-      FAIL=0
++    if ! mkdir $CGDIR/booster; then
++        exit 1
+     fi
+-    if ! mount -o remount,ro $CGDIR; then
+-      FAIL=1
+-    fi
+-  fi
+-  [ $FAIL = 0 ] || exit 1
+ fi
+ 
+ # mount booster directory
+@@ -26,6 +19,6 @@ fi
+ 
+ # adjust booster directory permissions
+ FAIL=0
+-chown -R root:privileged $CGDIR/booster || FAIL=1
++chown -R manjaro:manjaro $CGDIR/booster || FAIL=1
+ chmod 0774 $CGDIR/booster || FAIL=1
+ exit $FAIL
+-- 
+2.32.0
+
