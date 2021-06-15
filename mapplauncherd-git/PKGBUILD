@@ -9,9 +9,9 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=4.1.43.r0.g9970c11
+pkgver=4.2.1.r5.g254e3d1
 
-pkgrel=4
+pkgrel=1
 pkgdesc="Application launcher for fast startup"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"

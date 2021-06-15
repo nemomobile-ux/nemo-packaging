@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=r21.4f89156
+pkgver=0.1.r2.gae35d42
 
 pkgrel=1
 pkgdesc="Nemo browser"
