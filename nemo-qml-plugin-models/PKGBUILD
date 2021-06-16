@@ -28,7 +28,7 @@ build() {
 
 package() {
     cd "$srcdir/${pkgname%-git}"
-    make INSTALL_ROOT="$pkgdir/" install
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     rm -rf opt
 }

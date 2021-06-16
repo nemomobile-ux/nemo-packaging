@@ -34,7 +34,7 @@ build() {
 
 package() {
     cd "$srcdir/${pkgname%-git}"
-    make INSTALL_ROOT="$pkgdir/" install
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     mkdir -p ${pkgdir}/usr/lib/qt/qml/org/nemomobile/configuration/
     ln -sf /usr/lib/qt/qml/Nemo/Configuration/libnemoconfiguration.so ${pkgdir}/usr/lib/qt/qml/org/nemomobile/configuration/

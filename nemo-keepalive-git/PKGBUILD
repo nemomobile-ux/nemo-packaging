@@ -34,7 +34,7 @@ build() {
 package() {
     cd "$srcdir/${pkgname%-git}"
     mkdir -p $pkgdir/usr/lib/pkgconfig/
-    make INSTALL_ROOT="$pkgdir/" install
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
 #    make -C lib-glib install ROOT="$pkgdir/"
 #    make -C tools install ROOT="$pkgdir/"
 
