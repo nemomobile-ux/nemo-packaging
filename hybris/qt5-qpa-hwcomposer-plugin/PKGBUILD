@@ -10,7 +10,7 @@ url='https://github.com/neochapay/qt5-qpa-hwcomposer-plugin'
 license=('GPL3' 'LGPL' 'custom')
 pkgdesc='Qt QPA plugin for Android hwcomposer'
 depends=('qt5-base' 'qt5-wayland' 'qt5-sensors' 'android-headers' 'libhybris')
-makedepends=()
+makedepends=('git')
 source=(${_pkgname}::git+https://github.com/nemomobile-ux/qt5-qpa-hwcomposer-plugin.git)
 md5sums=('SKIP')
 
