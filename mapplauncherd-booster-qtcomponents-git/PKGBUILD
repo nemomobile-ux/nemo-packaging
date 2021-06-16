@@ -15,7 +15,7 @@ pkgdesc="Application launch boosters for Qt5 nemomobile components"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
 license=('LGPL-2.1-only AND Apache-2.0')
-depends=('mapplauncherd' 'qt5-base' 'mapplauncherd-qt')
+depends=('mapplauncherd' 'qt5-base' 'mapplauncherd-qt' 'qt5-declarative')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
