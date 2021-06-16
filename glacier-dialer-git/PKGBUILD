@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.2.1.r5.g450338d
+pkgver=0.2.1.r9.g4d408ac
 
 pkgrel=1
 pkgdesc="QML based dialer application for nemomobile"
@@ -31,16 +31,14 @@ pkgver() {
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
-  mkdir -p build
-  cd build
-  qmake ..
+  mkdir -p "${srcdir}/${pkgname}/build"
+  cd "${srcdir}/${pkgname}/build"
+  cmake -DCMAKE_INSTALL_PREFIX="$pkgdir"/usr ..
   make
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  cd build
+  cd "${srcdir}/${pkgname}/build"
   make INSTALL_ROOT="${pkgdir}" install
  
   mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants
@@ -48,5 +46,5 @@ package() {
 
   mkdir -p ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
   cd ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
-  ln -s /usr/share/glacier-dialer/qml/images/glacier-dialer.png icon-lock-missed-call.png
+  ln -s /usr/share/glacier-dialer/images/glacier-dialer.png icon-lock-missed-call.png
 }
