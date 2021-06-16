@@ -17,8 +17,9 @@ conflicts=("${pkgname%-git}")
 source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings#tag=0.5.47'
         '0002-Remove-developer-mode.patch'
         '0003-Remove-broken-certificatemodel.patch'
+        '0004-try-to-use-setlocale-in-usr-lib-in-manjaro.patch'
 )
-md5sums=('SKIP' 'SKIP' 'SKIP')
+md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname%-git}"
@@ -29,6 +30,7 @@ prepare() {
     cd "$srcdir/${pkgname%-git}"
     patch -p1 --input="${srcdir}/0002-Remove-developer-mode.patch"
     patch -p1 --input="${srcdir}/0003-Remove-broken-certificatemodel.patch"
+    patch -p1 --input="${srcdir}/0004-try-to-use-setlocale-in-usr-lib-in-manjaro.patch"
 }
 
 build() {

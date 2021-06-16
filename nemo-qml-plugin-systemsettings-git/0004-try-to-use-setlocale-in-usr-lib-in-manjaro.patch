@@ -1,0 +1,28 @@
+From 515aa1cd82006fd3a267fe39505b9d2ac0651be8 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jozef.mlich@greycortex.com>
+Date: Wed, 16 Jun 2021 11:40:41 +0200
+Subject: [PATCH] try to use setlocale in /usr/lib in manjaro
+
+---
+ src/languagemodel.cpp | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/languagemodel.cpp b/src/languagemodel.cpp
+index b3fe166..7472f63 100644
+--- a/src/languagemodel.cpp
++++ b/src/languagemodel.cpp
+@@ -171,7 +171,10 @@ QString LanguageModel::locale(int index) const
+ 
+ void LanguageModel::setSystemLocale(const QString &localeCode, LocaleUpdateMode updateMode)
+ {
+-    int ret = QProcess::execute(QLatin1String("/usr/libexec/setlocale"), QStringList(localeCode));
++    int ret = QProcess::execute(
++        QFile::exists("/usr/libexec/setlocale") ? QLatin1String("/usr/libexec/setlocale") : QLatin1String("/usr/lib/nemo-qml-plugin-systemsettings-git/setlocale"),
++        QStringList(localeCode)
++    );
+     if (ret != 0) {
+         qWarning() << "Setting user locale failed!";
+         return;
+-- 
+2.31.1
+
