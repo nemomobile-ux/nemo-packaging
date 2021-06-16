@@ -46,7 +46,7 @@ build() {
 
 package() {
     cd "${srcdir}/${pkgname}"
-    make INSTALL_ROOT="$pkgdir/" install
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
     mv $pkgdir/usr/sbin/* $pkgdir/usr/bin/
     rm -rf $pkgdir/usr/sbin/
 

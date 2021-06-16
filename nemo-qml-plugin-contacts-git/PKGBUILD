@@ -47,7 +47,7 @@ build() {
 
 package() {
   cd "${srcdir}/${pkgname}"
-  make INSTALL_ROOT="${pkgdir}" install
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
   # Remove installed tests
   rm -r "$pkgdir"/opt
 }

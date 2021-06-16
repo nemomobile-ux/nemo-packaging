@@ -37,7 +37,7 @@ build() {
 
 package() {
     cd "$srcdir/${pkgname%-git}"
-    make INSTALL_ROOT="$pkgdir/" install
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     mkdir -p usr/lib/${pkgname}
     mv usr/libexec/* usr/lib/${pkgname}

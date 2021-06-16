@@ -42,7 +42,6 @@ build() {
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  cd build
-  make INSTALL_ROOT="${pkgdir}" install
+  cd "${srcdir}/${pkgname}/build"
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
 }

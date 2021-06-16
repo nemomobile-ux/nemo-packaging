@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.7.1.r3.g3757150
+pkgver=0.7.3.r2.gb5f506f
 
 pkgrel=1
 pkgdesc="QML based contacts application for nemomobile"
@@ -41,5 +41,5 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   cd build
-  make INSTALL_ROOT="${pkgdir}" install
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
 }

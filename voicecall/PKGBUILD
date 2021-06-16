@@ -44,7 +44,7 @@ build() {
 
 package() {
   cd "${srcdir}/${pkgname}"
-  make INSTALL_ROOT="${pkgdir}" install
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
 
   mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants
   ln -s ../voicecall-manager.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/

@@ -9,13 +9,13 @@ _branch=master
 _gitname=$_basename
 pkgname=nemo-device-pinephone
 
-pkgver=0.4.1
+pkgver=0.4.2
 pkgrel=1
 pkgdesc="PinePhone specific files for GlacierUX"
 arch=('aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('glacier-wayland-session' 'usb-moded')
+depends=('glacier-wayland-session' 'usb-moded' 'maliit-nemo-keyboard')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}" "usb-tethering")

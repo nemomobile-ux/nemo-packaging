@@ -33,5 +33,5 @@ build() {
 
 package() {
     cd ${srcdir}/libconnman-qt
-    INSTALL_ROOT="$pkgdir" make install
+    make -j 1 INSTALL_ROOT="$pkgdir" install 
 }
