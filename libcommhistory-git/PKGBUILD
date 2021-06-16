@@ -15,7 +15,7 @@ pkgdesc="Nemomobile Qt Quick Controls"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
 license=('LGPL-2.1-only AND Apache-2.0')
-depends=('libphonenumber' 'qt5-base' 'qt5-contacts-sqlite-extensions-git')
+depends=('libphonenumber' 'qt5-base' 'qt5-contacts-sqlite-extensions-git' 'nemo-qml-plugin-contacts-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
