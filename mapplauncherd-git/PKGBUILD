@@ -17,11 +17,11 @@ arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL2.1')
 depends=('systemd' 'dbus')
-makedepends=('git')
+makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
+source=("${pkgname}::git+${url}" '0001-sys-fs-cgroup-is-already-mounted-for-write-in-manjar.patch')
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -30,6 +30,13 @@ pkgver() {
     printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
   ) 2>/dev/null
 }
+
+
+prepare() {
+    cd "${srcdir}/${pkgname}"
+    patch -Np1 -i "${srcdir}/0001-sys-fs-cgroup-is-already-mounted-for-write-in-manjar.patch"
+}
+
 
 build() {
   cd "${srcdir}/${pkgname}"
@@ -50,7 +57,6 @@ package() {
 #cgroup mount screept stuff
   install -D -m 0755 scripts/booster-cgroup-mount $pkgdir/usr/lib/startup/booster-cgroup-mount
   install -D -m 0755 rpm/booster-cgroup-mount.service $pkgdir/usr/lib/systemd/system/booster-cgroup-mount.service
-  sed -i "s|root\:privileged|manjaro\:manjaro|g" $pkgdir/usr/lib/startup/booster-cgroup-mount
 
   mkdir -p $pkgdir/usr/lib/systemd/system/multi-user.target.wants
   ln -s ../booster-cgroup-mount.service $pkgdir/usr/lib/systemd/system/multi-user.target.wants/
