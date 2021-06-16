@@ -36,7 +36,7 @@ index e8a2389..fbabfb9 100755
  # adjust booster directory permissions
  FAIL=0
 -chown -R root:privileged $CGDIR/booster || FAIL=1
-+chown -R manjaro:manjaro $CGDIR/booster || FAIL=1
++chown -R 1000:wheel $CGDIR/booster || FAIL=1
  chmod 0774 $CGDIR/booster || FAIL=1
  exit $FAIL
 -- 
