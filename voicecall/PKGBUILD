@@ -15,7 +15,7 @@ pkgdesc="Dialer engine for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
 license=('LGPL-2.1-only AND Apache-2.0')
-depends=('mapplauncherd-qt' 'libpulse' 'nemo-qml-plugin-devicelock-git' 'qt5-resource-git' 'libqofono-qt5' 'qt5-multimedia')
+depends=('mapplauncherd-qt' 'libpulse' 'nemo-qml-plugin-devicelock-git' 'qt5-resource-git' 'libqofono-qt5' 'qt5-multimedia' 'qt5-ngfd-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
