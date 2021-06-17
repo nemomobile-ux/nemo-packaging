@@ -15,7 +15,7 @@ pkgdesc="Communications event history database daemon"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
 license=('LGPLv2')
-depends=('qt5-base' 'libcommhistory-git' 'qt5-contacts-sqlite-extensions-git' 'qt5-mlite-git' 'qt5-mce-git' 'qt5-mlocale-git' 'telepathy-qt' 'libqofono-qt5' 'qt5-ngfd-git' 'mapplauncherd-qt-git' 'nemo-qml-plugin-contacts-git')
+depends=('qt5-base' 'libcommhistory-git' 'qt5-contacts-sqlite-extensions-git' 'qt5-mlite-git' 'qt5-mce-git' 'qt5-mlocale-git' 'telepathy-qt' 'libqofono-qt5' 'qt5-ngfd-git' 'mapplauncherd-qt-git' 'nemo-qml-plugin-contacts-git' 'nemo-qml-plugin-notifications-git')
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
