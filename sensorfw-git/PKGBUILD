@@ -16,7 +16,7 @@ arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPLv2')
 depends=('libngf-git' 'libiphb-git' 'qt5-mlite-git' 'ssu-sysinfo-git')
-makedepends=('git')
+makedepends=('git' 'doxygen')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}" "sensorfwd.service")
