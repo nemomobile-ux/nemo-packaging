@@ -13,7 +13,7 @@ arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/$_project/libmce-qt#branch=$_branch"
 license=('BSD-3-Clause')
 depends=('qt5-declarative')
-makedepends=('git' 'mce-git')
+makedepends=('git' 'mce-git' 'mce-headers-git')
 optdepends=()
 provides=("${pkgname}-git" "${_pkgname}-git")
 conflicts=("${pkgname}-git" "${_pkgname}-git")
