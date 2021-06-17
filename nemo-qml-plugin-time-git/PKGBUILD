@@ -11,7 +11,7 @@ arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-time"
 license=('BSD')
 depends=('qt5-timed-git' 'nemo-qml-plugin-dbus')
-makedepends=('git')
+makedepends=('git' 'mce-headers-git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-time.git')
@@ -34,7 +34,7 @@ build() {
 
 package() {
     cd "$srcdir/${pkgname%-git}"
-    make INSTALL_ROOT="$pkgdir/" install
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     rm -rf opt
 }

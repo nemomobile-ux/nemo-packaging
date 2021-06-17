@@ -21,7 +21,7 @@ url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.0-or-later')
 depends=('qt5-glacier-app-git' 'nemo-qml-plugin-settings-git')
 optdepends=()
-makedepends=('git' 'qt5-tools')
+makedepends=('git' 'qt5-tools' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

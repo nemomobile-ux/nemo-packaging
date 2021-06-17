@@ -37,7 +37,7 @@ build() {
 
 package() {
     cd "$srcdir/${_pkgname%-git}"
-    make INSTALL_ROOT="$pkgdir/" install
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
     # Remove tests
     rm -rf "$pkgdir/opt"
 }

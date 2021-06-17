@@ -43,6 +43,6 @@ build() {
 
 package() {
     cd libqofono-$pkgver/build
-	make INSTALL_ROOT="$pkgdir/" install
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
     rm -r "$pkgdir/usr/lib/libqofono-qt5/"
 }

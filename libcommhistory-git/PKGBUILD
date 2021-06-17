@@ -15,7 +15,7 @@ pkgdesc="Nemomobile Qt Quick Controls"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
 license=('LGPL-2.1-only AND Apache-2.0')
-depends=('libphonenumber' 'qt5-base' 'qt5-contacts-sqlite-extensions-git')
+depends=('libphonenumber' 'qt5-base' 'qt5-contacts-sqlite-extensions-git' 'nemo-qml-plugin-contacts-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -46,7 +46,7 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   cd build
-  make INSTALL_ROOT="${pkgdir}" install
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
   mkdir -p ${pkgdir}/usr/share/mapplauncherd/privileges.d
   install -m 644 -p ${srcdir}/${pkgname}/rpm/libcommhistory-qt5.privileges ${pkgdir}/usr/share/mapplauncherd/privileges.d
 }

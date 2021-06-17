@@ -14,7 +14,7 @@ arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/$_project/libmlocale#branch=$_branch"
 license=('LGPLv2')
 depends=('qt5-base')
-makedepends=('git')
+makedepends=('git' 'qt5-tools')
 optdepends=()
 provides=("${pkgname}-git" "${_pkgname}-git")
 conflicts=("${pkgname}-git" "${_pkgname}-git")
