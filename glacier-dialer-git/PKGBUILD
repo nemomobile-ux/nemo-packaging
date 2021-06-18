@@ -31,20 +31,20 @@ pkgver() {
 }
 
 build() {
-  mkdir -p "${srcdir}/${pkgname}/build"
-  cd "${srcdir}/${pkgname}/build"
-  cmake -DCMAKE_INSTALL_PREFIX="$pkgdir"/usr ..
-  make
+    cmake \
+        -B "${pkgname}/build" \
+        -S "${pkgname}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}/build" all
 }
 
 package() {
-  cd "${srcdir}/${pkgname}/build"
-  make INSTALL_ROOT="${pkgdir}" install
- 
-  mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants
-  ln -s ../voicecall-ui-prestart.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 
-  mkdir -p ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
-  cd ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
-  ln -s /usr/share/glacier-dialer/images/glacier-dialer.png icon-lock-missed-call.png
+    mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants
+    ln -s ../voicecall-ui-prestart.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+
+    mkdir -p ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
+    cd ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
+    ln -s /usr/share/glacier-dialer/images/glacier-dialer.png icon-lock-missed-call.png
 }
