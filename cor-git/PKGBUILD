@@ -27,17 +27,18 @@ prepare() {
 }
 
 build() {
-	cd "$srcdir/${pkgname%-git}"
-	mkdir -p build
-	cd build
-	cmake -DCMAKE_INSTALL_PREFIX=/usr -DVERSION=$pkgver ..
-	make
+    cmake \
+        -B "${pkgname%-git}/build" \
+        -S "${pkgname%-git}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DVERSION=$pkgver
+    make -C "${pkgname%-git}/build" all
 }
 
 package() {
-	cd "$srcdir/${pkgname%-git}/build"
-	make DESTDIR="$pkgdir/" install
-        # Remove tests
-        rm -rf "$pkgdir"/opt
+    make -C "${srcdir}/${pkgname%-git}/build" DESTDIR="$pkgdir" install
+
+    # Remove tests
+    rm -rf "$pkgdir"/opt
 }
- 
+
