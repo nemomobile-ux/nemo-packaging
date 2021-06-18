@@ -20,7 +20,7 @@ arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
 depends=('qt5-glacier-app-git' 'qt5-location' 'qt5-ofono-nemo-extensions-git' 'nemo-qml-plugin-devicelock-git' 'nemo-qml-plugin-settings-git' 'qt5-connman-git' 'qt5-mce-git' 'nemo-qml-plugin-connectivity-git' 'nemo-qml-plugin-models>=0.2.1')
-makedepends=('git' 'qt5-tools')
+makedepends=('git' 'qt5-tools' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
