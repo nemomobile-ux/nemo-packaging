@@ -36,16 +36,13 @@ pkgver() {
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
-  mkdir -p build
-  cd build
-  cmake -DCMAKE_INSTALL_PREFIX="$pkgdir"/usr ..
-  make
+    cmake \
+        -B "${pkgname}/build" \
+        -S "${pkgname}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}/build" all
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  cd build
-  make INSTALL_ROOT="${pkgdir}" install
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 }
- 
