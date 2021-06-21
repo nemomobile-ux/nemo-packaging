@@ -2,21 +2,16 @@
 # Maintainer: Felix Yan <felixonmars@archlinux.org>
 
 pkgname=libdsme
-pkgver=0.66.6.r0.g3633f59
+pkgver=0.66.6
 pkgrel=1
 pkgdesc="DSME dsmesock dynamic library"
-arch=('x86_64')
-url="https://git.merproject.org/mer-core/libdsme"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/libdsme.git"
 license=('LGPL')
 depends=('glib2')
 makedepends=('git' 'check')
 source=("git+https://git.merproject.org/mer-core/libdsme.git")
 sha512sums=('SKIP')
-
-pkgver() {
-        cd "$srcdir/${pkgname%-git}"
-        git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
 
 prepare() {
   cd libdsme
