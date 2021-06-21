@@ -10,12 +10,12 @@ pkgname=$_basename-git
 
 pkgver=0.99.2.r12.g7eb4c0fa
 
-pkgrel=1
+pkgrel=2
 pkgdesc="Contains the reference input method plugins, such as the Maliit Keyboard. "
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD')
-depends=('maliit-framework')
+depends=('maliit-framework' 'maliit-keyboard' 'qt5-quickcontrols2')
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
