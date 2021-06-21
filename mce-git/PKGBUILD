@@ -5,10 +5,10 @@
 
 pkgname=mce-git
 pkgver=1.106.7.r0.g9c6a089
-pkgrel=1
+pkgrel=2
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/mce"
+url="https://github.com/sailfishos/mce.git"
 license=('GPL')
 depends=('libngf-git' 'libiphb-git')
 makedepends=('git' 'doxygen' 'libdsme' 'libsystemd' 'usb-moded' 'mce-headers')
@@ -49,5 +49,4 @@ package() {
     mv $pkgdir/lib/systemd $pkgdir/usr/lib/systemd
 
     rm -rf $pkgdir/lib
-    rm -rf $pkgdir/var
 }
