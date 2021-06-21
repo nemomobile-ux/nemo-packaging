@@ -1,9 +1,10 @@
 ## $Id$
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 # Contributor: Alexey Andreyev (aa13q) <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-models
-pkgver=0.2.1
+pkgver=0.2.2
 pkgrel=1
 pkgdesc="Nemo QML models plugin"
 arch=('x86_64' 'aarch64')
