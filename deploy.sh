@@ -28,6 +28,7 @@ eval "$BUILD cor-git"
 
 eval "$BUILD google-opensans-fonts"
 eval "$BUILD nemo-theme-glacier-git"
+eval "$BUILD maliit-nemo-keyboard-git"
 eval "$BUILD qt5-quickcontrols-nemo-git"
 eval "$BUILD qt5-glacier-app-git"
 eval "$BUILD glacier-calc-git"
@@ -127,7 +128,6 @@ eval "$BUILD ohm-rule-engine"
 eval "$BUILD libdres-ohm"
 eval "$BUILD ohm-plugins-misc"
 eval "$BUILD policy-settings-common"
-eval "$BUILD maliit-nemo-keyboard-git"
 
 
 eval "$BUILD fingerterm-git"
