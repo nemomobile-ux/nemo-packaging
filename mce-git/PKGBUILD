@@ -48,5 +48,8 @@ package() {
     rmdir $pkgdir/lib/systemd/system/multi-user.target.wants
     mv $pkgdir/lib/systemd $pkgdir/usr/lib/systemd
 
+    mkdir -p $pkgdir/usr/lib/tmpfiles.d
+    echo "d /var/run/mce 0755 root root -" > $pkgdir/usr/lib/tmpfiles.d/mce.conf
     rm -rf $pkgdir/lib
+    rm -rf $pkgdir/var/run
 }
