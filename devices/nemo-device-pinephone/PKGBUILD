@@ -15,7 +15,7 @@ pkgdesc="PinePhone specific files for GlacierUX"
 arch=('aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('glacier-wayland-session' 'usb-moded' 'maliit-nemo-keyboard')
+depends=('glacier-wayland-session' 'usb-moded' 'maliit-nemo-keyboard' 'sensorfw')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}" "usb-tethering")
