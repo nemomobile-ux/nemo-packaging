@@ -45,4 +45,6 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make -j 1 INSTALL_ROOT="${pkgdir}" install
+  sed -i 's/post-user-session.target/graphical-session-post.target/;s/user-session.target/graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/contactsd.service"
+
 }
