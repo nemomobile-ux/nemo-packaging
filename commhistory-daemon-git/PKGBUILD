@@ -55,4 +55,6 @@ package() {
   make INSTALL_ROOT="${pkgdir}" install
   mkdir -p ${pkgdir}/usr/share/mapplauncherd/privileges.d
   install -m 644 -p ${srcdir}/${pkgname}/rpm/commhistory-daemon.privileges ${pkgdir}/usr/share/mapplauncherd/privileges.d
+    sed -i 's/pre-user-session.target/graphical-session-pre.target/;s/WantedBy=user-session.target/WantedBy=graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/commhistoryd.service"
+
 }
