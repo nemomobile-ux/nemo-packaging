@@ -41,8 +41,6 @@ build() {
 package() {
     make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 
-    sed -i 's/WantedBy=user-session.target/WantedBy=graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/voicecall-ui-prestart.service"
-
     mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
     ln -s ../voicecall-ui-prestart.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
 
