@@ -47,5 +47,5 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make DESTDIR="${pkgdir}" install
+  sed -i 's/pre-user-session.target/graphical-session-pre.target/' "${pkgdir}/usr/lib/systemd/user/ohm-session-agent.service"
 }
- 

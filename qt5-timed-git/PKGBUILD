@@ -52,6 +52,8 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make -j 1 INSTALL_ROOT="$pkgdir/" install
+  sed -i 's/WantedBy=pre-user-session.target/WantedBy=graphical-session-pre.target/' "${pkgdir}/usr/lib/systemd/user/timed-qt5.service"
+
   # Remove tests
   rm -rf "$pkgdir/opt"
 }

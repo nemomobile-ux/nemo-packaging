@@ -10,13 +10,13 @@ pkgname=$_basename-git
 
 pkgver=0.2.0.r2.g22a307e
 
-pkgrel=1
+pkgrel=2
 pkgdesc="Application launch boosters for Qt5 nemomobile components"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
 license=('LGPL-2.1-only AND Apache-2.0')
 depends=('mapplauncherd' 'qt5-base' 'mapplauncherd-qt' 'qt5-declarative')
-makedepends=('git')
+makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
@@ -30,17 +30,14 @@ pkgver() {
   ) 2>/dev/null
 }
 
-prepare() {
-  cd "${srcdir}/${pkgname}"
-}
-
 build() {
-  cd "${srcdir}/${pkgname}"
-  qmake
-  make
+    cmake \
+        -B "${pkgname}/build" \
+        -S "${pkgname}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}/build" all
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  make -j 1 INSTALL_ROOT="${pkgdir}" install
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 }

@@ -43,4 +43,8 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make -j 1 INSTALL_ROOT="${pkgdir}" install
+
+  sed -i 's/WantedBy=user-session.target/WantedBy=graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/booster-qt5.service"
+  sed -i 's/After=booster-qt5.service post-user-session.target/After=booster-qt5.service graphical-session-post.target/' "${pkgdir}/usr/lib/systemd/user/booster-qt5-signal.service"
+
 }

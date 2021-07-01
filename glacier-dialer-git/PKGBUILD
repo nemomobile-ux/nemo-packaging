@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.3.r0.gc06c29b
+pkgver=0.3.r5.gd4d8eec
 
 pkgrel=1
 pkgdesc="QML based dialer application for nemomobile"
@@ -41,8 +41,8 @@ build() {
 package() {
     make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 
-    mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants
-    ln -s ../voicecall-ui-prestart.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+    mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
+    ln -s ../voicecall-ui-prestart.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
 
     mkdir -p ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
     cd ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/

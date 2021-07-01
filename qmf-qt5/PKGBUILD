@@ -81,4 +81,7 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}/upstream"
   make -j 1 INSTALL_ROOT="${pkgdir}" install
+  sed -i 's/WantedBy=user-session.target/WantedBy=graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/messageserver5.service"
+  sed -i 's/WantedBy=user-session.target/WantedBy=graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/messageserver5-accounts-check.service"
+
 }
