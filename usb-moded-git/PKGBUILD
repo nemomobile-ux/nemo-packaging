@@ -6,7 +6,7 @@
 _pkgname=usb-moded
 pkgname=usb-moded-git
 pkgver=0.86.0+mer55.r2.g66317b7
-pkgrel=1
+pkgrel=2
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/usb-moded"
@@ -84,4 +84,12 @@ package() {
 
 	install -m 644 -D $srcdir/usb-moded/systemd/usb-moded.service $pkgdir/usr/lib/systemd/system/
 	ln -s ../usb-moded.service $pkgdir/usr/lib/systemd/system/basic.target.wants/
+
+
+	mkdir -p $pkgdir/etc/modprobe.d
+	install -m 644 -D $srcdir/${pkgname%-git}/rpm/usb_moded.conf $pkgdir/etc/modprobe.d/usb_moded.conf
+
+	mkdir -p $pkgdir/usr/share/dbus-1/system.d/
+	install -m 644 -D $srcdir/${pkgname%-git}/debian/usb_moded.conf $pkgdir/usr/share/dbus-1/system.d/usb_moded.conf
+
 }
