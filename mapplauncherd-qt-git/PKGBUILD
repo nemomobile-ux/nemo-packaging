@@ -1,8 +1,8 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
+_host="github.com"
+_project=sailfishos
 _basename=mapplauncherd-qt
 _branch=master
 

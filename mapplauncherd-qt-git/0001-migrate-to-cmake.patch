@@ -1,17 +1,19 @@
-From a782c6e9f6508eede52ec6116db7012e03845b8d Mon Sep 17 00:00:00 2001
+From e12bec954ea7e183e274b2f3db58e1bed1a81a24 Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
-Date: Fri, 2 Jul 2021 12:12:23 +0200
+Date: Fri, 2 Jul 2021 15:09:52 +0200
 Subject: [PATCH] migrate to cmake
 
 ---
- CMakeLists.txt                            | 42 +++++++++++++++++++++++
+ CMakeLists.txt                            | 45 +++++++++++++++++++++++
+ data/data.pro                             | 16 --------
  mapplauncherd-qt.pro                      |  7 ----
- mdeclarativecache5/CMakeLists.txt         | 35 +++++++++++++++++++
- mdeclarativecache5/mdeclarativecache5.pro | 18 ----------
- qtbooster/CMakeLists.txt                  | 19 ++++++++++
- qtbooster/qtbooster.pro                   | 20 -----------
- 6 files changed, 96 insertions(+), 45 deletions(-)
+ mdeclarativecache5/CMakeLists.txt         | 35 ++++++++++++++++++
+ mdeclarativecache5/mdeclarativecache5.pro | 18 ---------
+ qtbooster/CMakeLists.txt                  | 17 +++++++++
+ qtbooster/qtbooster.pro                   | 18 ---------
+ 7 files changed, 97 insertions(+), 59 deletions(-)
  create mode 100644 CMakeLists.txt
+ delete mode 100644 data/data.pro
  delete mode 100644 mapplauncherd-qt.pro
  create mode 100644 mdeclarativecache5/CMakeLists.txt
  delete mode 100644 mdeclarativecache5/mdeclarativecache5.pro
@@ -20,10 +22,10 @@ Subject: [PATCH] migrate to cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..76ac82d
+index 0000000..4d18b33
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,45 @@
 +cmake_minimum_required(VERSION 3.6.0)
 +
 +project(mapplauncherd-qt
@@ -39,6 +41,9 @@ index 0000000..76ac82d
 +set(CMAKE_AUTORCC ON)
 +
 +set(CMAKE_INCLUDE_CURRENT_DIR ON)
++
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden -fvisibility-inlines-hidden")
++set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
 +
 +include(FeatureSummary)
 +include(GNUInstallDirs)
@@ -66,6 +71,28 @@ index 0000000..76ac82d
 +    data/mkspecs/features/qt-boostable.prf
 +    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qt/mkspecs/features/)
 +
+diff --git a/data/data.pro b/data/data.pro
+deleted file mode 100644
+index b6fe5a2..0000000
+--- a/data/data.pro
++++ /dev/null
+@@ -1,16 +0,0 @@
+-TEMPLATE = aux
+-
+-mkspecs.files = mkspecs/features/qt-boostable.prf mkspecs/features/qdeclarative-boostable.prf
+-mkspecs.path = $$[QT_INSTALL_DATA]/mkspecs/features
+-
+-pkgconfig.files = pkgconfig/qt5-boostable.pc pkgconfig/qdeclarative5-boostable.pc
+-services.files = booster-qt5.service booster-qt5-signal.service
+-services.files += booster-qt5@.service
+-
+-pkgconfig.path = $$[QT_INSTALL_LIBS]/pkgconfig
+-services.path = /usr/lib/systemd/user/
+-
+-# Apply version to the pkgconfig files before installing
+-pkgconfig.commands = 'sed -i "s/Version:.*/Version: $$VERSION/" pkgconfig/*.pc'
+-
+-INSTALLS += mkspecs pkgconfig services
 diff --git a/mapplauncherd-qt.pro b/mapplauncherd-qt.pro
 deleted file mode 100644
 index 24da644..0000000
@@ -146,10 +173,10 @@ index 7288705..0000000
 -
 diff --git a/qtbooster/CMakeLists.txt b/qtbooster/CMakeLists.txt
 new file mode 100644
-index 0000000..64c7369
+index 0000000..89252d5
 --- /dev/null
 +++ b/qtbooster/CMakeLists.txt
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,17 @@
 +pkg_check_modules(MAPPLAUNCHERD "applauncherd" REQUIRED)
 +
 +include_directories(${MAPPLAUNCHERD_INCLUDE_DIRS})
@@ -164,17 +191,15 @@ index 0000000..64c7369
 +    Qt5::Core
 +)
 +
-+set_property(TARGET booster-qt5 PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-+
 +install(TARGETS booster-qt5 RUNTIME
 +    DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec/mapplauncherd/)
 +
 diff --git a/qtbooster/qtbooster.pro b/qtbooster/qtbooster.pro
 deleted file mode 100644
-index 8242553..0000000
+index b77d747..0000000
 --- a/qtbooster/qtbooster.pro
 +++ /dev/null
-@@ -1,20 +0,0 @@
+@@ -1,18 +0,0 @@
 -TEMPLATE = app
 -
 -TARGET = booster-qt5
@@ -188,10 +213,8 @@ index 8242553..0000000
 -QT += network dbus xml sql 
 -
 -CONFIG += link_pkgconfig
--PKGCONFIG += glib-2.0 gobject-2.0 gmodule-2.0 gio-2.0 libffi sqlite3 libxml-2.0
--# pkgconfig? 
--LIBS += -lapplauncherd -lresolv
--INCLUDEPATH += /usr/include/applauncherd
+-PKGCONFIG += glib-2.0 gobject-2.0 gmodule-2.0 gio-2.0 libffi sqlite3 libxml-2.0 applauncherd
+-LIBS += -lresolv
 -
 -SOURCES += qtbooster.cpp
 -HEADERS += qtbooster.h
