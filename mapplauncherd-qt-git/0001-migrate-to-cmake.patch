@@ -1,0 +1,200 @@
+From a782c6e9f6508eede52ec6116db7012e03845b8d Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 2 Jul 2021 12:12:23 +0200
+Subject: [PATCH] migrate to cmake
+
+---
+ CMakeLists.txt                            | 42 +++++++++++++++++++++++
+ mapplauncherd-qt.pro                      |  7 ----
+ mdeclarativecache5/CMakeLists.txt         | 35 +++++++++++++++++++
+ mdeclarativecache5/mdeclarativecache5.pro | 18 ----------
+ qtbooster/CMakeLists.txt                  | 19 ++++++++++
+ qtbooster/qtbooster.pro                   | 20 -----------
+ 6 files changed, 96 insertions(+), 45 deletions(-)
+ create mode 100644 CMakeLists.txt
+ delete mode 100644 mapplauncherd-qt.pro
+ create mode 100644 mdeclarativecache5/CMakeLists.txt
+ delete mode 100644 mdeclarativecache5/mdeclarativecache5.pro
+ create mode 100644 qtbooster/CMakeLists.txt
+ delete mode 100644 qtbooster/qtbooster.pro
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..76ac82d
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,42 @@
++cmake_minimum_required(VERSION 3.6.0)
++
++project(mapplauncherd-qt
++	VERSION 1.1.17
++	DESCRIPTION "mapplauncherd-qt"
++	LANGUAGES CXX)
++
++
++set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_CXX_STANDARD_REQUIRED ON)
++
++set(CMAKE_AUTOMOC ON)
++set(CMAKE_AUTORCC ON)
++
++set(CMAKE_INCLUDE_CURRENT_DIR ON)
++
++include(FeatureSummary)
++include(GNUInstallDirs)
++
++set(QT_MIN_VERSION "5.6.0")
++find_package(Qt5 COMPONENTS Core Quick REQUIRED)
++find_package(PkgConfig REQUIRED)
++#
++
++add_subdirectory(mdeclarativecache5)
++add_subdirectory(qtbooster)
++
++install(FILES
++    data/booster-qt5.service
++    data/booster-qt5-signal.service
++    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/systemd/user/)
++
++install(FILES
++    data/pkgconfig/qdeclarative5-boostable.pc
++    data/pkgconfig/qt5-boostable.pc
++    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
++
++install(FILES
++    data/mkspecs/features/qdeclarative-boostable.prf
++    data/mkspecs/features/qt-boostable.prf
++    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qt/mkspecs/features/)
++
+diff --git a/mapplauncherd-qt.pro b/mapplauncherd-qt.pro
+deleted file mode 100644
+index 24da644..0000000
+--- a/mapplauncherd-qt.pro
++++ /dev/null
+@@ -1,7 +0,0 @@
+-TEMPLATE = subdirs
+-
+-SUBDIRS = qtbooster \
+-    data
+-
+-SUBDIRS += mdeclarativecache5
+-
+diff --git a/mdeclarativecache5/CMakeLists.txt b/mdeclarativecache5/CMakeLists.txt
+new file mode 100644
+index 0000000..c1dc562
+--- /dev/null
++++ b/mdeclarativecache5/CMakeLists.txt
+@@ -0,0 +1,35 @@
++
++set(QT_MIN_VERSION "5.6.0")
++find_package(Qt5 COMPONENTS Core DBus REQUIRED)
++
++set(MDECLARATIVE_CACHE_SOURCES
++    mdeclarativecache.cpp
++)
++
++set(MDECLARATIVE_CACHE_HEADERS
++    mdeclarativecache.h
++    mdeclarativecache_p.h
++    testabilityinterface.h
++)
++
++
++add_library(mdeclarativecache5 SHARED ${MDECLARATIVE_CACHE_SOURCES} ${MDECLARATIVE_CACHE_HEADERS})
++target_link_libraries(mdeclarativecache5
++    Qt5::Core
++    Qt::CorePrivate
++    Qt5::Quick
++)
++
++set_target_properties(mdeclarativecache5 PROPERTIES
++    VERSION ${PROJECT_VERSION}
++    SOVERSION ${PROJECT_VERSION_MAJOR})
++
++install(TARGETS mdeclarativecache5
++    LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
++
++install(FILES
++    MDeclarativeCache
++    mdeclarativecache.h
++    DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/mdeclarativecache5
++    COMPONENT Devel
++    PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
+diff --git a/mdeclarativecache5/mdeclarativecache5.pro b/mdeclarativecache5/mdeclarativecache5.pro
+deleted file mode 100644
+index 7288705..0000000
+--- a/mdeclarativecache5/mdeclarativecache5.pro
++++ /dev/null
+@@ -1,18 +0,0 @@
+-TEMPLATE = lib
+-TARGET = mdeclarativecache5
+-VERSION = 0.0.0
+-QT += quick core-private 
+-
+-target.path = $$[QT_INSTALL_LIBS]
+-
+-headers.files = MDeclarativeCache mdeclarativecache.h
+-headers.path = $$[QT_INSTALL_PREFIX]/include/mdeclarativecache5/
+-
+-INSTALLS += target headers
+-
+-SOURCES += mdeclarativecache.cpp
+-
+-HEADERS += mdeclarativecache.h \
+-    mdeclarativecache_p.h \
+-    testabilityinterface.h
+-
+diff --git a/qtbooster/CMakeLists.txt b/qtbooster/CMakeLists.txt
+new file mode 100644
+index 0000000..64c7369
+--- /dev/null
++++ b/qtbooster/CMakeLists.txt
+@@ -0,0 +1,19 @@
++pkg_check_modules(MAPPLAUNCHERD "applauncherd" REQUIRED)
++
++include_directories(${MAPPLAUNCHERD_INCLUDE_DIRS})
++
++add_executable(booster-qt5
++    qtbooster.cpp
++    qtbooster.h
++)
++
++target_link_libraries(booster-qt5 PUBLIC
++    ${MAPPLAUNCHERD_LIBRARIES}
++    Qt5::Core
++)
++
++set_property(TARGET booster-qt5 PROPERTY POSITION_INDEPENDENT_CODE TRUE)
++
++install(TARGETS booster-qt5 RUNTIME
++    DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec/mapplauncherd/)
++
+diff --git a/qtbooster/qtbooster.pro b/qtbooster/qtbooster.pro
+deleted file mode 100644
+index 8242553..0000000
+--- a/qtbooster/qtbooster.pro
++++ /dev/null
+@@ -1,20 +0,0 @@
+-TEMPLATE = app
+-
+-TARGET = booster-qt5
+-
+-target.path = /usr/libexec/mapplauncherd/
+-INSTALLS += target
+-
+-# Resolve all relocations at launch time.
+-QMAKE_LFLAGS += -Wl,-z,now
+-
+-QT += network dbus xml sql 
+-
+-CONFIG += link_pkgconfig
+-PKGCONFIG += glib-2.0 gobject-2.0 gmodule-2.0 gio-2.0 libffi sqlite3 libxml-2.0
+-# pkgconfig? 
+-LIBS += -lapplauncherd -lresolv
+-INCLUDEPATH += /usr/include/applauncherd
+-
+-SOURCES += qtbooster.cpp
+-HEADERS += qtbooster.h
+-- 
+2.32.0
+

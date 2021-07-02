@@ -10,17 +10,17 @@ pkgname=$_basename-git
 
 pkgver=1.1.17.r0.g944f07e
 
-pkgrel=1
+pkgrel=2
 pkgdesc="Application launch boosters for Qt5"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
 license=('LGPL-2.1-only AND Apache-2.0')
 depends=('mapplauncherd' 'qt5-base' 'qt5-declarative')
-makedepends=('git')
+makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
+source=("${pkgname}::git+${url}" '0001-migrate-to-cmake.patch')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -31,18 +31,20 @@ pkgver() {
 }
 
 prepare() {
-  cd "${srcdir}/${pkgname}"
+    cd "${srcdir}/${pkgname}"
+    patch -Np1 -i "${srcdir}/0001-migrate-to-cmake.patch"
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
-  qmake
-  make
+    cmake \
+        -B "${pkgname}/build" \
+        -S "${pkgname}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}/build" all
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  make -j 1 INSTALL_ROOT="${pkgdir}" install
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 
   sed -i 's/WantedBy=user-session.target/WantedBy=graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/booster-qt5.service"
   sed -i 's/After=booster-qt5.service post-user-session.target/After=booster-qt5.service graphical-session-post.target/' "${pkgdir}/usr/lib/systemd/user/booster-qt5-signal.service"
