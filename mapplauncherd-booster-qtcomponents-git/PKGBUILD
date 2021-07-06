@@ -8,9 +8,9 @@ _branch=nemo
 
 pkgname=$_basename-git
 
-pkgver=0.2.0.r2.g22a307e
+pkgver=0.2.0.r4.g0d08347
 
-pkgrel=2
+pkgrel=1
 pkgdesc="Application launch boosters for Qt5 nemomobile components"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"

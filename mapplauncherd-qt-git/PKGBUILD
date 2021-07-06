@@ -8,9 +8,9 @@ _branch=master
 
 pkgname=$_basename-git
 
-pkgver=1.1.17.r0.g944f07e
+pkgver=1.1.19.r0.g100d228
 
-pkgrel=2
+pkgrel=1
 pkgdesc="Application launch boosters for Qt5"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
