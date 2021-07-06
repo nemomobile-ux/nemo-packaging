@@ -9,7 +9,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-nonandroid-git
 
-pkgver=1.12.3.r5.g2ae52dd
+pkgver=1.14.3.r5.g728aa72
 
 pkgrel=1
 pkgdesc="nonandroid plugin for Mode Control Entity"
