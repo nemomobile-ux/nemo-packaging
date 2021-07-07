@@ -47,15 +47,16 @@ build() {
   cd build
   qmake ..
   make
-#we use own service
-  rm -rf ${pkgdir}/usr/lib/systemd/user/commhistoryd.service
-  cp ${srcdir}/commhistoryd.service ${pkgdir}/usr/lib/systemd/user/commhistoryd.service
-  mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
-  ln -s ../commhistoryd.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
 }
 
 package() {
   cd "${srcdir}/${pkgname}"
   cd build
   make INSTALL_ROOT="${pkgdir}" install
+#we use own service
+  rm -rf ${pkgdir}/usr/lib/systemd/user/commhistoryd.service
+  cp ${srcdir}/commhistoryd.service ${pkgdir}/usr/lib/systemd/user/commhistoryd.service
+  mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+  ln -s ../commhistoryd.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+  
 }
