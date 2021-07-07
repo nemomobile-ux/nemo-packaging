@@ -1,7 +1,7 @@
 [Unit]
 Description=Communication history daemon
 # lipstick.service needed for org.freedesktop.Notifications
-After=graphical-session-pre.target booster-qt5.service lipstick.service
+After=graphical-session-pre.target lipstick.service
 Requires=dbus.socket
 
 [Service]
