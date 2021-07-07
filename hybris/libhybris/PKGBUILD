@@ -2,7 +2,7 @@
 pkgname=libhybris-git
 provides=('libhybris')
 _pkgbase=libhybris
-pkgver=1500.9d2860a
+pkgver=1502.133365c
 pkgrel=1
 arch=('x86_64' 'aarch64')
 url="https://github.com/libhybris/libhybris"

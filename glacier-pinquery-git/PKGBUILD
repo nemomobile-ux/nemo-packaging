@@ -12,9 +12,9 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.3.r3.ga3d3a3a
+pkgver=0.3.r5.g5a091c1
 
-pkgrel=2
+pkgrel=1
 pkgdesc="QML based PIN query application using libqofono"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"

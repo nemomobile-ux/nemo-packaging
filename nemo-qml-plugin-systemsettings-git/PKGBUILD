@@ -2,24 +2,23 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Contributor: Alexey Andreyev (aa13q) <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-systemsettings-git
-pkgver=0.5.47.r0.gc6e14bf
+pkgver=0.5.76.r2.g729c4ff
 pkgrel=1
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings#tag=0.5.47"
 license=('BSD')
-depends=('qt5-systems' 'ssu-sysinfo-git' 'qt5-usb-moded-git' 'profiled-git' 'qt5-timed-git' 'libsailfishkeyprovider-git' 'nemo-qml-plugin-models' 'qt5-connman-git' 'qt5-mlite-git' 'sailfish-user-managerd-git' 'mce-git' 'nemo-qml-plugin-dbus' 'sailfish-access-control-git')
+depends=('qt5-systems' 'ssu-sysinfo-git' 'qt5-usb-moded-git' 'profiled-git' 'qt5-timed-git' 'libsailfishkeyprovider-git' 'nemo-qml-plugin-models' 'qt5-connman-git' 'qt5-mlite-git' 'mce-git' 'nemo-qml-plugin-dbus' 'qt5-xmlpatterns')
 makedepends=('git' 'qt5-tools' 'mce-headers-git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings#tag=0.5.47'
-        '0002-Remove-developer-mode.patch'
-        '0003-Remove-broken-certificatemodel.patch'
+source=('git+https://github.com/nemomobile-ux/nemo-qml-plugin-systemsettings.git'
         '0004-try-to-use-setlocale-in-usr-lib-in-manjaro.patch'
 )
-md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname%-git}"
@@ -28,8 +27,7 @@ pkgver() {
 
 prepare() {
     cd "$srcdir/${pkgname%-git}"
-    patch -p1 --input="${srcdir}/0002-Remove-developer-mode.patch"
-    patch -p1 --input="${srcdir}/0003-Remove-broken-certificatemodel.patch"
+    git checkout nemomobile
     patch -p1 --input="${srcdir}/0004-try-to-use-setlocale-in-usr-lib-in-manjaro.patch"
 }
 
