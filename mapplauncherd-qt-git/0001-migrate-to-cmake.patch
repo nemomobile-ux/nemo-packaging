@@ -1,4 +1,4 @@
-From 1212468a5edd22735c9600dbaadad023d3c34c8f Mon Sep 17 00:00:00 2001
+From eb7bce0a0041c7ffcf8863d1b01143f99a73ab81 Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 2 Jul 2021 15:09:52 +0200
 Subject: [PATCH] migrate to cmake
@@ -6,12 +6,14 @@ Subject: [PATCH] migrate to cmake
 ---
  CMakeLists.txt                            | 42 +++++++++++++++++++++++
  data/data.pro                             | 16 ---------
+ data/pkgconfig/qdeclarative5-boostable.pc |  2 +-
+ data/pkgconfig/qt5-boostable.pc           |  2 +-
  mapplauncherd-qt.pro                      |  7 ----
  mdeclarativecache5/CMakeLists.txt         | 35 +++++++++++++++++++
  mdeclarativecache5/mdeclarativecache5.pro | 18 ----------
  qtbooster/CMakeLists.txt                  | 22 ++++++++++++
  qtbooster/qtbooster.pro                   | 18 ----------
- 7 files changed, 99 insertions(+), 59 deletions(-)
+ 9 files changed, 101 insertions(+), 61 deletions(-)
  create mode 100644 CMakeLists.txt
  delete mode 100644 data/data.pro
  delete mode 100644 mapplauncherd-qt.pro
@@ -90,6 +92,29 @@ index b6fe5a2..0000000
 -pkgconfig.commands = 'sed -i "s/Version:.*/Version: $$VERSION/" pkgconfig/*.pc'
 -
 -INSTALLS += mkspecs pkgconfig services
+diff --git a/data/pkgconfig/qdeclarative5-boostable.pc b/data/pkgconfig/qdeclarative5-boostable.pc
+index 20b97f8..d37047b 100644
+--- a/data/pkgconfig/qdeclarative5-boostable.pc
++++ b/data/pkgconfig/qdeclarative5-boostable.pc
+@@ -1,6 +1,6 @@
+ Name: qdeclarative5-boostable
+ Description: make application boostable by applauncherd
+-Version: 0.2.0
++Version: 1.1.17
+ Libs: -pie -rdynamic -lmdeclarativecache5
+ Cflags: -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -I/usr/include/mdeclarativecache5
+ 
+diff --git a/data/pkgconfig/qt5-boostable.pc b/data/pkgconfig/qt5-boostable.pc
+index 1b0a154..1a4e826 100644
+--- a/data/pkgconfig/qt5-boostable.pc
++++ b/data/pkgconfig/qt5-boostable.pc
+@@ -1,5 +1,5 @@
+ Name: qt5-boostable
+ Description: make application boostable by applauncherd
+-Version: 0.2.0
++Version: 1.1.17
+ Libs: -pie -rdynamic 
+ Cflags: -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
 diff --git a/mapplauncherd-qt.pro b/mapplauncherd-qt.pro
 deleted file mode 100644
 index 24da644..0000000
