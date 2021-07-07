@@ -1,17 +1,17 @@
-From e12bec954ea7e183e274b2f3db58e1bed1a81a24 Mon Sep 17 00:00:00 2001
+From 1212468a5edd22735c9600dbaadad023d3c34c8f Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 2 Jul 2021 15:09:52 +0200
 Subject: [PATCH] migrate to cmake
 
 ---
- CMakeLists.txt                            | 45 +++++++++++++++++++++++
- data/data.pro                             | 16 --------
+ CMakeLists.txt                            | 42 +++++++++++++++++++++++
+ data/data.pro                             | 16 ---------
  mapplauncherd-qt.pro                      |  7 ----
- mdeclarativecache5/CMakeLists.txt         | 35 ++++++++++++++++++
- mdeclarativecache5/mdeclarativecache5.pro | 18 ---------
- qtbooster/CMakeLists.txt                  | 17 +++++++++
- qtbooster/qtbooster.pro                   | 18 ---------
- 7 files changed, 97 insertions(+), 59 deletions(-)
+ mdeclarativecache5/CMakeLists.txt         | 35 +++++++++++++++++++
+ mdeclarativecache5/mdeclarativecache5.pro | 18 ----------
+ qtbooster/CMakeLists.txt                  | 22 ++++++++++++
+ qtbooster/qtbooster.pro                   | 18 ----------
+ 7 files changed, 99 insertions(+), 59 deletions(-)
  create mode 100644 CMakeLists.txt
  delete mode 100644 data/data.pro
  delete mode 100644 mapplauncherd-qt.pro
@@ -22,10 +22,10 @@ Subject: [PATCH] migrate to cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..4d18b33
+index 0000000..76ac82d
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,42 @@
 +cmake_minimum_required(VERSION 3.6.0)
 +
 +project(mapplauncherd-qt
@@ -41,9 +41,6 @@ index 0000000..4d18b33
 +set(CMAKE_AUTORCC ON)
 +
 +set(CMAKE_INCLUDE_CURRENT_DIR ON)
-+
-+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden -fvisibility-inlines-hidden")
-+set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
 +
 +include(FeatureSummary)
 +include(GNUInstallDirs)
@@ -173,10 +170,10 @@ index 7288705..0000000
 -
 diff --git a/qtbooster/CMakeLists.txt b/qtbooster/CMakeLists.txt
 new file mode 100644
-index 0000000..89252d5
+index 0000000..56ad958
 --- /dev/null
 +++ b/qtbooster/CMakeLists.txt
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,22 @@
 +pkg_check_modules(MAPPLAUNCHERD "applauncherd" REQUIRED)
 +
 +include_directories(${MAPPLAUNCHERD_INCLUDE_DIRS})
@@ -190,6 +187,11 @@ index 0000000..89252d5
 +    ${MAPPLAUNCHERD_LIBRARIES}
 +    Qt5::Core
 +)
++
++set_property(TARGET booster-qt5 PROPERTY POSITION_INDEPENDENT_CODE TRUE)
++set_property(TARGET booster-qt5 PROPERTY CXX_VISIBILITY_PRESET hidden)
++set_property(TARGET booster-qt5 PROPERTY VISIBILITY_INLINES_HIDDEN ON)
++
 +
 +install(TARGETS booster-qt5 RUNTIME
 +    DESTINATION ${CMAKE_INSTALL_PREFIX}/libexec/mapplauncherd/)
