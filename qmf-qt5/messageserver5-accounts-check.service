@@ -1,0 +1,11 @@
+[Unit]
+Description=check accounts for messageserver5
+After=oneshot-user.service
+Before=messageserver5.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/qmf-accountscheck
+
+[Install]
+WantedBy=graphical-session.target
