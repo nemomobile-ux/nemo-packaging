@@ -10,17 +10,17 @@ pkgname=$_basename-git
 
 pkgver=1.4.9.r0.g19a0201
 
-pkgrel=1
+pkgrel=2
 pkgdesc="Telepathy <> QtContacts bridge for contacts"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('telepathy-qt' 'qt5-mlite-git' 'qt5-mlocale-git' 'libqofono-qt5' 'mapplauncherd-qt-git' 'qt5-contacts-sqlite-extensions-git' 'buteo-syncfw' 'kcalendarcore' 'mkcal-git' 'nemo-qml-plugin-contacts-git' 'qt5-ofono-nemo-extensions-git')
+depends=('telepathy-qt' 'qt5-mlite-git' 'qt5-mlocale-git' 'libqofono-qt5' 'qt5-contacts-sqlite-extensions-git' 'buteo-syncfw' 'kcalendarcore' 'mkcal-git' 'nemo-qml-plugin-contacts-git' 'qt5-ofono-nemo-extensions-git')
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0001-KcalendarCore_not_provide_pc_files.path")
-sha256sums=('SKIP' 'SKIP')
+source=("${pkgname}::git+${url}" "0001-KcalendarCore_not_provide_pc_files.path" "contactsd.service")
+sha256sums=('SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -45,6 +45,8 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make -j 1 INSTALL_ROOT="${pkgdir}" install
-  sed -i 's/post-user-session.target/graphical-session-post.target/;s/user-session.target/graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/contactsd.service"
-
+  rm ${pkgdir}/usr/lib/systemd/user/contactsd.service
+  cp ${srcdir}/contactsd.service ${pkgdir}/usr/lib/systemd/user/contactsd.service
+  mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session-pre.target.wants
+  ln -s ../contactsd.service ${pkgdir}/usr/lib/systemd/user/graphical-session-pre.target.wants
 }
