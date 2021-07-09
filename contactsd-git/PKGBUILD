@@ -10,7 +10,7 @@ pkgname=$_basename-git
 
 pkgver=1.4.9.r0.g19a0201
 
-pkgrel=2
+pkgrel=3
 pkgdesc="Telepathy <> QtContacts bridge for contacts"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"

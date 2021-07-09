@@ -10,7 +10,7 @@ pkgname=$_basename-git
 
 pkgver=0.8.38.r0.g7e00f4a
 
-pkgrel=2
+pkgrel=3
 pkgdesc="Communications event history database daemon"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"

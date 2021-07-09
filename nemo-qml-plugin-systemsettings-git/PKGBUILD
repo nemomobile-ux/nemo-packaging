@@ -6,7 +6,7 @@
 
 pkgname=nemo-qml-plugin-systemsettings-git
 pkgver=0.5.76.r2.g729c4ff
-pkgrel=1
+pkgrel=2
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings#tag=0.5.47"
