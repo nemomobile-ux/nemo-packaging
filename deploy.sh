@@ -23,8 +23,6 @@ else
 fi
 
 # apps
-eval "$BUILD tut-git"
-
 eval "$BUILD google-opensans-fonts"
 eval "$BUILD nemo-theme-glacier-git"
 eval "$BUILD maliit-nemo-keyboard-git"
