@@ -24,7 +24,6 @@ fi
 
 # apps
 eval "$BUILD tut-git"
-eval "$BUILD cor-git"
 
 eval "$BUILD google-opensans-fonts"
 eval "$BUILD nemo-theme-glacier-git"
