@@ -10,17 +10,18 @@ pkgname=qmf-qt5-git
 
 pkgver=4.0.4.131
 
-pkgrel=1
+pkgrel=3
 pkgdesc="Qt Messaging Framework (QMF) Qt5"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname"
 license=('BSD-3-Clause')
-depends=('nemo-keepalive-git' 'mapplauncherd-qt-git' 'buteo-syncfw' 'libaccounts-qt' 'signond')
+depends=('nemo-keepalive-git' 'buteo-syncfw' 'libaccounts-qt' 'signond')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0090-fix_missing_librares.patch" "0091-use_std_list.patch")
-sha256sums=('SKIP' 'SKIP' 'SKIP')
+source=("${pkgname}::git+${url}" "0090-fix_missing_librares.patch" "0091-use_std_list.patch" "messageserver5.service" "messageserver5-accounts-check.service"
+)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 prepare() {
   cd "${srcdir}/${pkgname}"
@@ -81,7 +82,13 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}/upstream"
   make -j 1 INSTALL_ROOT="${pkgdir}" install
-  sed -i 's/WantedBy=user-session.target/WantedBy=graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/messageserver5.service"
-  sed -i 's/WantedBy=user-session.target/WantedBy=graphical-session.target/' "${pkgdir}/usr/lib/systemd/user/messageserver5-accounts-check.service"
-
+  rm "${pkgdir}/usr/lib/systemd/user/messageserver5.service"
+  rm "${pkgdir}/usr/lib/systemd/user/messageserver5-accounts-check.service"
+ 
+  cp ${srcdir}/messageserver5.service "${pkgdir}/usr/lib/systemd/user/messageserver5.service"
+  cp ${srcdir}/messageserver5-accounts-check.service "${pkgdir}/usr/lib/systemd/user/messageserver5-accounts-check.service"
+  
+  mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+  ln -s ../messageserver5.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+  ln -s ../messageserver5-accounts-check.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
 }
