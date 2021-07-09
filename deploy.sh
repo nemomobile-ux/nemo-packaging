@@ -103,7 +103,6 @@ eval "$BUILD glacier-browser-git"
 
 # need to be clarified
 eval "$BUILD qt5-profile-git"
-eval "$BUILD qt5-around-git"
 eval "$BUILD sailfish-access-control-qt5-git"
 
 eval "$BUILD usb-tethering"
