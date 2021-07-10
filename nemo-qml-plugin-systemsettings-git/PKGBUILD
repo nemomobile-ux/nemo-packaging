@@ -9,7 +9,7 @@ pkgver=0.5.76.r2.g729c4ff
 pkgrel=2
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-systemsettings#tag=0.5.47"
+url="https://github.com/nemomobile-ux/nemo-qml-plugin-systemsettings.git"
 license=('BSD')
 depends=('qt5-systems' 'ssu-sysinfo-git' 'qt5-usb-moded-git' 'profiled-git' 'qt5-timed-git' 'libsailfishkeyprovider-git' 'nemo-qml-plugin-models' 'qt5-connman-git' 'mlite' 'mce-git' 'nemo-qml-plugin-dbus' 'qt5-xmlpatterns')
 makedepends=('git' 'qt5-tools' 'mce-headers-git')
