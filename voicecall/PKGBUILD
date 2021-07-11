@@ -1,8 +1,8 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
+_host="github.com"
+_project=nemomobile-ux
 _basename=voicecall
 _branch=master
 
@@ -19,8 +19,8 @@ depends=('libpulse' 'nemo-qml-plugin-devicelock-git' 'qt5-resource-git' 'libqofo
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0001-fix_build_on_new_qt.patch" '0002-Empty-implementation-of-some-functions.patch' '0003-migrate-to-cmake.patch' 'voicecall-manager.service')
-md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+source=("${pkgname}::git+${url}" 'voicecall-manager.service')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -32,9 +32,6 @@ pkgver() {
 
 prepare() {
   cd "${srcdir}/${pkgname}"
-  patch -p1 --input "${srcdir}/0001-fix_build_on_new_qt.patch"
-  patch -p1 --input "${srcdir}/0002-Empty-implementation-of-some-functions.patch"
-  patch -p1 --input "${srcdir}/0003-migrate-to-cmake.patch"
 }
 
 build() {
