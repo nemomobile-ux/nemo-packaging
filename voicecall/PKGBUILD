@@ -8,9 +8,9 @@ _branch=master
 
 pkgname=$_basename-git
 
-pkgver=0.7.11.r0.ga188e61
+pkgver=0.7.11.r6.g116712f
 
-pkgrel=6
+pkgrel=1
 pkgdesc="Dialer engine for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_basename#branch=$_branch"
