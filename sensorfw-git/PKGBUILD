@@ -15,7 +15,7 @@ pkgdesc="Sensor Framework provides an interface to hardware sensor drivers throu
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPLv2')
-depends=('libngf-git' 'libiphb-git' 'mlite' 'ssu-sysinfo-git')
+depends=('libngf-git' 'libiphb-git' 'mlite')
 makedepends=('git' 'doxygen')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -38,7 +38,6 @@ prepare() {
 build() {
     cd "${srcdir}/${pkgname}"
     qmake \
-    CONFIG+=ssusysinfo\
     CONFIG+=mce\
     PC_VERSION=`echo $pkgver | sed 's/+.*//'`
     make
