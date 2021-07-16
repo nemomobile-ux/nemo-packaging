@@ -43,6 +43,9 @@ eval "$BUILD qt5-dbus-extended-git"
 eval "$BUILD qt5-mpris-git"
 eval "$BUILD glacier-music-git"
 
+eval "$BUILD nemo-qml-plugin-email-git"
+eval "$BUILD glacier-mail-git"
+
 # homescreen/de
 eval "$BUILD mce-headers-git"
 eval "$BUILD libiphb-git"
