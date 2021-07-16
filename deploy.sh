@@ -88,6 +88,7 @@ eval "$BUILD glacier-wayland-session"
 eval "$BUILD libcommhistory-git"
 eval "$BUILD commhistory-daemon-git"
 eval "$BUILD qmf-qt5"
+eval "$BUILD nemo-qml-plugin-accounts-git"
 eval "$BUILD nemo-qml-plugin-messages-git"
 eval "$BUILD mkcal-git"
 eval "$BUILD contactsd-git"
@@ -122,7 +123,6 @@ eval "$BUILD ohm-rule-engine"
 eval "$BUILD libdres-ohm"
 eval "$BUILD ohm-plugins-misc"
 eval "$BUILD policy-settings-common"
-
 
 eval "$BUILD fingerterm-git"
 
