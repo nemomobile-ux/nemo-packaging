@@ -43,8 +43,6 @@ eval "$BUILD qt5-dbus-extended-git"
 eval "$BUILD qt5-mpris-git"
 eval "$BUILD glacier-music-git"
 
-eval "$BUILD nemo-qml-plugin-email-git"
-eval "$BUILD glacier-mail-git"
 
 # homescreen/de
 eval "$BUILD mce-headers-git"
@@ -97,6 +95,9 @@ eval "$BUILD glacier-messages-git"
 eval "$BUILD glacier-contacts-git"
 eval "$BUILD voicecall"
 eval "$BUILD glacier-dialer-git"
+
+eval "$BUILD nemo-qml-plugin-email-git"
+eval "$BUILD glacier-mail-git"
 
 eval "$BUILD glacier-browser-git"
 
