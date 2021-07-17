@@ -10,7 +10,7 @@ url="https://github.com/sailfishos/mlite.git";
 license=('LGPL')
 depends=('qt5-base' 'dconf')
 makedepends=('git' 'qt5-tools')
-source=("git+https://github.com/sailfishos/mlite")
+source=("${pkgname%-git}::git+${url}")
 sha512sums=('SKIP')
 
 prepare() {

@@ -4,20 +4,13 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=buteo-syncfw
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
+pkgname=buteo-syncfw-git
 pkgver=0.10.7.r0.gb88bd53
 
 pkgrel=2
 pkgdesc="Synchronization backend"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://github.com/sailfishos/buteo-syncfw"
 license=('LGPLv2')
 depends=('libiphb-git' 'nemo-keepalive-git' 'qt5-mce-git' 'signond' 'libaccounts-qt')
 makedepends=('git' 'qt5-tools' 'doxygen')

@@ -3,20 +3,12 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=buteo-sync-plugin-carddav
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
+pkgname=buteo-sync-plugin-carddav-git
 pkgver=0.1.6.r0.gb67977c
-
 pkgrel=1
 pkgdesc="Syncs contact data from CardDAV services"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://github.com/sailfishos/buteo-sync-plugin-caldav"
 license=('BSD-3-Clause')
 depends=('libphonenumber' 'qt5-mlocale-git' 'libsailfishkeyprovider-git' 'buteo-syncfw-git' 'qt5-contacts-sqlite-extensions-git')
 makedepends=('git' 'qt5-tools')

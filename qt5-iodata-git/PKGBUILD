@@ -4,20 +4,12 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=iodata
-_branch=master
-
-_gitname=lib${_basename}
-pkgname=qt5-$_basename-git
-
+pkgname=qt5-iodata-git
 pkgver=0.19.11+git1.r0.g9c9c84b
-
 pkgrel=1
 pkgdesc="Mer library for input/output data"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/sailfishos/libiodata"
 license=('LGPL-2.1-or-later')
 depends=('qt5-base')
 makedepends=('git' 'bison' 'flex')

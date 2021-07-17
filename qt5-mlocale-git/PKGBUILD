@@ -6,12 +6,10 @@ pkgname=qt5-mlocale-git
 _pkgname=qt-mlocale-git
 pkgver=0.7.4.r0.gfcb7a926
 pkgrel=1
-_project=mer-core
-_branch=master
 pkgdesc="Contains classes MLocale and friends originally from libmeegotouch"
 arch=('x86_64' 'aarch64')
 # FIXME: libmlocale qt-related repo naming
-url="https://git.sailfishos.org/$_project/libmlocale#branch=$_branch"
+url="https://github.com/sailfishos/libmlocale"
 license=('LGPLv2')
 depends=('qt5-base')
 makedepends=('git' 'qt5-tools')

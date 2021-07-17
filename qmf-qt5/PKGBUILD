@@ -1,19 +1,11 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=messagingframework
-_branch=master
-
-_gitname=$_basename
 pkgname=qmf-qt5-git
-
 pkgver=4.0.4.131
-
 pkgrel=3
 pkgdesc="Qt Messaging Framework (QMF) Qt5"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://github.com/sailfishos/messagingframework"
 license=('BSD-3-Clause')
 depends=('nemo-keepalive-git' 'buteo-syncfw' 'libaccounts-qt' 'signond')
 makedepends=('git')

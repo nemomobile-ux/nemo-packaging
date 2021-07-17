@@ -1,19 +1,13 @@
 # $Id$
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=fingerterm
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
+pkgname=fingerterm-git
 
 pkgver=1.4.2.r0.gebcdb39
 
 pkgrel=1
 pkgdesc="fingerterm is a terminal emulator designed for touch-based interaction, specifically for (but not limited to) use on the Nokia N9 and Jolla's Jolla device."
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/sailfishos/fingerterm"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
 depends=('qt5-declarative')
 makedepends=('git' 'qt5-tools')
