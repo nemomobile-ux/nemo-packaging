@@ -2,19 +2,14 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=ohm-plugin-ruleengine
-_srcname=ohm-plugin-ruleengine
-_branch=master
 pkgver=1.1.14.r0.g991e498
 pkgrel=1
 pkgdesc="A prolog-based OHM rule engine plugin"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/ohm-rule-engine.git"
+url="https://github.com/sailfishos/ohm-rule-engine"
 license=('LGPL-2.1-only')
 depends=('glib2' 'ohm' 'swi-prolog' 'libprolog')
 makedepends=('git' 'automake' 'autoconf')
-optdepends=()
-provides=("${_srcname}")
-conflicts=()
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 

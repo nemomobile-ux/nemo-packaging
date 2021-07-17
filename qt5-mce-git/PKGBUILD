@@ -6,11 +6,9 @@ pkgname=qt5-mce-git
 _pkgname=qt-mce-git
 pkgver=1.4.2.r0.g431168d
 pkgrel=1
-_project=mer-core
-_branch=master
 pkgdesc="A library of Qt bindings for mce"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/$_project/libmce-qt#branch=$_branch"
+url="https://github.com/sailfishos/libmce-qt"
 license=('BSD-3-Clause')
 depends=('qt5-declarative')
 makedepends=('git' 'mce-git' 'mce-headers-git')

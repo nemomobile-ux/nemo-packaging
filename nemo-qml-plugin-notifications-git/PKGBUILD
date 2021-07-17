@@ -3,19 +3,12 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=nemo-qml-plugin-notifications
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
+pkgname=nemo-qml-plugin-notifications-git
 pkgver=1.2.12.r0.g218f5da
 pkgrel=1
 pkgdesc="Nemo QML notifications plugin"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#tag=1.2.12"
+url="https://github.com/sailfishos/nemo-qml-plugin-notifications#tag=1.2.12"
 license=('BSD-3-Clause')
 depends=('qt5-declarative')
 makedepends=('git')

@@ -1,19 +1,13 @@
 ## $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=sensorfw
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
+pkgname=sensorfw-git
 
 pkgver=0.12.2.r0.g08ce125
 pkgrel=3
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/sailfishos/sensorfw"
 license=('LGPLv2')
 depends=('libngf-git' 'libiphb-git' 'mlite')
 makedepends=('git' 'doxygen')
