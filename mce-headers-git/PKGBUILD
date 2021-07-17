@@ -12,7 +12,7 @@ license=('GPL')
 makedepends=('git' 'doxygen')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}")
+source=("${pkgname}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {
