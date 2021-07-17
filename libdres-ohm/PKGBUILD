@@ -10,9 +10,6 @@ url="https://github.com/sailfishos/libdres-ohm"
 license=('LGPL-2.1-only')
 depends=('glib2' 'ohm' 'libtrace-ohm' 'libprolog')
 makedepends=('git' 'automake' 'autoconf')
-optdepends=()
-provides=("${_srcname}")
-conflicts=()
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
