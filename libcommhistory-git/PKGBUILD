@@ -1,19 +1,12 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=libcommhistory
-_branch=master
-
-pkgname=$_basename-git
-
+pkgname=libcommhistory-git
 pkgver=1.11.10.r0.g334caec
-
 pkgrel=1
 pkgdesc="Nemomobile Qt Quick Controls"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_basename#branch=$_branch"
+url="https://github.com/sailfishos/libcommhistory"
 license=('LGPL-2.1-only AND Apache-2.0')
 depends=('libphonenumber' 'qt5-base' 'qt5-contacts-sqlite-extensions-git' 'nemo-qml-plugin-contacts-git')
 makedepends=('git')

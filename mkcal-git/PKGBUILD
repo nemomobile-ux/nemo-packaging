@@ -1,19 +1,11 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=mkcal
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
+pkgname=mkcal-git
 pkgver=0.5.43.r0.g40f1205
-
 pkgrel=1
 pkgdesc="Telepathy <> QtContacts bridge for contacts"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/sailfishos/mkcal"
 license=('BSD-3-Clause')
 depends=('kcalendarcore' 'qt5-timed-git' 'qmf-qt5')
 makedepends=('git' 'cmake' 'extra-cmake-modules')

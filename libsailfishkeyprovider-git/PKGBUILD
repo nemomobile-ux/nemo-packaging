@@ -7,13 +7,13 @@ pkgver=1.0.7.r0.gcef4186
 pkgrel=1
 pkgdesc="Library providing access to decoded OAuth2 keys"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/libsailfishkeyprovider"
+url="https://github.com/sailfishos/libsailfishkeyprovider"
 license=('LGPLv2')
 depends=('gcc-libs')
 makedepends=('git' 'qt5-base')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/libsailfishkeyprovider.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {
