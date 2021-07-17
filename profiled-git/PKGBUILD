@@ -38,7 +38,7 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make install
-  mv /tmp/test-${_srcname}/usr ${pkgdir}
-  mv /tmp/test-${_srcname}/etc ${pkgdir}
+  mv /tmp/test-profiled/usr ${pkgdir}
+  mv /tmp/test-profiled/etc ${pkgdir}
 }
 
