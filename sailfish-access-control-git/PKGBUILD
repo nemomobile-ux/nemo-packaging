@@ -15,7 +15,7 @@ depends=('glib2')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/sailfish-access-control.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {

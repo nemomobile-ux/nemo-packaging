@@ -7,13 +7,13 @@ pkgver=0.28.r0.g05ea200
 pkgrel=1
 pkgdesc="Non-graphic feedback C-based client library"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/libngf"
+url="https://github.com/sailfishos/libngf"
 license=('GPL')
 depends=('dbus-glib')
 makedepends=('git' 'check' 'doxygen')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/libngf.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {

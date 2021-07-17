@@ -14,7 +14,7 @@ depends=('libngf-git' 'libiphb-git')
 makedepends=('git' 'doxygen' 'libdsme' 'libsystemd' 'usb-moded' 'mce-headers')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/mce.git' '0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch')
+source=("${pkgname%-git}::git+${url}" '0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch')
 md5sums=('SKIP' 'SKIP')
 
 pkgver() {

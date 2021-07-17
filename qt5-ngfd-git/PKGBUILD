@@ -15,7 +15,7 @@ depends=('qt5-declarative' 'libngf')
 makedepends=('git')
 provides=("${_pkgname%-git}" "${pkgname%-git}")
 conflicts=("${_pkgname%-git}" "${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/libngf-qt.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {

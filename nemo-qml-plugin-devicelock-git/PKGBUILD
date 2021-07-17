@@ -16,7 +16,6 @@ makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname%-git}::git+${url}")
-
 md5sums=('SKIP')
 
 pkgver() {

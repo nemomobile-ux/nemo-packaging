@@ -15,7 +15,7 @@ depends=('qt5-declarative' 'libiphb' 'mce-headers-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/nemo-keepalive.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {

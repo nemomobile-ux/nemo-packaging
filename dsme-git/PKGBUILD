@@ -12,7 +12,7 @@ depends=('libngf-git' 'libiphb-git' 'mce-git' 'cryptsetup' 'libsystemd' 'libdsme
 makedepends=('git' 'autoconf' 'automake' 'mce-headers')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/dsme.git' 'fix-dsme_server_path.patch' 'dsme.service')
+source=("${pkgname%-git}::git+${url}" 'fix-dsme_server_path.patch' 'dsme.service')
 md5sums=('SKIP' 'SKIP' 'SKIP')
 
 pkgver() {

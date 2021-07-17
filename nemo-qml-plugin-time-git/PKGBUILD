@@ -14,7 +14,7 @@ depends=('qt5-timed-git' 'nemo-qml-plugin-dbus')
 makedepends=('git' 'mce-headers-git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-time.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {

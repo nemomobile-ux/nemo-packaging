@@ -16,7 +16,7 @@ depends=('qt5-base' 'usb-moded')
 makedepends=('git')
 provides=("${_pkgname%-git}" "${pkgname%-git}")
 conflicts=("${_pkgname%-git}" "${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/libusb-moded-qt.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {

@@ -16,7 +16,7 @@ depends=('libdsme' 'dbus-glib' 'udev' 'kmod' 'sailfish-access-control' 'dhcp' 'n
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/usb-moded.git' 'dhcpd.conf')
+source=("${pkgname%-git}::git+${url}" 'dhcpd.conf')
 md5sums=('SKIP' 'SKIP')
 
 pkgver() {

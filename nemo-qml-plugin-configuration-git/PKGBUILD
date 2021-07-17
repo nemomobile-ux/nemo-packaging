@@ -14,7 +14,7 @@ depends=('mlite' 'nemo-qml-plugin-dbus')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-configuration.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {
