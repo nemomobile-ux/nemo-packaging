@@ -10,9 +10,6 @@ url="https://github.com/sailfishos/ohm"
 license=('LGPL-2.1-only')
 depends=('glib2' 'libtrace-ohm' 'dbus-glib')
 makedepends=('git' 'automake' 'autoconf' 'check')
-optdepends=()
-provides=("${_srcname}")
-conflicts=()
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 

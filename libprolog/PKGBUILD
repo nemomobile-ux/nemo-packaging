@@ -10,9 +10,6 @@ url="https://github.com/sailfishos/libprolog"
 license=('LGPL-2.1-only')
 depends=('glib2' 'swi-prolog')
 makedepends=('git' 'automake' 'autoconf')
-optdepends=()
-provides=("${_srcname}")
-conflicts=()
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
