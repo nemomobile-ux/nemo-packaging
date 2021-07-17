@@ -1,5 +1,5 @@
 From b08a263a58c4bd4dcc701d37cec3f7f58408f1d5 Mon Sep 17 00:00:00 2001
-From: Jozef Mlich <jmlich83@gmail.como>
+From: Jozef Mlich <jmlich83@gmail.com>
 Date: Tue, 27 Apr 2021 18:47:49 +0000
 Subject: [PATCH] remove obsolete QContact::IgnoreAccessConstraints
 
