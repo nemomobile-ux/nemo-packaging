@@ -20,17 +20,17 @@ source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {
-    cd "$srcdir/${_pkgname%-git}"
+    cd "$srcdir/${pkgname%-git}"
     git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
-    cd "$srcdir/${_pkgname%-git}"
+    cd "$srcdir/${pkgname%-git}"
     qmake-qt5 PREFIX=/usr
     make
 }
 
 package() {
-    cd "$srcdir/${_pkgname%-git}"
+    cd "$srcdir/${pkgname%-git}"
     make -j 1 INSTALL_ROOT="$pkgdir/" install
 }
