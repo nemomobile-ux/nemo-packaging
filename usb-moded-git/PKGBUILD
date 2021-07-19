@@ -6,8 +6,8 @@
 
 _pkgname=usb-moded
 pkgname=usb-moded-git
-pkgver=0.86.0+mer55.r2.g66317b7
-pkgrel=2
+pkgver=0.86.0+mer55.r3.g473b789
+pkgrel=1
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/usb-moded.git"

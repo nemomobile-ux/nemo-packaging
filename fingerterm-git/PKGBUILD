@@ -2,7 +2,7 @@
 
 pkgname=fingerterm-git
 
-pkgver=1.4.2.r0.gebcdb39
+pkgver=1.4.3.r0.g7e52271
 
 pkgrel=1
 pkgdesc="fingerterm is a terminal emulator designed for touch-based interaction, specifically for (but not limited to) use on the Nokia N9 and Jolla's Jolla device."
