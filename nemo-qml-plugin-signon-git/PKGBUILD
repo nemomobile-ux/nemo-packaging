@@ -1,4 +1,5 @@
 ## $Id$
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-signon-git
 pkgver=0.0.7.r0.gdab9736
@@ -7,7 +8,7 @@ pkgdesc="signon plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-signon"
 license=('BSD')
-depends=('qt5-base')
+depends=('signond' 'qt5-declarative')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -32,4 +33,5 @@ build() {
 package() {
     cd "$srcdir/${pkgname}"
     make -j 1 INSTALL_ROOT="$pkgdir/" install
+    rm -rf $pkgdir/opt
 }
