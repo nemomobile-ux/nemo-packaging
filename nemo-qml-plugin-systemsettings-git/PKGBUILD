@@ -17,8 +17,9 @@ provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname%-git}::git+${url}"
         '0004-try-to-use-setlocale-in-usr-lib-in-manjaro.patch'
+        '0005-setlocale-path.patch'
 )
-md5sums=('SKIP' 'SKIP')
+md5sums=('SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname%-git}"
@@ -29,6 +30,7 @@ prepare() {
     cd "$srcdir/${pkgname%-git}"
     git checkout nemomobile
     patch -p1 --input="${srcdir}/0004-try-to-use-setlocale-in-usr-lib-in-manjaro.patch"
+    patch -p1 --input="${srcdir}/0005-setlocale-path.patch"
 }
 
 build() {
