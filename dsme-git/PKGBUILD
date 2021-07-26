@@ -6,13 +6,13 @@ pkgver=0.83.1.r0.gd9c5940
 pkgrel=1
 pkgdesc="Device State Management Entity"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/dsme"
+url="https://github.com/sailfishos/dsme"
 license=('GPL')
 depends=('libngf-git' 'libiphb-git' 'mce-git' 'cryptsetup' 'libsystemd' 'libdsme>=0.66.6' 'glib2' 'systemd' 'systemd-libs')
 makedepends=('git' 'autoconf' 'automake' 'mce-headers')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/dsme.git' 'fix-dsme_server_path.patch' 'dsme.service')
+source=("${pkgname%-git}::git+${url}" 'fix-dsme_server_path.patch' 'dsme.service')
 md5sums=('SKIP' 'SKIP' 'SKIP')
 
 pkgver() {

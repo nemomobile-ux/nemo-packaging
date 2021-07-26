@@ -4,20 +4,12 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=mpris
-_branch=master
-
-_gitname=qt${_basename//-/}
-pkgname=qt5-$_basename-git
-
+pkgname=qt5-mpris-git
 pkgver=1.0.6.r0.gade1b9a
-
 pkgrel=1
 pkgdesc="Qt and QML MPRIS interface and adaptor"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/sailfishos/qtmpris"
 license=('LGPL-2.1-or-later')
 depends=('qt5-declarative' 'qt5-dbus-extended-git')
 makedepends=('git')

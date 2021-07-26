@@ -2,19 +2,14 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=libdres-ohm
-_srcname=libdres-ohm
-_branch=master
 pkgver=1.1.17.r0.ga89f56c
 pkgrel=1
 pkgdesc="Dependency resolver for OHM"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/libdres-ohm.git"
+url="https://github.com/sailfishos/libdres-ohm"
 license=('LGPL-2.1-only')
 depends=('glib2' 'ohm' 'libtrace-ohm' 'libprolog')
 makedepends=('git' 'automake' 'autoconf')
-optdepends=()
-provides=("${_srcname}")
-conflicts=()
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 

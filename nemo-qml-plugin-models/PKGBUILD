@@ -8,13 +8,13 @@ pkgver=0.2.2
 pkgrel=1
 pkgdesc="Nemo QML models plugin"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-models"
+url="https://github.com/sailfishos/nemo-qml-plugin-models.git"
 license=('BSD')
 depends=('nemo-qml-plugin-dbus' 'qt5-mlocale-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://github.com/sailfishos/nemo-qml-plugin-models.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 prepare() {

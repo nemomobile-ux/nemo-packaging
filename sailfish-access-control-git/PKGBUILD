@@ -9,13 +9,13 @@ pkgver=0.0.5.r0.gf858fed
 pkgrel=1
 pkgdesc="Sailfish Access Control library"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/sailfish-access-control"
+url="https://github.com/sailfishos/sailfish-access-control"
 license=('GPL')
 depends=('glib2')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/sailfish-access-control.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {

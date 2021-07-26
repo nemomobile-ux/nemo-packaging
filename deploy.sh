@@ -43,12 +43,13 @@ eval "$BUILD qt5-dbus-extended-git"
 eval "$BUILD qt5-mpris-git"
 eval "$BUILD glacier-music-git"
 
+
 # homescreen/de
 eval "$BUILD mce-headers-git"
 eval "$BUILD libiphb-git"
 eval "$BUILD nemo-keepalive-git"
-eval "$BUILD ssu-sysinfo-git"
 eval "$BUILD nemo-qml-plugin-devicelock-git"
+eval "$BUILD mlite"
 eval "$BUILD nemo-qml-plugin-configuration-git"
 eval "$BUILD nemo-qml-plugin-statusnotifier-git"
 eval "$BUILD qt5-iodata-git"
@@ -87,6 +88,8 @@ eval "$BUILD glacier-wayland-session"
 eval "$BUILD libcommhistory-git"
 eval "$BUILD commhistory-daemon-git"
 eval "$BUILD qmf-qt5"
+eval "$BUILD nemo-qml-plugin-accounts-git"
+eval "$BUILD nemo-qml-plugin-signon-git"
 eval "$BUILD nemo-qml-plugin-messages-git"
 eval "$BUILD mkcal-git"
 eval "$BUILD contactsd-git"
@@ -94,6 +97,9 @@ eval "$BUILD glacier-messages-git"
 eval "$BUILD glacier-contacts-git"
 eval "$BUILD voicecall"
 eval "$BUILD glacier-dialer-git"
+
+eval "$BUILD nemo-qml-plugin-email-git"
+eval "$BUILD glacier-mail-git"
 
 eval "$BUILD glacier-browser-git"
 
@@ -118,7 +124,6 @@ eval "$BUILD ohm-rule-engine"
 eval "$BUILD libdres-ohm"
 eval "$BUILD ohm-plugins-misc"
 eval "$BUILD policy-settings-common"
-
 
 eval "$BUILD fingerterm-git"
 

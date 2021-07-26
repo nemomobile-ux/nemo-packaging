@@ -6,13 +6,13 @@ pkgver=0.2.7.r0.g891d345
 pkgrel=1
 pkgdesc="Connectivity plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-connectivity.git"
+url="https://github.com/sailfishos/nemo-qml-plugin-connectivity"
 license=('BSD')
 depends=('qt5-systems' 'qt5-connman-git' 'qt5-ofono-nemo-extensions-git' )
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-connectivity.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {

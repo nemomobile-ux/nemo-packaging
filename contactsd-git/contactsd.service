@@ -1,0 +1,11 @@
+[Unit]
+Description=Contacts daemon
+After=graphical-session.target
+Requires=dbus.socket
+
+[Service]
+ExecStart=/usr/bin/contactsd
+Restart=always
+
+[Install]
+WantedBy=graphical-session-pre.target

@@ -9,13 +9,13 @@ pkgver=1.2.7.r0.gc7fd4ea
 pkgrel=1
 pkgdesc="C API for using IP Heartbeat service"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/libiphb"
+url="https://github.com/sailfishos/libiphb"
 license=('LGPL-2.1-or-later')
 depends=('dbus-glib' 'libdsme')
 makedepends=('git' 'mce-headers-git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/libiphb.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {

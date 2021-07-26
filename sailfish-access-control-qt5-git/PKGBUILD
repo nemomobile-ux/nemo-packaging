@@ -8,28 +8,28 @@ pkgver=0.0.5.r0.gf858fed
 pkgrel=1
 pkgdesc="Sailfish Access Control QML plugin"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/sailfish-access-control"
+url="https://github.com/sailfishos/sailfish-access-control"
 license=('GPL')
 depends=('qt5-declarative' 'sailfish-access-control')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/sailfish-access-control.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {
-	cd "$srcdir/${_pkgname%-git}/qt"
+	cd "$srcdir/${pkgname%-git}"
 	git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
-	cd "$srcdir/${_pkgname%-git}/qt"
+	cd "$srcdir/${pkgname%-git}"
 	qmake PREFIX=/usr
 	make
 }
 
 package() {
-	cd "$srcdir/${_pkgname%-git}/qt"
+	cd "$srcdir/${pkgname%-git}"
 	make -j 1 INSTALL_ROOT="$pkgdir/" install
 }
 

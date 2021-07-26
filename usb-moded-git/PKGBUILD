@@ -1,21 +1,22 @@
 ## $Id$
 # Maintainer: TheKit <nekit1000 at gmail.com>
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 _pkgname=usb-moded
 pkgname=usb-moded-git
-pkgver=0.86.0+mer55.r2.g66317b7
-pkgrel=2
+pkgver=0.86.0+mer55.r3.g473b789
+pkgrel=1
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/usb-moded"
+url="https://github.com/nemomobile-ux/usb-moded.git"
 license=('GPL')
-depends=('libdsme' 'dbus-glib' 'udev' 'kmod' 'ssu-sysinfo' 'sailfish-access-control' 'dhcp' 'net-tools')
+depends=('libdsme' 'dbus-glib' 'udev' 'kmod' 'sailfish-access-control' 'dhcp' 'net-tools')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/usb-moded.git' 'dhcpd.conf')
+source=("${pkgname%-git}::git+${url}" 'dhcpd.conf')
 md5sums=('SKIP' 'SKIP')
 
 pkgver() {
@@ -37,7 +38,6 @@ build() {
 	--enable-debug \
 	--enable-connman \
 	--enable-systemd \
-	--enable-mer-ssu \
 	--enable-sailfish-access-control
     make
 }

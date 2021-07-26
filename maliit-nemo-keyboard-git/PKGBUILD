@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.99.2.r12.g7eb4c0fa
+pkgver=0.99.2.r14.g15d49247
 
 pkgrel=1
 pkgdesc="Contains the reference input method plugins, such as the Maliit Keyboard. "

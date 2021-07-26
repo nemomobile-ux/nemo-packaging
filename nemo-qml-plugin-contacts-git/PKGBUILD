@@ -3,20 +3,12 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=nemo-qml-plugin-contacts
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
+pkgname=nemo-qml-plugin-contacts-git
 pkgver=0.3.20.r0.gdfdedb9
-
 pkgrel=1
 pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://github.com/sailfishos/nemo-qml-plugin-contacts"
 license=('BSD-3-Clause')
 depends=('libphonenumber' 'qt5-mlocale-git' 'mce-git' 'mce-headers-git' 'qt5-contacts-sqlite-extensions-git' 'buteo-sync-plugin-carddav')
 makedepends=('git' 'qt5-tools')

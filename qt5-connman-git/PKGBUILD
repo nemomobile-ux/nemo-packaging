@@ -11,27 +11,27 @@ pkgver=20210114.f5b49d8
 pkgrel=1
 pkgdesc='Qt Quick wrappers for connman'
 arch=('x86_64' 'aarch64')
-url='https://git.sailfishos.org/mer-core/libconnman-qt'
+url="https://github.com/sailfishos/libconnman-qt"
 license=('GPL')
 provides=('libconnman-qt' 'qt5-connman')
 conflicts=('libconnman-qt' 'qt5-connman')
 depends=('qt5-declarative' 'connman')
 makedepends=('git' 'qt5-tools')
-source=("git+https://git.sailfishos.org/mer-core/libconnman-qt.git")
+source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
 pkgver () {
-  cd ${srcdir}/libconnman-qt
+  cd ${srcdir}/${pkgname}
   echo "$(git log -1 --format="%cd" --date=short | tr -d '-').$(git log -1 --format="%h")"
 }
 
 build() {
-    cd ${srcdir}/libconnman-qt
+    cd ${srcdir}/${pkgname}
     qmake
     make
 }
 
 package() {
-    cd ${srcdir}/libconnman-qt
+    cd ${srcdir}/${pkgname}
     make -j 1 INSTALL_ROOT="$pkgdir" install 
 }

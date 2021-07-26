@@ -16,30 +16,30 @@ conflicts=(qt5-pim)
 provides=(qt5-pim)
 depends=(qt5-declarative)
 makedepends=(git)
-source=("git+https://code.qt.io/qt/qtpim.git" "0001-Patch-module-version.patch")
+source=("${pkgname}::git+${url}" "0001-Patch-module-version.patch")
 sha512sums=('SKIP'
 '6e7d43f36bbf23dedd860727259a4bf5dfad8e8548a3d4a19c974b9afed87ebb25264cc08572bdbb0f703c95ae1a5f6a7a5ca8cd742feaf46440fe7c282535d2')
 
 prepare() {
-  mkdir -p build
-  cd qtpim
+  cd "${srcdir}/${pkgname}"
   git checkout 8fec622c
   patch -p1 --input="${srcdir}/0001-Patch-module-version.patch"
 }
 
 build() {
-  cd build
-  qmake-qt5 ../qtpim
+  mkdir -p "${srcdir}/${pkgname}/build"
+  cd "${srcdir}/${pkgname}/build"
+  qmake-qt5 ..
   make
 }
 
 check() {
-  cd build
+  cd "${srcdir}/${pkgname}/build"
   make check TESTARGS="-silent"
 }
 
 package() {
-  cd build
+  cd "${srcdir}/${pkgname}/build"
   make -j 1 INSTALL_ROOT="$pkgdir/" install
 
   # Drop QMAKE_PRL_BUILD_DIR because it references the build dir

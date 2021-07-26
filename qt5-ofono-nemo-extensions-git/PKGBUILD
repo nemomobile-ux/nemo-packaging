@@ -3,20 +3,13 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=ofono
-_branch=master
 
-_gitname=libq${_basename}ext
-pkgname=qt5-$_basename-nemo-extensions-git
-
+pkgname=qt5-ofono-nemo-extensions-git
 pkgver=1.0.27.r0.gebe45e0
-
-pkgrel=4
+pkgrel=1
 pkgdesc="A Qt library for accessing nemomobile specific ofono extensions"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/sailfishos/libqofonoext"
 license=('LGPL-2.1-only')
 depends=('libqofono-qt5>=0.101')
 makedepends=('git')
@@ -32,7 +25,7 @@ pkgver() {
 
 build() {
     cd "${srcdir}/${pkgname}"
-    qmake-qt5
+    qmake
     make
 }
 

@@ -2,19 +2,14 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=ohm-plugins-misc
-_srcname=ohm-plugins-misc
-_branch=master
 pkgver=1.7.0.r0.gef2c89c
 pkgrel=1
 pkgdesc="A miscallaneous set of OHM plugins"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/ohm-plugins-misc.git"
+url="https://github.com/sailfishos/ohm-plugins-misc"
 license=('LGPL-2.1-only')
 depends=('glib2' 'ohm' 'libdres-ohm')
 makedepends=('git' 'automake' 'autoconf')
-optdepends=()
-provides=("${_srcname}")
-conflicts=()
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 

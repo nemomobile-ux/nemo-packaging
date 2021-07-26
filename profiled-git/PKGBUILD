@@ -3,18 +3,15 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=profiled-git
-_srcname=profiled
 pkgver=1.0.12.r0.g32b02ae
 pkgrel=1
 pkgdesc="Sailfish Profile daemon, manages user settings"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/profiled"
+url="https://github.com/sailfishos/profiled"
 license=('BSD')
 depends=('dbus-glib')
 makedepends=('git' 'doxygen')
-optdepends=()
-provides=("${_srcname}")
-conflicts=()
+provides=("${pkgname%-git}")
 source=(
   "${pkgname}::git+${url}"
 )
@@ -41,7 +38,7 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make install
-  mv /tmp/test-${_srcname}/usr ${pkgdir}
-  mv /tmp/test-${_srcname}/etc ${pkgdir}
+  mv /tmp/test-profiled/usr ${pkgdir}
+  mv /tmp/test-profiled/etc ${pkgdir}
 }
 

@@ -9,13 +9,13 @@ pkgver=0.3.6.r0.gf10be30
 pkgrel=1
 pkgdesc="Device lock plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/nemo-qml-plugin-devicelock"
+url="https://github.com/sailfishos/nemo-qml-plugin-devicelock"
 license=('BSD-3-Clause')
 depends=('nemo-qml-plugin-dbus' 'nemo-keepalive-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/nemo-qml-plugin-devicelock.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {
@@ -42,4 +42,7 @@ package() {
     mkdir -p usr/lib/${pkgname}
     mv usr/libexec/* usr/lib/${pkgname}
     rm -rf usr/libexec
+
+    sed -i 's|ExecStart=/usr/libexec/nemo-devicelock|ExecStart=/usr/lib/nemo-qml-plugin-devicelock-git/nemo-devicelock|' "${pkgdir}/usr/lib/systemd/system/nemo-devicelock.service"
+
 }

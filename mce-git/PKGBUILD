@@ -4,8 +4,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=mce-git
-pkgver=1.106.7.r0.g9c6a089
-pkgrel=2
+pkgver=1.107.0.r0.ga394707
+pkgrel=1
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/mce.git"
@@ -14,7 +14,7 @@ depends=('libngf-git' 'libiphb-git')
 makedepends=('git' 'doxygen' 'libdsme' 'libsystemd' 'usb-moded' 'mce-headers')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/mce.git' '0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch')
+source=("${pkgname%-git}::git+${url}" '0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch')
 md5sums=('SKIP' 'SKIP')
 
 pkgver() {

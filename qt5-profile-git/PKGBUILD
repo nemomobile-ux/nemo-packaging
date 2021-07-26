@@ -3,17 +3,16 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt5-profile-git
-_srcname=qt5-profile
 pkgver=0.35.5.r0.gd10d69c
 pkgrel=1
 pkgdesc="Qt5 library for profiles"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/libprofile-qt"
+url="https://github.com/sailfishos/libprofile-qt"
 license=('BSD')
 depends=('qt5-base')
 makedepends=('git' 'sailfish-access-control-git')
 optdepends=()
-provides=("${_srcname}")
+provides=("${pkgname%-git}")
 conflicts=()
 source=(
   "${pkgname}::git+${url}.git")

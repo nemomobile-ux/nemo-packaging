@@ -3,20 +3,12 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="git.sailfishos.org"
-_project=mer-core
-_basename=contacts-sqlite
-_branch=master
-
-_gitname=qt${_basename}
-pkgname=qt5-$_basename-extensions-git
-
+pkgname=qt5-contacts-sqlite-extensions-git
 pkgver=0.3.14.r0.gcff793e
-
 pkgrel=1
 pkgdesc="SQLite-based plugin for QtPIM Contacts"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://github.com/sailfishos/qtcontacts-sqlite"
 license=('BSD-3-Clause')
 depends=('qt5-pim-git' 'mlite')
 makedepends=('git')

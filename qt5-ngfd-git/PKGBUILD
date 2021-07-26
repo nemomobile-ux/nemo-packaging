@@ -9,24 +9,24 @@ pkgver=0.7.0.r0.gac87734
 pkgrel=1
 pkgdesc="Qt-based client library for Non-Graphic Feedback daemon"
 arch=('x86_64' 'aarch64')
-url="https://git.sailfishos.org/mer-core/libngf-qt"
+url="https://github.com/sailfishos/libngf-qt"
 license=('GPL')
 depends=('qt5-declarative' 'libngf')
 makedepends=('git')
 provides=("${_pkgname%-git}" "${pkgname%-git}")
 conflicts=("${_pkgname%-git}" "${pkgname%-git}")
-source=('git+https://git.sailfishos.org/mer-core/libngf-qt.git')
+source=("${pkgname%-git}::git+${url}")
 md5sums=('SKIP')
 
 pkgver() {
-    cd "$srcdir/${_pkgname%-git}"
+    cd "$srcdir/${pkgname%-git}"
     git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
-    cd "$srcdir/${_pkgname%-git}"
+    cd "$srcdir/${pkgname%-git}"
     qmake PREFIX=/usr
-	
+
     # Hack for PREFIX path not being passed to src subproject for some reason
     cd src
     qmake PREFIX=/usr
@@ -36,7 +36,7 @@ build() {
 }
 
 package() {
-    cd "$srcdir/${_pkgname%-git}"
+    cd "$srcdir/${pkgname%-git}"
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     # Remove tests
     rm -rf "$pkgdir/opt"
