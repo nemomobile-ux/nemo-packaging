@@ -13,14 +13,14 @@ _branch=master
 _gitname=qt$_basename
 pkgname=qt5-quickcontrols-nemo-examples-git
 
-pkgver=5.6.r11.gb55640d
+pkgver=5.6.r12.g2bf729c
 
 pkgrel=1
 pkgdesc="Nemomobile Qt Quick Controls"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.1-only AND Apache-2.0')
-depends=('qt5-quickcontrols-nemo' 'qt5-glacier-app')
+depends=('qt5-quickcontrols-nemo' 'qt5-glacier-app' 'nemo-qml-plugin-statusnotifier-git')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
