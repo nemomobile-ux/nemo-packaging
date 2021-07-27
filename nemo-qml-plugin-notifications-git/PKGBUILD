@@ -4,7 +4,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-notifications-git
-pkgver=1.2.12.r0.g218f5da
+pkgver=1.2.14.r0.g2fd616c
 pkgrel=1
 pkgdesc="Nemo QML notifications plugin"
 arch=('x86_64' 'aarch64')
