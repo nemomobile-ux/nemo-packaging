@@ -15,10 +15,8 @@ depends=('qt5-systems' 'qt5-usb-moded-git' 'profiled-git' 'qt5-timed-git' 'libsa
 makedepends=('git' 'qt5-tools' 'mce-headers-git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}"
-        '0004-try-to-use-setlocale-in-usr-lib-in-manjaro.patch'
-)
-md5sums=('SKIP' 'SKIP')
+source=("${pkgname%-git}::git+${url}")
+md5sums=('SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname%-git}"
@@ -28,7 +26,6 @@ pkgver() {
 prepare() {
     cd "$srcdir/${pkgname%-git}"
     git checkout nemomobile
-    patch -p1 --input="${srcdir}/0004-try-to-use-setlocale-in-usr-lib-in-manjaro.patch"
 }
 
 build() {
