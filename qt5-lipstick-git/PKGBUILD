@@ -13,9 +13,7 @@ url="https://github.com/nemomobile-ux/lipstick.git"
 license=('LGPL-2.1-only')
 depends=('qt5-sensors' 'qt5-wayland' 'nemo-keepalive-git' 'qt5-resource-git' 'libsystemd' 'mce-headers-git' 'qt5-mce-git' 'qt5-ngfd-git' 'nemo-qml-plugin-devicelock-git' 'nemo-qml-plugin-systemsettings-git')
 makedepends=('git' 'qt5-tools' 'doxygen' 'graphviz')
-optdepends=()
-provides=("${_srcname}")
-conflicts=()
+provides=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
