@@ -6,7 +6,7 @@
 
 pkgname=qt5-lipstick-git
 pkgver=0.40
-pkgrel=2
+pkgrel=3
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/lipstick.git"
