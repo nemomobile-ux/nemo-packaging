@@ -2,16 +2,17 @@
 # Contributor: TheKit <nekit1000 at gmail.com>
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt5-timed-git
 pkgver=3.6.13.r0.g19cbb69
-pkgrel=1
+pkgrel=2
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/timed"
 license=('LGPL-2.1-or-later')
-depends=('sailfish-access-control-git' 'qt5-iodata-git')
+depends=('sailfish-access-control-git' 'qt5-iodata-git' 'tzdata-timed')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -48,4 +49,17 @@ package() {
 
   # Remove tests
   rm -rf "$pkgdir/opt"
+  #add some dir
+  install -d ${pkgdir}/var/lib/timed
+  touch ${pkgdir}/var/lib/timed/localtime
+  install -d ${pkgdir}/var/lib/timed/shared_events
+  install -d ${pkgdir}/var/lib/timed/shared_settings
+
+  # Make /etc/localtime a link to /var/lib/timed/localtime to make system time zone follow timed.
+  install -d ${pkgdir}/etc/
+  ln -sf /var/lib/timed/localtime ${pkgdir}/etc//localtime
+
+  #setup services
+  install -d ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+  ln -s ../timed-qt5.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
 }
