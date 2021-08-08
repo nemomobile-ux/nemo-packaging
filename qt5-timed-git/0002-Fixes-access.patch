@@ -1,0 +1,22 @@
+diff --git a/src/server/timed.cpp b/src/server/timed.cpp
+index 2c535e9..43fb42d 100644
+--- a/src/server/timed.cpp
++++ b/src/server/timed.cpp
+@@ -73,7 +73,7 @@
+  * - Modify files used for storing shared clock settings
+  * - Request settings changes over D-Bus
+  */
+-#define GROUP_SAILFISH_DATETIME "sailfish-datetime"
++#define GROUP_SAILFISH_DATETIME "sys"
+ 
+ /* Supplementary group required for accessing shared alarms
+  *
+@@ -81,7 +81,7 @@
+  * - Access files used for storing shared alarm events
+  * - Schedule an alarm with EventFlags::Shared bit set
+  */
+-#define GROUP_SAILFISH_ALARMS "sailfish-alarms"
++#define GROUP_SAILFISH_ALARMS "sys"
+ 
+ 
+ Timed::Timed(int ac, char **av)
