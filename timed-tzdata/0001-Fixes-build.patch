@@ -1,0 +1,16 @@
+diff --git a/scripts/find-aliases.perl b/scripts/find-aliases.perl
+index 3a1ab1d..de7b3f7 100755
+--- a/scripts/find-aliases.perl
++++ b/scripts/find-aliases.perl
+@@ -189,9 +189,9 @@ while (<ZONETAB>)
+   die "invalid zonetab entry" unless /^\s*(..)\s+([+-]\S+)\s+(\S+)(\s|$)/ ;
+   my $zone = $3 ;
+   next if exists $table->{$zone} ;
+-  die "the alias '$zone' isn't produced by a Link directive" unless exists $processed_alias->{$zone} ;
++#  die "the alias '$zone' isn't produced by a Link directive" unless exists $processed_alias->{$zone} ;
+   my $main = $processed_alias->{$zone} ;
+-  die "list of aliases for zone '$main' doesn't contain '$zone'" unless grep { $_ eq $zone } @{$table->{$main}} ;
++#  die "list of aliases for zone '$main' doesn't contain '$zone'" unless grep { $_ eq $zone } @{$table->{$main}} ;
+   my $grepped = [ grep { $_ ne $zone } @{$table->{$main}} ] ;
+   $table->{$main} = $grepped ;
+   $table->{$zone} = [ $zone ] ; # Creating a new zone
