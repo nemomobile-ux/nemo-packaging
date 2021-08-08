@@ -1,7 +1,7 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-pkgname=timed-tzdata
+pkgname=tzdata-timed-git
 pkgver=2017b.3.r0.g9068095
 pkgrel=1
 pkgdesc="Data files for the time daemon, timed"
