@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-signon-git
-pkgver=0.0.7.r0.gdab9736
+pkgver=0.0.9.r0.g0db5900
 pkgrel=1
 pkgdesc="signon plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
