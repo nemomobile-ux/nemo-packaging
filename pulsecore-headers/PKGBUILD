@@ -2,13 +2,13 @@
 
 pkgname=pulsecore-headers
 pkgdesc="A featureful, general-purpose sound server"
-pkgver=14.2
+pkgver=15.0
 pkgrel=1
 arch=(any)
 url="https://www.freedesktop.org/wiki/Software/PulseAudio/"
 license=(GPL)
 makedepends=('git' 'libpulse')
-_commit=6a487c5244563f49a025088de3510c80824fc99e  # tags/v14.2^0
+_commit=6329a2498eb038f8a9537888280a62b00a93f68e  # tags/v15.0^0
 source=("${pkgname}::git+https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git#commit=$_commit" "pulsecore.pc")
 sha256sums=('SKIP' 'SKIP')
 

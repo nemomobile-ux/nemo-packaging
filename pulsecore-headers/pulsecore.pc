@@ -7,6 +7,6 @@ pulsetestdir=${libexecdir}/pulse-tests
 
 Name: pulsecore
 Description: Module building interface for pulseaudio
-Version: 14.2
-Libs: -L${libdir} -L${libdir}/pulseaudio -L${libdir}/pulse-14.2/modules -lpulsecore-14.2 -lpulsecommon-14.2 -lpulse 
+Version: 15.0
+Libs: -L${libdir} -L${libdir}/pulseaudio -L${libdir}/pulse-15.0/modules -lpulsecore-15.0 -lpulsecommon-15.0 -lpulse 
 Cflags: -D_REENTRANT -D__INCLUDED_FROM_PULSE_AUDIO -DPA_DEFAULT_CONFIG_DIR=\"/etc/pulse\" -I${includedir}
