@@ -51,11 +51,11 @@ package() {
   # Remove tests
   rm -rf "$pkgdir/opt"
   #add some dir
-  install -d 777 ${pkgdir}/var/lib/timed
+  install -d -m 0777 ${pkgdir}/var/lib/timed
   touch ${pkgdir}/var/lib/timed/localtime
   chmod 666 ${pkgdir}/var/lib/timed/localtime
-  install -d 777 ${pkgdir}/var/lib/timed/shared_events
-  install -d 777 ${pkgdir}/var/lib/timed/shared_settings
+  install -d -m 0777 ${pkgdir}/var/lib/timed/shared_events
+  install -d -m 0777 ${pkgdir}/var/lib/timed/shared_settings
 
   # Make /etc/localtime a link to /var/lib/timed/localtime to make system time zone follow timed.
   install -d ${pkgdir}/etc/
