@@ -1,0 +1,17 @@
+diff --git a/configure.ac b/configure.ac
+index 357cad0..de72b6d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -170,9 +170,9 @@ AS_IF([test "$pulseaudio_cv__Bool" = "yes"], [
+ #LT_INIT([dlopen win32-dll disable-static])
+ AC_PROG_LIBTOOL
+ 
+-PKG_CHECK_MODULES([PULSEAUDIO], [libpulse >= 5.0 pulsecore >= 5.0])
+-AC_SUBST(PULSEAUDIO_CFLAGS)
+-AC_SUBST(PULSEAUDIO_LIBS)
++PKG_CHECK_MODULES([LIBPULSE], [libpulse >= 5.0])
++AC_SUBST(LIBPULSE_CFLAGS)
++AC_SUBST(LIBPULSE_LIBS)
+ 
+ PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.2])
+ AC_SUBST(DBUS_CFLAGS)

@@ -3,15 +3,15 @@
 
 pkgname=pulseaudio-module-keepalive
 pkgver=1.0.1.r0.g3102ee5
-pkgrel=1
+pkgrel=2
 pkgdesc="PulseAudio keepalive module"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/pulseaudio-module-keepalive"
 license=('LGPLv2+')
 depends=('libpulse' 'pulseaudio')
 makedepends=('git' 'automake' 'autoconf' 'pulsecore-headers')
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
+source=("${pkgname}::git+${url}" "0001-fix_build.patch")
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -23,6 +23,7 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
+    patch -p1 --input="${srcdir}/0001-fix_build.patch"
     ./bootstrap.sh
 }
 
@@ -31,9 +32,7 @@ build() {
   ./configure --prefix=/usr \
     --sysconfdir=/etc \
     --sbindir=/usr/bin \
-    --disable-static \
-    --enable-maintainer-mode \
-    --disable-processing
+    --disable-static
     make
 }
 
@@ -41,4 +40,3 @@ package() {
   cd "${srcdir}/${pkgname}"
   make DESTDIR="${pkgdir}" install
 }
- 
