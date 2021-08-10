@@ -1,0 +1,148 @@
+diff --git a/configure.ac b/configure.ac
+index 3415830..295bfec 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -20,15 +20,15 @@ AC_PROG_CC_C99
+ AM_PROG_CC_C_O
+ AC_PROG_GCC_TRADITIONAL
+ 
+-m4_define(pa_major, `echo $VERSION | cut -d. -f1 | cut -d- -f1`)
+-m4_define(pa_minor, `echo $VERSION | cut -d. -f2 | cut -d- -f1`)
+-m4_define(pa_module_version, `echo $VERSION | cut -d. -f3 | cut -d- -f1`)
++m4_define(pa_major, `echo 15`)
++m4_define(pa_minor, `echo 0`)
++m4_define(pa_module_version, `echo 15.0`)
+ 
+ AC_SUBST(PA_MAJOR, pa_major)
+ AC_SUBST(PA_MAJORMINOR, pa_major.pa_minor)
+ AC_SUBST(PA_MODULE_VERSION, pa_module_version)
+ 
+-DESIRED_FLAGS="-Wall -W -Wextra -pedantic -pipe -Wno-long-long -Winline -Wvla -Wno-overlength-strings -Wunsafe-loop-optimizations -Wundef -Wformat=2 -Wlogical-op -Wsign-compare -Wpacked -Wformat-security -Wmissing-include-dirs -Wformat-nonliteral -Wold-style-definition -Wpointer-arith -Winit-self -Wfloat-equal -Wmissing-prototypes -Wstrict-prototypes -Wredundant-decls -Wmissing-declarations -Wmissing-noreturn -Wshadow -Wendif-labels -Wstrict-aliasing=2 -Wwrite-strings -Wno-unused-parameter -ffast-math -Wp,-D_FORTIFY_SOURCE=2 -fno-common -fdiagnostics-show-option" # PulseAudio 0.9.15 usess same + -Wcast-align -Wdeclaration-after-statement
++DESIRED_FLAGS="-Wall -W -Wextra -pedantic -pipe -Wno-long-long -Winline -Wvla -Wno-overlength-strings -Wunsafe-loop-optimizations -Wundef -Wformat=2 -Wlogical-op -Wsign-compare -Wpacked -Wformat-security -Wmissing-include-dirs -Wformat-nonliteral -Wold-style-definition -Wpointer-arith -Winit-self -Wfloat-equal -Wmissing-prototypes -Wstrict-prototypes -Wredundant-decls -Wmissing-declarations -Wmissing-noreturn -Wshadow -Wendif-labels -Wstrict-aliasing=2 -Wwrite-strings -Wno-unused-parameter -ffast-math -Wp,-D_FORTIFY_SOURCE=2 -D__INCLUDED_FROM_PULSE_AUDIO -fno-common -fdiagnostics-show-option" # PulseAudio 0.9.15 usess same + -Wcast-align -Wdeclaration-after-statement
+ 
+ for flag in $DESIRED_FLAGS ; do
+   CC_CHECK_CFLAGS([$flag], [CFLAGS="$CFLAGS $flag"])
+@@ -172,9 +172,9 @@ AC_PROG_LIBTOOL
+ 
+ AC_DEFINE_UNQUOTED([PULSEAUDIO_VERSION], [${PA_MAJOR}], [PulseAudio version.])
+ 
+-PKG_CHECK_MODULES([PULSEAUDIO], [libpulse >= 2.1 pulsecore >= 2.1 ])
+-AC_SUBST(PULSEAUDIO_CFLAGS)
+-AC_SUBST(PULSEAUDIO_LIBS)
++PKG_CHECK_MODULES([LIBPULSE], [libpulse >= 5.0])
++AC_SUBST(LIBPULSE_CFLAGS)
++AC_SUBST(LIBPULSE_LIBS)
+ 
+ PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
+ AC_SUBST(CHECK_CFLAGS)
+diff --git a/src/mainvolume/Makefile.am b/src/mainvolume/Makefile.am
+index d9b6314..a08ef17 100644
+--- a/src/mainvolume/Makefile.am
++++ b/src/mainvolume/Makefile.am
+@@ -10,7 +10,7 @@ modlibexec_LTLIBRARIES = module-meego-mainvolume.la
+ module_meego_mainvolume_la_SOURCES = mainvolume.c mainvolume.h listening-watchdog.c listening-watchdog.h module-meego-mainvolume.c
+ 
+ module_meego_mainvolume_la_LDFLAGS = -module -avoid-version -Wl,-no-undefined
+-module_meego_mainvolume_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD)
++module_meego_mainvolume_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD) -lpulsecore-15.0 -lpulsecommon-15.0 -L/usr/lib/pulseaudio
+ module_meego_mainvolume_la_CFLAGS = $(AM_CFLAGS) -DPA_MODULE_NAME=module_meego_mainvolume
+ 
+ SUBDIRS = tests
+diff --git a/src/mainvolume/module-meego-mainvolume.c b/src/mainvolume/module-meego-mainvolume.c
+index 906c9c9..1db8aa0 100644
+--- a/src/mainvolume/module-meego-mainvolume.c
++++ b/src/mainvolume/module-meego-mainvolume.c
+@@ -27,6 +27,7 @@
+ #include <pulsecore/core.h>
+ #include <pulsecore/core-error.h>
+ #include <pulsecore/module.h>
++#include <pulsecore/macro.h>
+ #include <pulsecore/modargs.h>
+ #include <pulsecore/core-util.h>
+ #include <pulsecore/protocol-dbus.h>
+@@ -76,6 +77,7 @@ static void dbus_signal_media_state(struct mv_userdata *u);
+ 
+ static void check_notifier(struct mv_userdata *u);
+ 
++#define PA_DEFAULT_CONFIG_DIR "/etc/pulse"
+ #define DEFAULT_LISTENING_NOTIFIER_CONF_FILE PA_DEFAULT_CONFIG_DIR PA_PATH_SEP "mainvolume-listening-time-notifier.conf"
+ 
+ #define PROP_CALL_STEPS "x-nemo.mainvolume.call"
+diff --git a/src/music/Makefile.am b/src/music/Makefile.am
+index 06b9ccf..3821612 100644
+--- a/src/music/Makefile.am
++++ b/src/music/Makefile.am
+@@ -14,5 +14,5 @@ modlibexec_LTLIBRARIES = module-meego-music.la
+ module_meego_music_la_SOURCES = module-meego-music.c
+ 
+ module_meego_music_la_LDFLAGS = -module -avoid-version -Wl,-no-undefined -Wl,-z,noexecstack
+-module_meego_music_la_LIBADD = -lm $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD) $(PULSEAUDIO_LIBS)
++module_meego_music_la_LIBADD = -lm $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD) $(PULSEAUDIO_LIBS) -lpulsecore-15.0 -lpulsecommon-15.0 -L/usr/lib/pulseaudio
+ module_meego_music_la_CFLAGS = $(AM_CFLAGS) -DPA_MODULE_NAME=module_meego_music
+diff --git a/src/parameters/Makefile.am b/src/parameters/Makefile.am
+index 7cde7e0..bf87ace 100644
+--- a/src/parameters/Makefile.am
++++ b/src/parameters/Makefile.am
+@@ -8,5 +8,5 @@ module_meego_parameters_la_SOURCES = module-meego-parameters.c \
+ 	parameters.c parameters.h
+ 
+ module_meego_parameters_la_LDFLAGS = -module -avoid-version -Wl,-no-undefined
+-module_meego_parameters_la_LIBADD = $(AM_LIBADD)
++module_meego_parameters_la_LIBADD = $(AM_LIBADD) -lpulsecore-15.0 -lpulsecommon-15.0 -L/usr/lib/pulseaudio
+ module_meego_parameters_la_CFLAGS = $(AM_CFLAGS) -DPA_MODULE_NAME=module_meego_parameters
+diff --git a/src/record/Makefile.am b/src/record/Makefile.am
+index 1606303..b6733d2 100644
+--- a/src/record/Makefile.am
++++ b/src/record/Makefile.am
+@@ -11,5 +11,5 @@ modlibexec_LTLIBRARIES = module-meego-record.la
+ module_meego_record_la_SOURCES = module-meego-record.c
+ 
+ module_meego_record_la_LDFLAGS = -module -avoid-version -Wl,-no-undefined -Wl,-z,noexecstack
+-module_meego_record_la_LIBADD = $(AM_LIBADD) $(PULSEAUDIO_LIBS) -lm
++module_meego_record_la_LIBADD = $(AM_LIBADD) $(PULSEAUDIO_LIBS) -lm -lpulsecore-15.0 -lpulsecommon-15.0 -L/usr/lib/pulseaudio
+ module_meego_record_la_CFLAGS = $(AM_CFLAGS) -DPA_MODULE_NAME=module_meego_record
+diff --git a/src/sidetone/Makefile.am b/src/sidetone/Makefile.am
+index b4f02b7..5ee5e0d 100644
+--- a/src/sidetone/Makefile.am
++++ b/src/sidetone/Makefile.am
+@@ -15,5 +15,5 @@ module_meego_sidetone_la_SOURCES = \
+ 	sidetone-args.c sidetone-args.h
+ 
+ module_meego_sidetone_la_LDFLAGS = -module -avoid-version -Wl,-no-undefined
+-module_meego_sidetone_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD)
++module_meego_sidetone_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD) -lpulsecore-15.0 -lpulsecommon-15.0 -L/usr/lib/pulseaudio
+ module_meego_sidetone_la_CFLAGS = $(AM_CFLAGS) -DPA_MODULE_NAME=module_meego_sidetone
+diff --git a/src/stream-restore-nemo/Makefile.am b/src/stream-restore-nemo/Makefile.am
+index a38c673..8d78ee0 100644
+--- a/src/stream-restore-nemo/Makefile.am
++++ b/src/stream-restore-nemo/Makefile.am
+@@ -11,4 +11,4 @@ modlibexec_LTLIBRARIES = module-stream-restore-nemo.la
+ module_stream_restore_nemo_la_SOURCES = module-stream-restore-nemo.c
+ module_stream_restore_nemo_la_LDFLAGS = -module -avoid-version -Wl,-no-undefined
+ module_stream_restore_nemo_la_CFLAGS = $(AM_CFLAGS) -DPA_MODULE_NAME=module_stream_restore_nemo
+-module_stream_restore_nemo_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD) -L$(libdir)/pulse-$(PA_MAJORMINOR)/modules -lprotocol-native
++module_stream_restore_nemo_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD) -L$(libdir)/pulse-$(PA_MAJORMINOR)/modules -lprotocol-native -lpulsecore-15.0 -lpulsecommon-15.0 -L/usr/lib/pulseaudio
+diff --git a/src/stream-restore-nemo/module-stream-restore-nemo.c b/src/stream-restore-nemo/module-stream-restore-nemo.c
+index bcf061d..e123e52 100644
+--- a/src/stream-restore-nemo/module-stream-restore-nemo.c
++++ b/src/stream-restore-nemo/module-stream-restore-nemo.c
+@@ -75,6 +75,7 @@ PA_MODULE_USAGE(
+         "sink_volume_table=<filename> "
+         "use_voice=<true/false use voice module for mode detection");
+ 
++#define PA_DEFAULT_CONFIG_DIR "/etc/pulse"
+ #define SAVE_INTERVAL (10 * PA_USEC_PER_SEC)
+ #define IDENTIFICATION_PROPERTY "module-stream-restore.id"
+ 
+diff --git a/src/test/Makefile.am b/src/test/Makefile.am
+index bc294dc..633e77c 100644
+--- a/src/test/Makefile.am
++++ b/src/test/Makefile.am
+@@ -14,6 +14,6 @@ modlibexec_LTLIBRARIES = module-meego-test.la
+ module_meego_test_la_SOURCES = module-meego-test.c
+ 
+ module_meego_test_la_LDFLAGS = -module -avoid-version -Wl,-no-undefined
+-module_meego_test_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD)
++module_meego_test_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD) -lpulsecore-15.0 -lpulsecommon-15.0 -L/usr/lib/pulseaudio
+ module_meego_test_la_CFLAGS = $(AM_CFLAGS) -DPA_MODULE_NAME=module_meego_test
+ 

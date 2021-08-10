@@ -3,15 +3,15 @@
 
 pkgname=pulseaudio-modules-nemo
 pkgver=14.2.30.r0.gd0dfdc3
-pkgrel=1
+pkgrel=2
 pkgdesc="PulseAudio modules for Nemo"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/pulseaudio-modules-nemo"
 license=('LGPLv2+')
 depends=('libpulse' 'alsa-lib' 'pulseaudio')
 makedepends=('git' 'automake' 'autoconf' 'pulsecore-headers' 'check')
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
+source=("${pkgname}::git+${url}"  "0001-fix_build.patch")
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -23,6 +23,7 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
+    patch -p1 --input="${srcdir}/0001-fix_build.patch"
     ./bootstrap.sh
 }
 
