@@ -10,7 +10,7 @@ pkgname=$_basename-git
 
 pkgver=0.99.2.r18.g89f1e862
 
-pkgrel=1
+pkgrel=2
 pkgdesc="Contains the reference input method plugins, such as the Maliit Keyboard. "
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
@@ -19,8 +19,8 @@ depends=('maliit-framework')
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
+source=("${pkgname}::git+${url}" "nemo-keyboard.service")
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -40,4 +40,7 @@ build() {
 
 package() {
     make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
+    mkdir -p $pkgdir/usr/lib/systemd/user/graphical-session.target.wants/
+    cp ${srcdir}/nemo-keyboard.service $pkgdir/usr/lib/systemd/user/
+    ln -s ../nemo-keyboard.service $pkgdir/usr/lib/systemd/user/graphical-session.target.wants/
 }
