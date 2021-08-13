@@ -25,6 +25,7 @@ fi
 # apps
 eval "$BUILD google-opensans-fonts"
 eval "$BUILD nemo-theme-glacier-git"
+eval "$BUILD nemo-theme-openmoko-git"
 eval "$BUILD maliit-nemo-keyboard-git"
 eval "$BUILD qt5-quickcontrols-nemo-git"
 eval "$BUILD qt5-glacier-app-git"
