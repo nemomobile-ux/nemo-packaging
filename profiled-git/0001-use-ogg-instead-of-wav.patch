@@ -1,0 +1,81 @@
+From b1cbbbcb913097d19145fd6e69bddf3ed51c429d Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 13 Aug 2021 08:52:09 +0000
+Subject: [PATCH] use ogg instead of wav
+
+---
+ ini/10.meego_default.ini | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/ini/10.meego_default.ini b/ini/10.meego_default.ini
+index 1f0fda4..85b1731 100644
+--- a/ini/10.meego_default.ini
++++ b/ini/10.meego_default.ini
+@@ -24,19 +24,19 @@ calendar.alarm.enabled       = BOOLEAN
+ 
+ [fallback]
+ 
+-ringing.alert.tone           = ring-1.wav
++ringing.alert.tone           = ring-1.ogg
+ ringing.alert.type           = Ringing
+ ringing.alert.volume         = 50
+ 
+ vibrating.alert.enabled      = On
+ 
+-sms.alert.tone               = ring-4.wav
++sms.alert.tone               = ring-4.ogg
+ sms.alert.volume             = 50
+ 
+-im.alert.tone                = ring-4.wav
++im.alert.tone                = ring-4.ogg
+ im.alert.volume              = 50
+ 
+-email.alert.tone             = alert-3.wav
++email.alert.tone             = alert-3.ogg
+ email.alert.volume           = 50
+ 
+ keypad.sound.level           = 0
+@@ -70,13 +70,13 @@ ringing.alert.volume         = 35
+ 
+ vibrating.alert.enabled      = Off
+ 
+-sms.alert.tone               = default-beep.wav
++sms.alert.tone               = default-beep.ogg
+ sms.alert.volume             = 35
+ 
+-im.alert.tone                = default-beep.wav
++im.alert.tone                = default-beep.ogg
+ im.alert.volume              = 35
+ 
+-email.alert.tone             = default-beep.wav
++email.alert.tone             = default-beep.ogg
+ email.alert.volume           = 35
+ 
+ keypad.sound.level           = 0
+@@ -88,19 +88,19 @@ calendar.alarm.enabled       = On
+ 
+ [outdoors]
+ 
+-ringing.alert.tone           = ring-1.wav
++ringing.alert.tone           = ring-1.ogg
+ ringing.alert.type           = Ringing
+ ringing.alert.volume         = 90
+ 
+ vibrating.alert.enabled      = On
+ 
+-sms.alert.tone               = ring-4.wav
++sms.alert.tone               = ring-4.ogg
+ sms.alert.volume             = 90
+ 
+-im.alert.tone                = ring-4.wav
++im.alert.tone                = ring-4.ogg
+ im.alert.volume              = 90
+ 
+-email.alert.tone             = alert-3.wav
++email.alert.tone             = alert-3.ogg
+ email.alert.volume           = 90
+ 
+ keypad.sound.level           = 1
+-- 
+2.32.0
+

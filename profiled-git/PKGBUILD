@@ -4,7 +4,7 @@
 
 pkgname=profiled-git
 pkgver=1.0.12.r0.g32b02ae
-pkgrel=1
+pkgrel=2
 pkgdesc="Sailfish Profile daemon, manages user settings"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/profiled"
@@ -14,8 +14,9 @@ makedepends=('git' 'doxygen')
 provides=("${pkgname%-git}")
 source=(
   "${pkgname}::git+${url}"
+  '0001-use-ogg-instead-of-wav.patch'
 )
-sha256sums=('SKIP')
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -28,6 +29,8 @@ pkgver() {
 prepare() {
     cd "$srcdir/${pkgname}"
     git submodule update --init --recursive
+    patch -p1 --input="${srcdir}/0001-use-ogg-instead-of-wav.patch"
+
 }
 
 build() {
