@@ -1,11 +1,12 @@
 ## $Id$
 # Contributor: TheKit <nekit1000 at gmail.com>
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=mce-git
 pkgver=1.108.0.r0.g66df443
-pkgrel=1
+pkgrel=2
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/mce.git"
@@ -36,6 +37,7 @@ prepare() {
 build() {
     cd "$srcdir/${pkgname%-git}"
     make
+
 }
 
 package() {
@@ -47,6 +49,8 @@ package() {
     rm $pkgdir/lib/systemd/system/multi-user.target.wants/mce.service
     rmdir $pkgdir/lib/systemd/system/multi-user.target.wants
     mv $pkgdir/lib/systemd $pkgdir/usr/lib/systemd
+
+    sed -i 's/Before=basic.target//' $pkgdir/usr/lib/systemd/system/mce.service
 
     mkdir -p $pkgdir/usr/lib/tmpfiles.d
     echo "d /var/run/mce 0755 root root -" > $pkgdir/usr/lib/tmpfiles.d/mce.conf
