@@ -7,7 +7,7 @@
 
 pkgname=qt5-timed-git
 pkgver=3.6.13.r0.g19cbb69
-pkgrel=3
+pkgrel=4
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/timed"

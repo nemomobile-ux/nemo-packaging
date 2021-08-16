@@ -8,7 +8,7 @@ _branch=master
 
 pkgname=$_basename-git
 
-pkgver=0.7.11.r6.g116712f
+pkgver=0.7.11.r8.gf415bfb
 
 pkgrel=1
 pkgdesc="Dialer engine for Nemo Mobile"
