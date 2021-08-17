@@ -2,11 +2,11 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=commhistory-daemon-git
-pkgver=0.8.38.r0.g7e00f4a
-pkgrel=3
+pkgver=0.8.38.r1.gbc11fbd
+pkgrel=1
 pkgdesc="Communications event history database daemon"
 arch=('x86_64' 'aarch64')
-url="https://github.com/sailfishos/commhistory-daemon"
+url="https://github.com/nemomobile-ux/commhistory-daemon.git"
 license=('LGPLv2')
 depends=('qt5-base' 'libcommhistory-git' 'qt5-contacts-sqlite-extensions-git' 'mlite' 'qt5-mce-git' 'qt5-mlocale-git' 'telepathy-qt' 'libqofono-qt5' 'qt5-ngfd-git' 'nemo-qml-plugin-contacts-git' 'nemo-qml-plugin-notifications-git' 'qt5-ofono-nemo-extensions-git')
 makedepends=('git' 'qt5-tools')

@@ -1,11 +1,11 @@
 ## $Id$
 
 pkgname=nemo-qml-plugin-messages-git
-pkgver=0.1.30.r0.g6d05d2a
+pkgver=0.1.30.r1.gfa309ea
 pkgrel=1
 pkgdesc="Messages plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
-url="https://github.com/sailfishos/nemo-qml-plugin-messages/"
+url="https://github.com/nemomobile-ux/nemo-qml-plugin-messages.git"
 license=('BSD')
 depends=('telepathy-qt' 'libcommhistory-git' 'qt5-contacts-sqlite-extensions-git' 'libqofono-qt5' 'qt5-base' 'qt5-declarative' 'nemo-qml-plugin-dbus')
 makedepends=('git')
