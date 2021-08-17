@@ -1,7 +1,7 @@
-From 9eb23236c436a07aa365f275ae5dc4fe822654e8 Mon Sep 17 00:00:00 2001
-From: Jozef Mlich <jmlich83@gmail.com>
-Date: Wed, 19 May 2021 15:59:04 +0000
-Subject: [PATCH] fix warnings and api
+From 8309e0d196f97fe1cf35345abeddf74b136dd455 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Tue, 17 Aug 2021 16:53:48 +0300
+Subject: [PATCH 1/1] Fix warnngs and API for new Qt
 
 ---
  declarative/src/plugin.cpp                    |  4 +--
@@ -14,19 +14,18 @@ Subject: [PATCH] fix warnings and api
  src/event.cpp                                 |  6 ++--
  src/eventmodel_p.cpp                          |  4 +--
  src/groupmanager.cpp                          |  4 +--
- tests/common.cpp                              |  9 ++---
+ tests/common.cpp                              | 24 +++++++++++--
  tests/common.h                                |  4 ++-
  tests/mem_eventmodel/mem_eventmodel.cpp       |  4 +--
  tests/perf_callmodel/callmodelperftest.cpp    |  3 +-
  .../conversationmodelperftest.cpp             |  3 +-
  tests/perf_groupmodel/groupmodelperftest.cpp  |  3 +-
  .../recentcontactsmodelperftest.cpp           |  3 +-
+ tests/performance_tests.xml.in                | 28 +++++++++++++++
  .../callmodelprofiletest.cpp                  |  3 +-
  .../conversationmodelprofiletest.cpp          |  3 +-
  .../groupmodelprofiletest.cpp                 |  3 +-
  .../recentcontactsmodelprofiletest.cpp        |  3 +-
- tests/tests.xml.in                            |  3 --
- tests/unit_tests.pro                          |  1 -
  tests/ut_callmodel/callmodeltest.cpp          |  2 +-
  .../conversationmodeltest.cpp                 |  2 +-
  tests/ut_eventmodel/eventmodeltest.cpp        | 14 ++++----
@@ -35,7 +34,7 @@ Subject: [PATCH] fix warnings and api
  .../recipienteventmodeltest.cpp               |  2 +-
  .../singleeventmodeltest.cpp                  |  2 +-
  tools/commhistory-tool.cpp                    | 34 ++++++++++---------
- 31 files changed, 83 insertions(+), 71 deletions(-)
+ 30 files changed, 127 insertions(+), 66 deletions(-)
 
 diff --git a/declarative/src/plugin.cpp b/declarative/src/plugin.cpp
 index 0aac399..02c66b7 100644
@@ -238,10 +237,10 @@ index ba36a00..359a401 100644
      foreach (GroupObject *group, groups) {
          if (group->recipients().intersects(changed))
 diff --git a/tests/common.cpp b/tests/common.cpp
-index 0a68b62..bc0b40b 100644
+index d6e9372..e668123 100644
 --- a/tests/common.cpp
 +++ b/tests/common.cpp
-@@ -282,7 +282,7 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> >
+@@ -356,7 +356,7 @@ QList<int> addTestContacts(const QList<QPair<QString, QPair<QString, QString> >
  
  bool addTestContactAddress(int contactId, const QString &remoteUid, const QString &localUid)
  {
@@ -250,25 +249,24 @@ index 0a68b62..bc0b40b 100644
      if (internalContactId(existingAggregate.id()) != (unsigned)contactId) {
          qWarning() << "Could not retrieve contact:" << contactId;
          return false;
-@@ -331,7 +331,7 @@ void modifyTestContact(int id, const QString &name, bool favorite)
+@@ -404,6 +404,7 @@ bool addTestContactAddress(int contactId, const QString &remoteUid, const QStrin
+ void modifyTestContact(int id, const QString &name, bool favorite)
  {
-     qDebug() << Q_FUNC_INFO << id << name;
- 
--    QContact existingAggregate = manager()->contact(apiContactId(id, manager()->managerUri()));
-+    QContact existingAggregate = manager()->contact(apiContactId(id));
+     QContact existingAggregate = manager()->contact(apiContactId(id, manager()->managerUri()));
++
      if (internalContactId(existingAggregate.id()) != (unsigned)id) {
          qWarning() << "Could not retrieve contact:" << id;
          return;
-@@ -365,7 +365,7 @@ void modifyTestContact(int id, const QString &name, bool favorite)
+@@ -437,7 +438,7 @@ void modifyTestContact(int id, const QString &name, bool favorite)
  
- void deleteTestContact(int id)
+ void deleteTestContact(int id, ContactChangeListener *listener)
  {
 -    const QContactId contactId = apiContactId(id, manager()->managerUri());
 +    const QContactId contactId = apiContactId(id);
      const QContact contact = manager()->contact(contactId);
  
      const QContactId localId = localContactForAggregate(contactId);
-@@ -507,9 +507,10 @@ void deleteAll()
+@@ -585,13 +586,30 @@ void deleteAll(bool deleteDb)
  QString randomMessage(int words)
  {
      QString msg;
@@ -280,19 +278,39 @@ index 0a68b62..bc0b40b 100644
      }
      return msg;
  }
+ 
++bool waitSignal(QSignalSpy &spy, int msec)
++{
++    if (!spy.isEmpty()) {
++        return true;
++    }
++    QElapsedTimer timer;
++    timer.start();
++    while (timer.elapsed() < msec && spy.isEmpty()) {
++        QCoreApplication::sendPostedEvents();
++        QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
++        QCoreApplication::processEvents();
++    }
++
++    return !spy.isEmpty();
++}
++
+ void summarizeResults(const QString &className, QList<int> &times, QFile *logFile, int testSecs)
+ {
+     int sum = 0;
 diff --git a/tests/common.h b/tests/common.h
-index 40c92a9..e0887d9 100644
+index d55cb09..e779165 100644
 --- a/tests/common.h
 +++ b/tests/common.h
-@@ -29,6 +29,7 @@
- #include "group.h"
+@@ -32,6 +32,7 @@
  
+ #include <QTimer>
  #include <QFile>
 +#include <QRandomGenerator>
  #include <QSignalSpy>
  #include <QStandardPaths>
  
-@@ -40,9 +41,10 @@ template <class RandomAccessIterator>
+@@ -43,9 +44,10 @@ template <class RandomAccessIterator>
  void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
  {
      typename std::iterator_traits<RandomAccessIterator>::difference_type i, n;
@@ -305,7 +323,7 @@ index 40c92a9..e0887d9 100644
  }
  
 diff --git a/tests/mem_eventmodel/mem_eventmodel.cpp b/tests/mem_eventmodel/mem_eventmodel.cpp
-index 3e95a29..00f2904 100644
+index 499145d..1b50fa2 100644
 --- a/tests/mem_eventmodel/mem_eventmodel.cpp
 +++ b/tests/mem_eventmodel/mem_eventmodel.cpp
 @@ -37,7 +37,7 @@ Group group;
@@ -317,7 +335,7 @@ index 3e95a29..00f2904 100644
  
  static void waitWithDeletes(int msec)
  {
-@@ -126,7 +126,7 @@ void MemEventModelTest::addEvents()
+@@ -125,7 +125,7 @@ void MemEventModelTest::addEvents()
  
          waitWithDeletes(100);
          MALLINFO_DUMP("query done");
@@ -410,6 +428,45 @@ index acde7cd..097b19e 100644
  
      qDebug() << Q_FUNC_INFO << "- Creating" << contacts << "contacts";
  
+diff --git a/tests/performance_tests.xml.in b/tests/performance_tests.xml.in
+index 01e0f25..8820b78 100644
+--- a/tests/performance_tests.xml.in
++++ b/tests/performance_tests.xml.in
+@@ -3,6 +3,34 @@
+    <suite name="libcommhistory-qt5-tests-performance" domain="mw">
+        <description>libcommhistory tests</description>
+ 
++<<<<<<< HEAD:tests/performance_tests.xml.in
++=======
++       <set name="libcommhistory-qt5-tests-auto" feature="libcommhistory-qt5">
++           <description>libcommhistory-qt5 auto tests</description>
++           <case name="ut_callmodel" level="Component" type="Functional">
++               <step>@RUN_TEST@ auto ut_callmodel</step>
++           </case>
++           <case name="ut_conversationmodel" level="Component" type="Functional">
++               <step>@RUN_TEST@ auto ut_conversationmodel</step>
++           </case>
++           <case name="ut_eventmodel" level="Component" type="Functional" insignificant="true">
++               <step>@RUN_TEST@ auto ut_eventmodel</step>
++           </case>
++           <case name="ut_groupmodel" level="Component" type="Functional" timeout="180">
++               <step>@RUN_TEST@ auto ut_groupmodel</step>
++           </case>
++           <case name="ut_recentcontactsmodel" level="Component" type="Functional" timeout="180">
++               <step>@RUN_TEST@ auto ut_recentcontactsmodel</step>
++           </case>
++           <case name="ut_recipienteventmodel" level="Component" type="Functional">
++               <step>@RUN_TEST@ auto ut_recipienteventmodel</step>
++           </case>
++           <case name="ut_singleeventmodel" level="Component" type="Functional">
++               <step>@RUN_TEST@ auto ut_singleeventmodel</step>
++           </case>
++       </set>
++
++>>>>>>> 51bb0bc (Fix warnngs and API for new Qt):tests/tests.xml.in
+        <set name="libcommhistory-qt5-tests-performance" feature="libcommhistory-qt5">
+            <description>libcommhistory-qt5 performance tests</description>
+            <case name="perf_callmodel" level="Component" type="Performance" timeout="2500">
 diff --git a/tests/profile_callmodel/callmodelprofiletest.cpp b/tests/profile_callmodel/callmodelprofiletest.cpp
 index d6be571..aa00609 100644
 --- a/tests/profile_callmodel/callmodelprofiletest.cpp
@@ -494,47 +551,21 @@ index 84f3b92..1f44ce8 100644
  
      int ci = remoteUids.count();
      while(ci < contacts) {
-diff --git a/tests/tests.xml.in b/tests/tests.xml.in
-index c14688b..bf679ed 100644
---- a/tests/tests.xml.in
-+++ b/tests/tests.xml.in
-@@ -5,9 +5,6 @@
- 
-        <set name="libcommhistory-qt5-tests-auto" feature="libcommhistory-qt5">
-            <description>libcommhistory-qt5 auto tests</description>
--           <case name="mem_eventmodel">
--               <step>@RUN_TEST@ auto mem_eventmodel</step>
--           </case>
-            <case name="ut_callmodel" level="Component" type="Functional">
-                <step>@RUN_TEST@ auto ut_callmodel</step>
-            </case>
-diff --git a/tests/unit_tests.pro b/tests/unit_tests.pro
-index 7025ca4..e1a7440 100644
---- a/tests/unit_tests.pro
-+++ b/tests/unit_tests.pro
-@@ -25,7 +25,6 @@
- TEMPLATE = subdirs
- 
- SUBDIRS = \
--    mem_eventmodel \
-     ut_eventmodel \
-     ut_callmodel \
-     ut_conversationmodel \
 diff --git a/tests/ut_callmodel/callmodeltest.cpp b/tests/ut_callmodel/callmodeltest.cpp
-index bf35336..75ce7f8 100644
+index 6163e15..f6e4db4 100644
 --- a/tests/ut_callmodel/callmodeltest.cpp
 +++ b/tests/ut_callmodel/callmodeltest.cpp
-@@ -65,7 +65,7 @@ void CallModelTest::initTestCase()
- 
-     QTest::qWait(100);
+@@ -59,7 +59,7 @@ void CallModelTest::initTestCase()
+     initTestDatabase();
+     QVERIFY( QDBusConnection::sessionBus().isConnected() );
  
 -    qsrand( QDateTime::currentDateTime().toTime_t() );
-+    QRandomGenerator( QDateTime::currentDateTime().toTime_t() );
++    QRandomGenerator qrand( QDateTime::currentDateTime().toTime_t() );
  
+     Group group1, group2;
      addTestGroups( group1, group2 );
- 
 diff --git a/tests/ut_conversationmodel/conversationmodeltest.cpp b/tests/ut_conversationmodel/conversationmodeltest.cpp
-index 56cfc62..431f5e6 100644
+index 137d97d..9d512c8 100644
 --- a/tests/ut_conversationmodel/conversationmodeltest.cpp
 +++ b/tests/ut_conversationmodel/conversationmodeltest.cpp
 @@ -45,7 +45,7 @@ void ConversationModelTest::initTestCase()
@@ -542,15 +573,15 @@ index 56cfc62..431f5e6 100644
      loop = new QEventLoop(this);
  
 -    qsrand(QDateTime::currentDateTime().toTime_t());
-+    QRandomGenerator( QDateTime::currentDateTime().toTime_t() );
++    QRandomGenerator qrand(QDateTime::currentDateTime().toTime_t());
  
      addTestGroups(group1, group2);
  
 diff --git a/tests/ut_eventmodel/eventmodeltest.cpp b/tests/ut_eventmodel/eventmodeltest.cpp
-index 76a107f..20924c6 100644
+index 3ae9e8a..0388010 100644
 --- a/tests/ut_eventmodel/eventmodeltest.cpp
 +++ b/tests/ut_eventmodel/eventmodeltest.cpp
-@@ -62,7 +62,7 @@ void EventModelTest::initTestCase()
+@@ -60,7 +60,7 @@ void EventModelTest::initTestCase()
  {
      initTestDatabase();
  
@@ -559,7 +590,7 @@ index 76a107f..20924c6 100644
  
      new Adaptor(this);
      QVERIFY(QDBusConnection::sessionBus().registerObject(
-@@ -1000,9 +1000,9 @@ void EventModelTest::testCcBcc()
+@@ -997,9 +997,9 @@ void EventModelTest::testCcBcc()
      Event e;
      QVERIFY(model.databaseIO().getEvent(event.id(), e));
      QVERIFY(compareEvents(event, e));
@@ -572,7 +603,7 @@ index 76a107f..20924c6 100644
  
      event.resetModifiedProperties();
      ccList.clear();
-@@ -1023,9 +1023,9 @@ void EventModelTest::testCcBcc()
+@@ -1020,9 +1020,9 @@ void EventModelTest::testCcBcc()
  
      QVERIFY(model.databaseIO().getEvent(event.id(), e));
      QVERIFY(compareEvents(event, e));
@@ -586,10 +617,10 @@ index 76a107f..20924c6 100644
      event.resetModifiedProperties();
      ccList.clear();
 diff --git a/tests/ut_groupmodel/groupmodeltest.cpp b/tests/ut_groupmodel/groupmodeltest.cpp
-index d182590..2cd7318 100644
+index 48b8f71..64f91d3 100644
 --- a/tests/ut_groupmodel/groupmodeltest.cpp
 +++ b/tests/ut_groupmodel/groupmodeltest.cpp
-@@ -125,7 +125,7 @@ void GroupModelTest::initTestCase()
+@@ -108,7 +108,7 @@ void GroupModelTest::initTestCase()
  
      loop = new QEventLoop(this);
  
@@ -597,10 +628,10 @@ index d182590..2cd7318 100644
 +    QRandomGenerator qrand(QDateTime::currentDateTime().toTime_t());
  }
  
- void GroupModelTest::init()
-@@ -716,9 +716,9 @@ void GroupModelTest::streamingQuery()
+ void GroupModelTest::addInitialTestGroups()
+@@ -706,9 +706,9 @@ void GroupModelTest::streamingQuery()
  
-     verifyModelIsReady(streamModel, &modelReady);
+     QTRY_COMPARE(modelReady.count(), 1);
      QVERIFY(!streamModel.canFetchMore(QModelIndex()));
 -    QCOMPARE(idsOrig.toSet().size(), idsOrig.size());
 -    QCOMPARE(idsStream.toSet().size(), idsStream.size());
@@ -611,7 +642,7 @@ index d182590..2cd7318 100644
  
      modelThread.quit();
      modelThread.wait(5000);
-@@ -983,6 +983,8 @@ void GroupModelTest::resolveContact()
+@@ -969,6 +969,8 @@ void GroupModelTest::resolveContact()
      QSignalSpy groupDataChanged(&groupModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)));
      QSignalSpy groupsCommitted(&groupModel, SIGNAL(groupsCommitted(QList<int>,bool)));
  
@@ -619,22 +650,22 @@ index d182590..2cd7318 100644
 +
      QString phoneNumber = QString().setNum(qrand() % 10000000);
      QString contactName = QString("Test Contact 123");
-     int contactId = addTestContact(contactName, phoneNumber, RING_ACCOUNT);
+     int contactId = addTestContact(contactName, phoneNumber, RING_ACCOUNT, &contactChangeListener);
 diff --git a/tests/ut_recentcontactsmodel/recentcontactsmodeltest.cpp b/tests/ut_recentcontactsmodel/recentcontactsmodeltest.cpp
-index 623dce0..de30a29 100644
+index a0d2286..85cea78 100644
 --- a/tests/ut_recentcontactsmodel/recentcontactsmodeltest.cpp
 +++ b/tests/ut_recentcontactsmodel/recentcontactsmodeltest.cpp
-@@ -129,7 +129,7 @@ void RecentContactsModelTest::initTestCase()
-     initTestDatabase();
+@@ -136,7 +136,7 @@ void RecentContactsModelTest::initTestCase()
      QVERIFY(QDBusConnection::sessionBus().isConnected());
+     ContactChangeListener contactChangeListener;
  
 -    qsrand(QDateTime::currentDateTime().toTime_t());
-+    QRandomGenerator( QDateTime::currentDateTime().toTime_t() );
++    QRandomGenerator qsrand(QDateTime::currentDateTime().toTime_t());
  
      addTestGroups( group1, group2 );
  
 diff --git a/tests/ut_recipienteventmodel/recipienteventmodeltest.cpp b/tests/ut_recipienteventmodel/recipienteventmodeltest.cpp
-index a58da1d..fe8c3dd 100644
+index 208ca03..83a59dc 100644
 --- a/tests/ut_recipienteventmodel/recipienteventmodeltest.cpp
 +++ b/tests/ut_recipienteventmodel/recipienteventmodeltest.cpp
 @@ -36,7 +36,7 @@ void RecipientEventModelTest::initTestCase()
@@ -642,12 +673,12 @@ index a58da1d..fe8c3dd 100644
      initTestDatabase();
  
 -    qsrand(QDateTime::currentDateTime().toTime_t());
-+    QRandomGenerator( QDateTime::currentDateTime().toTime_t() );
++    QRandomGenerator(QDateTime::currentDateTime().toTime_t());
  }
  
  void RecipientEventModelTest::cleanupTestCase()
 diff --git a/tests/ut_singleeventmodel/singleeventmodeltest.cpp b/tests/ut_singleeventmodel/singleeventmodeltest.cpp
-index aa95c11..b96524a 100644
+index 7383c16..1eaf028 100644
 --- a/tests/ut_singleeventmodel/singleeventmodeltest.cpp
 +++ b/tests/ut_singleeventmodel/singleeventmodeltest.cpp
 @@ -20,7 +20,7 @@ void SingleEventModelTest::initTestCase()
@@ -655,7 +686,7 @@ index aa95c11..b96524a 100644
      initTestDatabase();
  
 -    qsrand(QDateTime::currentDateTime().toTime_t());
-+    QRandomGenerator( QDateTime::currentDateTime().toTime_t() );
++    QRandomGenerator(QDateTime::currentDateTime().toTime_t());
  
      addTestGroups(group1, group2);
  }
@@ -785,5 +816,5 @@ index cd65376..fb78e11 100644
  
      bool ok = true;
 -- 
-2.31.1
+2.32.0
 
