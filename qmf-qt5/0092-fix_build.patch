@@ -1,0 +1,13 @@
+diff --git a/src/libraries/qmfclient/qmflist.h b/src/libraries/qmfclient/qmflist.h
+index 7fd3304f..7ea7a05a 100644
+--- a/src/libraries/qmfclient/qmflist.h
++++ b/src/libraries/qmfclient/qmflist.h
+@@ -49,8 +49,6 @@
+  * std::list (which provides reference-stability).
+  */
+ 
+-typedef int qsizetype;
+-
+ template<class T>
+ class QmfList : public std::list<T>
+ {
