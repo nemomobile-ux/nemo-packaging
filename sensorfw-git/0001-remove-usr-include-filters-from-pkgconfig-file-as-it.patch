@@ -1,0 +1,23 @@
+From 64fc2c4ec37feeb5e383d3cf70fac013e2ad8284 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 22 Aug 2021 13:36:16 +0000
+Subject: [PATCH] remove /usr/include/filters from pkgconfig file as it is not
+ installed
+
+---
+ sensord-qt5.pc.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sensord-qt5.pc.in b/sensord-qt5.pc.in
+index 8b8e43d..be8611d 100644
+--- a/sensord-qt5.pc.in
++++ b/sensord-qt5.pc.in
+@@ -7,4 +7,4 @@ Description: Sensord for Qt 5
+ Version: 0.12.3
+ Requires:
+ Libs: -L${libdir} -lsensorclient-qt5 -lsensordatatypes-qt5
+-Cflags: -I${includedir} -I${includedir}/datatypes -I${includedir}/filters
++Cflags: -I${includedir} -I${includedir}/datatypes
+-- 
+2.32.0
+
