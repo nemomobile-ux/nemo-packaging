@@ -13,8 +13,8 @@ depends=('telepathy-qt' 'mlite' 'qt5-mlocale-git' 'libqofono-qt5' 'qt5-contacts-
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0001-KcalendarCore_not_provide_pc_files.path" "contactsd.service")
-sha256sums=('SKIP' 'SKIP' 'SKIP')
+source=("${pkgname}::git+${url}" "0001-KcalendarCore_not_provide_pc_files.patch" "contactsd.service" '0002-plugins-requires-QIcon-which-is-in-gui-module.patch')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -26,7 +26,8 @@ pkgver() {
 
 prepare() {
   cd "${srcdir}/${pkgname}"
-  patch -p1 --input="${srcdir}/0001-KcalendarCore_not_provide_pc_files.path"
+  patch -p1 --input="${srcdir}/0001-KcalendarCore_not_provide_pc_files.patch"
+  patch -p1 --input="${srcdir}/0002-plugins-requires-QIcon-which-is-in-gui-module.patch"
 }
 
 build() {
