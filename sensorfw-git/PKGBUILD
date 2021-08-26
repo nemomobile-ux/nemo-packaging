@@ -4,7 +4,7 @@
 pkgname=sensorfw-git
 
 pkgver=0.12.3.r0.ge894aad
-pkgrel=2
+pkgrel=1
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/sensorfw"
@@ -13,8 +13,8 @@ depends=('libngf-git' 'libiphb-git' 'mlite')
 makedepends=('git' 'doxygen')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "sensorfwd.service" '0001-remove-usr-include-filters-from-pkgconfig-file-as-it.patch')
-md5sums=('SKIP' 'SKIP' 'SKIP')
+source=("${pkgname}::git+${url}" "sensorfwd.service")
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
     cd "${srcdir}/${pkgname}"
@@ -23,8 +23,6 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
-    patch -p1 --input="${srcdir}/0001-remove-usr-include-filters-from-pkgconfig-file-as-it.patch"
-
     sed "s=@LIB@=/usr/lib=g" sensord-qt5.pc.in > sensord-qt5.pc
     sed "s=@LIBDIR@=/usr/lib=g" tests/tests.xml.in > tests/tests.xml
     unset LD_AS_NEEDED
