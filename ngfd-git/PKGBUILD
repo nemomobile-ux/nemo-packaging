@@ -1,0 +1,48 @@
+## $Id$
+
+pkgname=ngfd-git
+pkgver=1.2.5.r0.g9fa2a9d
+pkgrel=1
+pkgdesc="Non-Graphic Feedback daemon"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/ngfd"
+license=('GPL')
+depends=('ohm-plugins-misc' 'libpulse' 'pulseaudio' 'profiled-git' 'libcanberra' 'gstreamer' 'mce' 'mce-headers-git')
+makedepends=('git' 'doxygen')
+provides=("${pkgname%-git}")
+source=("${pkgname}::git+${url}")
+md5sums=('SKIP')
+
+pkgver() {
+    cd "$srcdir/${pkgname}"
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+
+prepare() {
+    cd "$srcdir/${pkgname}"
+    git submodule update --init --recursive
+}
+
+
+build() {
+    cd "$srcdir/${pkgname}"
+    ./autogen.sh --enable-debug
+    ./configure --prefix=/usr
+    make
+}
+
+package() {
+    cd "$srcdir/${pkgname}"
+    make DESTDIR="$pkgdir/" install
+
+    rm -f ${pkgdir}/usr/lib/systemd/user/ngfd.service
+    mkdir -p ${pkgdir}/usr/lib/systemd/user/
+    cp ${srcdir}/${pkgname}/rpm/ngfd.service ${pkgdir}/usr/lib/systemd/user/ngfd.service
+    mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
+    ln -s ../ngfd.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
+
+    # remove tests
+    rm -rf opt
+
+}
