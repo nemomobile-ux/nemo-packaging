@@ -131,6 +131,8 @@ eval "$BUILD policy-settings-common"
 
 eval "$BUILD fingerterm-git"
 
+eval "$BUILD glacier-tester-git"
+
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
     eval "$BUILD hybris/android-headers"
