@@ -131,7 +131,7 @@ eval "$BUILD policy-settings-common"
 
 eval "$BUILD fingerterm-git"
 
-eval "$BUILD glacier-tester-git"
+eval "$BUILD glacier-testtool-git"
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then

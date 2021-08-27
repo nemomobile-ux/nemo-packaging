@@ -1,13 +1,13 @@
 # $Id$
 
-pkgname=glacier-tester-git
+pkgname=glacier-testtool-git
 
 pkgver=r5.77b3d81
 
 pkgrel=1
 pkgdesc="Nemo hardware tester"
 arch=('x86_64' 'aarch64')
-url="https://github.com/jmlich/glacier-tester"
+url="https://github.com/nemomobile-ux/glacier-testtool"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
 depends=('qt5-glacier-app-git' 'qt5-sensors' 'qt5-charts')
 makedepends=('git' 'cmake' 'qt5-tools')
