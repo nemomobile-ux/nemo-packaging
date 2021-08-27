@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=ohm-plugins-misc
-pkgver=1.7.0.r0.gef2c89c
+pkgver=1.7.1.r0.gc3e9574
 pkgrel=1
 pkgdesc="A miscallaneous set of OHM plugins"
 arch=('x86_64' 'aarch64')
@@ -10,8 +10,8 @@ url="https://github.com/sailfishos/ohm-plugins-misc"
 license=('LGPL-2.1-only')
 depends=('glib2' 'ohm' 'libdres-ohm' 'meego-resource-git')
 makedepends=('git' 'automake' 'autoconf')
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
+source=("${pkgname}::git+${url}" '0001-update-pkg-config-files.patch')
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -23,6 +23,7 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
+    patch -p1 --input="${srcdir}/0001-update-pkg-config-files.patch"
     ./autogen.sh
 }
 
