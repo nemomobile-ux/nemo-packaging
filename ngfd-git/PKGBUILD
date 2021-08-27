@@ -42,6 +42,11 @@ package() {
     mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
     ln -s ../ngfd.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
 
+    # fix dbus config path
+    mkdir -p ${pkgdir}/etc/dbus-1/system.d
+    mv ${pkgdir}/usr/etc/dbus-1/system.d/ngfd.conf ${pkgdir}/etc/dbus-1/system.d/ngfd.conf
+    rm -rf ${pkgdir}/usr/etc/dbus-1/system.d
+
     # remove tests
     rm -rf opt
 
