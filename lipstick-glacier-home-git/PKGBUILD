@@ -8,12 +8,32 @@ _host="github.com"
 _project=nemomobile-ux
 _branch=master
 pkgver=0.33.2.r3.g80da40e
-pkgrel=1
+pkgrel=2
 pkgdesc="A nice homescreen for Glacier experience"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/glacier-home"
 license=('BSD-3-Clause AND MIT')
-depends=('bluez-qt' 'qt5-graphicaleffects' 'qt5-multimedia' 'qt5-feedback' 'qt5-mpris-git' 'qt5-lipstick-git' 'qt5-quickcontrols-nemo-git' 'nemo-qml-plugin-configuration-git' 'nemo-qml-plugin-statusnotifier-git' 'nemo-qml-plugin-time-git' 'nemo-qml-plugin-contacts-git' 'nemo-qml-plugin-notifications-git' 'nemo-qml-plugin-connectivity-git' 'glacier-settings-git' 'geoclue>2.0' 'mlite')
+depends=('bluez-qt' 
+	'qt5-graphicaleffects' 
+	'qt5-multimedia' 
+	'qt5-feedback' 
+	'qt5-mpris-git' 
+	'qt5-lipstick-git' 
+	'qt5-quickcontrols-nemo-git' 
+	'nemo-qml-plugin-configuration-git' 
+	'nemo-qml-plugin-statusnotifier-git' 
+	'nemo-qml-plugin-time-git' 
+	'nemo-qml-plugin-contacts-git' 
+	'nemo-qml-plugin-notifications-git' 
+	'nemo-qml-plugin-connectivity-git' 
+	'glacier-settings-git' 
+	'geoclue>2.0' 
+	'mlite'
+	'qt-mobility-haptics-ffmemless-git'
+	'ngfd-git'
+	'pulseaudio-module-keepalive'
+	'pulseaudio-modules-nemo')
+
 makedepends=('git' 'extra-cmake-modules' 'qt5-wayland' 'qt5-tools' 'nemo-qml-plugin-devicelock' 'bluez-qt')
 optdepends=()
 provides=("${pkgname%-git}")
