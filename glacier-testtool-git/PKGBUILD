@@ -2,7 +2,7 @@
 
 pkgname=glacier-testtool-git
 
-pkgver=r5.77b3d81
+pkgver=0.1.r0.g2a20849
 
 pkgrel=1
 pkgdesc="Nemo hardware tester"

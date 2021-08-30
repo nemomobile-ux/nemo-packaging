@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=tzdata-timed-git
-pkgver=2017b.3.r0.g9068095
+pkgver=2021a+git1.r0.g61116c3
 pkgrel=1
 pkgdesc="Data files for the time daemon, timed"
 arch=('x86_64' 'aarch64')
