@@ -3,12 +3,12 @@
 
 pkgname=ohm-plugin-ruleengine
 pkgver=1.1.14.r0.g991e498
-pkgrel=1
+pkgrel=4
 pkgdesc="A prolog-based OHM rule engine plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/ohm-rule-engine"
 license=('LGPL-2.1-only')
-depends=('glib2' 'ohm' 'swi-prolog' 'libprolog')
+depends=('glib2' 'ohm' 'ohm-plugins-misc' 'swi-prolog' 'libprolog' 'policy-settings-common')
 makedepends=('git' 'automake' 'autoconf')
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
@@ -38,5 +38,12 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   make DESTDIR="${pkgdir}" install
+#library is hardcoded
+  cd ${pkgdir}/usr/lib
+  ln -s /usr/lib/swipl/lib/`uname -m`-linux/libswipl.so.8
+#use basic rulse
+  mkdir -p ${pkgdir}/usr/share/policy/rules/
+  cd ${pkgdir}/usr/share/policy/rules/
+  ln -s basic current
 }
- 
+
