@@ -4,7 +4,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=buteo-sync-plugin-carddav-git
-pkgver=0.1.6.r0.gb67977c
+pkgver=0.1.7.r0.g960aa46
 pkgrel=1
 pkgdesc="Syncs contact data from CardDAV services"
 arch=('x86_64' 'aarch64')
