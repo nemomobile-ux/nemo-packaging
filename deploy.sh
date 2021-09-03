@@ -86,6 +86,10 @@ eval "$BUILD glacier-settings-git"
 eval "$BUILD buteo-syncfw"
 eval "$BUILD buteo-sync-plugin-carddav-git"
 eval "$BUILD nemo-qml-plugin-contacts-git"
+
+eval "$BUILD qt5-profile-git"
+eval "$BUILD qt-mobility-haptics-ffmemless-git"
+
 eval "$BUILD lipstick-glacier-home-git"
 eval "$BUILD glacier-wayland-session"
 
@@ -108,7 +112,6 @@ eval "$BUILD glacier-mail-git"
 eval "$BUILD glacier-browser-git"
 
 # need to be clarified
-eval "$BUILD qt5-profile-git"
 eval "$BUILD sailfish-access-control-qt5-git"
 
 eval "$BUILD usb-tethering"
@@ -133,7 +136,6 @@ eval "$BUILD fingerterm-git"
 
 eval "$BUILD glacier-testtool-git"
 eval "$BUILD ngfd-git"
-eval "$BUILD qt-mobility-haptics-ffmemless-git"
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
