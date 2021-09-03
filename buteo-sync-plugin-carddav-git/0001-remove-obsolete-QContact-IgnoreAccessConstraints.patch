@@ -1,15 +1,5 @@
-From b08a263a58c4bd4dcc701d37cec3f7f58408f1d5 Mon Sep 17 00:00:00 2001
-From: Jozef Mlich <jmlich83@gmail.com>
-Date: Tue, 27 Apr 2021 18:47:49 +0000
-Subject: [PATCH] remove obsolete QContact::IgnoreAccessConstraints
-
----
- src/carddav.cpp     | 16 ++++++++--------
- src/replyparser.cpp |  8 ++++----
- 2 files changed, 12 insertions(+), 12 deletions(-)
-
 diff --git a/src/carddav.cpp b/src/carddav.cpp
-index e4ab598..af07cbd 100644
+index ec28d27..06f9b85 100644
 --- a/src/carddav.cpp
 +++ b/src/carddav.cpp
 @@ -175,14 +175,14 @@ QPair<QContact, QStringList> CardDavVCardConverter::convertVCardToContact(const
@@ -18,7 +8,7 @@ index e4ab598..af07cbd 100644
                  QContactTimestamp dupRev(d);
 -                importedContact.removeDetail(&dupRev, QContact::IgnoreAccessConstraints);
 +                importedContact.removeDetail(&dupRev);
-                 LOG_DEBUG("Removed duplicate REV detail:" << dupRev);
+                 qCDebug(lcCardDav) << "Removed duplicate REV detail:" << dupRev;
                  QContactTimestamp firstRev = importedContact.detail<QContactTimestamp>();
                  if (dupRev.lastModified().isValid()
                          && (!firstRev.lastModified().isValid()
@@ -35,14 +25,14 @@ index e4ab598..af07cbd 100644
              }
 -            importedContact.saveDetail(&nameDetail, QContact::IgnoreAccessConstraints);
 +            importedContact.saveDetail(&nameDetail);
-             LOG_DEBUG("Decomposed vCard display name into structured name:" << nameDetail);
+             qCDebug(lcCardDav) << "Decomposed vCard display name into structured name:" << nameDetail;
          } else if (!nicknameField.isEmpty()) {
              SeasideCache::decomposeDisplayLabel(nicknameField, &nameDetail);
 -            importedContact.saveDetail(&nameDetail, QContact::IgnoreAccessConstraints);
 +            importedContact.saveDetail(&nameDetail);
-             LOG_DEBUG("Decomposed vCard nickname into structured name:" << nameDetail);
+             qCDebug(lcCardDav) << "Decomposed vCard nickname into structured name:" << nameDetail;
          } else {
-             LOG_WARNING("No structured name data exists in the vCard, contact will be unnamed!");
+             qCWarning(lcCardDav) << "No structured name data exists in the vCard, contact will be unnamed!";
 @@ -234,7 +234,7 @@ QPair<QContact, QStringList> CardDavVCardConverter::convertVCardToContact(const
      // mark each detail of the contact as modifiable
      Q_FOREACH (QContactDetail det, importedContact.details()) {
@@ -80,7 +70,7 @@ index e4ab598..af07cbd 100644
                      }
                  }
 diff --git a/src/replyparser.cpp b/src/replyparser.cpp
-index 457f6cf..55f8b07 100644
+index c5e6183..1c03582 100644
 --- a/src/replyparser.cpp
 +++ b/src/replyparser.cpp
 @@ -738,13 +738,13 @@ QHash<QString, QContact> ReplyParser::parseContactData(const QByteArray &contact
@@ -117,6 +107,3 @@ index 457f6cf..55f8b07 100644
  
          // and insert into the return map.
          uriToContactData.insert(uri, importedContact);
--- 
-2.31.1
-
