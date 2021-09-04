@@ -103,8 +103,8 @@ eval "$BUILD mce-plugin-libhybris-nondroid-git"
 eval "$BUILD ohm"
 eval "$BUILD libdres-ohm"
 eval "$BUILD policy-settings-common"
-eval "$BUILD ohm-rule-engine"
 eval "$BUILD ohm-plugins-misc"
+eval "$BUILD ohm-rule-engine"
 
 eval "$BUILD fingerterm-git"
 
