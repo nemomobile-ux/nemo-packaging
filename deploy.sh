@@ -101,10 +101,10 @@ eval "$BUILD libprolog"
 eval "$BUILD libtrace-ohm"
 eval "$BUILD mce-plugin-libhybris-nondroid-git"
 eval "$BUILD ohm"
+eval "$BUILD policy-settings-common"
 eval "$BUILD ohm-rule-engine"
 eval "$BUILD libdres-ohm"
 eval "$BUILD ohm-plugins-misc"
-eval "$BUILD policy-settings-common"
 
 eval "$BUILD fingerterm-git"
 
