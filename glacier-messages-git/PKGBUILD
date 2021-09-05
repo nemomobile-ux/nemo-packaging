@@ -35,19 +35,17 @@ pkgver() {
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
-  mkdir -p build
-  cd build
-  qmake ..
-  make
+    cmake \
+        -B "${pkgname}/build" \
+        -S "${pkgname}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}/build" all
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  cd build
-  make -j 1 INSTALL_ROOT="${pkgdir}" install
-  
-  mkdir -p ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
-  cd ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
-  ln -s /usr/share/glacier-messages/glacier-messages.png icon-lock-sms.png
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
+
+    mkdir -p ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
+    cd ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
+    ln -s /usr/share/glacier-messages/glacier-messages.png icon-lock-sms.png
 }
