@@ -1,0 +1,28 @@
+## $Id$
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+pkgname=glacier-wayland-session
+pkgver=0.3.1
+pkgrel=1
+pkgdesc="Glacier Wayland session"
+arch=('any')
+url="https://github.com/nemomobile-ux/glacier-wayland-session.git"
+license=('GPL-3.0-or-later')
+depends=('lipstick-glacier-home-git' 'lightdm')
+makedepends=('git')
+optdepends=()
+source=("${pkgname}::git+${url}")
+sha512sums=('SKIP')
+
+
+prepare(){
+    cd "${srcdir}/${pkgname}"
+    mkdir -p "${pkgdir}"
+}
+
+package() {
+    cp -r ${srcdir}/${pkgname}/rootdir/* ${pkgdir}/
+}
