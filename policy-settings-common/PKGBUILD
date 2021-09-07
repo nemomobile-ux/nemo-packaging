@@ -3,12 +3,12 @@
 
 pkgname=policy-settings-common
 pkgver=common.0.11.2.r0.g7a0e6fa
-pkgrel=1
+pkgrel=2
 pkgdesc="Common policy settings"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/policy-settings-common"
 license=('LGPL-2.1-only')
-depends=('glib2' 'libprolog' 'swi-prolog' 'libdres-ohm')
+depends=('glib2' 'libprolog' 'swi-prolog7' 'libdres-ohm')
 makedepends=('git' 'automake' 'autoconf')
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')

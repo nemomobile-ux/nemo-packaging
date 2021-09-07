@@ -3,12 +3,12 @@
 
 pkgname=libprolog
 pkgver=1.2.1.r0.g0d33632
-pkgrel=1
+pkgrel=2
 pkgdesc="A convenience library Nokia policy engine prolog library"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libprolog"
 license=('LGPL-2.1-only')
-depends=('glib2' 'swi-prolog')
+depends=('glib2' 'swi-prolog7')
 makedepends=('git' 'automake' 'autoconf')
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
