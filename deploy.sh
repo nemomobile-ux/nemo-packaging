@@ -97,6 +97,7 @@ eval "$BUILD pulseaudio-modules-nemo"
 
 eval "$BUILD libdsme"
 eval "$BUILD dsme-git"
+eval "$BUILD swi-prolog7"
 eval "$BUILD libprolog"
 eval "$BUILD libtrace-ohm"
 eval "$BUILD mce-plugin-libhybris-nondroid-git"
@@ -138,6 +139,7 @@ eval "$BUILD glacier-browser-git"
 eval "$BUILD sailfish-access-control-qt5-git"
 
 eval "$BUILD usb-tethering"
+eval "$BUILD pulseaudio-policy-enforcement"
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
