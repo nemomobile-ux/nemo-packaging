@@ -5,13 +5,20 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=glacier-wayland-session
-pkgver=0.3.1
+pkgver=0.4
 pkgrel=1
 pkgdesc="Glacier Wayland session"
 arch=('any')
 url="https://github.com/nemomobile-ux/glacier-wayland-session.git"
 license=('GPL-3.0-or-later')
-depends=('lipstick-glacier-home-git' 'lightdm')
+depends=('lipstick-glacier-home-git' 
+	'lightdm'
+	'ohm-plugin-ruleengine'
+	'ohm-plugins-misc'
+	'pulseaudio-modules-nemo'
+	'pulseaudio-module-keepalive'
+	'pulseaudio-policy-enforcement')
+
 makedepends=('git')
 optdepends=()
 source=("${pkgname}::git+${url}")
