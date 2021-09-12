@@ -115,6 +115,7 @@ eval "$BUILD ngfd-git"
 
 
 eval "$BUILD lipstick-glacier-home-git"
+eval "$BUILD pulseaudio-policy-enforcement"
 eval "$BUILD glacier-wayland-session"
 
 eval "$BUILD libcommhistory-git"
@@ -139,7 +140,6 @@ eval "$BUILD glacier-browser-git"
 eval "$BUILD sailfish-access-control-qt5-git"
 
 eval "$BUILD usb-tethering"
-eval "$BUILD pulseaudio-policy-enforcement"
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
