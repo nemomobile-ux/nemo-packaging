@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 _host="github.com"
-_project=nemomobile
+_project=nemomobile-ux
 _basename=nemo-qml-plugin-folderlistmodel
 _branch=master
 
