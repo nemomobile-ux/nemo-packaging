@@ -41,8 +41,9 @@ package() {
   cd "${srcdir}/${pkgname}"
   make DESTDIR="${pkgdir}" install
 
-  ln -s ../ohmd.service $pkgdir/etc/systemd/system/basic.target.wants/
-  ln -s ohmd.service $pkgdir/etc/systemd/system/dbus-org.freedesktop.ohm.service
+  install -d ${pkgdir}/usr/lib/systemd/system/basic.target.wants/
+  ln -s ../ohmd.service $pkgdir/usr/lib/systemd/system/basic.target.wants/
+  ln -s ohmd.service $pkgdir/usr/lib/systemd/system/dbus-org.freedesktop.ohm.service
 
 #modules config provide by glacier-wayland-session package
   rm -rf ${pkgdir}/etc/ohm/modules.ini
