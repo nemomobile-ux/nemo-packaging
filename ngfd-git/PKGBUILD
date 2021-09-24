@@ -10,8 +10,9 @@ license=('GPL')
 depends=('ohm-plugins-misc' 'libpulse' 'pulseaudio' 'profiled-git' 'libcanberra' 'gstreamer' 'mce' 'mce-headers-git')
 makedepends=('git' 'doxygen')
 provides=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
+source=("${pkgname}::git+${url}"
+    '0001-Revert-Configuration-for-the-new-effects-in-ffmemles.patch')
+md5sums=('SKIP' 'SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname}"
@@ -22,6 +23,7 @@ pkgver() {
 prepare() {
     cd "$srcdir/${pkgname}"
     git submodule update --init --recursive
+    patch -p1 --input="${srcdir}/0001-Revert-Configuration-for-the-new-effects-in-ffmemles.patch"
 }
 
 
