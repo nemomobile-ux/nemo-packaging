@@ -4,8 +4,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-configuration-git
-pkgver=0.2.3.r0.g917ed97
-pkgrel=2
+pkgver=0.2.4.r0.g2d64d15
+pkgrel=1
 pkgdesc="Configuration plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-configuration"
