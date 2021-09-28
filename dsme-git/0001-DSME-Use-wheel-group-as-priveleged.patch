@@ -1,0 +1,84 @@
+From 66091181b55cea3ca287696dfdbc4a7eb065de50 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Tue, 28 Sep 2021 15:15:49 +0300
+Subject: [PATCH] [DSME] Use wheel group as priveleged
+
+---
+ configure.ac   | 12 ++++++++++++
+ dsme/utility.c | 23 ++++++++++++++++++++++-
+ 2 files changed, 34 insertions(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index badbabf..1d4a9b3 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -168,6 +168,18 @@ AS_IF([test "x$enable_abootsettings" != xno],
+ AM_CONDITIONAL([WANT_ABOOTSETTINGS], [test x$enable_abootsettings != xno])
+ 
+ 
++#
++# Wheell is priveleged
++#
++AC_ARG_ENABLE([usewheel],
++  [AS_HELP_STRING([--enable-usewheel],
++    [use wheel group users as priveleged])])
++
++AS_IF([test "x$enable-usewheel" != xno],
++  [AC_DEFINE([DSME_USEWHEEL], [1], [Use wheel group as priveleged])])
++
++AM_CONDITIONAL([WANT_USEWHEEL], [test x$enable-usewheel != xno])
++
+ #
+ # Compiler and linker flags
+ #
+diff --git a/dsme/utility.c b/dsme/utility.c
+index 4e408e4..309c6fd 100644
+--- a/dsme/utility.c
++++ b/dsme/utility.c
+@@ -36,7 +36,9 @@
+ #include <unistd.h>
+ #include <stdlib.h>
+ #include <pwd.h>
+-
++#ifdef DSME_USEWHEEL
++#include <grp.h>
++#endif
+ #include <libcryptsetup.h>
+ 
+ /* ========================================================================= *
+@@ -64,6 +66,24 @@ dsme_user_is_privileged(uid_t uid, gid_t gid)
+ {
+     bool is_privileged = false;
+ 
++#ifdef DSME_USEWHEEL
++    struct passwd* pw = getpwuid(uid);
++    if( pw ) {
++        int ngroups = 0;
++        getgrouplist(pw->pw_name, pw->pw_gid, NULL, &ngroups);
++        gid_t groups[ngroups];
++        getgrouplist(pw->pw_name, pw->pw_gid, groups, &ngroups);
++
++        for (int i = 0; i < ngroups; i++) {
++            struct group* gr = getgrgid(groups[i]);
++            if( gr != NULL ) {
++                if(strcmp(gr->gr_name,"wheel") != 0 ) {
++                   is_privileged = true;
++               }
++            }
++        }
++    }
++#else
+     /* Check if UID/GID is root/privileged */
+     if( uid != 0 && gid != 0 ) {
+         struct passwd *pw = getpwnam("privileged");
+@@ -78,6 +98,7 @@ dsme_user_is_privileged(uid_t uid, gid_t gid)
+     is_privileged = true;
+ 
+ EXIT:
++#endif
+     return is_privileged;
+ }
+ 
+-- 
+2.33.0
+

@@ -12,8 +12,8 @@ depends=('libngf-git' 'libiphb-git' 'mce-git' 'cryptsetup' 'libsystemd' 'libdsme
 makedepends=('git' 'autoconf' 'automake' 'mce-headers')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}" 'fix-dsme_server_path.patch' 'dsme.service')
-md5sums=('SKIP' 'SKIP' 'SKIP')
+source=("${pkgname%-git}::git+${url}" 'fix-dsme_server_path.patch' 'dsme.service' '0001-DSME-Use-wheel-group-as-priveleged.patch')
+md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname%-git}"
@@ -24,6 +24,7 @@ prepare() {
     cd "$srcdir/${pkgname%-git}"
     git submodule update --init --recursive
     patch -p1 --input="${srcdir}/fix-dsme_server_path.patch"
+    patch -p1 --input="${srcdir}/0001-DSME-Use-wheel-group-as-priveleged.patch"
 }
 
 build() {
@@ -39,7 +40,8 @@ build() {
 	--enable-systemd \
 	--enable-pwrkeymonitor \
 	--disable-validatorlistener \
-	--enable-abootsettings
+	--enable-abootsettings \
+	--enable-usewheel
     make
 }
 
