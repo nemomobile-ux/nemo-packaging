@@ -40,7 +40,8 @@ build() {
 	--enable-systemd \
 	--enable-pwrkeymonitor \
 	--disable-validatorlistener \
-	--enable-abootsettings
+	--enable-abootsettings \
+	--enable-usewheel
     make
 }
 
