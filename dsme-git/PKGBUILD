@@ -3,7 +3,7 @@
 
 pkgname=dsme-git
 pkgver=0.83.2.r0.g24c6e56
-pkgrel=1
+pkgrel=2
 pkgdesc="Device State Management Entity"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/dsme"
