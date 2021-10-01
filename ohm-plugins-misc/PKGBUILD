@@ -10,8 +10,8 @@ url="https://github.com/sailfishos/ohm-plugins-misc"
 license=('LGPL-2.1-only')
 depends=('glib2' 'ohm' 'libdres-ohm' 'meego-resource-git')
 makedepends=('git' 'automake' 'autoconf')
-source=("${pkgname}::git+${url}" '0001-update-pkg-config-files.patch')
-sha256sums=('SKIP' 'SKIP')
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -23,7 +23,6 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname}"
-    patch -p1 --input="${srcdir}/0001-update-pkg-config-files.patch"
     ./autogen.sh
 }
 
