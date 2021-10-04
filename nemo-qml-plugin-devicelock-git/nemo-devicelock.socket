@@ -1,0 +1,16 @@
+[Unit]
+Description=Nemo device lock socket
+DefaultDependencies=no
+After=local-fs.target
+Before=shutdown.target
+Conflicts=shutdown.target
+
+[Socket]
+ListenStream=/run/nemo-devicelock/socket
+Accept=false
+SocketUser=root
+SocketGroup=wheel
+SocketMode=0660
+
+[Install]
+WantedBy=multi-user.target
