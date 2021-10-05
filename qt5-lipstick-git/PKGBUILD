@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt5-lipstick-git
-pkgver=0.42.r0.g0d9e2ce0
+pkgver=0.43.r6.g5c4dc016
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
@@ -20,7 +20,8 @@ depends=('qt5-sensors-sensorfw'
 	    'qt5-mce-git'
 	    'qt5-ngfd-git'
 	    'nemo-qml-plugin-devicelock-git'
-	    'nemo-qml-plugin-systemsettings-git')
+	    'nemo-qml-plugin-systemsettings-git'
+	    'bluez-qt')
 
 makedepends=('git' 'qt5-tools' 'doxygen' 'graphviz')
 provides=("${pkgname%-git}")
