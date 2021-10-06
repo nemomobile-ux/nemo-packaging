@@ -2,8 +2,8 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=dsme-git
-pkgver=0.83.2.r0.g24c6e56
-pkgrel=2
+pkgver=0.83.2.r2.g21ac4a3
+pkgrel=1
 pkgdesc="Device State Management Entity"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/dsme"
@@ -12,8 +12,8 @@ depends=('libngf-git' 'libiphb-git' 'mce-git' 'cryptsetup' 'libsystemd' 'libdsme
 makedepends=('git' 'autoconf' 'automake' 'mce-headers')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}" 'fix-dsme_server_path.patch' 'dsme.service' '0001-DSME-Use-wheel-group-as-priveleged.patch')
-md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+source=("${pkgname%-git}::git+${url}" 'fix-dsme_server_path.patch' 'dsme.service')
+md5sums=('SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname%-git}"
@@ -24,7 +24,6 @@ prepare() {
     cd "$srcdir/${pkgname%-git}"
     git submodule update --init --recursive
     patch -p1 --input="${srcdir}/fix-dsme_server_path.patch"
-    patch -p1 --input="${srcdir}/0001-DSME-Use-wheel-group-as-priveleged.patch"
 }
 
 build() {
