@@ -137,8 +137,6 @@ eval "$BUILD glacier-mail-git"
 eval "$BUILD glacier-browser-git"
 
 # need to be clarified
-eval "$BUILD sailfish-access-control-qt5-git"
-
 eval "$BUILD usb-tethering"
 
 # arm specific packages
