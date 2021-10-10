@@ -11,7 +11,7 @@ url="https://github.com/sailfishos/libqofono"
 license=('LGPL')
 provides=('libqofono')
 depends=('qt5-declarative' 'qt5-xmlpatterns')
-source=("https://git.merproject.org/mer-core/libqofono/-/archive/${pkgver}/libqofono-${pkgver}.tar.gz"
+source=("https://github.com/sailfishos/libqofono/archive/refs/tags/${pkgver}.tar.gz"
         "0001-add-support-for-reset-contexts.patch"
         "context-preferred.patch"
         "mtk_settings_binding.patch")
