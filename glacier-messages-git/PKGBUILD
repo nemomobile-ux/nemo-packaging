@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.2.2.r17.ge435052
+pkgver=0.2.2.r19.gee76d64
 
 pkgrel=1
 pkgdesc="QML based messages application for nemomobile"
@@ -20,7 +20,7 @@ arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
 depends=('qt5-glacier-app-git' 'nemo-qml-plugin-contacts-git' 'nemo-qml-plugin-dbus' 'commhistory-daemon-git' 'libcommhistory-git' 'nemo-qml-plugin-messages-git' 'telepathy-mission-control' 'telepathy-ofono')
-makedepends=('git')
+makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
