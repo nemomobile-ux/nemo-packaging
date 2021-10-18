@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=ohm-plugins-misc
-pkgver=1.7.1.r0.gc3e9574
+pkgver=1.8.0.r0.gda11b4b
 pkgrel=1
 pkgdesc="A miscallaneous set of OHM plugins"
 arch=('x86_64' 'aarch64')

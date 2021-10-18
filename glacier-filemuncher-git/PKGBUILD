@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.3.r21.g72ca529
+pkgver=0.3.r29.ge413ed2
 
 pkgrel=1
 pkgdesc="The Glacier file manager"

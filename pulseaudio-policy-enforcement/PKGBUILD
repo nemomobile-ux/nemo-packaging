@@ -2,8 +2,8 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=pulseaudio-policy-enforcement
-pkgver=14.2.44.r0.g6bf81c4
-pkgrel=2
+pkgver=14.2.45.r0.g88da9ca
+pkgrel=1
 pkgdesc="Pulseaudio module for enforcing policy decisions in the audio domain"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/pulseaudio-policy-enforcement"
