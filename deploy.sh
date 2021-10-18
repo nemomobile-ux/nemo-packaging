@@ -146,4 +146,5 @@ if [ "$BUILDARCH" == "aarch64" ]; then
     eval "$BUILD hybris/qt5-qpa-hwcomposer-plugin"
 
     eval "$BUILD devices/nemo-device-pinephone"
+    eval "$BUILD devices/nemo-device-pinetab"
 fi
