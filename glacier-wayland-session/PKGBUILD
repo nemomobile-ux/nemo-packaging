@@ -13,6 +13,7 @@ url="https://github.com/nemomobile-ux/glacier-wayland-session.git"
 license=('GPL-3.0-or-later')
 depends=('lipstick-glacier-home-git' 
 	'lightdm'
+	'glacier-devicelock-plugin'
 	'ohm-plugin-ruleengine'
 	'ohm-plugins-misc'
 	'pulseaudio-modules-nemo'
