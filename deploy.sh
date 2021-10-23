@@ -22,6 +22,7 @@ else
     BUILD="${BUILD-buildpkg -n -p}"
 fi
 
+eval "$BUILD bootsplash-theme-nemo"
 # apps
 eval "$BUILD google-opensans-fonts"
 eval "$BUILD nemo-theme-glacier-git"
