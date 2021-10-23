@@ -2,15 +2,19 @@
 pkgbase=bootsplash-themes
 pkgname=('bootsplash-theme-nemo')
 pkgver=0.1
-pkgrel=1
+pkgrel=4
 url="https://lists.freedesktop.org/archives/dri-devel/2017-December/160242.html"
 arch=('any')
 license=('GPL')
 makedepends=('imagemagick' 'bootsplash-packer')
 options=('!libtool' '!emptydirs')
 
-source=('bootsplash-nemo.sh'
-	'bootsplash-nemo.initcpio_install'
+provides=("bootsplash-theme-manjaro")
+conflicts=("bootsplash-theme-manjaro")
+
+
+source=('bootsplash-manjaro.sh'
+	'bootsplash-manjaro.initcpio_install'
 	'spinner.gif'
 	'logo_nemo.png')
 
@@ -21,13 +25,13 @@ sha256sums=('SKIP'
 
 build() {
   cd "$srcdir"
-  sh ./bootsplash-nemo.sh
+  sh ./bootsplash-manjaro.sh
 }
 
 package_bootsplash-theme-nemo() {
   pkgdesc="Bootsplash Theme nemo logo"
   cd "$srcdir"
 
-  install -Dm644 "$srcdir/bootsplash-nemo" "$pkgdir/usr/lib/firmware/bootsplash-themes/nemo/bootsplash"
-  install -Dm644 "$srcdir/bootsplash-nemo.initcpio_install" "$pkgdir/usr/lib/initcpio/install/bootsplash-nemo"
+  install -Dm644 "$srcdir/bootsplash-manjaro" "$pkgdir/usr/lib/firmware/bootsplash-themes/manjaro/bootsplash"
+  install -Dm644 "$srcdir/bootsplash-manjaro.initcpio_install" "$pkgdir/usr/lib/initcpio/install/bootsplash-manjaro"
 } 
