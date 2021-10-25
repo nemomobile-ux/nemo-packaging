@@ -1,0 +1,33 @@
+
+pkgbase=bootsplash-themes
+pkgname=('bootsplash-theme-nemo')
+pkgver=0.1
+pkgrel=1
+url="https://lists.freedesktop.org/archives/dri-devel/2017-December/160242.html"
+arch=('any')
+license=('GPL')
+makedepends=('imagemagick' 'bootsplash-packer')
+options=('!libtool' '!emptydirs')
+
+source=('bootsplash-nemo.sh'
+	'bootsplash-nemo.initcpio_install'
+	'spinner.gif'
+	'logo_nemo.png')
+
+sha256sums=('SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+
+build() {
+  cd "$srcdir"
+  sh ./bootsplash-nemo.sh
+}
+
+package_bootsplash-theme-nemo() {
+  pkgdesc="Bootsplash Theme nemo logo"
+  cd "$srcdir"
+
+  install -Dm644 "$srcdir/bootsplash-nemo" "$pkgdir/usr/lib/firmware/bootsplash-themes/nemo/bootsplash"
+  install -Dm644 "$srcdir/bootsplash-nemo.initcpio_install" "$pkgdir/usr/lib/initcpio/install/bootsplash-nemo"
+} 
