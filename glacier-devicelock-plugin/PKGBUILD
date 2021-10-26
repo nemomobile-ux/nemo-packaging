@@ -9,7 +9,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename
 
-pkgver=0.1
+pkgver=0.2
 
 pkgrel=1
 pkgdesc="Glacier devicelock plugin"
@@ -17,7 +17,7 @@ arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.1')
 depends=('nemo-qml-plugin-devicelock')
-makedepends=('git' 'cmake')
+makedepends=('git' 'cmake' 'glib2')
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
