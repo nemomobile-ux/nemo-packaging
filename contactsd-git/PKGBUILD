@@ -2,9 +2,9 @@
 
 pkgname=contactsd-git
 
-pkgver=1.4.9.r0.g19a0201
+pkgver=1.4.10.r0.g5b8426b
 
-pkgrel=3
+pkgrel=1
 pkgdesc="Telepathy <> QtContacts bridge for contacts"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/contactsd"
