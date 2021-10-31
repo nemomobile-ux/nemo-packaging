@@ -5,8 +5,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=mce-git
-pkgver=1.108.0.r0.g66df443
-pkgrel=2
+pkgver=1.109.0.r0.g7297d9e
+pkgrel=1
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/mce.git"

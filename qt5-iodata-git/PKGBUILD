@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt5-iodata-git
-pkgver=0.19.11+git1.r0.g9c9c84b
+pkgver=0.19.11+git2.r0.gda49f26
 pkgrel=1
 pkgdesc="Mer library for input/output data"
 arch=('x86_64' 'aarch64')
