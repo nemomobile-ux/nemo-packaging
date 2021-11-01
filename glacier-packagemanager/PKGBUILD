@@ -1,0 +1,32 @@
+# $Id$
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+_host="github.com"
+_project=nemomobile-ux
+_basename=glacier-packagemanager
+_branch=master
+
+_gitname=$_basename
+pkgname=$_basename
+
+pkgver=0.1.1
+
+pkgrel=1
+pkgdesc="Glacier package manager"
+arch=('x86_64' 'aarch64')
+url="https://$_host/$_project/$_gitname#branch=$_branch"
+license=('LGPL-2.1')
+depends=('libXPackageKit')
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
+
+build() {
+   cd "${srcdir}/${pkgname}"
+    qmake-qt5 PREFIX=/usr .
+    make
+}
+
+package() {
+    cd "${srcdir}/${pkgname}"
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
+}
