@@ -22,7 +22,6 @@ else
     BUILD="${BUILD-buildpkg -n -p}"
 fi
 
-eval "$BUILD bootsplash-theme-nemo"
 # apps
 eval "$BUILD google-opensans-fonts"
 eval "$BUILD nemo-theme-glacier-git"
@@ -143,6 +142,7 @@ eval "$BUILD usb-tethering"
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
+    eval "$BUILD bootsplash-theme-nemo" # for x86_64 plymouth-theme-
     eval "$BUILD hybris/android-headers"
     eval "$BUILD hybris/libhybris"
     eval "$BUILD hybris/qt5-qpa-hwcomposer-plugin"
