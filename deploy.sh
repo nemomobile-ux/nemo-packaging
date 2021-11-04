@@ -42,7 +42,9 @@ eval "$BUILD glacier-gallery-git"
 eval "$BUILD qt5-dbus-extended-git"
 eval "$BUILD qt5-mpris-git"
 eval "$BUILD glacier-music-git"
-
+eval "$BUILD libXPackageKit"
+eval "$BUILD glacier-packagemanager"
+eval "$BUILD glacier-polkit-agent"
 
 # homescreen/de
 eval "$BUILD mce-headers-git"
