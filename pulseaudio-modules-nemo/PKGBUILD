@@ -2,8 +2,8 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=pulseaudio-modules-nemo
-pkgver=14.2.30.r0.gd0dfdc3
-pkgrel=2
+pkgver=15.0
+pkgrel=1
 pkgdesc="PulseAudio modules for Nemo"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/pulseaudio-modules-nemo"
@@ -13,22 +13,16 @@ makedepends=('git' 'automake' 'autoconf' 'pulsecore-headers' 'check')
 source=("${pkgname}::git+${url}"  "0001-fix_build.patch")
 sha256sums=('SKIP' 'SKIP')
 
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
-
 prepare() {
     cd "${srcdir}/${pkgname}"
     patch -p1 --input="${srcdir}/0001-fix_build.patch"
-    ./bootstrap.sh
+
 }
 
 build() {
   cd "${srcdir}/${pkgname}"
+  echo 15.0 > .tarball-version
+  ./bootstrap.sh
   ./configure --prefix=/usr \
     --sysconfdir=/etc \
     --sbindir=/usr/bin \
