@@ -9,7 +9,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename
 
-pkgver=0.1.1
+pkgver=0.1.1.r5.g2a20592
 
 pkgrel=1
 pkgdesc="Glacier package manager"
@@ -20,13 +20,22 @@ depends=('libXPackageKit')
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  ( set -o pipefail
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  ) 2>/dev/null
+}
+
 build() {
-   cd "${srcdir}/${pkgname}"
-    qmake-qt5 PREFIX=/usr .
-    make
+    cmake \
+        -B "${pkgname}/build" \
+        -S "${pkgname}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}/build" all
 }
 
 package() {
-    cd "${srcdir}/${pkgname}"
-    make -j 1 INSTALL_ROOT="$pkgdir/" install
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 }
