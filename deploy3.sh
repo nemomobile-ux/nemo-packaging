@@ -15,7 +15,7 @@ function build_directory() {
     echo "building $1 ..."
 
 
-    log_name=$(printf "%s/%02d-%s.log" "$log_dir" "$build_id" "${1//\//.}")
+    log_name=$(printf "%s/%03d-%s.log" "$log_dir" "$build_id" "${1//\//.}")
     mkdir -p $(dirname "$log_name");
 
     (
