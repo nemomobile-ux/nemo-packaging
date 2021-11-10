@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-thumbnailer-git
-pkgver=1.0.4.r0.gdcda58f
+pkgver=1.0.5.r0.g62bcea8
 pkgrel=1
 pkgdesc="Thumbnail provider plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')

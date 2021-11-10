@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=meego-resource-git
-pkgver=0.25.0.r0.gc9220d7
+pkgver=0.25.1.r0.g60fdaba
 pkgrel=1
 pkgdesc="MeeGo resource management low level C API libraries"
 arch=('x86_64' 'aarch64')
