@@ -8,7 +8,7 @@ pkgname=lipstick-glacier-home-git
 _host="github.com"
 _project=nemomobile-ux
 _branch=master
-pkgver=0.35.r1.gc4af81d
+pkgver=0.36.1.r0.gec3cc50
 pkgrel=1
 pkgdesc="A nice homescreen for Glacier experience"
 arch=('x86_64' 'aarch64')
@@ -35,7 +35,7 @@ depends=('bluez-qt'
 	'pulseaudio-module-keepalive'
 	'pulseaudio-modules-nemo')
 
-makedepends=('git' 'extra-cmake-modules' 'qt5-wayland' 'qt5-tools' 'nemo-qml-plugin-devicelock' 'bluez-qt')
+makedepends=('git' 'extra-cmake-modules' 'qt5-wayland' 'qt5-tools' 'nemo-qml-plugin-devicelock' 'bluez-qt' 'polkit-qt5')
 optdepends=()
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
