@@ -7,16 +7,19 @@ _basename=glacier-packagemanager
 _branch=master
 
 _gitname=$_basename
-pkgname=$_basename
+pkgname=$_basename-git
 
-pkgver=0.1.1.r5.g2a20592
+pkgver=0.1.1.r15.g030f014
 
 pkgrel=1
 pkgdesc="Glacier package manager"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.1')
-depends=('libXPackageKit')
+depends=('libXPackageKit' 'qt5-glacier-app-git')
+makedepends=('git' 'cmake' 'qt5-tools')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
