@@ -9,14 +9,14 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.1.1.r15.g030f014
+pkgver=0.2.r0.gb1d1510
 
 pkgrel=1
 pkgdesc="Glacier package manager"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.1')
-depends=('libXPackageKit' 'qt5-glacier-app-git')
+depends=('pamac' 'qt5-glacier-app-git')
 makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
