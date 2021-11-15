@@ -42,7 +42,6 @@ eval "$BUILD glacier-gallery-git"
 eval "$BUILD qt5-dbus-extended-git"
 eval "$BUILD qt5-mpris-git"
 eval "$BUILD glacier-music-git"
-eval "$BUILD libXPackageKit"
 eval "$BUILD glacier-packagemanager-git"
 eval "$BUILD glacier-polkit-agent"
 
@@ -95,7 +94,6 @@ eval "$BUILD qt-mobility-haptics-ffmemless-git"
 #multimedia stuff
 eval "$BUILD pulsecore-headers"
 eval "$BUILD pulseaudio-module-keepalive"
-eval "$BUILD pulseaudio-modules-nemo"
 
 eval "$BUILD libdsme"
 eval "$BUILD dsme-git"
@@ -117,7 +115,6 @@ eval "$BUILD ngfd-git"
 
 
 eval "$BUILD lipstick-glacier-home-git"
-eval "$BUILD pulseaudio-policy-enforcement"
 eval "$BUILD glacier-wayland-session"
 
 eval "$BUILD libcommhistory-git"
