@@ -138,6 +138,19 @@ eval "$BUILD glacier-browser-git"
 # need to be clarified
 eval "$BUILD usb-tethering"
 
+
+# pure-maps packages
+if [ "$BUILDARCH" != "aarch64" ]; then
+    eval "$BUILD python-otherside"
+fi
+eval "$BUILD abseil-cpp-git"
+eval "$BUILD gpxpy-git"
+eval "$BUILD s2geometry-git"
+eval "$BUILD mapbox-gl-native-git"
+eval "$BUILD mapbox-gl-qml-git"
+eval "$BUILD pure-maps-git"
+
+
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
     eval "$BUILD bootsplash-theme-nemo" # for x86_64 plymouth-theme-
