@@ -1,0 +1,49 @@
+# $Id$
+
+_host="github.com"
+_project=rinigus
+_basename=pure-maps
+_branch=master
+
+_gitname=$_basename
+pkgname=$_basename-git
+
+pkgver=2.8.1.r51.g5d4ca454
+
+pkgrel=1
+pkgdesc="Pure Maps"
+arch=('x86_64' 'aarch64')
+url="https://$_host/$_project/$_gitname#branch=$_branch"
+license=('GPL-3.0 License')
+depends=('python-pyotherside' 'python-pyxdg' 'mapbox-gl-native' 'mapbox-gl-qml-git' 's2geometry-git' 'nemo-qml-plugin-dbus' 'qt5-quickcontrols2')
+makedepends=('git' 'cmake' 'qt5-tools')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  ( set -o pipefail
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  ) 2>/dev/null
+}
+
+prepare() {
+    cd "$srcdir/${pkgname}"
+    git submodule update --init --recursive
+}
+
+build() {
+    cmake \
+        -B "${pkgname}/build" \
+        -S "${pkgname}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DFLAVOR=qtcontrols
+    make -C "${pkgname}/build" all
+}
+
+package() {
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,25 @@
+From cf98f19b09f7ad73633d131b493dc2329796028a Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 14 Nov 2021 11:21:54 +0000
+Subject: [PATCH] Add -fPIC
+
+---
+ CMakeLists.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d59c2ade..90908c76 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -21,6 +21,8 @@
+ # and then issuing `yum install cmake3` on the command line.
+ cmake_minimum_required(VERSION 3.5)
+ 
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)
++
+ # Compiler id for Apple Clang is now AppleClang.
+ if (POLICY CMP0025)
+   cmake_policy(SET CMP0025 NEW)
+-- 
+2.33.0
+

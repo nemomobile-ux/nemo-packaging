@@ -1,0 +1,41 @@
+# $Id$
+
+_host="github.com"
+_project=tkrajina
+_basename=gpxpy
+_branch=master
+
+_gitname=$_basename
+pkgname=$_basename-git
+
+pkgver=v1.5.0.r0.g7d6c982
+
+pkgrel=1
+pkgdesc="gpx-py is a python GPX parser"
+arch=('x86_64' 'aarch64')
+url="https://$_host/$_project/$_gitname#branch=$_branch"
+license=('Apache-2.0 License')
+depends=('python')
+makedepends=('git' 'python-setuptools')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  ( set -o pipefail
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  ) 2>/dev/null
+}
+
+build() {
+    cd "${srcdir}/${pkgname}"
+    python setup.py build
+}
+
+package() {
+    cd "${srcdir}/${pkgname}"
+    python setup.py install --root="$pkgdir" --optimize=1
+}

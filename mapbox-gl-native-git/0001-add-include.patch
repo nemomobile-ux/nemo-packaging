@@ -1,0 +1,24 @@
+From f78f669bb4198f82b43d95fe9e2d9b399ac77ace Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 12 Nov 2021 21:52:06 +0000
+Subject: [PATCH] add include
+
+---
+ include/mbgl/util/string.hpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/mbgl/util/string.hpp b/include/mbgl/util/string.hpp
+index 27c3943c5f..66ad7cfda7 100644
+--- a/include/mbgl/util/string.hpp
++++ b/include/mbgl/util/string.hpp
+@@ -3,6 +3,7 @@
+ #include <string>
+ #include <cstdlib>
+ #include <type_traits>
++#include <exception>
+ 
+ // Polyfill needed by Qt when building for Android with GCC
+ #if defined(__ANDROID__) && defined(__GLIBCXX__)
+-- 
+2.33.0
+
