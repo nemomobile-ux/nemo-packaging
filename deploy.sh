@@ -150,6 +150,8 @@ eval "$BUILD mapbox-gl-native-git"
 eval "$BUILD mapbox-gl-qml-git"
 eval "$BUILD pure-maps-git"
 
+eval "$BUILD glacier-weather-git"
+
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
