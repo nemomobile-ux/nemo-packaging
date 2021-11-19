@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=libdres-ohm
-pkgver=1.1.17.r0.ga89f56c
+pkgver=1.1.18.r0.g122db90
 pkgrel=1
 pkgdesc="Dependency resolver for OHM"
 arch=('x86_64' 'aarch64')

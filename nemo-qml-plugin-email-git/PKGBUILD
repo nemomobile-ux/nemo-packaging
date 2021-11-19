@@ -1,7 +1,7 @@
 ## $Id$
 
 pkgname=nemo-qml-plugin-email-git
-pkgver=0.6.20.r0.gdbb3961
+pkgver=0.6.21.r0.g5e0f4a3
 pkgrel=1
 pkgdesc="Messages plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')

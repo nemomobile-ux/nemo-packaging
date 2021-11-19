@@ -5,7 +5,7 @@
 
 pkgname=qt5-ngfd-git
 _pkgname=libngf-qt-git
-pkgver=0.8.1.r0.ga637387
+pkgver=0.8.2.r0.g503e9d0
 pkgrel=1
 pkgdesc="Qt-based client library for Non-Graphic Feedback daemon"
 arch=('x86_64' 'aarch64')

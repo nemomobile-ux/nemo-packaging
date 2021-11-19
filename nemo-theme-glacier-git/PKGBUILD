@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.2.r2.gd9e2fe1
+pkgver=0.2.r5.g10fe1d5
 
 pkgrel=1
 pkgdesc="Glacier theme based on nemo-theme-default"

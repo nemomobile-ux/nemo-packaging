@@ -4,7 +4,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-contacts-git
-pkgver=0.3.20.r0.gdfdedb9
+pkgver=0.3.21.r0.ge3d4df5
 pkgrel=1
 pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
