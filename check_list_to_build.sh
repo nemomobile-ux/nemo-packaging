@@ -5,15 +5,18 @@ declare -a PACKAGES_FILES
 declare -a PACKAGES_TO_ADD
 declare -a PACKAGES_TO_REMOVE
 
-BUILDARCH=aarch64
 function check_add() {
     PACKAGES_BUILD+=("$1")
 }
+BUILDARCH=aarch64
 export BUILD_USER="$(whoami)"
 export BUILD="check_add"
 export -f check_add
 
 source ./deploy.sh
+BUILDARCH=x86_64
+source ./deploy.sh
+
 
 for pkgfile in $(find . -name 'PKGBUILD'); do
     pkg=$(dirname "$pkgfile")

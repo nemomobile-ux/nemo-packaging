@@ -111,6 +111,7 @@ eval "$BUILD fingerterm-git"
 
 eval "$BUILD glacier-testtool-git"
 eval "$BUILD ngfd-git"
+eval "$BUILD ngfd-plugin-native-vibrator"
 
 
 
