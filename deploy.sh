@@ -76,6 +76,7 @@ eval "$BUILD glacier-pinquery-git" # additional app
 eval "$BUILD qt5-ofono-nemo-extensions-git"
 eval "$BUILD qt5-connman-git"
 eval "$BUILD qt5-ngfd-git"
+eval "$BUILD ngfd-settings-nemo"
 eval "$BUILD qt5-usb-moded-git"
 eval "$BUILD profiled-settings-nemo-git"
 eval "$BUILD profiled-git"
