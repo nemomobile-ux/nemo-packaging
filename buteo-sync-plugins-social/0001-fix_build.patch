@@ -1,0 +1,718 @@
+diff --git a/src/common.pri b/src/common.pri
+index c0c9fc6..8f6fe32 100644
+--- a/src/common.pri
++++ b/src/common.pri
+@@ -1,7 +1,5 @@
+-QMAKE_CXXFLAGS += -Werror
+ CONFIG += link_pkgconfig
+ PKGCONFIG += \
+-    libsailfishkeyprovider \
+     libsignon-qt5 \
+     accounts-qt5 \
+     buteosyncfw5 \
+diff --git a/src/dropbox/dropbox-backup/dropbox-backup.pro b/src/dropbox/dropbox-backup/dropbox-backup.pro
+index 710b825..5d232d5 100644
+--- a/src/dropbox/dropbox-backup/dropbox-backup.pro
++++ b/src/dropbox/dropbox-backup/dropbox-backup.pro
+@@ -1,5 +1,7 @@
+ TARGET = dropbox-backup-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../dropbox-common.pri)
+ include($$PWD/../dropbox-backupoperation.pri)
+diff --git a/src/dropbox/dropbox-backupquery/dropbox-backupquery.pro b/src/dropbox/dropbox-backupquery/dropbox-backupquery.pro
+index 853955b..3d02a54 100644
+--- a/src/dropbox/dropbox-backupquery/dropbox-backupquery.pro
++++ b/src/dropbox/dropbox-backupquery/dropbox-backupquery.pro
+@@ -1,5 +1,7 @@
+ TARGET = dropbox-backupquery-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../dropbox-common.pri)
+ include($$PWD/../dropbox-backupoperation.pri)
+diff --git a/src/dropbox/dropbox-backuprestore/dropbox-backuprestore.pro b/src/dropbox/dropbox-backuprestore/dropbox-backuprestore.pro
+index 52746dc..88f9040 100644
+--- a/src/dropbox/dropbox-backuprestore/dropbox-backuprestore.pro
++++ b/src/dropbox/dropbox-backuprestore/dropbox-backuprestore.pro
+@@ -1,5 +1,7 @@
+ TARGET = dropbox-backuprestore-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../dropbox-common.pri)
+ include($$PWD/../dropbox-backupoperation.pri)
+diff --git a/src/dropbox/dropbox-common.pri b/src/dropbox/dropbox-common.pri
+index 65ab5e7..3039aec 100644
+--- a/src/dropbox/dropbox-common.pri
++++ b/src/dropbox/dropbox-common.pri
+@@ -1,3 +1,4 @@
+ INCLUDEPATH += $$PWD
++PKGCONFIG+=mlite5
+ SOURCES += $$PWD/dropboxdatatypesyncadaptor.cpp
+ HEADERS += $$PWD/dropboxdatatypesyncadaptor.h
+diff --git a/src/dropbox/dropbox-images/dropbox-images.pro b/src/dropbox/dropbox-images/dropbox-images.pro
+index e575039..481556e 100644
+--- a/src/dropbox/dropbox-images/dropbox-images.pro
++++ b/src/dropbox/dropbox-images/dropbox-images.pro
+@@ -1,5 +1,7 @@
+ TARGET = dropbox-images-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../dropbox-common.pri)
+ include($$PWD/dropbox-images.pri)
+diff --git a/src/dropbox/dropboxdatatypesyncadaptor.cpp b/src/dropbox/dropboxdatatypesyncadaptor.cpp
+index 560ad84..c36e8ea 100644
+--- a/src/dropbox/dropboxdatatypesyncadaptor.cpp
++++ b/src/dropbox/dropboxdatatypesyncadaptor.cpp
+@@ -28,8 +28,7 @@
+ #include <QtCore/QString>
+ #include <QtCore/QByteArray>
+ 
+-//libsailfishkeyprovider
+-#include <sailfishkeyprovider.h>
++#include <MGConfItem>
+ 
+ // libaccounts-qt5
+ #include <Accounts/Manager>
+@@ -159,30 +158,15 @@ QString DropboxDataTypeSyncAdaptor::clientSecret()
+ void DropboxDataTypeSyncAdaptor::loadClientIdAndSecret()
+ {
+     m_triedLoading = true;
+-    char *cClientId = NULL;
+-    char *cClientSecret = NULL;
++    QString cClientId = MGConfItem(QStringLiteral("/socialcache/keys/dropbox/client_id")).value(0).toString();;
++    QString cClientSecret = MGConfItem(QStringLiteral("/socialcache/keys/dropbox/client_secret")).value(0).toString();;;
+ 
+-    int cSuccess = SailfishKeyProvider_storedKey("dropbox", "dropbox-sync", "client_id", &cClientId);
+-    if (cClientId == NULL) {
+-        return;
+-    } else if (cSuccess != 0) {
+-        free(cClientId);
+-        return;
+-    }
+-
+-    m_clientId = QLatin1String(cClientId);
+-    free(cClientId);
+-
+-    cSuccess = SailfishKeyProvider_storedKey("dropbox", "dropbox-sync", "client_secret", &cClientSecret);
+-    if (cClientSecret == NULL) {
+-        return;
+-    } else if (cSuccess != 0) {
+-        free(cClientSecret);
++    if (cClientId.isEmpty() || cClientSecret.isEmpty()) {
+         return;
+     }
+ 
+-    m_clientSecret = QLatin1String(cClientSecret);
+-    free(cClientSecret);
++    m_clientId = cClientId;
++    m_clientSecret = cClientSecret;
+ }
+ 
+ void DropboxDataTypeSyncAdaptor::setCredentialsNeedUpdate(Accounts::Account *account)
+diff --git a/src/facebook/facebook-calendars/facebook-calendars.pro b/src/facebook/facebook-calendars/facebook-calendars.pro
+index e337f2b..eb04476 100644
+--- a/src/facebook/facebook-calendars/facebook-calendars.pro
++++ b/src/facebook/facebook-calendars/facebook-calendars.pro
+@@ -1,5 +1,7 @@
+ TARGET = facebook-calendars-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../facebook-common.pri)
+ include($$PWD/facebook-calendars.pri)
+diff --git a/src/facebook/facebook-common.pri b/src/facebook/facebook-common.pri
+index 7c30b50..96de150 100644
+--- a/src/facebook/facebook-common.pri
++++ b/src/facebook/facebook-common.pri
+@@ -1,3 +1,4 @@
+ INCLUDEPATH += $$PWD
++PKGCONFIG+=mlite5
+ SOURCES += $$PWD/facebookdatatypesyncadaptor.cpp
+ HEADERS += $$PWD/facebookdatatypesyncadaptor.h
+diff --git a/src/facebook/facebook-images/facebook-images.pro b/src/facebook/facebook-images/facebook-images.pro
+index 1496e04..3cbe6e4 100644
+--- a/src/facebook/facebook-images/facebook-images.pro
++++ b/src/facebook/facebook-images/facebook-images.pro
+@@ -1,5 +1,7 @@
+ TARGET = facebook-images-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../facebook-common.pri)
+ include($$PWD/facebook-images.pri)
+diff --git a/src/facebook/facebook-signon/facebook-signon.pro b/src/facebook/facebook-signon/facebook-signon.pro
+index 92a40fe..3a7c283 100644
+--- a/src/facebook/facebook-signon/facebook-signon.pro
++++ b/src/facebook/facebook-signon/facebook-signon.pro
+@@ -1,5 +1,7 @@
+ TARGET = facebook-signon-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../facebook-common.pri)
+ include($$PWD/facebook-signon.pri)
+diff --git a/src/facebook/facebookdatatypesyncadaptor.cpp b/src/facebook/facebookdatatypesyncadaptor.cpp
+index 2af9640..93a0e9d 100644
+--- a/src/facebook/facebookdatatypesyncadaptor.cpp
++++ b/src/facebook/facebookdatatypesyncadaptor.cpp
+@@ -28,8 +28,7 @@
+ #include <QtCore/QString>
+ #include <QtCore/QByteArray>
+ 
+-//libsailfishkeyprovider
+-#include <sailfishkeyprovider.h>
++#include <MGConfItem>
+ 
+ // libaccounts-qt5
+ #include <Accounts/Manager>
+@@ -146,14 +145,12 @@ QString FacebookDataTypeSyncAdaptor::graphAPI(const QString &request) const
+ void FacebookDataTypeSyncAdaptor::loadClientId()
+ {
+     m_triedLoading = true;
+-    char *cClientId = NULL;
+-    int cSuccess = SailfishKeyProvider_storedKey("facebook", "facebook-sync", "client_id", &cClientId);
+-    if (cSuccess != 0 || cClientId == NULL) {
++    QString cClientId = MGConfItem(QStringLiteral("/socialcache/keys/facebook/client_id")).value(0).toString();
++    if (cClientId.isEmpty()) {
+         return;
+     }
+ 
+-    m_clientId = QLatin1String(cClientId);
+-    free(cClientId);
++    m_clientId = cClientId;
+     return;
+ }
+ 
+diff --git a/src/google/google-calendars/google-calendars.pro b/src/google/google-calendars/google-calendars.pro
+index 554f2d3..8d94f39 100644
+--- a/src/google/google-calendars/google-calendars.pro
++++ b/src/google/google-calendars/google-calendars.pro
+@@ -1,5 +1,9 @@
+ TARGET = google-calendars-client
+ 
++LIBS+=-L../../common/
++
++PKGCONFIG+=mlite5
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../google-common.pri)
+ include($$PWD/google-calendars.pri)
+diff --git a/src/google/google-common.pri b/src/google/google-common.pri
+index 2755936..615fd5c 100644
+--- a/src/google/google-common.pri
++++ b/src/google/google-common.pri
+@@ -1,3 +1,4 @@
+ INCLUDEPATH += $$PWD
++PKGCONFIG+=mlite5
+ SOURCES += $$PWD/googledatatypesyncadaptor.cpp
+ HEADERS += $$PWD/googledatatypesyncadaptor.h
+diff --git a/src/google/google-contacts/google-contacts.pro b/src/google/google-contacts/google-contacts.pro
+index eab3ab4..af246ec 100644
+--- a/src/google/google-contacts/google-contacts.pro
++++ b/src/google/google-contacts/google-contacts.pro
+@@ -1,5 +1,9 @@
+ TARGET = google-contacts-client
+ 
++LIBS+=-L../../common/
++
++PKGCONFIG+=mlite5
++
+ DEFINES += SOCIALD_USE_QTPIM
+ include($$PWD/../../common.pri)
+ include($$PWD/../google-common.pri)
+diff --git a/src/google/google-contacts/googlepeoplejson.cpp b/src/google/google-contacts/googlepeoplejson.cpp
+index 9c7b918..eb76887 100644
+--- a/src/google/google-contacts/googlepeoplejson.cpp
++++ b/src/google/google-contacts/googlepeoplejson.cpp
+@@ -124,7 +124,7 @@ bool saveContactExtendedDetail(QContact *contact, const QString &detailName, con
+         matchedDetail.setName(detailName);
+     }
+     matchedDetail.setData(detailData);
+-    return contact->saveDetail(&matchedDetail, QContact::IgnoreAccessConstraints);
++    return contact->saveDetail(&matchedDetail);
+ }
+ 
+ QVariant contactExtendedDetail(const QContact &contact, const QString &detailName)
+@@ -140,7 +140,7 @@ QVariant contactExtendedDetail(const QContact &contact, const QString &detailNam
+ bool saveContactDetail(QContact *contact, QContactDetail *detail)
+ {
+     detail->setValue(QContactDetail__FieldModifiable, true);
+-    return contact->saveDetail(detail, QContact::IgnoreAccessConstraints);
++    return contact->saveDetail(detail);
+ }
+ 
+ template <typename T>
+@@ -1090,7 +1090,7 @@ bool GooglePeople::Person::saveToContact(QContact *contact,
+     QContactGuid guid = contact->detail<QContactGuid>();
+     if (guid.guid().isEmpty()) {
+         guid.setGuid(guidForPerson(accountId, resourceName));
+-        if (!contact->saveDetail(&guid, QContact::IgnoreAccessConstraints)) {
++        if (!contact->saveDetail(&guid)) {
+             return false;
+         }
+     }
+diff --git a/src/google/google-contacts/googletwowaycontactsyncadaptor.cpp b/src/google/google-contacts/googletwowaycontactsyncadaptor.cpp
+index ba70104..0b1fa1d 100644
+--- a/src/google/google-contacts/googletwowaycontactsyncadaptor.cpp
++++ b/src/google/google-contacts/googletwowaycontactsyncadaptor.cpp
+@@ -51,9 +51,9 @@ namespace {
+ const QString CollectionKeySyncToken = QStringLiteral("syncToken");
+ const QString CollectionKeySyncTokenDate = QStringLiteral("syncTokenDate");
+ 
+-QContactCollection findCollection(const QContactManager &contactManager, int accountId)
++QContactCollection findCollection(QContactManager &contactManager, int accountId)
+ {
+-    const QList<QContactCollection> collections = contactManager.collections();
++    QList<QContactCollection> collections = contactManager.collections();
+     for (const QContactCollection &collection : collections) {
+         if (GooglePeople::ContactGroup::isMyContactsCollection(collection, accountId)) {
+             return collection;
+diff --git a/src/google/google-signon/google-signon.pro b/src/google/google-signon/google-signon.pro
+index 892b346..7800970 100644
+--- a/src/google/google-signon/google-signon.pro
++++ b/src/google/google-signon/google-signon.pro
+@@ -1,5 +1,7 @@
+ TARGET = google-signon-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../google-common.pri)
+ include($$PWD/google-signon.pri)
+diff --git a/src/google/googledatatypesyncadaptor.cpp b/src/google/googledatatypesyncadaptor.cpp
+index 8bb6e68..38e22c1 100644
+--- a/src/google/googledatatypesyncadaptor.cpp
++++ b/src/google/googledatatypesyncadaptor.cpp
+@@ -28,8 +28,7 @@
+ #include <QtCore/QString>
+ #include <QtCore/QByteArray>
+ 
+-//libsailfishkeyprovider
+-#include <sailfishkeyprovider.h>
++#include <MGConfItem>
+ 
+ // libaccounts-qt5
+ #include <Accounts/Manager>
+@@ -170,30 +169,15 @@ QString GoogleDataTypeSyncAdaptor::clientSecret()
+ void GoogleDataTypeSyncAdaptor::loadClientIdAndSecret()
+ {
+     m_triedLoading = true;
+-    char *cClientId = NULL;
+-    char *cClientSecret = NULL;
++    QString cClientId = MGConfItem(QStringLiteral("/socialcache/keys/google/client_id")).value(0).toString();
++    QString cClientSecret = MGConfItem(QStringLiteral("/socialcache/keys/google/client_secret")).value(0).toString();
+ 
+-    int cSuccess = SailfishKeyProvider_storedKey("google", "google-sync", "client_id", &cClientId);
+-    if (cClientId == NULL) {
+-        return;
+-    } else if (cSuccess != 0) {
+-        free(cClientId);
+-        return;
+-    }
+-
+-    m_clientId = QLatin1String(cClientId);
+-    free(cClientId);
+-
+-    cSuccess = SailfishKeyProvider_storedKey("google", "google-sync", "client_secret", &cClientSecret);
+-    if (cClientSecret == NULL) {
+-        return;
+-    } else if (cSuccess != 0) {
+-        free(cClientSecret);
++    if (cClientId.isEmpty() || cClientSecret.isEmpty()) {
+         return;
+     }
+ 
+-    m_clientSecret = QLatin1String(cClientSecret);
+-    free(cClientSecret);
++    m_clientId = cClientId;
++    m_clientSecret = cClientSecret;
+ }
+ 
+ void GoogleDataTypeSyncAdaptor::setCredentialsNeedUpdate(Accounts::Account *account)
+diff --git a/src/knowncontacts/knowncontacts.pro b/src/knowncontacts/knowncontacts.pro
+index c7dfabd..844a699 100644
+--- a/src/knowncontacts/knowncontacts.pro
++++ b/src/knowncontacts/knowncontacts.pro
+@@ -1,5 +1,7 @@
+ TARGET = knowncontacts-client
+ 
++LIBS+=-L../common/
++
+ include($$PWD/../common.pri)
+ 
+ knowncontacts_sync_profile.path = /etc/buteo/profiles/sync
+diff --git a/src/knowncontacts/knowncontactssyncer.cpp b/src/knowncontacts/knowncontactssyncer.cpp
+index 5b674b9..a64e7e2 100644
+--- a/src/knowncontacts/knowncontactssyncer.cpp
++++ b/src/knowncontacts/knowncontactssyncer.cpp
+@@ -239,7 +239,7 @@ static void setGuid(QContact *contact, const QString &id)
+     Q_ASSERT(contact);
+     auto detail = contact->detail<QContactGuid>();
+     detail.setGuid(id);
+-    contact->saveDetail(&detail, QContact::IgnoreAccessConstraints);
++    contact->saveDetail(&detail);
+ }
+ 
+ static void setNames(QContact *contact, const QSettings &file)
+@@ -253,7 +253,7 @@ static void setNames(QContact *contact, const QSettings &file)
+             detail.setFirstName(firstName);
+         if (!lastName.isEmpty())
+             detail.setLastName(lastName);
+-        contact->saveDetail(&detail, QContact::IgnoreAccessConstraints);
++        contact->saveDetail(&detail);
+     }
+ }
+ 
+@@ -268,8 +268,8 @@ static inline void addPhoneNumberDetail(QContact *contact, const QString &value,
+         if (subType.isValid())
+             detail.setSubTypes({subType.value<int>()});
+         if (context.isValid())
+-            detail.setContexts({context.value<int>()});
+-        contact->saveDetail(&detail, QContact::IgnoreAccessConstraints);
++            detail.setContexts(context.value<int>());
++        contact->saveDetail(&detail);
+     }
+ }
+ 
+@@ -292,7 +292,7 @@ static void setEmailAddress(QContact *contact, const QSettings &file)
+         auto detail = findDetail<QContactEmailAddress>(
+                 *contact, QContactEmailAddress::FieldEmailAddress, emailAddress);
+         detail.setValue(QContactEmailAddress::FieldEmailAddress, emailAddress);
+-        contact->saveDetail(&detail, QContact::IgnoreAccessConstraints);
++        contact->saveDetail(&detail);
+     }
+ }
+ 
+@@ -310,7 +310,7 @@ static void setCompanyInfo(QContact *contact, const QSettings &file)
+             detail.setTitle(title);
+         if (!office.isEmpty())
+             detail.setLocation(office);
+-        contact->saveDetail(&detail, QContact::IgnoreAccessConstraints);
++        contact->saveDetail(&detail);
+     }
+ }
+ 
+diff --git a/src/onedrive/onedrive-backup/onedrive-backup.pro b/src/onedrive/onedrive-backup/onedrive-backup.pro
+index d05ec3d..41b1ea7 100644
+--- a/src/onedrive/onedrive-backup/onedrive-backup.pro
++++ b/src/onedrive/onedrive-backup/onedrive-backup.pro
+@@ -1,5 +1,7 @@
+ TARGET = onedrive-backup-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../onedrive-common.pri)
+ include($$PWD/../onedrive-backupoperation.pri)
+diff --git a/src/onedrive/onedrive-backupquery/onedrive-backupquery.pro b/src/onedrive/onedrive-backupquery/onedrive-backupquery.pro
+index 412ffe1..3b64781 100644
+--- a/src/onedrive/onedrive-backupquery/onedrive-backupquery.pro
++++ b/src/onedrive/onedrive-backupquery/onedrive-backupquery.pro
+@@ -1,5 +1,7 @@
+ TARGET = onedrive-backupquery-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../onedrive-common.pri)
+ include($$PWD/../onedrive-backupoperation.pri)
+diff --git a/src/onedrive/onedrive-backuprestore/onedrive-backuprestore.pro b/src/onedrive/onedrive-backuprestore/onedrive-backuprestore.pro
+index 25a9767..397c3e6 100644
+--- a/src/onedrive/onedrive-backuprestore/onedrive-backuprestore.pro
++++ b/src/onedrive/onedrive-backuprestore/onedrive-backuprestore.pro
+@@ -1,5 +1,7 @@
+ TARGET = onedrive-backuprestore-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../onedrive-common.pri)
+ include($$PWD/../onedrive-backupoperation.pri)
+diff --git a/src/onedrive/onedrive-common.pri b/src/onedrive/onedrive-common.pri
+index 92e8f37..c38cc9c 100644
+--- a/src/onedrive/onedrive-common.pri
++++ b/src/onedrive/onedrive-common.pri
+@@ -1,3 +1,4 @@
+ INCLUDEPATH += $$PWD
++PKGCONFIG+=mlite5
+ SOURCES += $$PWD/onedrivedatatypesyncadaptor.cpp
+ HEADERS += $$PWD/onedrivedatatypesyncadaptor.h
+diff --git a/src/onedrive/onedrive-images/onedrive-images.pro b/src/onedrive/onedrive-images/onedrive-images.pro
+index 8e7c591..edec63d 100644
+--- a/src/onedrive/onedrive-images/onedrive-images.pro
++++ b/src/onedrive/onedrive-images/onedrive-images.pro
+@@ -1,5 +1,7 @@
+ TARGET = onedrive-images-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../onedrive-common.pri)
+ include($$PWD/onedrive-images.pri)
+diff --git a/src/onedrive/onedrive-signon/onedrive-signon.pro b/src/onedrive/onedrive-signon/onedrive-signon.pro
+index 419a7f0..0d654a6 100644
+--- a/src/onedrive/onedrive-signon/onedrive-signon.pro
++++ b/src/onedrive/onedrive-signon/onedrive-signon.pro
+@@ -1,5 +1,7 @@
+ TARGET = onedrive-signon-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../onedrive-common.pri)
+ include($$PWD/onedrive-signon.pri)
+diff --git a/src/onedrive/onedrivedatatypesyncadaptor.cpp b/src/onedrive/onedrivedatatypesyncadaptor.cpp
+index ac02a15..4cc7dce 100644
+--- a/src/onedrive/onedrivedatatypesyncadaptor.cpp
++++ b/src/onedrive/onedrivedatatypesyncadaptor.cpp
+@@ -28,8 +28,7 @@
+ #include <QtCore/QString>
+ #include <QtCore/QByteArray>
+ 
+-//libsailfishkeyprovider
+-#include <sailfishkeyprovider.h>
++#include <MGConfItem>
+ 
+ // libaccounts-qt5
+ #include <Accounts/Manager>
+@@ -145,18 +144,13 @@ QString OneDriveDataTypeSyncAdaptor::clientId()
+ void OneDriveDataTypeSyncAdaptor::loadClientId()
+ {
+     m_triedLoading = true;
+-    char *cClientId = NULL;
++    QString cClientId = MGConfItem(QStringLiteral("/socialcache/keys/onedrive/client_id")).value(0).toString();;
+ 
+-    int cSuccess = SailfishKeyProvider_storedKey("onedrive", "onedrive-sync", "client_id", &cClientId);
+-    if (cClientId == NULL) {
+-        return;
+-    } else if (cSuccess != 0) {
+-        free(cClientId);
++    if (cClientId.isEmpty()) {
+         return;
+     }
+ 
+-    m_clientId = QLatin1String(cClientId);
+-    free(cClientId);
++    m_clientId = cClientId;
+ }
+ 
+ void OneDriveDataTypeSyncAdaptor::setCredentialsNeedUpdate(Accounts::Account *account)
+diff --git a/src/sociald/sociald.pro b/src/sociald/sociald.pro
+index de0ece5..b0d0cf4 100644
+--- a/src/sociald/sociald.pro
++++ b/src/sociald/sociald.pro
+@@ -10,6 +10,8 @@ sociald_sync_profile.files = $$PWD/sociald.All.xml
+ sociald_client_plugin_xml.path = /etc/buteo/profiles/client
+ sociald_client_plugin_xml.files = $$PWD/sociald.xml
+ 
++LIBS+=-L../common/
++
+ OTHER_FILES += \
+     sociald_sync_profile.files \
+     sociald_client_plugin_xml.files
+diff --git a/src/twitter/twitter-common.pri b/src/twitter/twitter-common.pri
+index 4ea61a8..da2887f 100644
+--- a/src/twitter/twitter-common.pri
++++ b/src/twitter/twitter-common.pri
+@@ -1,3 +1,4 @@
+ INCLUDEPATH += $$PWD
++PKGCONFIG+=mlite5
+ SOURCES += $$PWD/twitterdatatypesyncadaptor.cpp
+ HEADERS += $$PWD/twitterdatatypesyncadaptor.h
+diff --git a/src/twitter/twitter-notifications/twitter-notifications.pro b/src/twitter/twitter-notifications/twitter-notifications.pro
+index b1e8b60..075438a 100644
+--- a/src/twitter/twitter-notifications/twitter-notifications.pro
++++ b/src/twitter/twitter-notifications/twitter-notifications.pro
+@@ -1,5 +1,7 @@
+ TARGET = twitter-notifications-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../twitter-common.pri)
+ include($$PWD/twitter-notifications.pri)
+diff --git a/src/twitter/twitter-posts/twitter-posts.pro b/src/twitter/twitter-posts/twitter-posts.pro
+index 2762fe7..b2d4678 100644
+--- a/src/twitter/twitter-posts/twitter-posts.pro
++++ b/src/twitter/twitter-posts/twitter-posts.pro
+@@ -1,5 +1,7 @@
+ TARGET = twitter-posts-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../twitter-common.pri)
+ include($$PWD/twitter-posts.pri)
+diff --git a/src/twitter/twitterdatatypesyncadaptor.cpp b/src/twitter/twitterdatatypesyncadaptor.cpp
+index da336ee..29500d1 100644
+--- a/src/twitter/twitterdatatypesyncadaptor.cpp
++++ b/src/twitter/twitterdatatypesyncadaptor.cpp
+@@ -35,8 +35,7 @@
+ #include <QCryptographicHash>
+ #include <QJsonDocument>
+ 
+-//libsailfishkeyprovider
+-#include <sailfishkeyprovider.h>
++#include <MGConfItem>
+ 
+ // libaccounts-qt5
+ #include <Accounts/Manager>
+@@ -281,20 +280,16 @@ QDateTime TwitterDataTypeSyncAdaptor::parseTwitterDateTime(const QString &tdt)
+ void TwitterDataTypeSyncAdaptor::loadConsumerKeyAndSecret()
+ {
+     m_triedLoading = true;
+-    char *cConsumerKey = NULL;
+-    char *cConsumerSecret = NULL;
+-    int ckSuccess = SailfishKeyProvider_storedKey("twitter", "twitter-sync", "consumer_key", &cConsumerKey);
+-    int csSuccess = SailfishKeyProvider_storedKey("twitter", "twitter-sync", "consumer_secret", &cConsumerSecret);
++    QString cConsumerKey = MGConfItem(QStringLiteral("/socialcache/keys/twitter/consumer_key")).value(0).toString();
++    QString cConsumerSecret = MGConfItem(QStringLiteral("/socialcache/keys/twitter/consumer_secret")).value(0).toString();
+ 
+-    if (ckSuccess != 0 || cConsumerKey == NULL || csSuccess != 0 || cConsumerSecret == NULL) {
++    if (cConsumerKey.isEmpty() || cConsumerSecret.isEmpty()) {
+         qCInfo(lcSocialPlugin) << "No valid OAuth2 keys found";
+         return;
+     }
+ 
+-    m_consumerKey = QLatin1String(cConsumerKey);
+-    m_consumerSecret = QLatin1String(cConsumerSecret);
+-    free(cConsumerKey);
+-    free(cConsumerSecret);
++    m_consumerKey = cConsumerKey;
++    m_consumerSecret = cConsumerSecret;
+ }
+ 
+ void TwitterDataTypeSyncAdaptor::setCredentialsNeedUpdate(Accounts::Account *account)
+diff --git a/src/vk/vk-calendars/vk-calendars.pro b/src/vk/vk-calendars/vk-calendars.pro
+index e7d6f74..d9cec06 100644
+--- a/src/vk/vk-calendars/vk-calendars.pro
++++ b/src/vk/vk-calendars/vk-calendars.pro
+@@ -1,5 +1,7 @@
+ TARGET = vk-calendars-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../vk-common.pri)
+ include($$PWD/vk-calendars.pri)
+diff --git a/src/vk/vk-common.pri b/src/vk/vk-common.pri
+index ec545bc..ad305af 100644
+--- a/src/vk/vk-common.pri
++++ b/src/vk/vk-common.pri
+@@ -1,3 +1,4 @@
+ INCLUDEPATH += $$PWD
++PKGCONFIG += mlite5
+ SOURCES += $$PWD/vkdatatypesyncadaptor.cpp $$PWD/vknetworkaccessmanager.cpp
+ HEADERS += $$PWD/vkdatatypesyncadaptor.h $$PWD/vknetworkaccessmanager_p.h
+diff --git a/src/vk/vk-contacts/vk-contacts.pro b/src/vk/vk-contacts/vk-contacts.pro
+index fc0a949..44b2ed7 100644
+--- a/src/vk/vk-contacts/vk-contacts.pro
++++ b/src/vk/vk-contacts/vk-contacts.pro
+@@ -1,5 +1,7 @@
+ TARGET = vk-contacts-client
+ 
++LIBS+=-L../../common/
++
+ DEFINES += SOCIALD_USE_QTPIM
+ include($$PWD/../../common.pri)
+ include($$PWD/../vk-common.pri)
+diff --git a/src/vk/vk-contacts/vkcontactsyncadaptor.cpp b/src/vk/vk-contacts/vkcontactsyncadaptor.cpp
+index 302e639..9bfe686 100644
+--- a/src/vk/vk-contacts/vkcontactsyncadaptor.cpp
++++ b/src/vk/vk-contacts/vkcontactsyncadaptor.cpp
+@@ -54,12 +54,12 @@ const QString FriendCollectionName = QStringLiteral("VK");
+ bool saveNonexportableDetail(QContact &c, QContactDetail &d)
+ {
+     d.setValue(QContactDetail__FieldNonexportable, QVariant::fromValue<bool>(true));
+-    return c.saveDetail(&d, QContact::IgnoreAccessConstraints);
++    return c.saveDetail(&d);
+ }
+ 
+-QContactCollection findCollection(const QContactManager &contactManager, const QString &name, int accountId)
++QContactCollection findCollection(QContactManager &contactManager, const QString &name, int accountId)
+ {
+-    const QList<QContactCollection> collections = contactManager.collections();
++    QList<QContactCollection> collections = contactManager.collections();
+     for (const QContactCollection &collection : collections) {
+         if (collection.metaData(QContactCollection::KeyName).toString() == name
+                 && collection.extendedMetaData(COLLECTION_EXTENDEDMETADATA_KEY_ACCOUNTID).toInt() == accountId) {
+diff --git a/src/vk/vk-images/vk-images.pro b/src/vk/vk-images/vk-images.pro
+index a6d5966..a912ece 100644
+--- a/src/vk/vk-images/vk-images.pro
++++ b/src/vk/vk-images/vk-images.pro
+@@ -1,5 +1,7 @@
+ TARGET = vk-images-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../vk-common.pri)
+ include($$PWD/vk-images.pri)
+diff --git a/src/vk/vk-notifications/vk-notifications.pro b/src/vk/vk-notifications/vk-notifications.pro
+index d500b25..404c1c6 100644
+--- a/src/vk/vk-notifications/vk-notifications.pro
++++ b/src/vk/vk-notifications/vk-notifications.pro
+@@ -1,5 +1,7 @@
+ TARGET = vk-notifications-client
+ 
++LIBS+=-L../../common/
++
+ include($$PWD/../../common.pri)
+ include($$PWD/../vk-common.pri)
+ include($$PWD/vk-notifications.pri)
+diff --git a/src/vk/vk-posts/vk-posts.pro b/src/vk/vk-posts/vk-posts.pro
+index ae650f2..040e306 100644
+--- a/src/vk/vk-posts/vk-posts.pro
++++ b/src/vk/vk-posts/vk-posts.pro
+@@ -1,5 +1,7 @@
+ TARGET = vk-posts-client
+ 
++LIBS+=-L../../common/
++
+ DEFINES += SOCIALD_USE_QTPIM
+ include($$PWD/../../common.pri)
+ include($$PWD/../vk-common.pri)
+diff --git a/src/vk/vkdatatypesyncadaptor.cpp b/src/vk/vkdatatypesyncadaptor.cpp
+index 6539f2c..7b09e65 100644
+--- a/src/vk/vkdatatypesyncadaptor.cpp
++++ b/src/vk/vkdatatypesyncadaptor.cpp
+@@ -15,8 +15,7 @@
+ #include <QtCore/QString>
+ #include <QtCore/QByteArray>
+ 
+-//libsailfishkeyprovider
+-#include <sailfishkeyprovider.h>
++#include <MGConfItem>
+ 
+ //libaccounts-qt
+ #include <Accounts/Manager>
+@@ -313,15 +312,12 @@ QString VKDataTypeSyncAdaptor::clientId()
+ void VKDataTypeSyncAdaptor::loadClientId()
+ {
+     m_triedLoading = true;
+-    char *cClientId = NULL;
+-    int cSuccess = SailfishKeyProvider_storedKey("vk", "vk-sync", "client_id", &cClientId);
+-    if (cSuccess != 0 || cClientId == NULL) {
++    QString cClientId = MGConfItem(QStringLiteral("/socialcache/keys/vk/client_id")).value(0).toString();;
++    if (cClientId.isEmpty()) {
+         return;
+     }
+ 
+-    m_clientId = QLatin1String(cClientId);
+-    free(cClientId);
+-    return;
++    m_clientId = cClientId;
+ }
+ 
+ void VKDataTypeSyncAdaptor::setCredentialsNeedUpdate(Accounts::Account *account)
