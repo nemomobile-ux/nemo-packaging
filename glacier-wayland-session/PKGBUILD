@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=glacier-wayland-session
-pkgver=0.7
+pkgver=0.8
 pkgrel=1
 pkgdesc="Glacier Wayland session"
 arch=('any')
@@ -14,7 +14,9 @@ license=('GPL-3.0-or-later')
 depends=('lipstick-glacier-home-git' 
 	'lightdm'
 	'glacier-devicelock-plugin'
-	'pulseaudio-module-keepalive')
+	'pulseaudio-module-keepalive'
+	'ngfd-settings-nemo'
+	'profiled-settings-nemo')
 
 makedepends=('git')
 optdepends=()
