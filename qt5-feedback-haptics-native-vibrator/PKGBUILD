@@ -1,0 +1,35 @@
+# $Id$
+# Contributor: Donald Carr<sirspudd@gmail.com>
+# Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+#set -o errexit
+#set -o xtrace
+
+pkgname=qt5-feedback-haptics-native-vibrator
+pkgver=20201217.2d8e6e6
+pkgrel=1
+pkgdesc='Haptic feedback plugin using native vibrator'
+arch=('x86_64' 'aarch64')
+url="https://github.com/mer-hybris/qt5-feedback-haptics-droid-vibrator.git"
+license=('GPL')
+depends=('qt5-base' 'qt5-feedback' 'qt5-profile-git')
+makedepends=('git')
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
+
+pkgver () {
+  cd ${srcdir}/${pkgname}
+  echo "$(git log -1 --format="%cd" --date=short | tr -d '-').$(git log -1 --format="%h")"
+}
+
+build() {
+    cd ${srcdir}/${pkgname}
+    qmake "CONFIG+=native_vibrator"
+    make
+}
+
+package() {
+    cd ${srcdir}/${pkgname}
+    make -j 1 INSTALL_ROOT="$pkgdir" install 
+}
