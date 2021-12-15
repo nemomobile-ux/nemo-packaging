@@ -155,6 +155,11 @@ eval "$BUILD pure-maps-git"
 eval "$BUILD glacier-weather-git"
 
 
+eval "$BUILD qt5-feedback-haptics-native-vibrator"
+eval "$BUILD libsocialcache"
+eval "$BUILD buteo-sync-plugins-social"
+
+
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
     eval "$BUILD bootsplash-theme-nemo" # for x86_64 plymouth-theme-
