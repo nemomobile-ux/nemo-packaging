@@ -15,7 +15,8 @@ depends=('libsocialcache'
 	'qt5-pim'
 	'mkcal'
 	'kcalendarcore'
-	'libaccounts-qt')
+	'libaccounts-qt'
+	'nemo-qml-plugin-notifications')
 
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
