@@ -5,7 +5,7 @@
 
 pkgname=nemo-qml-plugin-contacts-git
 pkgver=0.3.21.r0.ge3d4df5
-pkgrel=1
+pkgrel=2
 pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-contacts"
