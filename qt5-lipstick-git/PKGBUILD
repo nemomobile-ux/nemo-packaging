@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt5-lipstick-git
-pkgver=0.44.r0.g4328161d
+pkgver=0.44.r8.gd6b37384
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')

@@ -5,7 +5,7 @@
 
 
 pkgname=qt5-ofono-nemo-extensions-git
-pkgver=1.0.27.r0.gebe45e0
+pkgver=1.0.28.r0.gbfb7eda
 pkgrel=1
 pkgdesc="A Qt library for accessing nemomobile specific ofono extensions"
 arch=('x86_64' 'aarch64')

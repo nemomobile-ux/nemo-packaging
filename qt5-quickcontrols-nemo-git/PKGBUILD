@@ -13,7 +13,7 @@ _branch=master
 _gitname=qt$_basename
 pkgname=qt5-$_basename-git
 
-pkgver=5.6.3.r5.g2719a63
+pkgver=5.6.4.r0.gf458169
 
 pkgrel=1
 pkgdesc="Nemomobile Qt Quick Controls"

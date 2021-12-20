@@ -9,7 +9,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.3.r0.gc62dfa5
+pkgver=0.4.r10.g1824405
 pkgrel=1
 pkgdesc="Glacier package manager"
 arch=('x86_64' 'aarch64')

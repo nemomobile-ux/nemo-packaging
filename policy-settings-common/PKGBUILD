@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=policy-settings-common
-pkgver=common.0.12.1.r0.g4b01640
+pkgver=0.12.2.r0.g766245a
 pkgrel=1
 pkgdesc="Common policy settings"
 arch=('x86_64' 'aarch64')

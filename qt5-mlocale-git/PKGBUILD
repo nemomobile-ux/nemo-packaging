@@ -4,7 +4,7 @@
 
 pkgname=qt5-mlocale-git
 _pkgname=qt-mlocale-git
-pkgver=0.7.4.r0.gfcb7a926
+pkgver=0.7.5.r0.g9609e0f0
 pkgrel=1
 pkgdesc="Contains classes MLocale and friends originally from libmeegotouch"
 arch=('x86_64' 'aarch64')

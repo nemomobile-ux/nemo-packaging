@@ -3,7 +3,7 @@
 
 pkgname=sensorfw-git
 
-pkgver=0.12.5.r0.gd51730b
+pkgver=0.12.6.r0.g2e53901
 pkgrel=1
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')

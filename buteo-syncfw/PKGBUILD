@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=buteo-syncfw-git
-pkgver=0.10.13.r0.g6af7f70
+pkgver=0.10.16.r0.g5f8276e
 
 pkgrel=1
 pkgdesc="Synchronization backend"

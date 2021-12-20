@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=2.8.1.r54.g5ea3af7d
+pkgver=2.9.1.r4.g652b5d03
 
 pkgrel=1
 pkgdesc="Pure Maps"

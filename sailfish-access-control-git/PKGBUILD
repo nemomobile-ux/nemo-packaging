@@ -5,7 +5,7 @@
 
 pkgname=sailfish-access-control-git
 _pkgname=sailfish-access-control
-pkgver=0.0.5.r0.gf858fed
+pkgver=0.0.6.r0.g563353c
 pkgrel=1
 pkgdesc="Sailfish Access Control library"
 arch=('x86_64' 'aarch64')

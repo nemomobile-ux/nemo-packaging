@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.1.3.r0.g316daf9
+pkgver=0.1.3.r14.g9d7f360
 
 pkgrel=1
 pkgdesc="Glacier Camera"

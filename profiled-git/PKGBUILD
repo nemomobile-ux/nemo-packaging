@@ -3,8 +3,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=profiled-git
-pkgver=1.0.12.r0.g32b02ae
-pkgrel=4
+pkgver=1.0.13.r0.gd3d2b21
+pkgrel=1
 pkgdesc="Sailfish Profile daemon, manages user settings"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/profiled"
