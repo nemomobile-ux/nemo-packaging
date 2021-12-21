@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=r255.9e1fd83
+pkgver=r257.f5ca8d0
 
 pkgrel=1
 pkgdesc="Nemo mail client"
@@ -31,15 +31,13 @@ pkgver() {
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
-  mkdir -p build
-  cd build
-  qmake ..
-  make
+    cmake \
+        -B "${pkgname}/build" \
+        -S "${pkgname}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}/build" all
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  cd build
-  make -j 1 INSTALL_ROOT="${pkgdir}" install
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 }
