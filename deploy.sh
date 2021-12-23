@@ -82,6 +82,7 @@ eval "$BUILD profiled-git"
 eval "$BUILD nemo-qml-plugin-systemsettings-git"
 eval "$BUILD qt5-lipstick-git"
 eval "$BUILD nemo-qml-plugin-connectivity-git"
+eval "$BUILD qt5-systems"
 eval "$BUILD glacier-settings-git"
 
 eval "$BUILD buteo-syncfw"
