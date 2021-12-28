@@ -160,6 +160,8 @@ eval "$BUILD qt5-feedback-haptics-native-vibrator"
 eval "$BUILD libsocialcache"
 eval "$BUILD buteo-sync-plugins-social"
 
+eval "$BUILD nemo-qml-plugin-alarms-git"
+
 
 # arm specific packages
 if [ "$BUILDARCH" == "aarch64" ]; then
