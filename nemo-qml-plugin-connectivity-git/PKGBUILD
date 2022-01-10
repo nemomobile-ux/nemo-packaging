@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (neochapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-connectivity-git
-pkgver=0.2.10.r0.g7ec117f
+pkgver=0.2.11.r0.g2e685b4
 pkgrel=1
 pkgdesc="Connectivity plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
