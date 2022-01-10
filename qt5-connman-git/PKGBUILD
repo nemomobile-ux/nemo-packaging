@@ -7,7 +7,7 @@
 #set -o xtrace
 
 pkgname=qt5-connman-git
-pkgver=20211220.04f72d5
+pkgver=20211222.bc9d38e
 pkgrel=1
 pkgdesc='Qt Quick wrappers for connman'
 arch=('x86_64' 'aarch64')
