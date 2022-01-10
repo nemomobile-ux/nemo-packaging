@@ -4,7 +4,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-time-git
-pkgver=0.1.3.r0.ge9ac208
+pkgver=0.1.4.r0.g6009158
 pkgrel=1
 pkgdesc="Wall clock plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
