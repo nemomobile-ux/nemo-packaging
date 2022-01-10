@@ -5,7 +5,7 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-systemsettings-git
-pkgver=0.5.85.1.r0.g86886e8
+pkgver=0.5.85.1.r1.g8339463
 pkgrel=1
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
