@@ -19,7 +19,7 @@ depends=('qt5-sensors-sensorfw'
 	    'mce-headers'
 	    'qt5-mce-git'
 	    'qt5-ngfd-git'
-	    'nemo-qml-plugin-devicelock-git'
+	    'nemo-qml-plugin-devicelock'
 	    'nemo-qml-plugin-systemsettings-git'
 	    'pulseaudio'
 	    'bluez-qt')

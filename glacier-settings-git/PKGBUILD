@@ -21,7 +21,7 @@ url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
 depends=('qt5-glacier-app-git'
 	'qt5-location'
-	'nemo-qml-plugin-devicelock-git'
+	'nemo-qml-plugin-devicelock'
 	'nemo-qml-plugin-settings-git'
 	'qt5-connman-git'
 	'qt5-mce-git'

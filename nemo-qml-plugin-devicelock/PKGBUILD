@@ -5,39 +5,35 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=nemo-qml-plugin-devicelock-git
-pkgver=0.3.7.r0.g453727e
-pkgrel=2
+pkgname=nemo-qml-plugin-devicelock
+pkgver=0.3.7
+pkgrel=1
 pkgdesc="Device lock plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-devicelock"
 license=('BSD-3-Clause')
 depends=('nemo-qml-plugin-dbus' 'nemo-keepalive')
-makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}" "nemo-devicelock.service" "nemo-devicelock.socket")
-md5sums=('SKIP' 'SKIP' 'SKIP')
-
-pkgver() {
-    cd "$srcdir/${pkgname%-git}"
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+	"nemo-devicelock.service"
+	"nemo-devicelock.socket")
+sha256sums=('926dc476c0d9b7ec5f0dff62c610d5877f98006bf76803a2f16978860865619b'
+	'460a0ad1d48f16d31ee26828536ce8bc6745f37de1b1a725d6b6c0e186eabb8e'
+	'cd9c280bf80a62c5a67b1369b085328ccc2886addcacd2c18eb3498f41d0fee1')
 
 prepare() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     sed -i "s|libsystemd-daemon|libsystemd|g" ./src/nemo-devicelock/host/host.pro
     sed -i "s|libsystemd-daemon|libsystemd|g" ./src/daemon/daemon.pro
 }
 
 build() {
-    cd "$srcdir/${pkgname%-git}"
-    qmake
+    cd $pkgname-$pkgver
+    qmake "VERSION=${pkgver}"
     make
 }
 
 package() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     mkdir -p run/nemo-devicelock
