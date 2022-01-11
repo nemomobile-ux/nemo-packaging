@@ -4,42 +4,32 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt5-iodata-git
-pkgver=0.19.11+git2.r0.gda49f26
+pkgname=libiodata
+pkgver=0.19.11+git2
 pkgrel=1
 pkgdesc="Mer library for input/output data"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libiodata"
 license=('LGPL-2.1-or-later')
 depends=('qt5-base')
-makedepends=('git' 'bison' 'flex')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
-
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+makedepends=('bison' 'flex')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('a519553209c5037954454d167530b1b02c3e929f8d38547622aaaa922d89dd0f')
 
 prepare() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-0.19.11-git2
   # Logging macro cause compilation to fail otherwise
   sed -i "s@define LOG_LEVEL LOG_WARNING@define LOG_LEVEL LOG_NONE@" src/log.h
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
-  export IODATA_VERSION=0.19.10
+  cd $pkgname-0.19.11-git2
+  export IODATA_VERSION=${pkgver}
   qmake
   make -j1
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-0.19.11-git2
   make -j 1 INSTALL_ROOT="${pkgdir}" install
 }
