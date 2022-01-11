@@ -1,33 +1,27 @@
 # $Id$
 # Maintainer: TheKit <nekit1000 at gmail.com>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=mce-headers-git
-pkgver=1.29.0.r0.g5af012a
+pkgname=mce-headers
+pkgver=1.29.0
 pkgrel=1
 pkgdesc="Development files for mce"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/mce-dev"
 license=('GPL')
-makedepends=('git' 'doxygen')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
-
-pkgver() {
-	cd "$srcdir/${pkgname}"
-	git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
+makedepends=('doxygen')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('55ba1f3c8aa47aa4925bbf3bbd29aec977c69060cb459c5eec295b8278266b9c')
 
 build() {
-	cd "$srcdir/${pkgname}"
+	cd mce-dev-$pkgver
 	make
 	make doc
 }
 
 package() {
-	cd "$srcdir/${pkgname}"
+	cd mce-dev-$pkgver
 	make DESTDIR="$pkgdir/" install
 	install -d $pkgdir/usr/share/doc/mce-doc/html/
 	install -m 644 doc/html/* $pkgdir/usr/share/doc/mce-doc/html/

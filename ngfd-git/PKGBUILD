@@ -13,7 +13,7 @@ depends=('ohm-plugins-misc'
 	'libcanberra'
 	'gstreamer'
 	'mce'
-	'mce-headers-git')
+	'mce-headers')
 
 makedepends=('git' 'doxygen')
 provides=("${pkgname%-git}")

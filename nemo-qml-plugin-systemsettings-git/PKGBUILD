@@ -22,7 +22,7 @@ depends=('qt5-systems'
 	'nemo-qml-plugin-dbus'
 	'qt5-xmlpatterns')
 
-makedepends=('git' 'qt5-tools' 'mce-headers-git')
+makedepends=('git' 'qt5-tools' 'mce-headers')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname%-git}::git+${url}")
