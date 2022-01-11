@@ -4,45 +4,45 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=mce-git
-pkgver=1.109.2.r0.g51135ea
+pkgname=mce
+pkgver=1.109.2
 pkgrel=1
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
-url="https://github.com/sailfishos/mce.git"
-license=('GPL')
-depends=('libngf-git' 'libiphb-git')
+url="https://github.com/sailfishos/mce"
+license=('LGPLv2')
+depends=('libngf' 'libiphb')
 makedepends=('git' 'doxygen' 'libdsme' 'libsystemd' 'usb-moded' 'mce-headers')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}" '0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch')
-md5sums=('SKIP' 'SKIP')
-
-pkgver() {
-  cd "$srcdir/${pkgname%-git}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+	'0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch'
+	'0002-Handle_KEY_WAKEUP.patch')
+sha256sums=('d14a87b2c91b2ec8898ceedfdbb7ccec13aac6c59e4c0ab7bbbc102d0fb13717'
+	'8ed260853165760423b4c6764ae9fb129e0506403d070fced60f576d9185e5f4'
+	'595ddbfda22a802a47f0239b24f53a28aa785abe128ae56cfbdbcac0d0deae2d')
 
 
 prepare() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     sed -i "s|libsystemd-daemon|libsystemd|g" ./Makefile
-    git submodule update --init --recursive
+    rm -rf dbus-gmain
+    git clone https://github.com/sailfishos-mirror/dbus-glib.git dbus-gmain
+    cd dbus-gmain
+    git reset --hard d42176ae4763e5288ef37ea314fe58387faf2005
+    cd ../
     patch -p1 --input="${srcdir}/0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch"
+    patch -p1 --input="${srcdir}/0002-Handle_KEY_WAKEUP.patch"
 }
 
 build() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
+    ./verify_version
     make
 
 }
 
 package() {
-    cd "$srcdir/${pkgname%-git}"
-    make DESTDIR="$pkgdir/" install
+    cd $pkgname-$pkgver
+    make DESTDIR="$pkgdir/" install ENABLE_MANPAGE_INSTALL=n
 
     mv $pkgdir/usr/sbin $pkgdir/usr/bin
 
