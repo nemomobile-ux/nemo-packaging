@@ -6,26 +6,20 @@ pkgver=0.66.6
 pkgrel=1
 pkgdesc="DSME dsmesock dynamic library"
 arch=('x86_64' 'aarch64')
-url="https://github.com/sailfishos/libdsme.git"
+url="https://github.com/sailfishos/libdsme"
 license=('LGPL')
 depends=('glib2')
-makedepends=('git' 'check')
-source=("${pkgname}::git+${url}")
-sha512sums=('SKIP')
-
-prepare() {
-  cd libdsme
-#  patch -p1 -i ../libdsme-uio.patch # Fix build
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('3e5f1b145500a503180b793345045bda195733c5bcd1083602798b680dfe8ada')
 
 build() {
-  cd libdsme
+  cd $pkgname-$pkgver
   ./verify_version
   make
 }
 
 package() {
-  cd libdsme
+  cd $pkgname-$pkgver
   make DESTDIR="${pkgdir}" install_main install_devel
 
   # Fix symlinks
