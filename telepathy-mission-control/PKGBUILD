@@ -1,0 +1,56 @@
+# Maintainer: Antonio Rojas 
+# Contributor: Ionut Biru 
+# Contributor: Ju Liu 
+# Contributor: Bjorn Lindeijer 
+# Contributor: Andreas Zwinkau 
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+pkgname=telepathy-mission-control
+pkgver=5.16.6
+pkgrel=1
+pkgdesc="A Telepathy component providing abstraction of some of the details of connection managers."
+arch=('x86_64' 'aarch64')
+url="http://telepathy.freedesktop.org/wiki/Mission Control"
+license=(LGPL2.1)
+depends=(telepathy-glib
+	dconf
+	connman
+	mce
+	mce-headers)
+makedepends=(libxslt python gtk-doc)
+source=("https://github.com/TelepathyIM/telepathy-mission-control/archive/telepathy-mission-control-$pkgver.tar.gz"
+	"0002-Disable-gtkdoc.patch"
+	"0003-McdSlacker-Revert-use-of-org.gnome.SessionManager-in.patch"
+	"0005-Introduce-a-systemd-service-for-mission-control-5.patch")
+sha256sums=('63653aa4d5690037398c5b812740fa8ea1ee775440c5262fe50c269faff87f8e'
+	'08421f3151416c46ecf41cf70c318281369f8aacdadcae913714db70d30cd74f'
+	'773518101fcfadcaedfebd335a26f25697ded5b766b022fe5ced593e3d32141c'
+	'95e870b42247c2bdeaac10c4e8675613fc8aeb85bdf2325114a0fa903db40612')
+
+prepare() {
+    cd $pkgname-$pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0002-Disable-gtkdoc.patch"
+    patch -p1 --input="${srcdir}/0003-McdSlacker-Revert-use-of-org.gnome.SessionManager-in.patch"
+    patch -p1 --input="${srcdir}/0005-Introduce-a-systemd-service-for-mission-control-5.patch"
+    NOCONFIGURE=1 ./autogen.sh
+}
+build() {
+    cd $pkgname-$pkgname-$pkgver
+    ./configure --prefix=/usr --libexecdir=/usr/lib/telepathy \
+        --with-connectivity=connman \
+        --with-accounts-cache-dir=/tmp \
+        --disable-gtk-doc \
+        --disable-static \
+        --disable-conn-setting \
+        --disable-Werror \
+        --disable-schemas-compile
+    make
+}
+
+package() {
+    cd $pkgname-$pkgname-$pkgver
+    make DESTDIR="$pkgdir" install
+
+    mkdir -p $pkgdir/usr/lib/systemd/user/user-session.target.wants/
+    ln -s ../mission-control-5.service $pkgdir/usr/lib/systemd/user/user-session.target.wants/mission-control-5.service
+}

@@ -1,0 +1,88 @@
+From 14401a53cf3b4fcb0c1dea9365685ce10cb660ae Mon Sep 17 00:00:00 2001
+From: John Brooks <john.brooks@jollamobile.com>
+Date: Wed, 11 Jun 2014 06:10:59 -0600
+Subject: [PATCH] Introduce a systemd service for mission-control-5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is useful to ensure that mission-control-5 is always started at the
+right time, and restarted automatically if it fails.
+
+Signed-off-by: Tomi Leppänen <tomi.leppanen@jolla.com>
+---
+ .gitignore                                           |  1 +
+ server/Makefile.am                                   |  5 +++++
+ server/mission-control-5.service.in                  | 12 ++++++++++++
+ ...g.freedesktop.Telepathy.AccountManager.service.in |  3 ++-
+ 4 files changed, 20 insertions(+), 1 deletion(-)
+ create mode 100644 server/mission-control-5.service.in
+
+diff --git a/.gitignore b/.gitignore
+index c3abe8e7..36b1d652 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -74,6 +74,7 @@ stamp-*
+ /server/mission-control-5.8
+ /server/org.freedesktop.Telepathy.AccountManager.service
+ /server/org.freedesktop.Telepathy.MissionControl5.service
++/server/mission-control-5.service
+ tags
+ TAGS
+ /telepathy-mission-control-5*
+diff --git a/server/Makefile.am b/server/Makefile.am
+index 5be1cdc1..57c5cf4a 100644
+--- a/server/Makefile.am
++++ b/server/Makefile.am
+@@ -12,15 +12,20 @@ AM_CFLAGS = $(ERROR_CFLAGS)
+ 
+ EXTRA_DIST = org.freedesktop.Telepathy.MissionControl5.service.in \
+ 	     org.freedesktop.Telepathy.AccountManager.service.in \
++	     mission-control-5.service.in \
+ 	     mission-control-5.8.in
+ CLEANFILES = org.freedesktop.Telepathy.MissionControl5.service \
+ 	     org.freedesktop.Telepathy.AccountManager.service \
++	     mission-control-5.service \
+ 	     mission-control-5.8
+ 
+ servicefiledir=$(prefix)/share/dbus-1/services
+ servicefile_DATA=org.freedesktop.Telepathy.MissionControl5.service \
+ 		 org.freedesktop.Telepathy.AccountManager.service
+ 
++systemdfiledir=$(prefix)/lib/systemd/user
++systemdfile_DATA=mission-control-5.service
++
+ %.service: %.service.in Makefile
+ 	$(AM_V_GEN)sed \
+ 		-e 's![@]libexecdir[@]!$(libexecdir)!' \
+diff --git a/server/mission-control-5.service.in b/server/mission-control-5.service.in
+new file mode 100644
+index 00000000..88439f31
+--- /dev/null
++++ b/server/mission-control-5.service.in
+@@ -0,0 +1,12 @@
++[Unit]
++Description=Telepathy mission control daemon
++After=dbus.socket lipstick.service
++Requires=dbus.socket
++
++[Service]
++ExecStart=@libexecdir@/mission-control-5
++Type=dbus
++BusName=org.freedesktop.Telepathy.AccountManager
++
++[Install]
++WantedBy=user-session.target
+diff --git a/server/org.freedesktop.Telepathy.AccountManager.service.in b/server/org.freedesktop.Telepathy.AccountManager.service.in
+index c137820b..ef9f7979 100644
+--- a/server/org.freedesktop.Telepathy.AccountManager.service.in
++++ b/server/org.freedesktop.Telepathy.AccountManager.service.in
+@@ -1,3 +1,4 @@
+ [D-BUS Service]
+ Name=org.freedesktop.Telepathy.AccountManager
+-Exec=@libexecdir@/mission-control-5
++Exec=/bin/false
++SystemdService=mission-control-5.service
+-- 
+2.20.1
+

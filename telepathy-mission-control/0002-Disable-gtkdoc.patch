@@ -1,0 +1,71 @@
+From 7ed75804983e0c817f379b30cb8c1a03aa794c9d Mon Sep 17 00:00:00 2001
+From: John Brooks <john.brooks@jollamobile.com>
+Date: Mon, 19 May 2014 07:21:12 -0600
+Subject: [PATCH] Disable gtkdoc
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Tomi Leppänen <tomi.leppanen@jolla.com>
+---
+ autogen.sh   | 24 ++++++++++++++++++++++--
+ configure.ac |  7 +++++++
+ 2 files changed, 29 insertions(+), 2 deletions(-)
+
+diff --git a/autogen.sh b/autogen.sh
+index 5c3d0843..759f3efc 100755
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -1,8 +1,28 @@
+ #!/bin/sh
+ set -e
+ 
+-echo 'Running gtkdocize'
+-gtkdocize
++# check if gtk-doc is explicitly disabled
++for ag_option in $@
++do
++  case $ag_option in
++    -disable-gtk-doc | --disable-gtk-doc)
++    enable_gtk_doc=no
++  ;;
++  esac
++done
++
++if test x$enable_gtk_doc = xno; then
++    if test -f gtk-doc.make; then :; else
++       echo "EXTRA_DIST = missing-gtk-doc" > gtk-doc.make
++    fi
++    echo "WARNING: You have disabled gtk-doc."
++    echo "         As a result, you will not be able to generate the API"
++    echo "         documentation and 'make dist' will not work."
++    echo
++else
++    echo 'Running gtkdocize'
++    gtkdocize || exit $?
++fi
+ 
+ if test -n "$AUTOMAKE"; then
+     : # don't override an explicit user request
+diff --git a/configure.ac b/configure.ac
+index ceacae81..2582d96f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -332,7 +332,14 @@ AC_SUBST(GLIB_GENMARSHAL)
+ GLIB_MKENUMS="`$PKG_CONFIG --variable=glib_mkenums glib-2.0`"
+ AC_SUBST(GLIB_MKENUMS)
+ 
++AM_CONDITIONAL(ENABLE_GTK_DOC, test "x$enable_gtk_doc" = xyes)
++AM_CONDITIONAL(DISABLE_GTK_DOC, test "x$disable_gtk_doc" = xno)
++# Check for GTK_DOC_CHECK availability. The GTK_DOC_CHECK invocation
++# must be on its own line, gtkdocize relies on it
++m4_ifdef([GTK_DOC_CHECK], [
+ GTK_DOC_CHECK([1.17],[--flavour no-tmpl])
++])
++
+ GLIB_GSETTINGS
+ 
+ pluginlibdir=$libdir/mission-control
+-- 
+2.26.2
+
