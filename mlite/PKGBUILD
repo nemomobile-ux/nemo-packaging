@@ -2,20 +2,19 @@
 # Maintainer: Felix Yan <felixonm...@archlinux.org>
 
 pkgname=mlite
-pkgver=0.3.8
+pkgver=0.4.0
 pkgrel=1
 pkgdesc="Useful classes originating from MeeGo Touch"
 arch=('x86_64' 'aarch64')
-url="https://github.com/sailfishos/mlite.git";
+url="https://github.com/sailfishos/mlite";
 license=('LGPL')
 depends=('qt5-base' 'dconf')
-makedepends=('git' 'qt5-tools')
-source=("${pkgname%-git}::git+${url}")
-sha512sums=('SKIP')
+makedepends=('qt5-tools')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('6403c5b7551fae31bfa8d0cc5173905873ffc0ef34d377f09ab10af7bf833aba')
 
 prepare() {
-  cd mlite
-  git checkout $pkgver
+  cd $pkgname-$pkgver
   sed -i -e 's|/usr/libexec|/usr/lib|' \
       tools/mliteremoteaction/mliteremoteaction.pro \
       tools/mliteremoteaction/main.cpp \
@@ -23,14 +22,14 @@ prepare() {
 }
 
 build() {
-  cd mlite
+  cd $pkgname-$pkgver
 
-  qmake-qt5
+  qmake-qt5 VERSION=${pkgver}
   make
 }
 
 package() {
-  cd mlite
+  cd $pkgname-$pkgver
 
   make INSTALL_ROOT="$pkgdir" install
 
