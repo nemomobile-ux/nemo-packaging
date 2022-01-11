@@ -8,7 +8,7 @@ pkgdesc="Device State Management Entity"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/dsme"
 license=('GPL')
-depends=('libngf' 'libiphb-git' 'mce' 'cryptsetup' 'libsystemd' 'libdsme>=0.66.6' 'glib2' 'systemd' 'systemd-libs')
+depends=('libngf' 'libiphb' 'mce' 'cryptsetup' 'libsystemd' 'libdsme>=0.66.6' 'glib2' 'systemd' 'systemd-libs')
 makedepends=('git' 'autoconf' 'automake' 'mce-headers')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")

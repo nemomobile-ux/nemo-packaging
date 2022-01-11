@@ -47,7 +47,7 @@ eval "$BUILD glacier-polkit-agent"
 
 # homescreen/de
 eval "$BUILD mce-headers"
-eval "$BUILD libiphb-git"
+eval "$BUILD libiphb"
 eval "$BUILD nemo-keepalive-git"
 eval "$BUILD nemo-qml-plugin-devicelock-git"
 eval "$BUILD glacier-devicelock-plugin"
