@@ -4,33 +4,33 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_pkgname=usb-moded
-pkgname=usb-moded-git
-pkgver=0.86.0+mer55.r3.g473b789
+pkgname=usb-moded
+pkgver=0.86.0+mer56
 pkgrel=1
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/usb-moded.git"
+url="https://github.com/sailfishos/usb-moded"
 license=('GPL')
 depends=('libdsme' 'dbus-glib' 'udev' 'kmod' 'sailfish-access-control' 'dhcp' 'net-tools')
-makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}" 'dhcpd.conf')
-md5sums=('SKIP' 'SKIP')
-
-pkgver() {
-	cd "$srcdir/$_pkgname"
-	git describe --long --tags | sed 's/^mer\///;s/\([^-]*-g\)/r\1/;s/-/./g'
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+	'dhcpd.conf'
+	'0001-use_etc-hw-release.patch')
+sha256sums=('8776a4a373bc0ec375b22b28b2fb31e114bdc73aed911f5075ce11de2385847c'
+	'a2408b6692339595f98fd5e46398da794019b4818ee865fd22953576f26366c9'
+	'7c2d178094394e24dc08cc10213d9153b44ecab7994287d18be257e8fbd53305')
 
 prepare() {
-    cd "$srcdir/${pkgname%-git}"
-    git submodule update --init --recursive
+    cd $pkgname-0.86.0-mer56
+    patch -p1 --input="${srcdir}/0001-use_etc-hw-release.patch"
+    rm -rf dbus-gmain
+    git clone https://github.com/sailfishos-mirror/dbus-glib.git dbus-gmain
+    cd dbus-gmain
+    git reset --hard d42176ae4763e5288ef37ea314fe58387faf2005
+    cd ../
 }
 
 build() {
-	cd "$srcdir/$_pkgname"
+    cd $pkgname-0.86.0-mer56
     ./autogen.sh
     ./configure --prefix=/usr \
 	--enable-app-sync \
@@ -43,7 +43,7 @@ build() {
 }
 
 package() {
-	cd "$srcdir/$_pkgname"
+	cd $pkgname-0.86.0-mer56
 	make DESTDIR="$pkgdir/" install
 	mv "$pkgdir/usr/sbin" "$pkgdir/usr/bin"
 #installs dev files
@@ -82,14 +82,13 @@ package() {
 	install -d $pkgdir/usr/share/user-managerd/remove.d/
 	install -m 744 -D scripts/usb_mode_user_clear.sh $pkgdir/usr/share/user-managerd/remove.d/
 
-	install -m 644 -D $srcdir/usb-moded/systemd/usb-moded.service $pkgdir/usr/lib/systemd/system/
+	install -m 644 -D systemd/usb-moded.service $pkgdir/usr/lib/systemd/system/
 	ln -s ../usb-moded.service $pkgdir/usr/lib/systemd/system/basic.target.wants/
 
 
 	mkdir -p $pkgdir/etc/modprobe.d
-	install -m 644 -D $srcdir/${pkgname%-git}/rpm/usb_moded.conf $pkgdir/etc/modprobe.d/usb_moded.conf
+	install -m 644 -D rpm/usb_moded.conf $pkgdir/etc/modprobe.d/usb_moded.conf
 
 	mkdir -p $pkgdir/usr/share/dbus-1/system.d/
-	install -m 644 -D $srcdir/${pkgname%-git}/debian/usb_moded.conf $pkgdir/usr/share/dbus-1/system.d/usb_moded.conf
-
+	install -m 644 -D debian/usb_moded.conf $pkgdir/usr/share/dbus-1/system.d/usb_moded.conf
 }
