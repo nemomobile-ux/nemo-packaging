@@ -4,31 +4,24 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-models
-pkgver=0.2.2
+pkgver=0.2.4
 pkgrel=1
 pkgdesc="Nemo QML models plugin"
 arch=('x86_64' 'aarch64')
-url="https://github.com/sailfishos/nemo-qml-plugin-models.git"
+url="https://github.com/sailfishos/nemo-qml-plugin-models"
 license=('BSD')
 depends=('nemo-qml-plugin-dbus' 'libmlocale')
-makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}")
-md5sums=('SKIP')
-
-prepare() {
-    cd "$srcdir/${pkgname%-git}"
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('7bc9843ba4da057016b8efe9e5eb68cf2099b90d68bef2810d828434b06e6004')
 
 build() {
-    cd "$srcdir/${pkgname%-git}"
-    qmake
+    cd $pkgname-$pkgver
+    qmake VERSION=$pkgver
     make
 }
 
 package() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     rm -rf opt
