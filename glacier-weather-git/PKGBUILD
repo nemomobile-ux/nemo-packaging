@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=r37.9a36e06
+pkgver=r39.2b8dab8
 
 pkgrel=1
 pkgdesc="Nemo weather"
