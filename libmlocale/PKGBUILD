@@ -1,47 +1,37 @@
 ## $Id$
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt5-mlocale-git
-_pkgname=qt-mlocale-git
-pkgver=0.7.5.r0.g9609e0f0
+pkgname=libmlocale
+pkgver=0.7.5
 pkgrel=1
 pkgdesc="Contains classes MLocale and friends originally from libmeegotouch"
 arch=('x86_64' 'aarch64')
-# FIXME: libmlocale qt-related repo naming
 url="https://github.com/sailfishos/libmlocale"
 license=('LGPLv2')
 depends=('qt5-base')
-makedepends=('git' 'qt5-tools')
-optdepends=()
-provides=("${pkgname}-git" "${_pkgname}-git")
-conflicts=("${pkgname}-git" "${_pkgname}-git")
+makedepends=( 'qt5-tools')
 source=(
-  "${_pkgname}::git+${url}"
+  "${url}/archive/refs/tags/$pkgver.tar.gz"
   "disable-werror.patch"
   )
-sha256sums=('SKIP' 'SKIP')
-
-pkgver() {
-  cd "${srcdir}/${_pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+sha256sums=('d6cb14638dfa8f048db8b896dd802fc598dd45ce4599001203bafb1a32584238'
+    '74a0ea1a421144c1fe9d5c3624d8e4eb4977a6286137b724a0b24999b1b0643b')
 
 build() {
-  cd "${srcdir}/${_pkgname}"
+  cd $pkgname-$pkgver
   patch -p1 --input="${srcdir}/disable-werror.patch"
   mkdir -p build
   cd build
-  ../configure --prefix=/usr 
-  #qmake ..
+  ../configure --prefix=/usr \
+    --disable-static \
+    -icu
   make
 }
 
 package() {
-  cd "${srcdir}/${_pkgname}"
+  cd $pkgname-$pkgver
   cd build
   make INSTALL_ROOT="${pkgdir}" install
   # remove tests mess
