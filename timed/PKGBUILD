@@ -5,30 +5,24 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt5-timed-git
-pkgver=3.6.13.r0.g19cbb69
-pkgrel=4
+pkgname=timed
+pkgver=3.6.13
+pkgrel=1
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/timed"
 license=('LGPL-2.1-or-later')
 depends=('sailfish-access-control' 'libiodata' 'tzdata-timed' 'connman' 'ofono')
-makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0001-Fixes-build.patch" "0002-Fixes-access.patch")
-md5sums=('SKIP' 'SKIP' 'SKIP')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    "0001-Fixes-build.patch"
+    "0002-Fixes-access.patch")
 
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+sha256sums=('38dd11965895863133910935d56abf8b50b28dc20ffbf77eff124576f82e213e'
+	'deb706820ce9b76c0994d35e72394bac8c739d0593736a1713736c491ecd513a'
+	'cf81d073f2618fd914fbd5f55152580c7e3bf14f53eaf0950cb7998fd9460e02')
 
 prepare() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   patch -Np1 -i "${srcdir}/0001-Fixes-build.patch"
   patch -Np1 -i "${srcdir}/0002-Fixes-access.patch"
   mkdir -p src/h/timed-qt5/
@@ -37,14 +31,13 @@ prepare() {
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   qmake
-  cd "${srcdir}/${pkgname}"
   make
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   make -j 1 INSTALL_ROOT="$pkgdir/" install
   sed -i 's/WantedBy=pre-user-session.target/WantedBy=graphical-session-pre.target/' "${pkgdir}/usr/lib/systemd/user/timed-qt5.service"
 

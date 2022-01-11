@@ -14,7 +14,7 @@ license=('BSD')
 depends=('qt5-systems'
 	'qt5-usb-moded-git'
 	'profiled-git'
-	'qt5-timed-git'
+	'timed'
 	'nemo-qml-plugin-models'
 	'qt5-connman-git'
 	'mlite'
