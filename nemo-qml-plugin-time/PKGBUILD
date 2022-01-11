@@ -1,0 +1,29 @@
+## $Id$
+# Contributor TheKit <nekit1000 at gmail.com>
+# Contributor Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+pkgname=nemo-qml-plugin-time
+pkgver=0.1.4
+pkgrel=1
+pkgdesc="Wall clock plugin for Nemo Mobile"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/nemo-qml-plugin-time"
+license=('BSD')
+depends=('timed' 'nemo-qml-plugin-dbus')
+makedepends=('mce-headers')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('1d483ae9ac64b17df7e777e424d5fd43a6a7acd84d2afc3791f54cc2d726aa29')
+
+build() {
+    cd $pkgname-$pkgver
+    qmake
+    make
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
+    rm -rf $pkgdir/opt
+}
