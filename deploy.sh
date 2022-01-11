@@ -97,7 +97,7 @@ eval "$BUILD pulsecore-headers"
 eval "$BUILD pulseaudio-module-keepalive"
 
 eval "$BUILD libdsme"
-eval "$BUILD dsme-git"
+eval "$BUILD dsme"
 eval "$BUILD swi-prolog7"
 eval "$BUILD libprolog"
 eval "$BUILD libtrace-ohm"
