@@ -1,49 +1,30 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="github.com"
-_project=nemomobile-ux
-_basename=voicecall
-_branch=master
-
-pkgname=$_basename-git
-
-pkgver=0.7.11.r8.gf415bfb
-
+pkgname=voicecall
+pkgver=0.7.14
 pkgrel=1
 pkgdesc="Dialer engine for Nemo Mobile"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_basename#branch=$_branch"
+url="https://github.com/sailfishos/voicecall"
 license=('LGPL-2.1-only AND Apache-2.0')
 depends=('libpulse' 'nemo-qml-plugin-devicelock-git' 'qt5-resource-git' 'libqofono-qt5' 'qt5-multimedia' 'qt5-ngfd-git' 'telepathy-qt')
 makedepends=('git' 'cmake')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" 'voicecall-manager.service')
-md5sums=('SKIP' 'SKIP')
-
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
-
-prepare() {
-  cd "${srcdir}/${pkgname}"
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+	'voicecall-manager.service')
+sha256sums=('78241c14d8678bcf987951e0beb4b4608399f14c8eec8d5d9503f101906e8d51'
+    '2b23389872552e88b061d170271ec35c1c0cec68f38c1a770c14c79c3491fb8d')
 
 build() {
-    cmake \
-        -B "${pkgname}/build" \
-        -S "${pkgname}" \
-        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
-    make -C "${pkgname}/build" all
+    cd $pkgname-$pkgver
+    qmake CONFIG+=enable-ngf CONFIG+=enable-audiopolicy CONFIG+=enable-telepathy CONFIG+=enable-nemo-devicelock CONFIG+=install-servicefiles
+    make
 }
 
 package() {
-    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
+    cd $pkgname-$pkgver
+    make -j 1 INSTALL_ROOT="${pkgdir}" install
+
     rm "${pkgdir}/usr/lib/systemd/user/voicecall-manager.service"
     cp ${srcdir}/voicecall-manager.service "${pkgdir}/usr/lib/systemd/user/voicecall-manager.service"
     mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
