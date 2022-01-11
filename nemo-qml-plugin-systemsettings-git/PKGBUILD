@@ -18,7 +18,7 @@ depends=('qt5-systems'
 	'nemo-qml-plugin-models'
 	'qt5-connman-git'
 	'mlite'
-	'mce-git'
+	'mce'
 	'nemo-qml-plugin-dbus'
 	'qt5-xmlpatterns')
 
