@@ -1,0 +1,32 @@
+# $Id$
+# Contributer Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+# Maintainer: TheKit <nekit1000 at gmail.com>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+pkgname=libngf
+pkgver=0.28
+pkgrel=1
+pkgdesc="Non-graphic feedback C-based client library"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/libngf"
+license=('GPL')
+depends=('dbus-glib')
+makedepends=('check' 'doxygen')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('b4bb365c8ef207a3a0e29ccd16711d899a8be2351b580f7e2ec2423d57463bdd')
+
+build() {
+	cd $pkgname-$pkgver
+	./autogen.sh
+	./configure --prefix=/usr \
+	    --disable-static
+	make
+	doxygen doc/doxygen.cfg
+}
+
+package() {
+	cd $pkgname-$pkgver
+	make DESTDIR="$pkgdir/" install
+	install -d $pkgdir/usr/share/doc/libngf-doc/html/
+	install -m 644 doc/html/* $pkgdir/usr/share/doc/libngf-doc/html/
+}
