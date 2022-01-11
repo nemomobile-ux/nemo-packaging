@@ -1,13 +1,13 @@
 ## $Id$
 
 pkgname=nemo-qml-plugin-alarms-git
-pkgver=0.3.10.r0.g87ebc13
+pkgver=0.3.11.r0.g2bd0624
 pkgrel=1
 pkgdesc="alarms plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-alarms"
 license=('BSD')
-depends=('qt5-base')
+depends=('qt5-base' 'qt5-timed' 'qt5-declarative')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
