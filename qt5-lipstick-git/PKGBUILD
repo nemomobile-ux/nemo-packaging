@@ -13,7 +13,7 @@ url="https://github.com/nemomobile-ux/lipstick.git"
 license=('LGPL-2.1-only')
 depends=('qt5-sensors-sensorfw'
 	    'qt5-wayland'
-	    'nemo-keepalive-git'
+	    'nemo-keepalive'
 	    'qt5-resource-git'
 	    'libsystemd'
 	    'mce-headers'

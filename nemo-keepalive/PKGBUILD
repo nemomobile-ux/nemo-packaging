@@ -2,41 +2,31 @@
 # Contributor: TheKit <nekit1000 at gmail.com>
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=nemo-keepalive-git
-pkgver=1.8.7.r0.g1bb68f2
+pkgname=nemo-keepalive
+pkgver=1.8.7
 pkgrel=1
 pkgdesc="CPU and display keepalive and scheduling library"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-keepalive"
 license=('LGPL-2.1-or-later')
 depends=('qt5-declarative' 'libiphb' 'mce-headers')
-makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}")
-md5sums=('SKIP')
-
-pkgver() {
-    cd "$srcdir/${pkgname%-git}"
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('b49d8c4f53024250774f3f47f7c5da9d701db03b464c3c800b460375fe073dcc')
 
 build() {
-    cd "$srcdir/${pkgname%-git}"
-    qmake-qt5
+    cd $pkgname-$pkgver
+    export VERSION=`echo ${pkgver} | sed 's/+.*//'`
+    qmake-qt5 VERSION=${VERSION}
     make
-#    make -C lib-glib
-#    make -C tools
 }
 
 package() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     mkdir -p $pkgdir/usr/lib/pkgconfig/
     make -j 1 INSTALL_ROOT="$pkgdir/" install
-#    make -C lib-glib install ROOT="$pkgdir/"
-#    make -C tools install ROOT="$pkgdir/"
 
     # Remove tests
     rm -rf "$pkgdir"/opt
