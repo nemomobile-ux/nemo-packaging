@@ -1,0 +1,29 @@
+# $Id$
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+pkgname=nemo-qml-plugin-notifications
+pkgver=1.2.16
+pkgrel=1
+pkgdesc="Nemo QML notifications plugin"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/nemo-qml-plugin-notifications"
+license=('BSD-3-Clause')
+depends=('qt5-declarative')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('8c56b7f5bc1a9fc1e8fe46f3ca3b290d901456d4a1e875606501c6141db7343f')
+
+build() {
+  cd $pkgname-$pkgver
+  mkdir -p build
+  cd build
+  qmake VERSION=${pkgver} ..
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver/build
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
+}
