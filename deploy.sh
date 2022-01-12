@@ -74,7 +74,7 @@ eval "$BUILD libqofono-qt5"
 eval "$BUILD glacier-pinquery-git" # additional app
 eval "$BUILD libqofonoext"
 eval "$BUILD libconnman-qt"
-eval "$BUILD qt5-ngfd-git"
+eval "$BUILD libngf-qt"
 eval "$BUILD qt5-usb-moded-git"
 eval "$BUILD profiled-settings-nemo-git"
 eval "$BUILD profiled-git"

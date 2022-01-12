@@ -1,31 +1,24 @@
 ## $Id$
 # Contributor: TheKit <nekit1000 at gmail.com>
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt5-ngfd-git
-_pkgname=libngf-qt-git
-pkgver=0.8.2.r0.g503e9d0
+pkgname=libngf-qt
+pkgver=0.8.2
 pkgrel=1
 pkgdesc="Qt-based client library for Non-Graphic Feedback daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libngf-qt"
 license=('GPL')
 depends=('qt5-declarative' 'libngf' 'qt5-feedback')
-makedepends=('git')
-provides=("${_pkgname%-git}" "${pkgname%-git}")
-conflicts=("${_pkgname%-git}" "${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}")
-md5sums=('SKIP')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('e18b3b05f30fe58d7c272df18b07559d1ca479879ad1778cf51db6b60f812126')
 
-pkgver() {
-    cd "$srcdir/${pkgname%-git}"
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
 
 build() {
-    cd "$srcdir/${pkgname%-git}"
-    qmake PREFIX=/usr
+    cd $pkgname-$pkgver
+    qmake PREFIX=/usr "VERSION=$(sed 's/+.*//' <<<"${pkgver}")"
 
     # Hack for PREFIX path not being passed to src subproject for some reason
     cd src
@@ -36,7 +29,7 @@ build() {
 }
 
 package() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     # Remove tests
     rm -rf "$pkgdir/opt"
