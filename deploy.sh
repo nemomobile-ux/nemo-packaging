@@ -118,7 +118,7 @@ eval "$BUILD ngfd-plugin-native-vibrator"
 
 
 eval "$BUILD lipstick-glacier-home-git"
-eval "$BUILD glacier-wayland-session"
+eval "$BUILD glacier-wayland-session-git"
 
 eval "$BUILD libcommhistory-git"
 eval "$BUILD commhistory-daemon-git"
