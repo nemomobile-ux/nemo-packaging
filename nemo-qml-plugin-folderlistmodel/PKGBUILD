@@ -1,0 +1,30 @@
+# $Id$
+# Contributor: TheKit <nekit1000 at gmail.com>
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+pkgname=nemo-qml-plugin-folderlistmodel
+pkgver=0.15
+pkgrel=1
+pkgdesc="Folder list model plugin for Nemo Mobile"
+arch=('x86_64' 'aarch64')
+url="https://github.com/nemomobile-ux/nemo-qml-plugin-folderlistmodel"
+license=('BSD-3-Clause')
+depends=('qt5-declarative')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('3bfdb17c0a24cc7f751ae31851fca0d40b5231671905444dbac13000f4ba4977')
+
+build() {
+  cd $pkgname-$pkgver
+  mkdir -p build
+  cd build
+  qmake ..
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver/build
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
+}
