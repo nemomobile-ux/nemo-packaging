@@ -13,7 +13,7 @@ url="https://github.com/nemomobile-ux/nemo-qml-plugin-systemsettings.git"
 license=('BSD')
 depends=('qt5-systems'
 	'libusb-moded-qt'
-	'profiled-git'
+	'profiled'
 	'timed'
 	'nemo-qml-plugin-models'
 	'libconnman-qt'

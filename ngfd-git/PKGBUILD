@@ -9,7 +9,7 @@ url="https://github.com/sailfishos/ngfd"
 license=('GPL')
 depends=('ohm-plugins-misc'
 	'libpulse' 'pulseaudio'
-	'profiled-git'
+	'profiled'
 	'libcanberra'
 	'gstreamer'
 	'mce'
