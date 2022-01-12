@@ -3,22 +3,22 @@
 # Contributor: Bhushan Shah <bshah@kde.org>
 
 pkgname=libqofono-qt5
-pkgver=0.103
-pkgrel=2
+pkgver=0.105
+pkgrel=1
 pkgdesc="A library for accessing the ofono daemon, and a declarative plugin for it. This allows accessing ofono in qtquick and friends."
 arch=('aarch64' 'x86_64')
 url="https://github.com/sailfishos/libqofono"
 license=('LGPL')
 provides=('libqofono')
 depends=('qt5-declarative' 'qt5-xmlpatterns')
-source=("https://github.com/sailfishos/libqofono/archive/refs/tags/${pkgver}.tar.gz"
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
         "0001-add-support-for-reset-contexts.patch"
         "context-preferred.patch"
         "mtk_settings_binding.patch")
-md5sums=('SKIP'
-         '18cd69a363041b4b3e72a565ab68b69b'
-         '17444b274709abf45a7e871c9f8b6407'
-         '19aac206aab5c3e4f115f7e7ba55e541')
+sha256sums=('78e7dd98c62c921c6966d5e921f103d242c9bf8ba6c336e192720c7aa7033eb7'
+         'd09066cb9337895da66f01c2c06d35f9dc478c070cdfb788a16a829d8b9bfdb2'
+         'f793347078553903c7e6f6b235091c1863b18cd9b4078f34addc7a3ded7f2bd8'
+         '1f63b04d05be4988498cba96c9700d6f4b6237325d65e508cf6fa2f21247a765')
 
 prepare() {
     cd libqofono-$pkgver
