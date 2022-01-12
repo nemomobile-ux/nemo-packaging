@@ -14,7 +14,7 @@ license=('LGPL-2.1-only')
 depends=('qt5-sensors-sensorfw'
 	    'qt5-wayland'
 	    'nemo-keepalive'
-	    'qt5-resource-git'
+	    'libresourceqt'
 	    'libsystemd'
 	    'mce-headers'
 	    'libmce-qt'

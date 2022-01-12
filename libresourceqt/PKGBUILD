@@ -2,39 +2,31 @@
 # Contributor: TheKit <nekit1000 at gmail.com>
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt5-resource-git
-pkgver=1.31.0.r0.g200a861
+pkgname=libresourceqt
+pkgver=1.31.0
 pkgrel=1
 pkgdesc="Resource Policy Qt API"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libresourceqt"
 license=('LGPL-2.1-or-later')
 depends=('qt5-base' 'libresource')
-makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
-
-pkgver() {
-    cd "${srcdir}/${pkgname}"
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('5fc3d5d28c2c32fcab768136ed6f113271681dc7db7f109af4ddc53b1838c5f1')
 
 build() {
-    cd "${srcdir}/${pkgname}"
-    qmake
+    cd $pkgname-$pkgver
+    qmake "VERSION=$pkgver"
     make
 }
 
 package() {
-    cd "${srcdir}/${pkgname}"
+    cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     # Remove tests and empty dirs
     rm -rf "$pkgdir/usr/lib/libresourceqt-qt5-tests"
     rm -rf "$pkgdir/usr/share/doc"
     rm -rf "$pkgdir/usr/share/man"
 }
- 
