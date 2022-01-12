@@ -1,37 +1,25 @@
 ## $Id$
 # Maintainer: Chupligin Sergey (neochapay) <neochapay@gmail.com>
 
-pkgname=nemo-qml-plugin-connectivity-git
-pkgver=0.2.11.r0.g2e685b4
+pkgname=nemo-qml-plugin-connectivity
+pkgver=0.2.11
 pkgrel=1
 pkgdesc="Connectivity plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-connectivity"
 license=('BSD')
 depends=('qt5-systems' 'libconnman-qt' 'libqofonoext' )
-makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}")
-md5sums=('SKIP')
-
-pkgver() {
-    cd "$srcdir/${pkgname%-git}"
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
-
-prepare() {
-    cd "$srcdir/${pkgname%-git}"
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('cb0d3c317baddd63a44a48ceec4646349060acdae31b4b731501d6f40c9de5b3')
 
 build() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     qmake
     make
 }
 
 package() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     rm -rf opt

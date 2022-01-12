@@ -13,7 +13,7 @@ url="https://github.com/sailfishos/libqofonoext"
 license=('LGPL-2.1-only')
 depends=('libqofono-qt5>=0.101')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('ssss')
+sha256sums=('c19c19bd53d9c1107b6548489fd7fe60538d748db7e60ca6a5957cc208b7aafa')
 
 build() {
     cd $pkgname-$pkgver

@@ -25,7 +25,7 @@ depends=('qt5-glacier-app-git'
 	'nemo-qml-plugin-settings-git'
 	'libconnman-qt'
 	'libmce-qt'
-	'nemo-qml-plugin-connectivity-git'
+	'nemo-qml-plugin-connectivity'
 	'nemo-qml-plugin-models>=0.2.1'
 	'qt5-systems>=5.12'
 	'nemo-qml-plugin-systemsettings')
