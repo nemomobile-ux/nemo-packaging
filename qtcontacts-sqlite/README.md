@@ -1,2 +1,2 @@
-# qt5-contacts-sqlite-extensions-git
+# qtcontacts-sqlite
 SQLite-based plugin for QtPIM Contacts
