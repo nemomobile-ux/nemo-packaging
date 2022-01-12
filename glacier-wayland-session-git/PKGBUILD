@@ -5,8 +5,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=glacier-wayland-session-git
-pkgver=0.4.r4.gaaa760a
-pkgrel=1
+pkgver=0.8.r0.gaaa760a
+pkgrel=3
 pkgdesc="Glacier Wayland session"
 arch=('any')
 url="https://github.com/nemomobile-ux/glacier-wayland-session.git"
