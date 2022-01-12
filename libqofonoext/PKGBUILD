@@ -4,33 +4,25 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 
-pkgname=qt5-ofono-nemo-extensions-git
-pkgver=1.0.28.r0.gbfb7eda
+pkgname=libqofonoext
+pkgver=1.0.28
 pkgrel=1
 pkgdesc="A Qt library for accessing nemomobile specific ofono extensions"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libqofonoext"
 license=('LGPL-2.1-only')
 depends=('libqofono-qt5>=0.101')
-makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-sha512sums=('SKIP')
-
-pkgver() {
-    cd "${srcdir}/${pkgname}"
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('ssss')
 
 build() {
-    cd "${srcdir}/${pkgname}"
+    cd $pkgname-$pkgver
     qmake
     make
 }
 
 package() {
-    cd "${srcdir}/${pkgname}"
+    cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
 }
  

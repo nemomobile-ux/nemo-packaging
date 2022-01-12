@@ -73,7 +73,7 @@ eval "$BUILD qtcontacts-sqlite"
 eval "$BUILD nemo-qml-plugin-notifications"
 eval "$BUILD libqofono-qt5"
 eval "$BUILD glacier-pinquery-git" # additional app
-eval "$BUILD qt5-ofono-nemo-extensions-git"
+eval "$BUILD libqofonoext"
 eval "$BUILD qt5-connman-git"
 eval "$BUILD qt5-ngfd-git"
 eval "$BUILD qt5-usb-moded-git"
