@@ -4,41 +4,28 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=buteo-syncfw-git
-pkgver=0.10.16.r0.g5f8276e
-
+pkgname=buteo-syncfw
+pkgver=0.10.16
 pkgrel=1
 pkgdesc="Synchronization backend"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/buteo-syncfw"
 license=('LGPLv2')
 depends=('libiphb' 'nemo-keepalive' 'libmce-qt' 'signond' 'libaccounts-qt')
-makedepends=('git' 'qt5-tools' 'doxygen')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "msyncd.service")
-md5sums=('SKIP' 'SKIP')
-
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
-
-prepare() {
-    cd "${srcdir}/${pkgname}"
-}
+makedepends=('qt5-tools' 'doxygen')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+	"msyncd.service")
+sha256sums=('8d6c1bdfacc23654487c7a6b573a025a2c8ffa7e7496ea2eb11df566db2f8e7e'
+	'bd37f105cd64ebac3dc2c991bfc8f7b989c8311800b92dd8e50add996aebc133')
 
 build() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   qmake-qt5 CONFIG+=usb-moded DEFINES+=USE_KEEPALIVE
   make
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   make -j 1 INSTALL_ROOT="${pkgdir}" install
 
   rm "${pkgdir}/usr/lib/systemd/user/msyncd.service"
