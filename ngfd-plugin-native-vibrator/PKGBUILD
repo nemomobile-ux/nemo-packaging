@@ -7,41 +7,31 @@
 _host="github.com"
 _project=mer-hybris
 _basename=ngfd-plugin-droid-vibrator
-_branch=master
 
 _gitname=$_basename
 pkgname=ngfd-plugin-native-vibrator
 
-pkgver=1.3.1.r0.gacc17b2
+pkgver=1.3.1
 pkgrel=1
 pkgdesc="Vibrator native plugin for ngfd"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://$_host/$_project/$_gitname"
 license=('LGPL-2.1')
 depends=('ngfd')
-makedepends=('git' 'cmake' 'glib2')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}" "ngfd-plugin-droid-vibrator")
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
-
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+makedepends=('cmake' 'glib2')
+conflicts=("ngfd-plugin-droid-vibrator")
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('c6fce10044f3a3dc10b59759ded2b9bc857167a8da8ba3ca83c4c99dfd2d33b7')
 
 build() {
+    cd $_basename-$pkgver
     cmake \
-        -B "${pkgname}/build" \
-        -S "${pkgname}" \
         -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
-        -DNATIVE_VIBRATOR=ON
-    make -C "${pkgname}/build" all
+        -DNATIVE_VIBRATOR=ON .
+    make  all
 }
 
 package() {
-    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
+    cd $_basename-$pkgver
+    make DESTDIR="$pkgdir" install
 }
