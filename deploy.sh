@@ -115,11 +115,10 @@ eval "$BUILD ngfd-settings-nemo"
 eval "$BUILD ngfd-plugin-native-vibrator"
 
 
-
 eval "$BUILD lipstick-glacier-home-git"
 eval "$BUILD glacier-wayland-session-git"
 
-eval "$BUILD libcommhistory-git"
+eval "$BUILD libcommhistory"
 eval "$BUILD commhistory-daemon-git"
 eval "$BUILD qmf-qt5"
 eval "$BUILD nemo-qml-plugin-accounts-git"

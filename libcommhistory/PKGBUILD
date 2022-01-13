@@ -1,0 +1,37 @@
+# $Id$
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+pkgname=libcommhistory
+pkgver=1.11.13
+pkgrel=1
+pkgdesc="Communications event history database API"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/libcommhistory"
+license=('LGPL-2.1-only AND Apache-2.0')
+depends=('libphonenumber'
+    'qt5-base'
+    'qtcontacts-sqlite'
+    'nemo-qml-plugin-contacts')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    "0001-fix-warnings-and-api.patch")
+sha256sums=('8ec0f6af9ec28a83aaceaa40b2afb93d372aef780f6b003e8932b507f9789d7a'
+    '1bf3fe3d5b2ecaeb15155c9b2f4df1b0a12c6ea611e416c60ee7ab19cc7038a0')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-fix-warnings-and-api.patch"
+}
+
+build() {
+  cd $pkgname-$pkgver
+  mkdir -p build
+  cd build
+  qmake .. PKGCONFIG_LIB=/usr/lib PROJECT_VERSION=$pkgver
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  cd build
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
+}
