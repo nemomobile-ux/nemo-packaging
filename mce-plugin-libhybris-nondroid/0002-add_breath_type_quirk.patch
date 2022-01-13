@@ -1,0 +1,69 @@
+From 07bff310ec690e5cfe8f5c2cc55bfeddb1b4130c Mon Sep 17 00:00:00 2001
+From: Simo Piiroinen <simo.piiroinen@jollamobile.com>
+Date: Mon, 24 Dec 2018 22:22:09 +0200
+Subject: [PATCH] add breath type quirk
+
+---
+ plugin-config.h  | 3 +++
+ plugin-quirks.c  | 3 ++-
+ plugin-quirks.h  | 3 +++
+ sysfs-led-main.c | 4 ++++
+ 4 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/plugin-config.h b/plugin-config.h
+index b0c6cc2..2d393b7 100644
+--- a/plugin-config.h
++++ b/plugin-config.h
+@@ -43,6 +43,9 @@
+ /** Optional enable/disable sw breathing setting */
+ #define MCE_CONF_LED_CONFIG_HYBRIS_BREATHING "QuirkBreathing"
+ 
++/** Optional sw breathing type setting */
++#define MCE_CONF_LED_CONFIG_HYBRIS_BREATH_TYPE "QuirkBreathType"
++
+ gchar * plugin_config_get_string(const gchar *group, const gchar *key, const gchar *defaultval);
+ 
+ typedef enum
+diff --git a/plugin-quirks.c b/plugin-quirks.c
+index 42965eb..49be162 100644
+--- a/plugin-quirks.c
++++ b/plugin-quirks.c
+@@ -49,7 +49,8 @@ static const char * const quirk_false_lut[] =
+ /** Quirk enum id to settings ini-file key lookup table */
+ static const char * const quirk_name_lut[QUIRK_COUNT] =
+ {
+-    [QUIRK_BREATHING] = MCE_CONF_LED_CONFIG_HYBRIS_BREATHING,
++    [QUIRK_BREATHING]   = MCE_CONF_LED_CONFIG_HYBRIS_BREATHING,
++    [QUIRK_BREATH_TYPE] = MCE_CONF_LED_CONFIG_HYBRIS_BREATH_TYPE,
+ };
+ 
+ /** Flag array for: quirk setting has been defined in mce config */
+diff --git a/plugin-quirks.h b/plugin-quirks.h
+index cfb27c6..82cd561 100644
+--- a/plugin-quirks.h
++++ b/plugin-quirks.h
+@@ -39,6 +39,9 @@ typedef enum
+     /** Override sw breathing desicion made by led backend */
+     QUIRK_BREATHING,
+ 
++    /** Override sw breathing type set by led backend */
++    QUIRK_BREATH_TYPE,
++
+     /** Number of quirks */
+     QUIRK_COUNT
+ } quirk_t;
+diff --git a/sysfs-led-main.c b/sysfs-led-main.c
+index 4bdf3e6..8761094 100644
+--- a/sysfs-led-main.c
++++ b/sysfs-led-main.c
+@@ -331,6 +331,10 @@ led_control_probe(led_control_t *self)
+ 
+     self->can_breathe = QUIRK(QUIRK_BREATHING, self->can_breathe);
+ 
++    if( self->can_breathe ) {
++      self->breath_type = QUIRK(QUIRK_BREATH_TYPE, self->breath_type);
++    }
++
+     ack = true;
+     break;
+   }

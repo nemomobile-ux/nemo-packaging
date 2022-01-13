@@ -1,0 +1,455 @@
+From c0ae0cd061bbabc0ca88efea20f56be34daf95be Mon Sep 17 00:00:00 2001
+From: Simo Piiroinen <simo.piiroinen@jollamobile.com>
+Date: Mon, 24 Dec 2018 21:17:03 +0200
+Subject: [PATCH] hack: debian build
+
+---
+ Makefile         | 24 +++++++++++++---
+ debian/changelog |  5 ++++
+ debian/compat    |  1 +
+ debian/control   | 27 +++++++++++++++++
+ debian/rules     | 63 ++++++++++++++++++++++++++++++++++++++++
+ plugin-api.c     | 75 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 191 insertions(+), 4 deletions(-)
+ create mode 100644 debian/changelog
+ create mode 100644 debian/compat
+ create mode 100644 debian/control
+ create mode 100755 debian/rules
+
+diff --git a/Makefile b/Makefile
+index f7667b3..71bd07d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,10 +4,21 @@
+ 
+ NAME    ?= mce-plugin-libhybris
+ 
+-DESTDIR ?= /tmp/test-install-$(NAME)
++## QUARANTINE DESTDIR ?= /tmp/test-install-$(NAME)
++DESTDIR ?= /tmp/test-mce-install
+ 
+ _LIBDIR ?= /usr/lib
+ 
++# ----------------------------------------------------------------------------
++# CONFIG
++# ----------------------------------------------------------------------------
++
++ENABLE_HYBRIS_SUPPPORT ?= n
++
++ifeq ($(strip $(ENABLE_HYBRIS_SUPPORT)),y)
++CPPFLAGS += -DENABLE_HYBRIS_SUPPORT
++endif
++
+ # ----------------------------------------------------------------------------
+ # List of targets to build
+ # ----------------------------------------------------------------------------
+@@ -64,8 +75,8 @@ LDLIBS   += -lpthread
+ # ----------------------------------------------------------------------------
+ 
+ PKG_NAMES += glib-2.0
+-PKG_NAMES += libhardware
+-PKG_NAMES += android-headers
++## QUARANTINE PKG_NAMES += libhardware
++## QUARANTINE PKG_NAMES += android-headers
+ 
+ maintenance  = normalize clean distclean mostlyclean
+ intersection = $(strip $(foreach w,$1, $(filter $w,$2)))
+@@ -114,10 +125,12 @@ locals: $(patsubst %.c,%.i,$(wildcard *.c))
+ # Explicit dependencies
+ # ----------------------------------------------------------------------------
+ 
++ifeq ($(ENABLE_HYBRIS_SUPPORT),y)
+ hybris_OBJS += hybris-fb.pic.o
+ hybris_OBJS += hybris-lights.pic.o
+ hybris_OBJS += hybris-sensors.pic.o
+ hybris_OBJS += hybris-thread.pic.o
++endif
+ hybris_OBJS += plugin-api.pic.o
+ hybris_OBJS += plugin-config.pic.o
+ hybris_OBJS += plugin-logging.pic.o
+@@ -134,7 +147,10 @@ hybris_OBJS += sysfs-led-vanilla.pic.o
+ hybris_OBJS += sysfs-led-white.pic.o
+ hybris_OBJS += sysfs-val.pic.o
+ 
+-hybris.so : LDLIBS += -lhardware -lm
++ifeq ($(ENABLE_HYBRIS_SUPPORT),y)
++hybris.so : LDLIBS += -lhardware
++endif
++hybris.so : LDLIBS += -lm
+ hybris.so : $(hybris_OBJS)
+ 
+ install:: hybris.so
+diff --git a/debian/changelog b/debian/changelog
+new file mode 100644
+index 0000000..5475a41
+--- /dev/null
++++ b/debian/changelog
+@@ -0,0 +1,5 @@
++mce-plugin-libhybris (1.12.3) precise; urgency=low
++
++  * hack hack hack
++
++ -- Simo Piiroinen <simo.piiroinen@jollamobile.com>  Mon, 24 Dec 2018 20:38:34 +0200
+diff --git a/debian/compat b/debian/compat
+new file mode 100644
+index 0000000..7ed6ff8
+--- /dev/null
++++ b/debian/compat
+@@ -0,0 +1 @@
++5
+diff --git a/debian/control b/debian/control
+new file mode 100644
+index 0000000..ef87cd5
+--- /dev/null
++++ b/debian/control
+@@ -0,0 +1,27 @@
++Source: mce-plugin-libhybris
++Section: misc
++Priority: optional
++Maintainer: Simo Piiroinen <simo.piiroinen@jollamobile.com>
++Uploaders: Simo Piiroinen <simo.piiroinen@jollamobile.com>
++Build-Depends:
++ debhelper (>= 5.0.0),
++ pkg-config,
++ dpkg-dev (>= 1.13.19)
++Standards-Version: 3.8.4
++
++Package: mce-plugin-libhybris
++Architecture: any
++Depends: dbus, ${shlibs:Depends}, ${misc:Depends}
++Recommends: dsme (>= 0.30.11), devicelock (>= 0.3.3), sysinfo-dbus | sysinfod (= 1.0.20)
++Description: the Mode Control Entity for Nokia mobile computers
++ This package contains the Mode Control Entity which provides
++ mode management features.  This is a daemon that is the backend
++ for many features on Nokia's mobile computers.
++
++Package: mce-plugin-libhybris-dbg
++Section: devel
++Priority: extra
++Architecture: any
++Depends: mce-plugin-libhybris (= ${binary:Version}), ${misc:Depends}
++Description: debug symbols for mce-plugin-libhybris
++ This package contains the debug symbols for the Mode Control Entity.
+diff --git a/debian/rules b/debian/rules
+new file mode 100755
+index 0000000..9b3a80a
+--- /dev/null
++++ b/debian/rules
+@@ -0,0 +1,63 @@
++#!/usr/bin/make -f
++# debian/rules for mce-plugin-libhybris using debhelper.
++# Copyright © 2004-2011 Nokia Corporation and/or its subsidiary(-ies).
++
++# Uncomment this to turn on verbose mode.
++#export DH_VERBOSE=1
++
++# This has to be exported to make some magic below work.
++export DH_OPTIONS
++
++.PHONY: clean
++clean:
++	dh_testdir
++	dh_testroot
++	rm -f build-stamp
++
++	$(MAKE) distclean
++
++	dh_clean
++
++.PHONY: check
++check:
++
++build-stamp:
++	dh_testdir
++	$(MAKE)
++
++	touch build-stamp
++
++.PHONY: build
++build: check build-stamp
++
++.PHONY: install
++install:
++	dh_testdir
++	dh_testroot
++	dh_clean -k
++	dh_installdirs
++	$(MAKE) install DESTDIR=debian/mce-plugin-libhybris
++
++.PHONY: binary-indep
++binary-indep:
++
++.PHONY: binary-arch
++binary-arch: build install
++	dh_testdir
++	dh_testroot
++	dh_installdocs
++	dh_installman
++	dh_installchangelogs
++	dh_install -s
++	dh_strip -pmce-plugin-libhybris --dbg-package=mce-plugin-libhybris-dbg
++	dh_link
++	dh_compress
++	dh_fixperms
++	dh_installdeb
++	dh_shlibdeps
++	dh_gencontrol
++	dh_md5sums
++	dh_builddeb
++
++.PHONY: binary
++binary: binary-indep binary-arch
+diff --git a/plugin-api.c b/plugin-api.c
+index 20116cd..faf6ac8 100644
+--- a/plugin-api.c
++++ b/plugin-api.c
+@@ -127,7 +127,11 @@ void mce_hybris_quit                      (void);
+ bool
+ mce_hybris_framebuffer_init(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_device_fb_init();
++#else
++  return false;
++#endif
+ }
+ 
+ /** Release libhybris frame buffer device object
+@@ -135,7 +139,9 @@ mce_hybris_framebuffer_init(void)
+ void
+ mce_hybris_framebuffer_quit(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   hybris_device_fb_quit();
++#endif
+ }
+ 
+ /** Set frame buffer power state via libhybris
+@@ -147,7 +153,12 @@ mce_hybris_framebuffer_quit(void)
+ bool
+ mce_hybris_framebuffer_set_power(bool state)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_device_fb_set_power(state);
++#else
++  (void)state;
++  return false;
++#endif
+ }
+ 
+ /* ========================================================================= *
+@@ -161,7 +172,11 @@ mce_hybris_framebuffer_set_power(bool state)
+ bool
+ mce_hybris_backlight_init(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_device_backlight_init();
++#else
++  return false;
++#endif
+ }
+ 
+ /** Release libhybris display backlight device object
+@@ -169,7 +184,9 @@ mce_hybris_backlight_init(void)
+ void
+ mce_hybris_backlight_quit(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   hybris_device_backlight_quit();
++#endif
+ }
+ 
+ /** Set display backlight brightness via libhybris
+@@ -181,7 +198,12 @@ mce_hybris_backlight_quit(void)
+ bool
+ mce_hybris_backlight_set_brightness(int level)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_device_backlight_set_brightness(level);
++#else
++  (void)level;
++  return false;
++#endif
+ }
+ 
+ /* ========================================================================= *
+@@ -195,7 +217,11 @@ mce_hybris_backlight_set_brightness(int level)
+ bool
+ mce_hybris_keypad_init(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_device_keypad_init();
++#else
++  return false;
++#endif
+ }
+ 
+ /** Release libhybris keypad backlight device object
+@@ -203,7 +229,9 @@ mce_hybris_keypad_init(void)
+ void
+ mce_hybris_keypad_quit(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   hybris_device_keypad_quit();
++#endif
+ }
+ 
+ /** Set display keypad brightness via libhybris
+@@ -215,7 +243,12 @@ mce_hybris_keypad_quit(void)
+ bool
+ mce_hybris_keypad_set_brightness(int level)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_device_keypad_set_brightness(level);
++#else
++  (void)level;
++  return false;
++#endif
+ }
+ 
+ /* ========================================================================= *
+@@ -258,9 +291,15 @@ mce_hybris_indicator_init(void)
+   if( sysfs_led_init() ) {
+     mce_hybris_indicator_uses_sysfs = true;
+   }
++#ifdef ENABLE_HYBRIS_SUPPORT
+   else if( !hybris_device_indicator_init() ) {
+     goto  cleanup;
+   }
++#else
++  else {
++    goto cleanup;
++  }
++#endif
+ 
+   ack = true;
+ 
+@@ -280,10 +319,12 @@ mce_hybris_indicator_quit(void)
+     /* Release sysfs controls */
+     sysfs_led_quit();
+   }
++#ifdef ENABLE_HYBRIS_SUPPORT
+   else {
+     /* Release libhybris controls */
+     hybris_device_indicator_quit();
+   }
++#endif
+ }
+ 
+ /** Set indicator led pattern via libhybris
+@@ -329,9 +370,11 @@ mce_hybris_indicator_set_pattern(int r, int g, int b, int ms_on, int ms_off)
+   if( mce_hybris_indicator_uses_sysfs ) {
+     ack = sysfs_led_set_pattern(r, g, b, ms_on, ms_off);
+   }
++#ifdef ENABLE_HYBRIS_SUPPORT
+   else {
+     ack = hybris_device_indicator_set_pattern(r, g, b, ms_on, ms_off);
+   }
++#endif
+ 
+   mce_log(LL_DEBUG, "pattern(%d,%d,%d,%d,%d) -> %s",
+           r,g,b, ms_on, ms_off , ack ? "success" : "failure");
+@@ -420,7 +463,11 @@ mce_hybris_indicator_set_brightness(int level)
+ bool
+ mce_hybris_ps_init(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_sensor_ps_init();
++#else
++  return false;
++#endif
+ }
+ 
+ /** Stop using proximity sensor via libhybris
+@@ -430,7 +477,9 @@ mce_hybris_ps_init(void)
+ void
+ mce_hybris_ps_quit(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   hybris_sensor_ps_quit();
++#endif
+ }
+ 
+ /** Set proximity sensort input enabled state
+@@ -440,7 +489,12 @@ mce_hybris_ps_quit(void)
+ bool
+ mce_hybris_ps_set_active(bool state)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_sensor_ps_set_active(state);
++#else
++  (void)state;
++  return false;
++#endif
+ }
+ 
+ /** Set callback function for handling proximity sensor events
+@@ -450,7 +504,11 @@ mce_hybris_ps_set_active(bool state)
+ void
+ mce_hybris_ps_set_hook(mce_hybris_ps_fn cb)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   hybris_sensor_ps_set_hook(cb);
++#else
++  (void)cb;
++#endif
+ }
+ 
+ /* ========================================================================= *
+@@ -464,7 +522,11 @@ mce_hybris_ps_set_hook(mce_hybris_ps_fn cb)
+ bool
+ mce_hybris_als_init(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_device_als_init();
++#else
++  return false;
++#endif
+ }
+ 
+ /** Stop using ambient light sensor via libhybris
+@@ -474,7 +536,9 @@ mce_hybris_als_init(void)
+ void
+ mce_hybris_als_quit(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   hybris_device_als_quit();
++#endif
+ }
+ 
+ /** Set ambient light sensor input enabled state
+@@ -484,7 +548,12 @@ mce_hybris_als_quit(void)
+ bool
+ mce_hybris_als_set_active(bool state)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   return hybris_device_als_set_active(state);
++#else
++  (void)state;
++  return false;
++#endif
+ }
+ 
+ /** Set callback function for handling ambient light sensor events
+@@ -494,7 +563,11 @@ mce_hybris_als_set_active(bool state)
+ void
+ mce_hybris_als_set_hook(mce_hybris_als_fn cb)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   hybris_device_als_set_hook(cb);
++#else
++  (void)cb;
++#endif
+ }
+ 
+ /* ========================================================================= *
+@@ -506,7 +579,9 @@ mce_hybris_als_set_hook(mce_hybris_als_fn cb)
+ void
+ mce_hybris_quit(void)
+ {
++#ifdef ENABLE_HYBRIS_SUPPORT
+   hybris_plugin_fb_unload();
+   hybris_plugin_lights_unload();
+   hybris_plugin_sensors_unload();
++#endif
+ }
