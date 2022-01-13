@@ -107,10 +107,10 @@ eval "$BUILD policy-settings-common"
 eval "$BUILD ohm-plugins-misc"
 eval "$BUILD ohm-rule-engine"
 
-eval "$BUILD fingerterm-git"
+eval "$BUILD fingerterm"
 
 eval "$BUILD glacier-testtool-git"
-eval "$BUILD ngfd-git"
+eval "$BUILD ngfd"
 eval "$BUILD ngfd-settings-nemo"
 eval "$BUILD ngfd-plugin-native-vibrator"
 
