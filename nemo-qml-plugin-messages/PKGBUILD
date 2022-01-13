@@ -1,0 +1,38 @@
+## $Id$
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+pkgname=nemo-qml-plugin-messages
+pkgver=0.1.31
+pkgrel=1
+pkgdesc="Messages plugin for Nemo Mobile"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/nemo-qml-plugin-messages"
+license=('BSD')
+depends=('telepathy-qt'
+    'libcommhistory'
+    'qtcontacts-sqlite'
+    'libqofono-qt5'
+    'qt5-base'
+    'qt5-declarative'
+    'nemo-qml-plugin-dbus')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    "0001-fix_telepathy_client_name.patch")
+sha256sums=('35df104b6bc2a9c05d30f61862f58b9488fd61ef4d98d616734a2f7adc42cb45'
+    'dc28650a0152cbb910676f0913785879f3cfa67b85971a83f92af14df2498dc7')
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-fix_telepathy_client_name.patch"
+}
+
+build() {
+    cd $pkgname-$pkgver
+    qmake
+    make
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
+    rm -rf $pkgdir/opt
+}
