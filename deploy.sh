@@ -86,7 +86,7 @@ eval "$BUILD glacier-settings-git"
 
 eval "$BUILD buteo-syncfw"
 eval "$BUILD buteo-sync-plugin-carddav"
-eval "$BUILD nemo-qml-plugin-contacts-git"
+eval "$BUILD nemo-qml-plugin-contacts"
 
 eval "$BUILD qt5-profile-git"
 eval "$BUILD qt-mobility-haptics-ffmemless-git"

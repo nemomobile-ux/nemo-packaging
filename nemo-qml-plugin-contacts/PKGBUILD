@@ -1,0 +1,43 @@
+# $Id$
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+pkgname=nemo-qml-plugin-contacts
+pkgver=0.3.22
+pkgrel=1
+pkgdesc="Nemo QML contacts plugin"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/nemo-qml-plugin-contacts"
+license=('BSD-3-Clause')
+depends=('libphonenumber'
+	'libmlocale'
+	'mce'
+	'mce-headers'
+	'qtcontacts-sqlite'
+	'buteo-sync-plugin-carddav')
+
+makedepends=('qt5-tools')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+	"0001-remove-collection.extendedMetaData-as-it-doens-t-exi.patch")
+sha256sums=('164ae3bffcf68b19e56e693fecc639ed17d0965777514e13d87860034e34a299'
+    '4d9d1e3d2b4c607fe972cef10073fff36a1518f8aaa4b8d1c93789d73c8fa6fd')
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-remove-collection.extendedMetaData-as-it-doens-t-exi.patch"
+}
+
+build() {
+  cd $pkgname-$pkgver
+  # Not possible to install in build subdir
+  qmake-qt5 VERSION=$pkgver
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
+  # Remove installed tests
+  rm -r "$pkgdir"/opt
+}
