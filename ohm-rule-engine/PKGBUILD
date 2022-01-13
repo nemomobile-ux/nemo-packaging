@@ -2,32 +2,31 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=ohm-plugin-ruleengine
-pkgver=1.1.14.r0.g991e498
+pkgver=1.1.14
 pkgrel=5
 pkgdesc="A prolog-based OHM rule engine plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/ohm-rule-engine"
 license=('LGPL-2.1-only')
-depends=('glib2' 'ohm' 'ohm-plugins-misc' 'swi-prolog7' 'libprolog' 'policy-settings-common')
-makedepends=('git' 'automake' 'autoconf')
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
+depends=('glib2'
+    'ohm'
+    'ohm-plugins-misc'
+    'swi-prolog7'
+    'libprolog'
+    'policy-settings-common')
 
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+makedepends=('automake' 'autoconf')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('3b4e2ffbe308323e62ac09b3b6407298c028f32b710d3e6cdd26491dee43193c')
 
 prepare() {
-    cd "${srcdir}/${pkgname}"
+    cd ohm-rule-engine-$pkgver
+    echo -n "${pkgver}" > .tarball-version
     ./autogen.sh
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
+  cd ohm-rule-engine-$pkgver
   ./configure --prefix=/usr \
     --sysconfdir=/etc \
     --sbindir=/usr/bin \
@@ -36,7 +35,7 @@ build() {
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
+  cd ohm-rule-engine-$pkgver
   make DESTDIR="${pkgdir}" install
 #library is hardcoded
   cd ${pkgdir}/usr/lib
@@ -46,4 +45,3 @@ package() {
   cd ${pkgdir}/usr/share/policy/rules/
   ln -s basic current
 }
-
