@@ -88,8 +88,8 @@ eval "$BUILD buteo-syncfw"
 eval "$BUILD buteo-sync-plugin-carddav"
 eval "$BUILD nemo-qml-plugin-contacts"
 
-eval "$BUILD qt5-profile-git"
-eval "$BUILD qt-mobility-haptics-ffmemless-git"
+eval "$BUILD libprofile-qt"
+eval "$BUILD qt-mobility-haptics-ffmemless"
 
 #multimedia stuff
 eval "$BUILD pulsecore-headers"

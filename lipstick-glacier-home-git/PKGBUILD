@@ -30,7 +30,7 @@ depends=('bluez-qt'
 	'glacier-settings-git'
 	'geoclue>2.0'
 	'mlite'
-	'qt-mobility-haptics-ffmemless-git'
+	'qt-mobility-haptics-ffmemless'
 	'ngfd-git'
 	'pulseaudio-module-keepalive')
 

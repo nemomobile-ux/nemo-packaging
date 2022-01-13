@@ -26,7 +26,7 @@ depends=('glacier-wayland-session'
 	'glacier-pinquery-git'
 	'qt5-sensors-sensorfw'
 	'qt5-feedback-haptics-native-vibrator'
-	'qt-mobility-haptics-ffmemless-git')
+	'qt-mobility-haptics-ffmemless')
 
 makedepends=('git')
 provides=("${pkgname%-git}")

@@ -1,33 +1,22 @@
 ## $Id$
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt5-profile-git
-pkgver=0.35.5.r0.gd10d69c
+pkgname=libprofile-qt
+pkgver=0.35.5
 pkgrel=1
 pkgdesc="Qt5 library for profiles"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libprofile-qt"
 license=('BSD')
 depends=('qt5-base')
-makedepends=('git' 'sailfish-access-control')
-optdepends=()
-provides=("${pkgname%-git}")
-conflicts=()
-source=(
-  "${pkgname}::git+${url}.git")
-sha256sums=('SKIP')
-
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+makedepends=('sailfish-access-control')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('e47cbed6a67337de959b73fdd567edc435699da0075383d1bac37acb83a8155a')
 
 build() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   mkdir -p build
   cd build
   qmake ..
@@ -35,6 +24,6 @@ build() {
 }
 
 package() {
-  cd "${srcdir}/${pkgname}/build"
+  cd $pkgname-$pkgver/build
   make -j 1 INSTALL_ROOT="${pkgdir}" install
 }
