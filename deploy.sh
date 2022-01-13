@@ -119,7 +119,7 @@ eval "$BUILD lipstick-glacier-home-git"
 eval "$BUILD glacier-wayland-session-git"
 
 eval "$BUILD libcommhistory"
-eval "$BUILD commhistory-daemon-git"
+eval "$BUILD commhistory-daemon"
 eval "$BUILD qmf-qt5"
 eval "$BUILD nemo-qml-plugin-accounts-git"
 eval "$BUILD nemo-qml-plugin-signon-git"

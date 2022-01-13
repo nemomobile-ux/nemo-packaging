@@ -1,0 +1,44 @@
+From bc11fbd3515d31880856f58f68ab5d962d0c8068 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Thu, 15 Jul 2021 15:42:58 +0300
+Subject: [PATCH] Revert "[commhistoryd] Adjust to new Messages bus names.
+ Contributes to JB#51772"
+
+This reverts commit d73295c30ae9322e7e3ecddf6c0d32cddb4990a8.
+---
+ src/constants.h             | 4 ++--
+ src/notificationmanager.cpp | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/constants.h b/src/constants.h
+index 02a20f2..af5371c 100644
+--- a/src/constants.h
++++ b/src/constants.h
+@@ -35,8 +35,8 @@
+ #define ACCOUNT_PRESENCE_OBJECT_PATH     QLatin1String("/org/nemomobile/AccountPresence")
+ #define ACCOUNT_PRESENCE_INTERFACE       QLatin1String("org.nemomobile.AccountPresenceIf")
+ 
+-#define MESSAGING_SERVICE_NAME    QLatin1String("org.sailfishos.Messages")
+-#define MESSAGING_INTERFACE       QLatin1String("org.sailfishos.Messages")
++#define MESSAGING_SERVICE_NAME    QLatin1String("org.nemomobile.qmlmessages")
++#define MESSAGING_INTERFACE       QLatin1String("org.nemomobile.qmlmessages")
+ #define SHOW_INBOX_METHOD         QLatin1String("showGroupsWindow")
+ #define START_CONVERSATION_METHOD QLatin1String("startConversation")
+ 
+diff --git a/src/notificationmanager.cpp b/src/notificationmanager.cpp
+index 6eecde2..456c862 100644
+--- a/src/notificationmanager.cpp
++++ b/src/notificationmanager.cpp
+@@ -356,9 +356,9 @@ void NotificationManager::playClass0SMSAlert()
+ 
+ void NotificationManager::requestClass0Notification(const CommHistory::Event &event)
+ {
+-    QDBusMessage msg = QDBusMessage::createMethodCall(QLatin1String("org.sailfishos.Messages.ClassZeroSmsNotification"),
+-                                                      QLatin1String("/org/sailfishos/messages/ClassZeroSmsNotification"),
+-                                                      QLatin1String("org.sailfishos.Messages.ClassZeroSmsNotification"),
++    QDBusMessage msg = QDBusMessage::createMethodCall(QLatin1String("org.nemomobile.ClassZeroSmsNotification"),
++                                                      QLatin1String("/org/nemomobile/ClassZeroSmsNotification"),
++                                                      QLatin1String("org.nemomobile.ClassZeroSmsNotification"),
+                                                       QLatin1String("showNotification"));
+     QList<QVariant> arguments;
+     arguments << event.freeText();
