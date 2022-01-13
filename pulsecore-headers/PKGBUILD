@@ -7,25 +7,26 @@ pkgrel=2
 arch=(any)
 url="https://www.freedesktop.org/wiki/Software/PulseAudio/"
 license=(GPL)
-makedepends=('git' 'libpulse')
-_commit=6329a2498eb038f8a9537888280a62b00a93f68e  # tags/v15.0^0
-source=("${pkgname}::git+https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git#commit=$_commit"
+makedepends=('libpulse')
+source=("https://github.com/pulseaudio/pulseaudio/archive/refs/tags/v${pkgver}.tar.gz"
     "pulsecore.pc"
     '0001-warn-to-warning.patch'
 )
-sha256sums=('SKIP' 'SKIP' 'SKIP')
+sha256sums=('596196c530df19c6f7998af0682f5401b84b23f9732210010eb968034c7eb477'
+    'a069082f1d877a20a40e1953adee8a2c3a637cc06bdfaefbb1bfdbfe041aa26e'
+    '0f5effd1a6e1088dd09972821afa4b179fd28b2d98c5c1207ca77f04cf415393')
 
 prepare() {
-    cd "${srcdir}/${pkgname}"
+    cd pulseaudio-$pkgver
     patch -p1 --input="${srcdir}/0001-warn-to-warning.patch"
 }
 
 package() {
-  mkdir -p ${pkgdir}/usr/include/pulsecore/filter
-  mkdir -p ${pkgdir}/usr/lib/pkgconfig/
-  cd ${srcdir}/${pkgname}/src/pulsecore
-  cp *.h ${pkgdir}/usr/include/pulsecore/
-  cd filter
-  cp *.h ${pkgdir}/usr/include/pulsecore/filter
-  cp "${srcdir}/pulsecore.pc" ${pkgdir}/usr/lib/pkgconfig/
+    mkdir -p ${pkgdir}/usr/include/pulsecore/filter
+    mkdir -p ${pkgdir}/usr/lib/pkgconfig/
+    cd pulseaudio-$pkgver/src/pulsecore
+    cp *.h ${pkgdir}/usr/include/pulsecore/
+    cd filter
+    cp *.h ${pkgdir}/usr/include/pulsecore/filter
+    cp "${srcdir}/pulsecore.pc" ${pkgdir}/usr/lib/pkgconfig/
 }
