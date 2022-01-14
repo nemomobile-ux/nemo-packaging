@@ -2,41 +2,32 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=libsocialcache
-pkgver=0.1.7.r0.g6c3f563
+pkgver=0.1.7
 pkgrel=1
 pkgdesc="A library that manages data from social networks"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libsocialcache"
 license=('BSD-3-Clause')
 depends=('buteo-syncfw')
-
-makedepends=('git' 'qt5-tools')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0001-use_mlite_for_keys.patch")
-md5sums=('SKIP' 'SKIP')
-
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+makedepends=('qt5-tools')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    "0001-use_mlite_for_keys.patch")
+sha256sums=('ff1110e9ccca5a1e8c6d5a70448bc061e5ba4b83a5dbae974d55241e8156573b'
+    '7358f59bd2d6db7a1d91d6faedf9d33adade0e804035edbf9f0f213e0bbe352d')
 
 prepare() {
-    cd "${srcdir}/${pkgname}"
+    cd $pkgname-$pkgver
     patch -p1 --input="${srcdir}/0001-use_mlite_for_keys.patch"
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   qmake-qt5
   make
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   make -j 1 INSTALL_ROOT="${pkgdir}" install
   # Remove installed tests
   rm -r "$pkgdir"/opt
