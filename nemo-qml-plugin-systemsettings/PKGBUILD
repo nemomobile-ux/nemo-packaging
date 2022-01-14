@@ -4,12 +4,12 @@
 # Contributor: Alexey Andreyev (aa13q) <aa13q@ya.ru>
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-pkgname=nemo-qml-plugin-systemsettings-git
-pkgver=0.5.85.1.r1.g8339463
+pkgname=nemo-qml-plugin-systemsettings
+pkgver=0.5.89
 pkgrel=1
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/nemo-qml-plugin-systemsettings.git"
+url="https://github.com/nemomobile-ux/nemo-qml-plugin-systemsettings"
 license=('BSD')
 depends=('qt5-systems'
 	'libusb-moded-qt'
@@ -22,30 +22,18 @@ depends=('qt5-systems'
 	'nemo-qml-plugin-dbus'
 	'qt5-xmlpatterns')
 
-makedepends=('git' 'qt5-tools' 'mce-headers')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname%-git}::git+${url}")
-md5sums=('SKIP')
-
-pkgver() {
-    cd "$srcdir/${pkgname%-git}"
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
-
-prepare() {
-    cd "$srcdir/${pkgname%-git}"
-    git checkout nemomobile
-}
+makedepends=('qt5-tools' 'mce-headers')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('6118e642277b38f039880c8cd914e5ba073d597e4cb6c525a7d3e267c8365fbf')
 
 build() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     qmake
     make
 }
 
 package() {
-    cd "$srcdir/${pkgname%-git}"
+    cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     rm -rf opt
