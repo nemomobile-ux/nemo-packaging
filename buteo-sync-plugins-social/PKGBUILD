@@ -1,8 +1,8 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-pkgname=buteo-sync-plugins-social-git
-pkgver=0.4.17.r2.gf09e294
+pkgname=buteo-sync-plugins-social
+pkgver=0.4.17
 pkgrel=1
 pkgdesc="Syncs contact data from CardDAV services"
 arch=('x86_64' 'aarch64')
@@ -10,7 +10,7 @@ url="https://github.com/sailfishos/buteo-sync-plugins-social"
 license=('BSD-3-Clause')
 depends=('libsocialcache'
 	'buteo-syncfw'
-	'qt5-contacts-sqlite-extensions'
+	'qtcontacts-sqlite'
 	'mlite'
 	'qt5-pim'
 	'mkcal'
@@ -18,27 +18,19 @@ depends=('libsocialcache'
 	'libaccounts-qt'
 	'nemo-qml-plugin-notifications')
 
-makedepends=('git' 'qt5-tools')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "0001-fix_build.patch")
-md5sums=('SKIP' 'SKIP')
-
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+makedepends=('qt5-tools')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    "0001-fix_build.patch")
+sha256sums=('05d79384c8a4d51960a7cda3962f802471a1dd0c3d9a8f9de911577deb4eca40'
+    'c24e68d5e79f30fac73bfa0ee35b6fc307230f92cea6b53f6c50428024be42f7')
 
 prepare() {
-    cd "${srcdir}/${pkgname}"
+    cd $pkgname-$pkgver
     patch -p1 --input="${srcdir}/0001-fix_build.patch"
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   qmake-qt5 \
     "CONFIG+=dropbox" \
     "CONFIG+=facebook" \
@@ -52,6 +44,6 @@ build() {
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   make -j 1 INSTALL_ROOT="${pkgdir}" install
 }
