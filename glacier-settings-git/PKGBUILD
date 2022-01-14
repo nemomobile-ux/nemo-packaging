@@ -22,7 +22,7 @@ license=('BSD-3-Clause')
 depends=('qt5-glacier-app-git'
 	'qt5-location'
 	'nemo-qml-plugin-devicelock'
-	'nemo-qml-plugin-settings-git'
+	'nemo-qml-plugin-settings'
 	'libconnman-qt'
 	'libmce-qt'
 	'nemo-qml-plugin-connectivity'

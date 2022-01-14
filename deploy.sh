@@ -23,7 +23,7 @@ else
 fi
 
 # NemoMobile packages
-eval "$BUILD nemo-qml-plugin-settings-git"
+eval "$BUILD nemo-qml-plugin-settings"
 eval "$BUILD nemo-qml-plugin-folderlistmodel"
 eval "$BUILD libresource"
 eval "$BUILD libresourceqt"
@@ -100,7 +100,7 @@ eval "$BUILD usb-tethering"
 eval "$BUILD qt5-feedback-haptics-native-vibrator"
 eval "$BUILD libsocialcache"
 eval "$BUILD buteo-sync-plugins-social"
-eval "$BUILD nemo-qml-plugin-alarms-git"
+eval "$BUILD nemo-qml-plugin-alarms"
 
 #Glacier UX packages
 eval "$BUILD google-opensans-fonts"

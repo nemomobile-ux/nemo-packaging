@@ -1,0 +1,36 @@
+# $Id$
+# Contributor: TheKit <nekit1000 at gmail.com>
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+_host="github.com"
+_project=nemomobile-ux
+_basename=nemo-qml-plugin-settings
+_branch=master
+
+_gitname=$_basename
+pkgname=$_basename
+
+pkgver=0.1.1
+
+pkgrel=1
+pkgdesc="Nemomobile QML wrapper for QSettings class"
+arch=('x86_64' 'aarch64')
+url="https://$_host/$_project/$_gitname"
+license=('LGPL-2.0-or-later')
+depends=('qt5-declarative')
+makedepends=('cmake')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('ec95f061027589aa1d38405d74bc22b49ea554923d2f09fc394f374a7bd90055')
+
+build() {
+    cd $pkgname-$pkgver
+    cmake -DCMAKE_INSTALL_PREFIX:PATH='/usr' .
+    make all
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make DESTDIR="$pkgdir" install
+}
