@@ -1,0 +1,40 @@
+_host="github.com"
+_project=sailfishos
+_basename=qtdocgallery
+
+_gitname=$_basename
+pkgname=$_basename
+
+pkgver=5.3.0+git2
+
+pkgrel=1
+pkgdesc="The Glacier image gallery"
+arch=('x86_64' 'aarch64')
+url="https://$_host/$_project/$_gitname"
+license=('LGPLv2')
+optdepends=()
+depends=('qt5-declarative' 'tracker3' 'tracker3-miners')
+makedepends=('qt5-tools')
+source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
+    '0001-workaround-missing-G_BEGIN-END_DECLS-in-tracker.patch')
+sha256sums=('9996cc1add17c216b201582bcd91cb780b629d7db4c0cac04e069a3c57b18d9e'
+    '43e1184286366eb01c66e5d7ec4bfa01b37ca7c56d37054888a2396adb056ff3')
+
+prepare() {
+    cd ${pkgname}-mer-5.3.0-git2
+    touch .git
+    patch -p1 --input="${srcdir}/0001-workaround-missing-G_BEGIN-END_DECLS-in-tracker.patch"
+}
+
+
+build() {
+  cd ${pkgname}-mer-5.3.0-git2
+  qmake-qt5 tracker_enabled=yes MODULE_VERSION=5.0.0
+  make -j1
+}
+
+package() {
+  cd ${pkgname}-mer-5.3.0-git2
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
+}
+ 
