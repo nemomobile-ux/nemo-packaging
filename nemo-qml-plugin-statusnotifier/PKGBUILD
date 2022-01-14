@@ -9,32 +9,21 @@ _basename=nemo-qml-plugin-statusnotifier
 _branch=master
 
 _gitname=$_basename
-pkgname=$_basename-git
+pkgname=$_basename
 
-pkgver=1.0.r1.g859139a
+pkgver=1.0.1
 
 pkgrel=1
 pkgdesc="Nemo QML statusnotifier plugin"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://$_host/$_project/$_gitname"
 license=('LGPL-2.0-or-later')
 depends=('qt5-declarative')
-makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
-
-pkgver() {
-  cd "${srcdir}/${pkgname}"
-  ( set -o pipefail
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-  ) 2>/dev/null
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('dd952e1848358edc276861c8bd9939ffe64d3df813388d7d63e736e353afc8fc')
 
 build() {
-  cd "${srcdir}/${pkgname}"
+  cd $pkgname-$pkgver
   mkdir -p build
   cd build
   qmake ..
@@ -42,6 +31,6 @@ build() {
 }
 
 package() {
-  cd "${srcdir}/${pkgname}/build"
+  cd $pkgname-$pkgver/build
   make -j 1 INSTALL_ROOT="${pkgdir}" install
 }

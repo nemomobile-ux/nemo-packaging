@@ -47,10 +47,10 @@ package() {
 	make DESTDIR="$pkgdir/" install
 	mv "$pkgdir/usr/sbin" "$pkgdir/usr/bin"
 #installs dev files
-	install -m 644 -D src/usb_moded-dbus.h "$pkgdir/usr/include/$_pkgname/usb_moded-dbus.h"
-	install -m 644 -D src/usb_moded-modes.h "$pkgdir/usr/include/$_pkgname/usb_moded-modes.h"
-	install -m 644 -D src/usb_moded-appsync-dbus.h "$pkgdir/usr/include/$_pkgname/usb_moded-appsync-dbus.h"
-	install -m 644 -D src/com.meego.usb_moded.xml "$pkgdir/usr/include/$_pkgname/com.meego.usb_moded.xml"
+	install -m 644 -D src/usb_moded-dbus.h "$pkgdir/usr/include/$pkgname/usb_moded-dbus.h"
+	install -m 644 -D src/usb_moded-modes.h "$pkgdir/usr/include/$pkgname/usb_moded-modes.h"
+	install -m 644 -D src/usb_moded-appsync-dbus.h "$pkgdir/usr/include/$pkgname/usb_moded-appsync-dbus.h"
+	install -m 644 -D src/com.meego.usb_moded.xml "$pkgdir/usr/include/$pkgname/com.meego.usb_moded.xml"
 	install -m 644 -D usb_moded.pc "$pkgdir/usr/lib/pkgconfig/usb_moded.pc"
 #install configs
 	install -d $pkgdir/etc
