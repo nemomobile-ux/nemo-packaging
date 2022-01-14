@@ -1,0 +1,25 @@
+## $Id$
+
+pkgname=nemo-qml-plugin-email
+pkgver=0.6.22
+pkgrel=1
+pkgdesc="Email plugin for Nemo Mobile"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/nemo-qml-plugin-email"
+license=('BSD')
+depends=('qt5-base' 'qmf-qt5-git')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('60fdbbf7d0de570074d959befc184f9aa364de3026c93750b22986fa99a485cd')
+
+build() {
+    cd $pkgname-$pkgver
+    qmake
+    make
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
+    cd "$pkgdir"
+    rm -rf opt
+}

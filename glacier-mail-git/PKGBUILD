@@ -15,7 +15,7 @@ pkgdesc="Nemo mail client"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
-depends=('qt5-glacier-app-git' 'qt5-webengine' 'nemo-qml-plugin-email-git')
+depends=('qt5-glacier-app-git' 'qt5-webengine' 'nemo-qml-plugin-email')
 makedepends=('git' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
