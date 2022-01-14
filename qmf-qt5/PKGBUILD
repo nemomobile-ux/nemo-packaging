@@ -1,6 +1,6 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-pkgname=qmf-qt5-git
+pkgname=qmf-qt5
 pkgver=4.0.4+git135
 pkgrel=1
 pkgdesc="Qt Messaging Framework (QMF) Qt5"
