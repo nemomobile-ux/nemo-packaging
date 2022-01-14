@@ -1,0 +1,24 @@
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+pkgname=mkcal
+pkgver=0.5.51
+pkgrel=1
+pkgdesc="Telepathy <> QtContacts bridge for contacts"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/mkcal"
+license=('BSD-3-Clause')
+depends=('kcalendarcore' 'timed' 'qmf-qt5')
+makedepends=('cmake' 'extra-cmake-modules')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('705ba360ebe578fce96c406b0ffd2b5d0019eb1647b90a222fa56e32f370544d')
+
+build() {
+    cd $pkgname-$pkgver
+    cmake -DCMAKE_INSTALL_PREFIX:PATH='/usr' .
+    make  all
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make DESTDIR="$pkgdir" install
+}
