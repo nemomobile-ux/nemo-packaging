@@ -1,0 +1,25 @@
+## $Id$
+
+pkgname=nemo-qml-plugin-alarms
+pkgver=0.3.11
+pkgrel=1
+pkgdesc="alarms plugin for Nemo Mobile"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/nemo-qml-plugin-alarms"
+license=('BSD')
+depends=('qt5-base' 'timed' 'qt5-declarative')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('533fed4a2334b1c721476795e75eb406fa94265f169061732a84720fa96217be')
+
+build() {
+    cd $pkgname-$pkgver
+    qmake
+    make
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
+    cd "$pkgdir"
+    rm -rf opt
+}
