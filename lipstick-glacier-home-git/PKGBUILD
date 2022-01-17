@@ -22,7 +22,7 @@ depends=('bluez-qt'
 	'qt5-lipstick-git'
 	'qt5-quickcontrols-nemo-git'
 	'nemo-qml-plugin-configuration'
-	'nemo-qml-plugin-statusnotifier-git'
+	'nemo-qml-plugin-statusnotifier'
 	'nemo-qml-plugin-time'
 	'nemo-qml-plugin-contacts'
 	'nemo-qml-plugin-notifications'
@@ -31,7 +31,7 @@ depends=('bluez-qt'
 	'geoclue>2.0'
 	'mlite'
 	'qt-mobility-haptics-ffmemless'
-	'ngfd-git'
+	'ngfd'
 	'pulseaudio-module-keepalive')
 
 makedepends=('git' 'extra-cmake-modules' 'qt5-wayland' 'qt5-tools' 'nemo-qml-plugin-devicelock' 'bluez-qt' 'polkit-qt5')
