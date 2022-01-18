@@ -1,0 +1,77 @@
+From 473b789478f479994ac7ebdc0e3e502ab2a25910 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Tue, 13 Jul 2021 17:30:05 +0300
+Subject: [PATCH 1/2] Use /etc/hw-release for manufacturer and device name
+
+---
+ src/usb_moded-config.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/src/usb_moded-config.c b/src/usb_moded-config.c
+index fd5488f..5ba14e0 100644
+--- a/src/usb_moded-config.c
++++ b/src/usb_moded-config.c
+@@ -1061,6 +1061,16 @@ char * config_get_android_manufacturer(void)
+     {
+         return ssu_name;
+     }
++#else
++    /*Trying use /etc/hw-release to get MANUFACTURER_ID*/
++    GKeyFile *hwReleaseFile;
++    GError *error = NULL;
++
++    // Create a new GKeyFile object and a bitwise list of flags.
++    hwReleaseFile = g_key_file_new();
++    if (g_key_file_load_from_file(hwReleaseFile, "/etc/hw-release", G_KEY_FILE_NONE, &error)) {
++        return g_key_file_get_string(hwReleaseFile, NULL, "MANUFACTURER", NULL);
++    }
+ #endif
+ 
+     return config_get_conf_string(ANDROID_ENTRY, ANDROID_MANUFACTURER_KEY);
+@@ -1085,6 +1095,15 @@ char * config_get_android_product(void)
+     {
+         return ssu_name;
+     }
++#else
++    /*Trying use /etc/hw-release to get NAME*/
++    GKeyFile *hwReleaseFile;
++    GError *error = NULL;
++
++    hwReleaseFile = g_key_file_new();
++    if (g_key_file_load_from_file(hwReleaseFile, "/etc/hw-release", G_KEY_FILE_NONE, &error)) {
++        return g_key_file_get_string(hwReleaseFile, NULL, "NAME", NULL);
++    }
+ #endif
+ 
+     return config_get_conf_string(ANDROID_ENTRY, ANDROID_PRODUCT_KEY);
+
+From 40b1ca25fe1b3ff354ddee314ad3f4c1e1728019 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Tue, 11 Jan 2022 15:21:43 +0000
+Subject: [PATCH 2/2] Fix memory leak
+
+---
+ src/usb_moded-config.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/src/usb_moded-config.c b/src/usb_moded-config.c
+index 5ba14e0..d08b3c7 100644
+--- a/src/usb_moded-config.c
++++ b/src/usb_moded-config.c
+@@ -1068,9 +1068,15 @@ char * config_get_android_manufacturer(void)
+ 
+     // Create a new GKeyFile object and a bitwise list of flags.
+     hwReleaseFile = g_key_file_new();
+-    if (g_key_file_load_from_file(hwReleaseFile, "/etc/hw-release", G_KEY_FILE_NONE, &error)) {
++    if (g_key_file_load_from_file(hwReleaseFile, "/etc/hw-release", G_KEY_FILE_NONE, &error)) 
++    {
+         return g_key_file_get_string(hwReleaseFile, NULL, "MANUFACTURER", NULL);
+     }
++    else
++    {
++        g_free(hwReleaseFile);
++        return "n/a";
++    }
+ #endif
+ 
+     return config_get_conf_string(ANDROID_ENTRY, ANDROID_MANUFACTURER_KEY);
