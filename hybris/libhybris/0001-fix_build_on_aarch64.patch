@@ -1,0 +1,22 @@
+From d700b48c525d99dd3b9fff4cb2c24e75cfd858bd Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Tue, 18 Jan 2022 11:48:00 +0000
+Subject: [PATCH] Fix build on aarch64 devices
+
+---
+ hybris/common/jb/linker.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/hybris/common/jb/linker.h b/hybris/common/jb/linker.h
+index a9d5d3eb..ba619472 100644
+--- a/hybris/common/jb/linker.h
++++ b/hybris/common/jb/linker.h
+@@ -38,7 +38,7 @@
+ #define PAGE_SIZE 4096
+ #define PAGE_MASK 4095
+ 
+-#if defined(__x86_64__)
++#if defined(__x86_64__) || defined(__aarch64__)
+ typedef Elf64_Ehdr Elf_Ehdr;
+ typedef Elf64_Shdr Elf_Shdr;
+ typedef Elf64_Sym  Elf_Sym;

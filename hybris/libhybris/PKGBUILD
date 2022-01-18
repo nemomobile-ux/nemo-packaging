@@ -8,9 +8,10 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/libhybris/libhybris"
 license=('Apache')
 depends=('wayland')
-makedepends=('git' 'mesa' android-headers)
-source=("libhybris::git+https://github.com/libhybris/libhybris")
-md5sums=('SKIP')
+makedepends=('git' 'mesa' 'android-headers')
+source=("libhybris::git+https://github.com/libhybris/libhybris"
+    "0001-fix_build_on_aarch64.patch")
+md5sums=('SKIP' 'SKIP')
 options=(debug !strip)
 
 pkgver() {
@@ -20,7 +21,7 @@ pkgver() {
 
 prepare() {
   cd "${_pkgbase}"
-
+  patch -p1 --input="${srcdir}/0001-fix_build_on_aarch64.patch"
 }
 
 build() {
