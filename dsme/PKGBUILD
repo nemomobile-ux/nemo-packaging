@@ -49,6 +49,7 @@ package() {
     cd $pkgname-$pkgver
     make DESTDIR="$pkgdir/" install
 
+    mkdir -p $pkgdir/var/lib/dsme
     mkdir -p $pkgdir/usr/lib/systemd/system/
     cp $srcdir/dsme.service $pkgdir/usr/lib/systemd/system/
 #Remove tests
