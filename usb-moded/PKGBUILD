@@ -6,12 +6,19 @@
 
 pkgname=usb-moded
 pkgver=0.86.0+mer56
-pkgrel=1
+pkgrel=2
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/usb-moded"
 license=('GPL')
-depends=('libdsme' 'dbus-glib' 'udev' 'kmod' 'sailfish-access-control' 'dhcp' 'net-tools')
+depends=('libdsme'
+    'dbus-glib'
+    'udev'
+    'kmod'
+    'sailfish-access-control'
+    'dhcp'
+    'net-tools'
+    'buteo-mtp')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	'dhcpd.conf'
 	'0001-use_etc-hw-release.patch')

@@ -1,0 +1,125 @@
+diff --git a/mts/mts.pro b/mts/mts.pro
+index 3e6d4a5..f41b322 100644
+--- a/mts/mts.pro
++++ b/mts/mts.pro
+@@ -3,7 +3,7 @@ include(common.pri)
+ QT += xml dbus
+ QT -= gui
+ 
+-LIBS += -lssu
++#LIBS += -lssu
+ 
+ CONFIG += link_pkgconfig debug
+ 
+diff --git a/mts/platform/deviceinfo/deviceinfoprovider.cpp b/mts/platform/deviceinfo/deviceinfoprovider.cpp
+index aa0429b..8f8cb0e 100644
+--- a/mts/platform/deviceinfo/deviceinfoprovider.cpp
++++ b/mts/platform/deviceinfo/deviceinfoprovider.cpp
+@@ -32,7 +32,9 @@
+ 
+ #include "deviceinfoprovider.h"
+ #include <QTimer>
++#ifdef USE_SSU
+ #include <ssudeviceinfo.h>
++#endif
+ #include <batterystatus.h>
+ #include <deviceinfo.h>
+ #include "trace.h"
+@@ -45,13 +47,18 @@ using namespace meegomtp1dot0;
+ DeviceInfoProvider::DeviceInfoProvider()
+     : m_batteryStatus(new BatteryStatus(this))
+ {
++#ifdef USE_SSU
+     DeviceInfo deviceInfo;
+     SsuDeviceInfo ssuDeviceInfo;
+-
+     m_serialNo = ssuDeviceInfo.deviceUid();
+     m_deviceVersion = deviceInfo.osVersion();
+     m_manufacturer = deviceInfo.manufacturer();
+     m_model = deviceInfo.prettyName();
++#else
++    m_serialNo = "1234567890ABCDEF";
++    m_manufacturer = "NemoMobile";
++    m_model = "GlacierUX";
++#endif
+ 
+     connect(m_batteryStatus, &BatteryStatus::chargePercentageChanged,
+             this, &DeviceInfoProvider::onBatteryPercentageChanged);
+diff --git a/mts/platform/deviceinfo/unittests/unittests.pro b/mts/platform/deviceinfo/unittests/unittests.pro
+index 2f8db39..36badcf 100644
+--- a/mts/platform/deviceinfo/unittests/unittests.pro
++++ b/mts/platform/deviceinfo/unittests/unittests.pro
+@@ -4,8 +4,6 @@ QT += dbus xml testlib
+ QT -= gui
+ CONFIG += warn_off debug_and_release
+ 
+-LIBS += -lssu
+-
+ TEMPLATE = app
+ TARGET = deviceinfo-test
+ DEFINES += UT_ON
+diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
+index 471d371..f1c9b81 100644
+--- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
++++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
+@@ -43,7 +43,7 @@ SOURCES += fsstorageplugin.cpp \
+            storageitem.cpp
+ 
+ LIBPATH += ../../..
+-LIBS    += -lmeegomtp -lssu
++LIBS    += -lmeegomtp
+ 
+ #install
+ target.path = $$[QT_INSTALL_LIBS]/mtp
+diff --git a/mts/platform/storage/fsstorageplugin/unittests/unittests.pro b/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
+index 56234e8..06ff42e 100644
+--- a/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
++++ b/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
+@@ -2,7 +2,7 @@ include(../../../../common.pri)
+ 
+ CONFIG += warn_off debug_and_release
+ 
+-LIBS += -ldl -lssu
++LIBS += -ldl
+ TEMPLATE = app
+ TARGET = storage-test
+ QT += dbus xml testlib
+diff --git a/mts/platform/storage/unittests/unittests.pro b/mts/platform/storage/unittests/unittests.pro
+index e712b55..0975cd6 100644
+--- a/mts/platform/storage/unittests/unittests.pro
++++ b/mts/platform/storage/unittests/unittests.pro
+@@ -19,7 +19,7 @@ INCLUDEPATH += \
+ 	../../../transport/dummy \
+ 	../../../transport/usb \
+ 
+-LIBS += -ldl -lssu
++LIBS += -ldl
+ 
+ HEADERS += \
+ 	storagefactory_test.h \
+diff --git a/mts/protocol/unittests/unittests.pro b/mts/protocol/unittests/unittests.pro
+index 2b7ed8c..e349116 100644
+--- a/mts/protocol/unittests/unittests.pro
++++ b/mts/protocol/unittests/unittests.pro
+@@ -2,7 +2,7 @@ include(../../common.pri)
+ 
+ CONFIG += warn_off debug_and_release
+ 
+-LIBS += -ldl -lssu
++LIBS += -ldl
+ TEMPLATE = app
+ TARGET = protocol-test
+ QT += dbus xml testlib
+diff --git a/test/test.pro b/test/test.pro
+index ff5b2a0..164b1df 100644
+--- a/test/test.pro
++++ b/test/test.pro
+@@ -2,7 +2,7 @@ TEMPLATE = app
+ TARGET = mtp_test
+ DEPENDPATH += .
+ INCLUDEPATH += . ../mts
+-LIBS += -L../mts -lmeegomtp -lssu
++LIBS += -L../mts -lmeegomtp
+ DRIVER = nogadgetfs
+ CONFIG += debug_and_release
+ QT -= gui
