@@ -69,6 +69,7 @@ package() {
 	install -m 644 -D "$srcdir"/dhcpd.conf "$pkgdir"/etc/usb-moded/
 
 #install systemd stuff
+	mkdir -p $pkgdir/usr/lib/systemd/system/basic.target.wants/
 	install -m 644 -D systemd/usb-moded.service $pkgdir/usr/lib/systemd/system/
 	ln -s ../usb-moded.service $pkgdir/usr/lib/systemd/system/basic.target.wants/
 
