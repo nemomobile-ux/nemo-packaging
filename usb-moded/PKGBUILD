@@ -6,7 +6,7 @@
 
 pkgname=usb-moded
 pkgver=0.86.0+mer56
-pkgrel=2
+pkgrel=3
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/usb-moded"
@@ -66,29 +66,9 @@ package() {
 	install -d $pkgdir/etc/usb-moded/run-diag
 	install -d $pkgdir/etc/usb-moded/dyn-modes
 	install -d $pkgdir/etc/usb-moded/diag
-	install -m 644 -D config/dyn-modes/* $pkgdir/etc/usb-moded/dyn-modes/
-	install -m 644 -D config/diag/* $pkgdir/etc/usb-moded/diag/
-	install -m 644 -D config/run/* $pkgdir/etc/usb-moded/run/
-	install -m 644 -D config/run-diag/* $pkgdir/etc/usb-moded/run-diag/
-	install -m 644 -D config/mass-storage-jolla.ini $pkgdir/etc/usb-moded/
-	install -m 644 -D config/10-usb-moded-defaults.ini $pkgdir/etc/usb-moded/
 	install -m 644 -D "$srcdir"/dhcpd.conf "$pkgdir"/etc/usb-moded/
 
 #install systemd stuff
-	mkdir -p $pkgdir/usr/lib/systemd/system/basic.target.wants/
-	mkdir -p $pkgdir/var/lib/environment/usb-moded/
-	install -m 644 -D systemd/usb-moded-args.conf $pkgdir/var/lib/environment/usb-moded/usb-moded-args.conf
-	install -m 755 -D systemd/turn-usb-rescue-mode-off $pkgdir/usr/bin/turn-usb-rescue-mode-off
-	install -m 644 -D systemd/usb-rescue-mode-off.service $pkgdir/usr/lib/systemd/system/usb-rescue-mode-off.service
-	install -m 644 -D systemd/usb-rescue-mode-off.service $pkgdir/usr/lib/systemd/system/graphical.target.wants/usb-rescue-mode-off.service
-	install -m 644 -D systemd/usb-moded.conf $pkgdir/etc/tmpfiles.d/usb-moded.conf
-	install -m 644 -D systemd/adbd-prepare.service $pkgdir/usr/lib/systemd/system/adbd-prepare.service
-	install -m 644 -D systemd/adbd-prepare.service $pkgdir/usr/lib/systemd/system/graphical.target.wants/adbd-prepare.service
-	mkdir -p $pkgdir $pkgdir/usr/bin
-	install -m 744 -D systemd/adbd-functionfs.sh $pkgdir/usr/bin/adbd-functionfs.sh
-	install -d $pkgdir/usr/share/user-managerd/remove.d/
-	install -m 744 -D scripts/usb_mode_user_clear.sh $pkgdir/usr/share/user-managerd/remove.d/
-
 	install -m 644 -D systemd/usb-moded.service $pkgdir/usr/lib/systemd/system/
 	ln -s ../usb-moded.service $pkgdir/usr/lib/systemd/system/basic.target.wants/
 
