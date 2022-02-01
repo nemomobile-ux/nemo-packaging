@@ -1,7 +1,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=mkcal
-pkgver=0.5.51
+pkgver=0.5.55
 pkgrel=1
 pkgdesc="Telepathy <> QtContacts bridge for contacts"
 arch=('x86_64' 'aarch64')
@@ -10,7 +10,7 @@ license=('BSD-3-Clause')
 depends=('kcalendarcore' 'timed' 'qmf-qt5')
 makedepends=('cmake' 'extra-cmake-modules')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('705ba360ebe578fce96c406b0ffd2b5d0019eb1647b90a222fa56e32f370544d')
+sha256sums=('ce5a5be5464993ba92fb3d462780bca431d3881405c0196b3f0f70cc18e641e4')
 
 build() {
     cd $pkgname-$pkgver
