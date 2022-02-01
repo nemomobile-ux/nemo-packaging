@@ -104,6 +104,7 @@ eval "$BUILD qt5-feedback-haptics-native-vibrator"
 eval "$BUILD libsocialcache"
 eval "$BUILD buteo-sync-plugins-social"
 eval "$BUILD nemo-qml-plugin-alarms"
+eval "$BUILD nemo-qml-plugin-calendar"
 
 #Glacier UX packages
 eval "$BUILD nemo-theme-openmoko-git"
