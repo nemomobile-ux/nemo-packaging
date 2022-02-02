@@ -133,6 +133,7 @@ eval "$BUILD glacier-dialer-git"
 eval "$BUILD glacier-mail-git"
 eval "$BUILD glacier-browser-git"
 eval "$BUILD glacier-weather-git"
+eval "$BUILD glacier-calendar-git"
 
 # pure-maps packages
 if [ "$BUILDARCH" != "aarch64" ]; then
