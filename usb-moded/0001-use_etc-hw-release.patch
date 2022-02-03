@@ -45,33 +45,35 @@ index fd5488f..5ba14e0 100644
  
      return config_get_conf_string(ANDROID_ENTRY, ANDROID_PRODUCT_KEY);
 
-From 40b1ca25fe1b3ff354ddee314ad3f4c1e1728019 Mon Sep 17 00:00:00 2001
+From a8cf8e8bb12c8e99a71296c3c12f3bb8dac72a15 Mon Sep 17 00:00:00 2001
 From: Chupligin Sergey <neochapay@gmail.com>
 Date: Tue, 11 Jan 2022 15:21:43 +0000
 Subject: [PATCH 2/2] Fix memory leak
 
 ---
- src/usb_moded-config.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ src/usb_moded-config.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/src/usb_moded-config.c b/src/usb_moded-config.c
-index 5ba14e0..d08b3c7 100644
+index 5ba14e0..d24c07b 100644
 --- a/src/usb_moded-config.c
 +++ b/src/usb_moded-config.c
-@@ -1068,9 +1068,15 @@ char * config_get_android_manufacturer(void)
+@@ -1067,9 +1067,16 @@ char * config_get_android_manufacturer(void)
+     GError *error = NULL;
  
      // Create a new GKeyFile object and a bitwise list of flags.
++    char *hw_name = NULL;
      hwReleaseFile = g_key_file_new();
 -    if (g_key_file_load_from_file(hwReleaseFile, "/etc/hw-release", G_KEY_FILE_NONE, &error)) {
-+    if (g_key_file_load_from_file(hwReleaseFile, "/etc/hw-release", G_KEY_FILE_NONE, &error)) 
+-        return g_key_file_get_string(hwReleaseFile, NULL, "MANUFACTURER", NULL);
++    if (g_key_file_load_from_file(hwReleaseFile, "/etc/hw-release", G_KEY_FILE_NONE, &error))
 +    {
-         return g_key_file_get_string(hwReleaseFile, NULL, "MANUFACTURER", NULL);
-     }
-+    else
-+    {
-+        g_free(hwReleaseFile);
-+        return "n/a";
++        hw_name = g_key_file_get_string(hwReleaseFile, NULL, "MANUFACTURER", NULL);
 +    }
++
++    if(hw_name)
++    {
++        return hw_name;
+     }
  #endif
  
-     return config_get_conf_string(ANDROID_ENTRY, ANDROID_MANUFACTURER_KEY);

@@ -4,9 +4,12 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
+_basever=0.86.0
+_merver=57
+
 pkgname=usb-moded
-pkgver=0.86.0+mer56
-pkgrel=3
+pkgver=$_basever+mer$_merver
+pkgrel=1
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/usb-moded"
@@ -19,15 +22,15 @@ depends=('libdsme'
     'dhcp'
     'net-tools'
     'buteo-mtp')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
 	'dhcpd.conf'
 	'0001-use_etc-hw-release.patch')
-sha256sums=('8776a4a373bc0ec375b22b28b2fb31e114bdc73aed911f5075ce11de2385847c'
+sha256sums=('4475fcd9e8827a7d8f86cea238cfdea6291317a6b4ba6463e1cb283be9229b27'
 	'a2408b6692339595f98fd5e46398da794019b4818ee865fd22953576f26366c9'
-	'7c2d178094394e24dc08cc10213d9153b44ecab7994287d18be257e8fbd53305')
+	'e340d6a21b94518ebb16b6ab76b0a12f197e5b5ae0861c1c46201f863a3b971f')
 
 prepare() {
-    cd $pkgname-0.86.0-mer56
+    cd $pkgname-mer-$_basever-mer$_merver
     patch -p1 --input="${srcdir}/0001-use_etc-hw-release.patch"
     rm -rf dbus-gmain
     git clone https://github.com/sailfishos-mirror/dbus-glib.git dbus-gmain
@@ -37,7 +40,7 @@ prepare() {
 }
 
 build() {
-    cd $pkgname-0.86.0-mer56
+    cd $pkgname-mer-$_basever-mer$_merver
     ./autogen.sh
     ./configure --prefix=/usr \
 	--enable-app-sync \
@@ -50,7 +53,7 @@ build() {
 }
 
 package() {
-	cd $pkgname-0.86.0-mer56
+	cd $pkgname-mer-$_basever-mer$_merver
 	make DESTDIR="$pkgdir/" install
 	mv "$pkgdir/usr/sbin" "$pkgdir/usr/bin"
 #installs dev files
@@ -67,12 +70,12 @@ package() {
 	install -d $pkgdir/etc/usb-moded/dyn-modes
 	install -d $pkgdir/etc/usb-moded/diag
 	install -m 644 -D "$srcdir"/dhcpd.conf "$pkgdir"/etc/usb-moded/
+	install -m 644 -D config/10-usb-moded-defaults.ini "$pkgdir"/etc/usb-moded/
 
 #install systemd stuff
 	mkdir -p $pkgdir/usr/lib/systemd/system/basic.target.wants/
 	install -m 644 -D systemd/usb-moded.service $pkgdir/usr/lib/systemd/system/
 	ln -s ../usb-moded.service $pkgdir/usr/lib/systemd/system/basic.target.wants/
-
 
 	mkdir -p $pkgdir/etc/modprobe.d
 	install -m 644 -D rpm/usb_moded.conf $pkgdir/etc/modprobe.d/usb_moded.conf
