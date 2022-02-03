@@ -5,7 +5,7 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-systemsettings
-pkgver=0.5.89.1
+pkgver=0.6.0.1
 pkgrel=1
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
@@ -24,7 +24,7 @@ depends=('qt5-systems'
 
 makedepends=('qt5-tools' 'mce-headers')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('8e3deb49ea9a195a4667c8b8b1b3138570915c148f872506a769f8408bdf39a6')
+sha256sums=('6a5502ce0cb221f2f4e4b1f0614956a710f28e909068b56ccb37fa9f6b43f2d8')
 
 build() {
     cd $pkgname-$pkgver
