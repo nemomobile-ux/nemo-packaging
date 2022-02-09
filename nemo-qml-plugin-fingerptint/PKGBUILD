@@ -1,0 +1,33 @@
+# $Id$
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+_host="github.com"
+_project=nemomobile-ux
+_basename=nemo-qml-plugin-fingerprint
+_branch=master
+
+_gitname=$_basename
+pkgname=$_basename
+
+pkgver=0.0.2
+
+pkgrel=1
+pkgdesc="Nemomobile QML plugin for fprintd"
+arch=('x86_64' 'aarch64')
+url="https://$_host/$_project/$_gitname"
+license=('LGPL-2.0-or-later')
+depends=('qt5-declarative' 'fprintd' 'qt5-base')
+makedepends=('cmake')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('1a0b2f81c15a5f18ea4b10f21fd1049cb62b4c92710c71f999ee722ea8c76f20')
+
+build() {
+    cd $pkgname-$pkgver
+    cmake -DCMAKE_INSTALL_PREFIX:PATH='/usr' .
+    make -j1
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make DESTDIR="$pkgdir" install
+}
