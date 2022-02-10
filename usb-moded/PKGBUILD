@@ -9,7 +9,7 @@ _merver=57
 
 pkgname=usb-moded
 pkgver=$_basever+mer$_merver
-pkgrel=1
+pkgrel=2
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/usb-moded"
@@ -20,8 +20,8 @@ depends=('libdsme'
     'kmod'
     'sailfish-access-control'
     'dhcp'
-    'net-tools'
-    'buteo-mtp')
+    'net-tools')
+optdepends=('buteo-mtp: mtp sync support')
 source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
 	'dhcpd.conf'
 	'0001-use_etc-hw-release.patch')
