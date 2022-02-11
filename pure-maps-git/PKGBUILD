@@ -19,8 +19,9 @@ depends=('python-pyotherside' 'python-pyxdg' 'mapbox-gl-native' 'mapbox-gl-qml-g
 makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
+source=("${pkgname}::git+${url}"
+    "apikeys.py")
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -36,6 +37,7 @@ prepare() {
 }
 
 build() {
+    cp $srcdir/apikey.py tools/
     cmake \
         -B "${pkgname}/build" \
         -S "${pkgname}" \
