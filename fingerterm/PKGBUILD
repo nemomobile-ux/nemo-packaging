@@ -2,7 +2,7 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=fingerterm
-pkgver=1.4.4
+pkgver=1.4.5
 pkgrel=1
 pkgdesc="fingerterm is a terminal emulator designed for touch-based interaction, specifically for (but not limited to) use on the Nokia N9 and Jolla's Jolla device."
 arch=('x86_64' 'aarch64')
@@ -11,7 +11,7 @@ license=('BSD-3-Clause' 'LGPL-2.1-only')
 depends=('qt5-declarative')
 makedepends=('qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('4c65831fdae258d7ab4c5ca2f85e1bb22adb798dd849fdc2346d5228caa2617f')
+sha256sums=('de89bf38466c54c261dffb570086ba2638746c4c950e81053efcd3bf42a60da2')
 
 build() {
     cd $pkgname-$pkgver

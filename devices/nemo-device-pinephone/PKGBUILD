@@ -9,7 +9,7 @@ _branch=master
 _gitname=$_basename
 pkgname=nemo-device-pinephone
 
-pkgver=0.8.3
+pkgver=0.8.5
 pkgrel=1
 pkgdesc="PinePhone specific files for GlacierUX"
 arch=('aarch64')
@@ -27,7 +27,9 @@ depends=('glacier-wayland-session'
 	'qt5-sensors-sensorfw'
 	'qt5-feedback-haptics-native-vibrator'
 	'qt-mobility-haptics-ffmemless'
-	'bluez-utils>5.44')
+	'bluez-utils>5.44'
+	'gpsd'
+	'buteo-mtp')
 
 makedepends=('git')
 provides=("${pkgname%-git}")
