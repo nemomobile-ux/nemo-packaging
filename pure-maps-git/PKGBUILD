@@ -20,7 +20,7 @@ makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}"
-    'apikey.py')
+    'apikeys.py')
 sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
@@ -37,7 +37,7 @@ prepare() {
 }
 
 build() {
-    cp "$srcdir/apikey.py" "${pkgname}/tools/"
+    cp "$srcdir/apikeys.py" "${pkgname}/tools/"
     cmake \
         -B "${pkgname}/build" \
         -S "${pkgname}" \
