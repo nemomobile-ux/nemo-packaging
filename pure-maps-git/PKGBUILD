@@ -20,7 +20,7 @@ makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}"
-    "apikeys.py")
+    'apikey.py')
 sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
