@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=2.9.2.r0.g8bb6475a
+pkgver=2.9.2.r6.g31bdfe70
 
 pkgrel=1
 pkgdesc="Pure Maps"
@@ -20,7 +20,7 @@ makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}"
-    "apikeys.py")
+    'apikey.py')
 sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
@@ -37,7 +37,7 @@ prepare() {
 }
 
 build() {
-    cp $srcdir/apikey.py tools/
+    cp "$srcdir/apikey.py" "${pkgname}/tools/"
     cmake \
         -B "${pkgname}/build" \
         -S "${pkgname}" \
