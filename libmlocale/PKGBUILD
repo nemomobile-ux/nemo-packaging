@@ -4,7 +4,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libmlocale
-pkgver=0.7.5
+pkgver=0.7.6
 pkgrel=1
 pkgdesc="Contains classes MLocale and friends originally from libmeegotouch"
 arch=('x86_64' 'aarch64')
@@ -16,7 +16,7 @@ source=(
   "${url}/archive/refs/tags/$pkgver.tar.gz"
   "disable-werror.patch"
   )
-sha256sums=('d6cb14638dfa8f048db8b896dd802fc598dd45ce4599001203bafb1a32584238'
+sha256sums=('1b0db667a124be67251af0c5a3d920798a77b83ff11b404852f7fcb12d0f17af'
     '74a0ea1a421144c1fe9d5c3624d8e4eb4977a6286137b724a0b24999b1b0643b')
 
 build() {
