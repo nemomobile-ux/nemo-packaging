@@ -4,7 +4,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qtcontacts-sqlite
-pkgver=0.3.15
+pkgver=0.3.17
 pkgrel=1
 pkgdesc="SQLite-based plugin for QtPIM Contacts"
 arch=('x86_64' 'aarch64')
@@ -14,7 +14,7 @@ depends=('qt5-pim' 'mlite')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	"0001-fix-build-with-newer-qt.patch"
 	"0002-remove-obsolete-QContact-IgnoreAccessConstraints.patch")
-sha256sums=('c39edb9102e630fde0019e83790849876a59dbe19170fda37184ac04b54b0c04'
+sha256sums=('60db30bc475b533b1370b9b08c80e5aed9d1ca6f6eb84dd6f1f07b03823b9e9b'
 	'35fe310dec658365354d3b2da90fc4211d6afb0be9e1914dcb1cc8b81e740390'
 	'03d72e86a485abd9d8230c5a41b9ba3d8d110164fe4869170f94b65c1b639382')
 
