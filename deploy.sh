@@ -26,6 +26,7 @@ eval "$BUILD nemo-theme-glacier-git"
 
 
 # NemoMobile packages
+eval "$BUILD geoclue"
 eval "$BUILD nemo-qml-plugin-settings"
 eval "$BUILD nemo-qml-plugin-folderlistmodel"
 eval "$BUILD libresource"
@@ -135,6 +136,8 @@ eval "$BUILD glacier-mail-git"
 eval "$BUILD glacier-browser-git"
 eval "$BUILD glacier-weather-git"
 eval "$BUILD glacier-calendar-git"
+eval "$BUILD glacier-alarmclock-git"
+eval "$BUILD glacier-alarm-listener-git"
 
 # pure-maps packages
 if [ "$BUILDARCH" != "aarch64" ]; then
