@@ -2,8 +2,8 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=ngfd
-pkgver=1.3.1
-pkgrel=2
+pkgver=1.3.2
+pkgrel=1
 pkgdesc="Non-Graphic Feedback daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/ngfd"
@@ -18,7 +18,7 @@ depends=('ohm-plugins-misc'
 
 makedepends=('git' 'doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('884e66e773788b40b595c25d53d8803b8a6ef609c8bb0bea6eb0932f968c781f')
+sha256sums=('358520bbd7c2cc0bd113595264afea055e1da4ea09d533f7bafa33a1ff95e6c0')
 
 prepare() {
     cd $pkgname-$pkgver
