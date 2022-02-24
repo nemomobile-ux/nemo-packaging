@@ -59,7 +59,8 @@ build() {
         -DCMAKE_BUILD_TYPE=None \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_INSTALL_LIBDIR=lib \
-        -DCMAKE_INSTALL_SYSCONFDIR=/etc
+        -DCMAKE_INSTALL_SYSCONFDIR=/etc \
+        -DUSE_GEOCLUE2
   make -C build
 }
 
