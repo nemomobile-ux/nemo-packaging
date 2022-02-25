@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=r2.411aee2
+pkgver=r5.55fed0a
 
 pkgrel=1
 pkgdesc="Nemo alarm events notification popup"

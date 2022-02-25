@@ -8,7 +8,7 @@ pkgname=lipstick-glacier-home-git
 _host="github.com"
 _project=nemomobile-ux
 _branch=master
-pkgver=0.37.2.r15.gc24a0d6
+pkgver=0.37.3.r4.g2657d64
 pkgrel=1
 pkgdesc="A nice homescreen for Glacier experience"
 arch=('x86_64' 'aarch64')
@@ -60,7 +60,7 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_INSTALL_LIBDIR=lib \
         -DCMAKE_INSTALL_SYSCONFDIR=/etc \
-        -DUSE_GEOCLUE2
+        -DUSE_GEOCLUE2=true
   make -C build
 }
 

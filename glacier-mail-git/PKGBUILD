@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.0.2.r14.g3bca180
+pkgver=0.0.2.r19.g7a1f802
 
 pkgrel=1
 pkgdesc="Nemo mail client"
