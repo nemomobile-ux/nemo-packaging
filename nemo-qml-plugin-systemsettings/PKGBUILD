@@ -5,11 +5,11 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-systemsettings
-pkgver=0.6.0.1
+pkgver=0.8.0
 pkgrel=1
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/nemo-qml-plugin-systemsettings"
+url="https://github.com/sailfishos/nemo-qml-plugin-systemsettings"
 license=('BSD')
 depends=('qt5-systems'
 	'libusb-moded-qt'
@@ -20,11 +20,32 @@ depends=('qt5-systems'
 	'mlite'
 	'mce'
 	'nemo-qml-plugin-dbus'
+	'libqofono-qt5>=0.105'
 	'qt5-xmlpatterns')
 
-makedepends=('qt5-tools' 'mce-headers')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('6a5502ce0cb221f2f4e4b1f0614956a710f28e909068b56ccb37fa9f6b43f2d8')
+makedepends=('qt5-tools' 'mce-headers' 'pkgconf')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    "0001-disable-libsailfishkeyprovider.patch"
+    "0002-disable-ssu.patch"
+    "0003-disable-devmode.patch"
+    "0004-fixup-setlocale.patch"
+    "0005-geoclue-use-usr-lib.patch")
+
+sha256sums=('c570eb433f2ce85700c118a859bf4071d1900633fbc61b65c1a163420d8d1e34'
+	    '95b628b623631eb3d1b9d43a8d28140eb98e491df8fd85dea527b3a68b272ac1'
+	    'c81267a18e0cd9d6b23d5ef2e8d9e60fd662ac4fe8a3035418a1e0205e556fd3'
+	    'ed9f7ccc5e8a1fe31419c11972fbcc4a9d54fe76f3d0fc4de6758b856ad6df27'
+	    'c80f108307625355bfa064b51d09c45b100034e03f281644136cfd7c9f83dcfe'
+	    'd4b6a68158391758bd586a383c5bde4d31ec55b1c5ad1c604b3885e700ebd053')
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -Np1 -i "${srcdir}/0001-disable-libsailfishkeyprovider.patch"
+    patch -Np1 -i "${srcdir}/0002-disable-ssu.patch"
+    patch -Np1 -i "${srcdir}/0003-disable-devmode.patch"
+    patch -Np1 -i "${srcdir}/0004-fixup-setlocale.patch"
+    patch -Np1 -i "${srcdir}/0005-geoclue-use-usr-lib.patch"
+}
 
 build() {
     cd $pkgname-$pkgver
@@ -37,7 +58,4 @@ package() {
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     cd "$pkgdir"
     rm -rf opt
-    mkdir -p usr/lib/${pkgname}
-    mv usr/libexec/* usr/lib/${pkgname}
-    rm -rf usr/libexec
 }

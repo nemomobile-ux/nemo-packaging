@@ -1,0 +1,74 @@
+From 1075f1ab4a475087941fe0ee1f63269caf997e60 Mon Sep 17 00:00:00 2001
+From: Sergey Chupligin <neochapay@gmail.com>
+Date: Fri, 25 Feb 2022 08:38:01 +0000
+Subject: [PATCH] fixup setlocale
+
+---
+ setlocale/main.cpp      | 2 +-
+ setlocale/setlocale.pro | 2 +-
+ src/languagemodel.cpp   | 2 +-
+ src/localeconfig.cpp    | 3 ++-
+ 4 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/setlocale/main.cpp b/setlocale/main.cpp
+index fabadf5..fb240da 100644
+--- a/setlocale/main.cpp
++++ b/setlocale/main.cpp
+@@ -78,7 +78,7 @@ static bool writeLocale(QString &configPath, QString &locale)
+ {
+     QFile localeConfig(configPath);
+     if (!ensureDirectory(configPath)) {
+-        qWarning() << "Unable to create directory for locale configuration file";
++        qWarning() << "Unable to create directory for locale configuration file" << configPath;
+         return false;
+     }
+ 
+diff --git a/setlocale/setlocale.pro b/setlocale/setlocale.pro
+index 4c8ad39..fe72505 100644
+--- a/setlocale/setlocale.pro
++++ b/setlocale/setlocale.pro
+@@ -1,6 +1,6 @@
+ TEMPLATE = app
+ TARGET = setlocale
+-TARGETPATH = /usr/libexec
++TARGETPATH = /usr/bin
+ target.path = $$TARGETPATH
+ 
+ QT = core
+diff --git a/src/languagemodel.cpp b/src/languagemodel.cpp
+index 997becb..1de1718 100644
+--- a/src/languagemodel.cpp
++++ b/src/languagemodel.cpp
+@@ -181,7 +181,7 @@ QString LanguageModel::locale(int index) const
+ 
+ void LanguageModel::setSystemLocale(const QString &localeCode, LocaleUpdateMode updateMode)
+ {
+-    int ret = QProcess::execute(QLatin1String("/usr/libexec/setlocale"), QStringList(localeCode));
++    int ret = QProcess::execute(QLatin1String("/usr/bin/setlocale"), QStringList(localeCode));
+     if (ret != 0) {
+         qWarning() << "Setting user locale failed!";
+         return;
+diff --git a/src/localeconfig.cpp b/src/localeconfig.cpp
+index 9611896..d5dbd33 100644
+--- a/src/localeconfig.cpp
++++ b/src/localeconfig.cpp
+@@ -31,6 +31,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+  */
+ 
++#include <QStandardPaths>
+ #include <QDebug>
+ 
+ #include "localeconfig.h"
+@@ -41,7 +42,7 @@
+ QString localeConfigPath()
+ {
+     // User-wide locale config
+-    return QString("/home/.system/var/lib/environment/%1/locale.conf").arg(getuid());
++    return QString("%1/.config/locale.conf").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
+ }
+ 
+ QString systemLocaleConfigPath()
+-- 
+2.35.1
+

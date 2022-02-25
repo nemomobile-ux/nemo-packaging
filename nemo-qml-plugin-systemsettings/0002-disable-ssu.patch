@@ -1,0 +1,92 @@
+From 15cfdf7f22ce7fb20645aacf608c27bf497a2d3c Mon Sep 17 00:00:00 2001
+From: Sergey Chupligin <neochapay@gmail.com>
+Date: Fri, 25 Feb 2022 08:22:49 +0000
+Subject: [PATCH] disable ssu
+
+---
+ src/deviceinfo.cpp | 46 +++++++++++++++++-----------------------------
+ src/src.pro        |  2 +-
+ 2 files changed, 18 insertions(+), 30 deletions(-)
+
+diff --git a/src/deviceinfo.cpp b/src/deviceinfo.cpp
+index 4ffdba9..b16cc02 100644
+--- a/src/deviceinfo.cpp
++++ b/src/deviceinfo.cpp
+@@ -32,8 +32,10 @@
+ #include "deviceinfo.h"
+ 
+ #include <QSet>
++#include <QFile>
++#include <QDebug>
++#include <QSettings>
+ 
+-#include <ssusysinfo.h>
+ #include <qofonomanager.h>
+ #include <qofonomodem.h>
+ 
+@@ -93,35 +95,21 @@ DeviceInfoPrivate::DeviceInfoPrivate(DeviceInfo *deviceInfo, bool synchronousIni
+     , m_synchronousInit(synchronousInit)
+     , m_updateModemPropertiesTimer(nullptr)
+ {
+-    ssusysinfo_t *si = ssusysinfo_create();
+-
+-    hw_feature_t *features = ssusysinfo_get_hw_features(si);
+-    if (features) {
+-        for (size_t i = 0; features[i]; ++i) {
+-            m_features.insert(static_cast<DeviceInfo::Feature>(features[i]));
+-        }
+-        free(features);
+-    }
+-
+-    hw_key_t *keys = ssusysinfo_get_hw_keys(si);
+-    if (keys) {
+-        for (size_t i = 0; keys[i]; ++i) {
+-            m_keys.insert(static_cast<Qt::Key>(keys[i]));
+-        }
+-        free(keys);
++    if(QFile::exists("/etc/hw-release")) {
++        QSettings* devSettings = new QSettings("/etc/device.ini", QSettings::IniFormat);
++        m_model = devSettings->value("MODEL", "Unknown model").toString();
++        m_baseModel = devSettings->value("BASE_MODEL", "Unknown base model").toString();
++        m_designation = devSettings->value("DESIGNATION", "Unknown designation").toString();
++        m_manufacturer = devSettings->value("MANUFACTURER", "Unknown anufacturer").toString();
++        m_prettyName = devSettings->value("PRETTY_NAME", "Unknown pretty name").toString();
++    } else {
++        qWarning() << "/etc/hw-release file not found";
++        m_model = "Unknown";
++        m_baseModel = "Unknown";
++        m_designation = "Unknown";
++        m_manufacturer = "Unknown";
++        m_prettyName = "Unknown";
+     }
+-
+-    /* Note: These queries always return non-null C string */
+-    m_model = ssusysinfo_device_model(si);
+-    m_baseModel = ssusysinfo_device_base_model(si);
+-    m_designation = ssusysinfo_device_designation(si);
+-    m_manufacturer = ssusysinfo_device_manufacturer(si);
+-    m_prettyName = ssusysinfo_device_pretty_name(si);
+-    m_osName = ssusysinfo_os_name(si);
+-    m_osVersion = ssusysinfo_os_version(si);
+-    m_adaptationVersion = ssusysinfo_hw_version(si);
+-
+-    ssusysinfo_delete(si);
+ }
+ 
+ DeviceInfoPrivate::~DeviceInfoPrivate()
+diff --git a/src/src.pro b/src/src.pro
+index 61bd016..28d3a5e 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -7,7 +7,7 @@ QT -= gui
+ 
+ CONFIG += c++11 hide_symbols link_pkgconfig
+ PKGCONFIG += profile mlite5 mce timed-qt5 blkid libcrypto connman-qt5 glib-2.0
+-PKGCONFIG += ssu-sysinfo nemodbus packagekitqt5 libsystemd sailfishusermanager sailfishaccesscontrol
++PKGCONFIG += nemodbus packagekitqt5 libsystemd sailfishusermanager sailfishaccesscontrol
+ PKGCONFIG += qofono-qt5
+ 
+ system($$[QT_INSTALL_BINS]/qdbusxml2cpp -p mceiface.h:mceiface.cpp mce.xml)
+-- 
+2.35.1
+
