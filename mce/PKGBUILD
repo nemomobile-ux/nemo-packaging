@@ -5,18 +5,23 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=mce
-pkgver=1.109.2
+pkgver=1.110.0
 pkgrel=1
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/mce"
 license=('LGPLv2')
 depends=('libngf' 'libiphb')
-makedepends=('git' 'doxygen' 'libdsme' 'libsystemd' 'usb-moded' 'mce-headers')
+makedepends=('git'
+	'doxygen'
+	'libdsme'
+	'libsystemd'
+	'usb-moded'
+	'mce-headers>=1.30')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	'0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch'
 	'0002-Handle_KEY_WAKEUP.patch')
-sha256sums=('d14a87b2c91b2ec8898ceedfdbb7ccec13aac6c59e4c0ab7bbbc102d0fb13717'
+sha256sums=('a78933194cc0679a8eb8f8bc4fe7141eeeadd7bb126a4ec5ba715654f9446936'
 	'8ed260853165760423b4c6764ae9fb129e0506403d070fced60f576d9185e5f4'
 	'595ddbfda22a802a47f0239b24f53a28aa785abe128ae56cfbdbcac0d0deae2d')
 
