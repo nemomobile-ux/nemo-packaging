@@ -1,0 +1,87 @@
+diff --git a/plugin/mlsdbonlinelocator.cpp b/plugin/mlsdbonlinelocator.cpp
+index a760685..0759662 100644
+--- a/plugin/mlsdbonlinelocator.cpp
++++ b/plugin/mlsdbonlinelocator.cpp
+@@ -26,7 +26,6 @@
+ #include <QtGlobal>
+ #include <QSettings>
+ 
+-#include <sailfishkeyprovider.h>
+ #include <qofonosimmanager.h>
+ #include <qofonoextmodemmanager.h>
+ #include <networkmanager.h>
+@@ -70,6 +69,7 @@ MlsdbOnlineLocator::MlsdbOnlineLocator(QObject *parent)
+     , m_simManager(0)
+     , m_networkManager(new NetworkManager(this))
+     , m_currentReply(0)
++    , m_mlsKey("geoclue")
+     , m_fallbacksLacf(true)
+     , m_fallbacksIpf(true)
+     , m_wlanDataAllowed(true)
+@@ -219,11 +219,6 @@ bool MlsdbOnlineLocator::findLocation(const QPair<QDateTime, QVariantMap> &query
+         return false;
+     }
+ 
+-    if (!loadMlsKey()) {
+-        qCDebug(lcGeoclueMlsdbOnline) << "Unable to load MLS API key";
+-        return false;
+-    }
+-
+     if (m_currentReply) {
+         qCDebug(lcGeoclueMlsdbOnline) << "Previous request still in progress";
+         return true;
+@@ -494,23 +489,3 @@ void MlsdbOnlineLocator::setupSimManager()
+     }
+ }
+ 
+-
+-bool MlsdbOnlineLocator::loadMlsKey()
+-{
+-    if (!m_mlsKey.isEmpty()) {
+-        return true;
+-    }
+-
+-    char *keyBuf = NULL;
+-    int success = SailfishKeyProvider_storedKey("mls", "mls-geolocate", "key", &keyBuf);
+-    if (keyBuf == NULL) {
+-        return false;
+-    } else if (success != 0) {
+-        free(keyBuf);
+-        return false;
+-    }
+-
+-    m_mlsKey = QLatin1String(keyBuf);
+-    free(keyBuf);
+-    return true;
+-}
+diff --git a/plugin/mlsdbonlinelocator.h b/plugin/mlsdbonlinelocator.h
+index 0f2861b..ebc9b57 100644
+--- a/plugin/mlsdbonlinelocator.h
++++ b/plugin/mlsdbonlinelocator.h
+@@ -74,7 +74,6 @@ private:
+     QVariantMap fallbackFields() const;
+ 
+     void setupSimManager();
+-    bool loadMlsKey();
+ 
+     QNetworkAccessManager *m_nam;
+     QOfonoExtModemManager *m_modemManager;
+diff --git a/plugin/plugin.pro b/plugin/plugin.pro
+index 791edca..7e82335 100644
+--- a/plugin/plugin.pro
++++ b/plugin/plugin.pro
+@@ -3,12 +3,12 @@ CONFIG   += console
+ CONFIG   -= app_bundle
+ TEMPLATE = app
+ 
+-target.path = /usr/libexec
++target.path = /usr/lib
+ 
+ QT = core dbus network
+ 
+ CONFIG += link_pkgconfig
+-PKGCONFIG += qofono-qt5 qofonoext connman-qt5 libsailfishkeyprovider mlite5
++PKGCONFIG += qofono-qt5 qofonoext connman-qt5 mlite5
+ 
+ LIBS += -lrt
+ 
