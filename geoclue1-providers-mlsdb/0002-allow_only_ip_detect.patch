@@ -1,0 +1,16 @@
+diff --git a/plugin/mlsdbonlinelocator.cpp b/plugin/mlsdbonlinelocator.cpp
+index 0759662..a682909 100644
+--- a/plugin/mlsdbonlinelocator.cpp
++++ b/plugin/mlsdbonlinelocator.cpp
+@@ -214,11 +214,6 @@ QPair<QDateTime, QVariantMap> MlsdbOnlineLocator::buildLocationQuery(
+ 
+ bool MlsdbOnlineLocator::findLocation(const QPair<QDateTime, QVariantMap> &query)
+ {
+-    if (query.first.isNull() || query.second.isEmpty()) {
+-        qCDebug(lcGeoclueMlsdbOnline) << "Empty query data provided";
+-        return false;
+-    }
+-
+     if (m_currentReply) {
+         qCDebug(lcGeoclueMlsdbOnline) << "Previous request still in progress";
+         return true;
