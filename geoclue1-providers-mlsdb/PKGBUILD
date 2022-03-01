@@ -2,7 +2,7 @@
 
 pkgname=geoclue1-providers-mlsdb
 pkgver=0.1.7
-pkgrel=2
+pkgrel=3
 pkgdesc="Geoinformation Service from Mozilla Location Services Database Provider"
 arch=('x86_64' 'aarch64')
 url="https://github.com/mer-hybris/geoclue-providers-mlsdb";
@@ -14,15 +14,15 @@ depends=('geoclue1'
     'mlite')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-disable_libsailfiskeyprovider.patch"
-    "0002-allow_only_ip_detect.patch")
+    "0003-use_standart_path_for_location_config.patch")
 sha256sums=('ae5667d6150cedb1e79ef899ce62f01273f997b07a77d90acf1c28e5c5c9430e'
     '5c769e6b19f155f4059b8c03ed682b3dc39468d8048e308a7efe5c0ed9460600'
-    'a7e1d08b78d294e033ae8cfee9de6ac7849c9b74f5b7d8c9fb473bc96446dcaa')
+    '200b85f0b682841b418686bf4e9e0ff5eca7229030f455dd0c2f6b63f7bc82cc')
 
 prepare() {
     cd $srcdir/geoclue-providers-mlsdb-${pkgver}
     patch -p1 --input="${srcdir}/0001-disable_libsailfiskeyprovider.patch"
-    patch -p1 --input="${srcdir}/0002-allow_only_ip_detect.patch"
+    patch -p1 --input="${srcdir}/0003-use_standart_path_for_location_config.patch"
 }
 
 build() {

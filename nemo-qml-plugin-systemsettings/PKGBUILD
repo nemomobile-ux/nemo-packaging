@@ -6,7 +6,7 @@
 
 pkgname=nemo-qml-plugin-systemsettings
 pkgver=0.8.0
-pkgrel=2
+pkgrel=3
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-systemsettings"
@@ -30,7 +30,8 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0003-disable-devmode.patch"
     "0004-fixup-setlocale.patch"
     "0005-geoclue-use-usr-lib.patch"
-    "0007-fixup_pkgconfig.patch")
+    "0007-fixup_pkgconfig.patch"
+    "0008-use_standart_path_for_location_config.patch")
 
 sha256sums=('c570eb433f2ce85700c118a859bf4071d1900633fbc61b65c1a163420d8d1e34'
 	    '95b628b623631eb3d1b9d43a8d28140eb98e491df8fd85dea527b3a68b272ac1'
@@ -38,7 +39,8 @@ sha256sums=('c570eb433f2ce85700c118a859bf4071d1900633fbc61b65c1a163420d8d1e34'
 	    'ed9f7ccc5e8a1fe31419c11972fbcc4a9d54fe76f3d0fc4de6758b856ad6df27'
 	    'c80f108307625355bfa064b51d09c45b100034e03f281644136cfd7c9f83dcfe'
 	    'd4b6a68158391758bd586a383c5bde4d31ec55b1c5ad1c604b3885e700ebd053'
-	    '4bc36dae27bf1061bd9a703002cd96424de599a5eb72ddfeae694e79ece0964c')
+	    '4bc36dae27bf1061bd9a703002cd96424de599a5eb72ddfeae694e79ece0964c'
+	    'ddbe1cb23229f0fe60c4290267dd6c5c774bf2b2c63b09ed3c2af1a58672ac11')
 
 prepare() {
     cd $pkgname-$pkgver
@@ -48,6 +50,7 @@ prepare() {
     patch -Np1 -i "${srcdir}/0004-fixup-setlocale.patch"
     patch -Np1 -i "${srcdir}/0005-geoclue-use-usr-lib.patch"
     patch -Np1 -i "${srcdir}/0007-fixup_pkgconfig.patch"
+    patch -Np1 -i "${srcdir}/0008-use_standart_path_for_location_config.patch"
 }
 
 build() {
