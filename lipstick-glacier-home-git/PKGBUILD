@@ -28,13 +28,20 @@ depends=('bluez-qt'
 	'nemo-qml-plugin-notifications'
 	'nemo-qml-plugin-connectivity'
 	'glacier-settings-git'
-	'geoclue>2.0'
+	'geoclue1'
 	'mlite'
 	'qt-mobility-haptics-ffmemless'
 	'ngfd'
 	'pulseaudio-module-keepalive')
 
-makedepends=('git' 'extra-cmake-modules' 'qt5-wayland' 'qt5-tools' 'nemo-qml-plugin-devicelock' 'bluez-qt' 'polkit-qt5')
+makedepends=('git'
+	'extra-cmake-modules'
+	'qt5-wayland'
+	'qt5-tools'
+	'nemo-qml-plugin-devicelock'
+	'bluez-qt'
+	'polkit-qt5'
+	'mce-headers>=1.30.0')
 optdepends=()
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -60,7 +67,7 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_INSTALL_LIBDIR=lib \
         -DCMAKE_INSTALL_SYSCONFDIR=/etc \
-        -DUSE_GEOCLUE2=true
+        -DUSE_GEOCLUE2=false
   make -C build
 }
 
