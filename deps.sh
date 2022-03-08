@@ -6,7 +6,7 @@ have+="curl icu zlib lightdm glib2 dbus-glib sqlite systemd systemd-libs libsyst
 have+="qt5-location qt5-webengine qt5-svg qt5-declarative qt5-base qt5-quickcontrols qt5-wayland qt5-multimedia qt5-feedback qt5-charts qt5-graphicaleffects qt5-quickcontrols2 "
 have+="telepathy-qt telepathy-glib telepathy-ofono libpulse pulseaudio python openssl libaccounts-qt bluez-qt kcalendarcore maliit-framework qt5-xmlpatterns dconf libarchive "
 have+="libphonenumber tracker3 tracker3-miners ofono connman check kmod signond gtest libpamac fprintd taglib nemo-qml-plugin-dbus polkit-qt5 geoclue gmp "
-have+="libcanberra python-pyxdg "
+have+="libcanberra python-pyxdg libsoup json-glib libmm-glib avahi geocode-glib gobject-introspection vala meson libnotify libxml2 pkgconf "
 
 have+="cmake qt5-tools automake autoconf libtool doxygen bison flex libxft libjpeg libxpm extra-cmake-modules libxslt graphviz gtk-doc python-setuptools unixodbc libxinerama " # makedepends
 have+=" " # must end with space
