@@ -15,7 +15,9 @@ pkgdesc="Nemo alarm clock"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('qt5-glacier-app-git' 'timed')
+depends=('qt5-glacier-app-git'
+    'timed'
+    'nemo-qml-plugin-alarms')
 makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
