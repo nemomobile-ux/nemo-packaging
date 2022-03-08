@@ -26,7 +26,6 @@ eval "$BUILD nemo-theme-glacier-git"
 
 
 # NemoMobile packages
-eval "$BUILD geoclue"
 eval "$BUILD geoclue1"
 eval "$BUILD nemo-qml-plugin-settings"
 eval "$BUILD nemo-qml-plugin-folderlistmodel"
