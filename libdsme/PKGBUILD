@@ -2,7 +2,7 @@
 # Maintainer: Felix Yan <felixonmars@archlinux.org>
 
 pkgname=libdsme
-pkgver=0.66.6
+pkgver=0.66.7
 pkgrel=1
 pkgdesc="DSME dsmesock dynamic library"
 arch=('x86_64' 'aarch64')
@@ -10,7 +10,7 @@ url="https://github.com/sailfishos/libdsme"
 license=('LGPL')
 depends=('glib2')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('3e5f1b145500a503180b793345045bda195733c5bcd1083602798b680dfe8ada')
+sha256sums=('95b6ccb7db39db8bb07e01777f4c0055e4a597c5100313329700995c0a84d87e')
 
 build() {
   cd $pkgname-$pkgver
