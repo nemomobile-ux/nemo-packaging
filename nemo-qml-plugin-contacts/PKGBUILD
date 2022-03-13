@@ -4,7 +4,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-contacts
-pkgver=0.3.22
+pkgver=0.3.23
 pkgrel=1
 pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
@@ -18,15 +18,8 @@ depends=('libphonenumber'
 	'buteo-sync-plugin-carddav')
 
 makedepends=('qt5-tools')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-	"0001-remove-collection.extendedMetaData-as-it-doens-t-exi.patch")
-sha256sums=('164ae3bffcf68b19e56e693fecc639ed17d0965777514e13d87860034e34a299'
-    '4d9d1e3d2b4c607fe972cef10073fff36a1518f8aaa4b8d1c93789d73c8fa6fd')
-
-prepare() {
-    cd $pkgname-$pkgver
-    patch -p1 --input="${srcdir}/0001-remove-collection.extendedMetaData-as-it-doens-t-exi.patch"
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('84b113123dfdc22bb4638cdc23e5544ab09429b68103c54ad10d1aa5baf1a075')
 
 build() {
   cd $pkgname-$pkgver
