@@ -1,0 +1,23 @@
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+pkgname=libdbusaccess
+pkgver=1.0.16
+pkgrel=1
+pkgdesc="Access control over D-Bus"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/${pkgname}"
+license=('LGPLv2')
+depends=('glib2' 'libglibutil')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('c7729066f63f8c5c4e3cbeaf4926604b52e3426f7e93eed871a6d9749e42dae5')
+
+build() {
+    cd $pkgname-$pkgver
+    make LIBDIR=/usr/lib KEEP_SYMBOLS=1 release pkgconfig
+    make
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make DESTDIR="$pkgdir/" LIBDIR=/usr/lib install-dev
+}
