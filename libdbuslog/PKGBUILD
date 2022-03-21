@@ -1,0 +1,27 @@
+# Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+
+pkgname=libdbuslog
+pkgver=1.0.22
+pkgrel=1
+pkgdesc="Library of logging utilities for libdbus based programs"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/${pkgname}"
+license=('LGPLv2')
+depends=('glib2' 
+    'libglibutil'
+    'libdbusaccess')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('e8dce3056e97109ced4b288bbbdb76dcbb5709e8d2e2f83ee1a1d563d8985c72')
+
+
+build() {
+    cd $pkgname-$pkgver
+    make LIBDIR=/usr/lib KEEP_SYMBOLS=1 release pkgconfig
+    make LIBDIR=/usr/lib KEEP_SYMBOLS=1 -C tools/dbuslog-client release
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make DESTDIR="$pkgdir/" LIBDIR=/usr/lib -C tools/dbuslog-client install
+    make DESTDIR="$pkgdir/" LIBDIR=/usr/lib -C server install-dev
+}
