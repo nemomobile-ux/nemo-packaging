@@ -1,0 +1,25 @@
+From 212c6d76affb6448e3e92c3b20a98f0db2237cf8 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Mon, 21 Mar 2022 16:53:11 +0100
+Subject: [PATCH] disable storage test
+
+---
+ libmeegomtp.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libmeegomtp.pro b/libmeegomtp.pro
+index 252b24b..f27eb4d 100644
+--- a/libmeegomtp.pro
++++ b/libmeegomtp.pro
+@@ -46,7 +46,7 @@ mts_protocol_tests.depends = sub-mts
+ SUBDIRS += \
+     mts \
+     test \
+-    mts_storage_tests \
++#    mts_storage_tests \
+     mts_fsstorage_plugin \
+     mts_fsstorage_tests \
+     mts_deviceinfo_tests \
+-- 
+2.35.1
+
