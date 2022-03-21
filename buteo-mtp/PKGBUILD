@@ -2,7 +2,7 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=buteo-mtp
-pkgver=0.9.5
+pkgver=0.9.7
 pkgrel=1
 pkgdesc="MTP library"
 arch=('x86_64' 'aarch64')
@@ -13,13 +13,16 @@ depends=('mlite'
     'nemo-qml-plugin-dbus'
     'nemo-qml-plugin-thumbnailer')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-disable_ssu.patch")
-sha256sums=('6e3d662911c67f593d2bb88b49170cb40dc3fd0c1b17482947761c4d9807e84e'
-    'eb46ea60f45151893d210d3e5e2a9229cec7455f25e1ee278287bfd1eda433d3')
+    "0001-disable_ssu.patch"
+    '0002-disable-storage-test.patch')
+sha256sums=('2f6730f9cc29da465f1790b4ffc3628e6bf4fec5b6369f592f8bb087a3b7689b'
+    'eb46ea60f45151893d210d3e5e2a9229cec7455f25e1ee278287bfd1eda433d3'
+    '190b7b2eb1aa7e588d35ccdbed2e5787b17098799f3933a4a3ddec11f06c1bc3')
 
 prepare() {
     cd $pkgname-$pkgver
     patch -p1 --input="${srcdir}/0001-disable_ssu.patch"
+    patch -p1 --input="${srcdir}/0002-disable-storage-test.patch"
 }
 
 build() {
