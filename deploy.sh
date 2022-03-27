@@ -22,7 +22,7 @@ else
     BUILD="${BUILD-buildpkg -n -p}"
 fi
 
-eval "$BUILD nemo-theme-glacier-git"
+eval "$BUILD nemo-theme-glacier"
 
 
 # NemoMobile packages
