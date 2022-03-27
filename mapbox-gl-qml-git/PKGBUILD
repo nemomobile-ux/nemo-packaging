@@ -8,14 +8,14 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=2.0.0.r0.g4944a87
+pkgver=2.0.1.r0.gc01e406
 
 pkgrel=1
 pkgdesc="QML plugin for Mapbox GL Native"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-3.0 License')
-depends=('qt5-base' 'curl' 'mapbox-gl-native' 'qt5-location')
+depends=('qt5-base' 'curl' 'mapbox-gl-native' 'qt5-location' 'qt5-svg')
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
