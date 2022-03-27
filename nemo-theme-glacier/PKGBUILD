@@ -4,34 +4,21 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="github.com"
-_project=nemomobile-ux
-_basename=nemo-theme-glacier
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
-pkgver=0.2.r5.g10fe1d5
-
-pkgrel=1
+pkgname=nemo-theme-glacier
 pkgdesc="Glacier theme based on nemo-theme-default"
+pkgver=0.2.1
+pkgrel=1
+url="https://github.com/nemomobile-ux/nemo-theme-glacier"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
-license=('CC-BY-SA-3.0')    
+license=('CC-BY-SA-3.0')
 makedepends=('git')
-provides=("${pkgname%-git}" "nemo-theme-default")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
+provides=("nemo-theme-default")
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('c6ed13fd22b400690eeee39d3ad18b50528bab1f095adde1fe15104a73b1da19')
 
-pkgver() {
-    cd "${srcdir}/${pkgname}"
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-}
 
 package() {
-    cd "${srcdir}/${pkgname}"
+    cd "${srcdir}/${pkgname}-${pkgver}"
     mkdir -p \
         "$pkgdir"/usr/share/themes/glacier/meegotouch/icons \
         "$pkgdir"/usr/share/themes/glacier/fontawesome/icons \
@@ -64,4 +51,4 @@ package() {
     ln -rsf "$pkgdir"/usr/share/themes/glacier/meegotouch/icons/icon-app-packages.png "$pkgdir"/usr/share/themes/glacier/meegotouch/icons/icon-launcher-store.png
     ln -rsf "$pkgdir"/usr/share/themes/glacier/meegotouch/icons/icon-app-weather.png "$pkgdir"/usr/share/themes/glacier/meegotouch/icons/icon-launcher-weather.png
 }
- 
+
