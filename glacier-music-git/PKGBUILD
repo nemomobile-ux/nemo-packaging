@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.2.3.r25.gb898e54
+pkgver=0.2.3.r31.g04be9f6
 
 pkgrel=1
 pkgdesc="The glacier music player"
