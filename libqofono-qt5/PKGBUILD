@@ -1,22 +1,25 @@
 # Maintainer: dodgejcr@gmail.com
 # Maintainer: Bernhard Landauer <bernhard@manjaro.org>
 # Contributor: Bhushan Shah <bshah@kde.org>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=libqofono-qt5
-pkgver=0.109
+pkgver=0.110
 pkgrel=1
 pkgdesc="A library for accessing the ofono daemon, and a declarative plugin for it. This allows accessing ofono in qtquick and friends."
 arch=('aarch64' 'x86_64')
 url="https://github.com/sailfishos/libqofono"
 license=('LGPL')
 provides=('libqofono')
-depends=('qt5-declarative' 'qt5-xmlpatterns')
+depends=('qt5-declarative'
+    'qt5-xmlpatterns'
+    'ofono>=1.29')
+
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-        "0001-add-support-for-reset-contexts.patch"
         "context-preferred.patch"
         "mtk_settings_binding.patch")
-sha256sums=('4cdbeca775275780089f542d6179a6cbd05d4ad1b4f28e1e3fce96d30040c892'
-         'd09066cb9337895da66f01c2c06d35f9dc478c070cdfb788a16a829d8b9bfdb2'
+
+sha256sums=('e22f7262805d306ac43d39c9c1f511c7aeb64d29769640f6db0bc01eac00eafc'
          'f793347078553903c7e6f6b235091c1863b18cd9b4078f34addc7a3ded7f2bd8'
          '1f63b04d05be4988498cba96c9700d6f4b6237325d65e508cf6fa2f21247a765')
 
@@ -26,9 +29,6 @@ prepare() {
 
     # None of these patches break any abi or api, they only add qml functions
     # nor does these patches change the code, only adds code
-
-    # upstreamed patch, adds support for upstream ofono dbus call
-    patch -Np1 -i "${srcdir}/0001-add-support-for-reset-contexts.patch"
 
     # Not upstreamed patches
     patch -Np1 -i "${srcdir}/context-preferred.patch"
