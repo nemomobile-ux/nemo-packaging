@@ -13,11 +13,11 @@ sha256sums=('c7729066f63f8c5c4e3cbeaf4926604b52e3426f7e93eed871a6d9749e42dae5')
 
 build() {
     cd $pkgname-$pkgver
-    make LIBDIR=/usr/lib KEEP_SYMBOLS=1 release pkgconfig
-    make
+    make -j1 LIBDIR=/usr/lib KEEP_SYMBOLS=1 release pkgconfig
+    make -j1
 }
 
 package() {
     cd $pkgname-$pkgver
-    make DESTDIR="$pkgdir/" LIBDIR=/usr/lib install-dev
+    make -j1 DESTDIR="$pkgdir/" LIBDIR=/usr/lib install-dev
 }
