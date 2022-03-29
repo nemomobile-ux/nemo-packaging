@@ -10,6 +10,7 @@ license=("GPL2")
 makedepends=('git')
 depends=("bluez"
 	"dbus"
+	'dbus-glib'
 	"modemmanager"
 	"glib2"
 	"udev"
