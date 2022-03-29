@@ -26,6 +26,12 @@ eval "$BUILD nemo-theme-glacier"
 
 
 # NemoMobile packages
+eval "$BUILD libglibutil"
+eval "$BUILD libwspcodec"
+eval "$BUILD libdbusaccess"
+eval "$BUILD libdbuslog"
+eval "$BUILD ofono"
+
 eval "$BUILD geoclue1"
 eval "$BUILD nemo-qml-plugin-settings"
 eval "$BUILD nemo-qml-plugin-folderlistmodel"
