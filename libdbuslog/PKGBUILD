@@ -8,6 +8,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/${pkgname}"
 license=('LGPLv2')
 depends=('glib2' 
+    'dbus'
     'libglibutil'
     'libdbusaccess')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
