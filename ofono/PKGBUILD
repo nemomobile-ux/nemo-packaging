@@ -7,6 +7,7 @@ pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications"
 url="https://github.com/neochapay/ofono-new"
 arch=('x86_64' 'aarch64')
 license=("GPL2")
+makedepends=('git')
 depends=("bluez"
 	"dbus"
 	"modemmanager"
