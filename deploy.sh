@@ -150,9 +150,9 @@ eval "$BUILD glacier-alarm-listener-git"
 if [ "$BUILDARCH" != "aarch64" ]; then
     eval "$BUILD python-otherside"
 fi
-eval "$BUILD abseil-cpp-git"
-eval "$BUILD gpxpy-git"
-eval "$BUILD s2geometry-git"
+eval "$BUILD abseil-cpp"
+eval "$BUILD gpxpy"
+eval "$BUILD s2geometry"
 eval "$BUILD mapbox-gl-native-git"
 eval "$BUILD mapbox-gl-qml-git"
 eval "$BUILD pure-maps-git"

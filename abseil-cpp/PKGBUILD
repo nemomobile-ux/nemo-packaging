@@ -1,0 +1,37 @@
+# $Id$
+
+pkgname=abseil-cpp
+pkgver=20211102.0
+pkgrel=1
+pkgdesc="Abseil is an open-source collection of C++ code"
+arch=('x86_64' 'aarch64')
+url="https://github.com/abseil/abseil-cpp"
+
+license=('Apache-2.0 License')
+makedepends=('git' 'cmake')
+source=("${url}/archive/$pkgver/abseil-cpp-$pkgver.tar.gz"
+    '0001-Add-fPIC.patch'
+    '0002-abseil.patch'
+)
+sha256sums=('dcf71b9cba8dc0ca9940c4b316a0c796be8fab42b070bb6b7cab62b48f0e66c4'
+    '917df057c253c0edf5710ee21ed4dac8991eb3e1e8c447f48ea05de49e98b384'
+    '1245cad28319ff8c58cf5625d6ba7d1347c65a4fbf1acc03fb7b05418816b5d6')
+
+prepare() {
+    ls -l
+    cd "$srcdir/${pkgname}-${pkgver}"
+    patch -p1 --input="${srcdir}/0001-Add-fPIC.patch"
+    patch -p1 --input="${srcdir}/0002-abseil.patch"
+}
+
+build() {
+    cmake \
+        -B "${pkgname}-${pkgver}/build" \
+        -S "${pkgname}-${pkgver}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}-${pkgver}/build" all
+}
+
+package() {
+    make -C "${srcdir}/${pkgname}-${pkgver}/build" DESTDIR="$pkgdir" install
+}
