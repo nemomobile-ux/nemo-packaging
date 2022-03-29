@@ -1,0 +1,23 @@
+# $Id$
+
+pkgname="gpxpy"
+pkgver=1.5.0
+pkgrel=1
+pkgdesc="gpx-py is a python GPX parser"
+arch=('x86_64' 'aarch64')
+url="https://github.com/tkrajina/gpxpy"
+license=('Apache-2.0 License')
+depends=('python')
+makedepends=('git' 'python-setuptools')
+source=("${url}/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('4fd0afe9f8858d340a1481a7ef05de0be498ce19c1e1535407b58b7f1f02d456')
+
+build() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    python setup.py build
+}
+
+package() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    python setup.py install --root="$pkgdir" --optimize=1
+}

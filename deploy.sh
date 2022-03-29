@@ -151,7 +151,7 @@ if [ "$BUILDARCH" != "aarch64" ]; then
     eval "$BUILD python-otherside"
 fi
 eval "$BUILD abseil-cpp"
-eval "$BUILD gpxpy-git"
+eval "$BUILD gpxpy"
 eval "$BUILD s2geometry-git"
 eval "$BUILD mapbox-gl-native-git"
 eval "$BUILD mapbox-gl-qml-git"
