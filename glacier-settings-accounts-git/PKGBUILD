@@ -9,7 +9,8 @@ url="https://github.com/nemomobile-ux/glacier-settings-accounts/#branch=master"
 license=('BSD-3-Clause')
 depends=('glacier-settings'
     'nemo-qml-plugin-accounts'
-    'nemo-qml-plugin-signon')
+    'nemo-qml-plugin-signon'
+    'qt5-networkauth')
 
 makedepends=('git' 'qt5-tools' 'cmake')
 provides=("${pkgname%-git}")
