@@ -3,7 +3,7 @@
 pkgname=nemo-qml-plugin-signon
 pkgver=0.0.9
 pkgrel=1
-pkgdesc="Wall clock plugin for Nemo Mobile"
+pkgdesc="SignOn plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-signon"
 license=('BSD')
