@@ -145,6 +145,7 @@ eval "$BUILD glacier-weather-git"
 eval "$BUILD glacier-calendar-git"
 eval "$BUILD glacier-alarmclock-git"
 eval "$BUILD glacier-alarm-listener-git"
+eval "$BUILD glacier-settings-accounts-git"
 
 # pure-maps packages
 if [ "$BUILDARCH" != "aarch64" ]; then
