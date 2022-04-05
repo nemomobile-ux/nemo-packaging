@@ -7,7 +7,10 @@ pkgdesc="Accounts settings plugin for glacier-settings"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/glacier-settings-accounts/#branch=master"
 license=('BSD-3-Clause')
-depends=('glacier-settings')
+depends=('glacier-settings'
+    'nemo-qml-plugin-accounts'
+    'nemo-qml-plugin-signon')
+
 makedepends=('git' 'qt5-tools' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
