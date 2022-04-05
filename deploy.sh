@@ -115,6 +115,7 @@ eval "$BUILD buteo-sync-plugins-social"
 eval "$BUILD nemo-qml-plugin-alarms"
 eval "$BUILD nemo-qml-plugin-calendar"
 eval "$BUILD nemo-qml-plugin-fingerprint"
+eval "$BUILD nemo-qml-plugin-signon"
 
 #Glacier UX packages
 eval "$BUILD nemo-theme-openmoko-git"
