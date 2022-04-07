@@ -1,7 +1,7 @@
 # $Id$
 
 pkgname=glacier-settings-accounts-git
-pkgver=0.0.1.r5.g033045a
+pkgver=0.0.1.r8.ga46ec3d
 pkgrel=1
 pkgdesc="Accounts settings plugin for glacier-settings"
 arch=('x86_64' 'aarch64')
@@ -10,7 +10,8 @@ license=('BSD-3-Clause')
 depends=('glacier-settings'
     'nemo-qml-plugin-accounts'
     'nemo-qml-plugin-signon'
-    'qt5-networkauth')
+    'qt5-networkauth'
+    'qt5-declarative')
 
 makedepends=('git' 'qt5-tools' 'cmake')
 provides=("${pkgname%-git}")
