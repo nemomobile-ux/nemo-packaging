@@ -15,7 +15,13 @@ pkgdesc="QML plugin for Mapbox GL Native"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-3.0 License')
-depends=('qt5-base' 'curl' 'mapbox-gl-native' 'qt5-location' 'qt5-svg')
+depends=(
+    'qt5-base'
+    'curl'
+    'maplibre-gl-native'
+    'qt5-location'
+    'qt5-svg'
+)
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")

@@ -1,0 +1,39 @@
+# $Id$
+
+pkgname=maplibre-gl-native-git
+pkgver=1.6.0.r0.gd60fd302b1
+pkgrel=1
+_commit="59fa32e96a8e24d439afc1bcba503e87852a4644"
+pkgdesc="Maplibre GL Native Qt version"
+arch=('x86_64' 'aarch64')
+url="https://github.com/maplibre/maplibre-gl-native"
+license=('2-Clause BSD license')
+depends=('qt5-base' 'sqlite' 'zlib' 'curl' 'icu' )
+makedepends=('git' 'cmake')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=("${pkgname}::git+${url}#commit=${_commit}"
+)
+sha256sums=('SKIP')
+
+prepare() {
+    cd "$srcdir/${pkgname}"
+    git submodule update --init --recursive
+}
+
+build() {
+  mkdir -p "${srcdir}/${pkgname}/build"
+  cd "${srcdir}/${pkgname}/build"
+
+    cmake \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DMBGL_WITH_QT=ON -DMBGL_WITH_WERROR=OFF  \
+        -DMBGL_WITH_QT_HEADLESS=OFF -DMBGL_WITH_QT_LIB_ONLY=ON \
+        -DCMAKE_SHARED_LINKER_FLAGS=-pthread \
+        ..
+    make
+}
+
+package() {
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
+}

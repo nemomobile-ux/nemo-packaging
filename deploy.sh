@@ -155,7 +155,7 @@ fi
 eval "$BUILD abseil-cpp"
 eval "$BUILD gpxpy"
 eval "$BUILD s2geometry"
-eval "$BUILD mapbox-gl-native-git"
+eval "$BUILD maplibre-gl-native-git"
 eval "$BUILD mapbox-gl-qml-git"
 eval "$BUILD pure-maps-git"
 
