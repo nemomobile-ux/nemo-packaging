@@ -1,6 +1,6 @@
 # $Id$
 
-pkgname=maplibre-gl-native-git
+pkgname=maplibre-gl-native
 pkgver=1.6.0.r0.gd60fd302b1
 pkgrel=1
 _commit="59fa32e96a8e24d439afc1bcba503e87852a4644"
@@ -10,8 +10,6 @@ url="https://github.com/maplibre/maplibre-gl-native"
 license=('2-Clause BSD license')
 depends=('qt5-base' 'sqlite' 'zlib' 'curl' 'icu' )
 makedepends=('git' 'cmake')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}#commit=${_commit}"
 )
 sha256sums=('SKIP')
