@@ -1,33 +1,25 @@
 # $Id$
 
-_host="github.com"
-_project=rinigus
-_basename=pure-maps
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
-pkgver=3.0.0.r0.g4851ebc1
-
+pkgname=pure-maps-git
+pkgver=3.0.0
 pkgrel=1
 pkgdesc="Pure Maps"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/rinigus/pure-maps"
 license=('GPL-3.0 License')
 depends=(
     'python-pyotherside'
     'python-pyxdg'
     'maplibre-gl-native'
-    'mapbox-gl-qml-git'
-    's2geometry-git'
+    'mapbox-gl-qml'
+    's2geometry'
     'nemo-qml-plugin-dbus'
     'qt5-quickcontrols2'
 )
 makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}"
+source=("${pkgname}::git+${url}#branch=master"
     'apikeys.py')
 sha256sums=('SKIP' 'SKIP')
 
