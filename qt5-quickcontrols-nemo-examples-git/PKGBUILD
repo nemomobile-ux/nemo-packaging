@@ -38,21 +38,20 @@ pkgver() {
 }
 
 prepare() {
-  # TODO: upstream building examples optional
-  # https://t.me/NemoMobile/17555
-  cd "${srcdir}/${pkgname}"
-  sed -i 's/src//' qtquickcontrols-nemo.pro
+    # TODO: upstream building examples optional
+    # https://t.me/NemoMobile/17555
+    cd "${srcdir}/${pkgname}"
+    sed -i.bak 's/add_subdirectory[(]src[)]//' CMakeLists.txt
 }
 
 build() {
-  cd "${srcdir}/${pkgname}"
-  mkdir -p build
-  cd build
-  qmake ..
-  make
+    cmake \
+        -B "${pkgname}/build" \
+        -S "${pkgname}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}/build" all
 }
 
 package() {
-  cd "${srcdir}/${pkgname}/build"
-  make -j 1 INSTALL_ROOT="${pkgdir}" install
+    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 }
