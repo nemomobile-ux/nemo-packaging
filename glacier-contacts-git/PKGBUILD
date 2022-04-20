@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.8.r127.gc8368d1
+pkgver=0.8.r135.gcd9759f
 
 pkgrel=1
 pkgdesc="QML based contacts application for nemomobile"

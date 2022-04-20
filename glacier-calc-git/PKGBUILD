@@ -12,7 +12,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.3.2.r14.gf05e23e
+pkgver=0.3.2.r18.g6d3fd4a
 
 pkgrel=1
 pkgdesc="Nemo calculator"
