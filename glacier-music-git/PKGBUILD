@@ -12,14 +12,21 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.2.3.r75.g1cfc8c5
+pkgver=0.2.3.r86.gd2af4e2
 
 pkgrel=1
 pkgdesc="The glacier music player"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.0-or-later')
-depends=('taglib' 'qt5-glacier-app-git' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-thumbnailer' 'qtmpris')
+depends=(
+    'taglib'
+    'qt5-glacier-app-git'
+    'nemo-qml-plugin-settings'
+    'nemo-qml-plugin-thumbnailer'
+    'nemo-qml-plugin-notifications'
+    'qtmpris'
+)
 optdepends=()
 makedepends=('git' 'qt5-multimedia' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
