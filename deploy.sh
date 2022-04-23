@@ -168,4 +168,5 @@ if [ "$BUILDARCH" == "aarch64" ]; then
 
     eval "$BUILD devices/nemo-device-pinephone"
     eval "$BUILD devices/nemo-device-pinetab"
+    eval "$BUILD devices/nemo-device-cutiepi"
 fi

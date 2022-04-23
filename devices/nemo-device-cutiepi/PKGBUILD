@@ -1,0 +1,29 @@
+## $Id$
+# Maintainer: Jozef Mlich <jmlich83@gmail.com>
+
+pkgname=nemo-device-cutiepi
+pkgver=0.1
+pkgrel=1
+pkgdesc="PineTab specific files for GlacierUX"
+arch=('aarch64')
+url="https://github.com/nemomobile-ux/nemo-device-cutiepi#branch=master"
+license=('BSD-3-Clause')
+depends=('glacier-wayland-session'
+	'usb-moded'
+	'maliit-nemo-keyboard'
+	'sensorfw'
+	'qt5-sensors-sensorfw'
+	'qt-mobility-haptics-ffmemless')
+
+makedepends=('git')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}" "usb-tethering")
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
+
+package() {
+    mkdir -p ${pkgdir}
+
+    cp -r ${srcdir}/${pkgname}/sparse/* ${pkgdir}/
+    sed -r "s/NEMOVER/${pkgver}/" ${srcdir}/${pkgname}/sparse/etc/hw-release > ${pkgdir}/etc/hw-release
+}
