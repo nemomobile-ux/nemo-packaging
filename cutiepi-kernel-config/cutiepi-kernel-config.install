@@ -1,0 +1,35 @@
+post_install () {
+    # Define root partitions partuuid
+    PART_DEV=`findmnt / -o source -n | cut -f1 -d"["`
+    PART_NAME=`echo $PART_DEV | cut -d "/" -f 3`
+    ROOT_PART=$(lsblk -p -o NAME,PARTUUID | grep "${PART_NAME}" | awk '{print $2}')
+    FSTYPE=$(lsblk -p -o NAME,FSTYPE | grep "${PART_NAME}" | awk '{print $2}')
+
+    if [ -z "$FSTYPE" ]; then
+        lsblk -f
+    fi
+
+    # backup previous version
+    if [ -f /boot/cmdline.txt ]; then
+        mv /boot/cmdline.txt $(mktemp /boot/cmdline.txt.XXXXXX)
+    fi
+
+    echo "===> Installing /boot/cmdline.txt ... (PARTUUID=$ROOT_PART)"
+    echo "console=tty1 root=PARTUUID=$ROOT_PART rootfstype=ext4 fsck.repair=yes rootwait plymouth.ignore-serial-consoles video=HDMI-A-2:D video=DSI-1:800x1280@60" > /boot/cmdline.txt
+
+
+    if [ -f /boot/config.txt ]; then
+        mv /boot/config.txt $(mktemp /boot/config.txt.XXXXXX)
+    fi
+    echo "===> Installing /boot/config.txt ..."
+    cp /boot/config.txt.dist /boot/config.txt
+}
+
+
+post_upgrade() {
+    post_install $1
+}
+
+post_remove () {
+    rm -f boot/initramfs-linux.img
+}
