@@ -9,13 +9,13 @@ post_install () {
         lsblk -f
     fi
 
-    # backup previous version
-    if [ -f /boot/cmdline.txt ]; then
-        mv /boot/cmdline.txt $(mktemp /boot/cmdline.txt.XXXXXX)
-    fi
-
-    echo "===> Installing /boot/cmdline.txt ... (PARTUUID=$ROOT_PART)"
-    echo "console=tty1 root=PARTUUID=$ROOT_PART rootfstype=ext4 fsck.repair=yes rootwait plymouth.ignore-serial-consoles video=HDMI-A-2:D video=DSI-1:800x1280@60" > /boot/cmdline.txt
+    #    /boot/cmdline.txt is modified in manajro-arm-tools/functions
+    #    if [ -f /boot/cmdline.txt ]; then
+    #        mv /boot/cmdline.txt $(mktemp /boot/cmdline.txt.XXXXXX)
+    #    fi
+    #
+    #    echo "===> Installing /boot/cmdline.txt ... (PARTUUID=$ROOT_PART)"
+    #    echo "console=tty1 root=PARTUUID=$ROOT_PART rootfstype=ext4 fsck.repair=yes rootwait plymouth.ignore-serial-consoles video=HDMI-A-2:D video=DSI-1:800x1280@60" > /boot/cmdline.txt
 
 
     if [ -f /boot/config.txt ]; then
