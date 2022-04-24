@@ -1,0 +1,27 @@
+# $Id$
+# Maintainer: Jozef Mlich <jmlich83@gmail.com>
+
+pkgname='cutiepi-kernel-config'
+pkgver=0.1
+pkgrel=1
+arch=('any')
+license=('GPL')
+options=('!libtool' '!emptydirs')
+makedepends=('git')
+url='https://github.com/cutiepi-io/cutiepi-drivers'
+source=(
+    "${pkgname}::git+${url}#branch=master"
+    'config.txt')
+sha256sums=('SKIP' 'SKIP')
+install='cutiepi-kernel-config.install'
+
+#build() {
+#    cd ${pkgname}/Gyro
+#    dtc -I dts -O dtb -o mpu6050-i2c5.dtbo mpu6050-i2c5-overlay.dts
+#}
+
+package() {
+    mkdir -p ${pkgdir}/boot/overlays
+    cp ${pkgname}/Gyro/mpu6050-i2c5.dtbo ${pkgdir}/boot/overlays
+    cp config.txt ${pkgdir}/boot/config.txt.dist
+}

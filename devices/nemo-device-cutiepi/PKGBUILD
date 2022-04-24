@@ -13,7 +13,9 @@ depends=('glacier-wayland-session'
 	'maliit-nemo-keyboard'
 	'sensorfw'
 	'qt5-sensors-sensorfw'
-	'qt-mobility-haptics-ffmemless')
+	'qt-mobility-haptics-ffmemless'
+	'cutiepi-cutoff'
+)
 
 makedepends=('git')
 provides=("${pkgname%-git}")
