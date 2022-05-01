@@ -24,7 +24,13 @@ depends=('qt5-sensors-sensorfw'
 	    'pulseaudio'
 	    'bluez-qt')
 
-makedepends=('git' 'qt5-tools' 'doxygen' 'graphviz')
+makedepends=('git'
+	'qt5-tools'
+	'doxygen'
+	'graphviz'
+	'make'
+	'pkgconfig')
+
 provides=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
