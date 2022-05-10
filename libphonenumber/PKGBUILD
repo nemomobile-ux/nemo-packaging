@@ -1,0 +1,44 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=libphonenumber
+pkgver=8.12.48
+pkgrel=1
+epoch=1
+pkgdesc="Google's common library for parsing, formatting, and validating international phone numbers"
+url="https://github.com/googlei18n/libphonenumber"
+arch=(x86_64)
+license=(Apache)
+depends=('icu=71.1' protobuf boost-libs abseil-cpp)
+makedepends=(boost cmake gtest git)
+source=("https://github.com/google/libphonenumber/archive/refs/tags/v${pkgver}.tar.gz"
+	"0001-Fix-geocoding-build-when-static-libraries-are-off.patch")
+sha256sums=('4bd2b7c89f1cba8dc78038395f4cc3236dd5aa62118feb4c354a8890634faea9'
+            '9743019766135003c5290d3b0c2c8c27b813ece9033fd3e587501129d3ab4098')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-Fix-geocoding-build-when-static-libraries-are-off.patch"
+}
+
+build() {
+  cd $pkgname-$pkgver
+  CXXFLAGS+=" -Wno-error=deprecated-declarations"  # readdir_r deprecation
+  CXXFLAGS+=" -Wno-error=unused-variable"          # this is nuts
+  cmake -S cpp -B build \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DREGENERATE_METADATA=OFF \
+    -DBUILD_STATIC_LIB=OFF \
+    -DUSE_ICU_REGEXP=ON \
+    -DUSE_LITE_METADATA=ON \
+    -DUSE_RE2=OFF
+  cmake --build build
+}
+
+package() {
+  cd $pkgname-$pkgver
+  depends+=(libicu{uc,i18n}.so libprotobuf.so libboost_thread.so)
+  provides+=(libgeocoding.so libphonenumber.so)
+
+  DESTDIR="$pkgdir" cmake --install build
+}
