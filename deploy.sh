@@ -22,10 +22,9 @@ else
     BUILD="${BUILD-buildpkg -n -p}"
 fi
 
-eval "$BUILD nemo-theme-glacier"
-
-
 # NemoMobile packages
+eval "$BUILD nemo-theme-glacier"
+eval "$BUILD libphonenumber"
 eval "$BUILD libglibutil"
 eval "$BUILD libwspcodec"
 eval "$BUILD libdbusaccess"
@@ -121,6 +120,7 @@ eval "$BUILD nemo-qml-plugin-signon"
 eval "$BUILD nemo-theme-openmoko-git"
 eval "$BUILD google-opensans-fonts"
 eval "$BUILD maliit-nemo-keyboard-git"
+eval "$BUILD maliit-input-context-gtk"
 eval "$BUILD qt5-quickcontrols-nemo-git"
 eval "$BUILD qt5-glacier-app-git"
 eval "$BUILD glacier-calc-git"
