@@ -1,0 +1,27 @@
+# $Id$
+
+pkgname=maliit-input-context-gtk
+gitname=inputcontext-gtk
+_commit=72d75769b6763391ae30e51ef2178fb294fdb2b7
+pkgver=0.99.2
+pkgrel=1
+pkgdesc="The GTK+ input context for Maliit."
+arch=('x86_64' 'aarch64')
+url="https://github.com/maliit/inputcontext-gtk"
+license=('LGPL-2.1-only')
+depends=('maliit-framework')
+makedepends=('qt5-tools' 'gtk2' 'gtk3')
+source=("${url}/archive/${_commit}.tar.gz")
+sha256sums=('60306af0acbef4ace2304e8ca79bfaeab485c21b536ed01d0039729749bd186f')
+
+build() {
+    cmake \
+        -B "${gitname}-${_commit}/build" \
+        -S "${gitname}-${_commit}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${gitname}-${_commit}/build" all
+}
+
+package() {
+    make -C "${srcdir}/${gitname}-${_commit}/build" DESTDIR="$pkgdir" install
+}
