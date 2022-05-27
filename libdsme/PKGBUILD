@@ -9,8 +9,15 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libdsme"
 license=('LGPL')
 depends=('glib2')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('95b6ccb7db39db8bb07e01777f4c0055e4a597c5100313329700995c0a84d87e')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+'0001-fix-use-after-free.patch')
+sha256sums=('95b6ccb7db39db8bb07e01777f4c0055e4a597c5100313329700995c0a84d87e'
+    '54e1c83ca7e1ab07381d0867ddaa4e55b31ad5163af08f95c66f4be92ee03426')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-fix-use-after-free.patch"
+}
 
 build() {
   cd $pkgname-$pkgver
