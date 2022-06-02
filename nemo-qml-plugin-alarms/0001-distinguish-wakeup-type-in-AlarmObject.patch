@@ -1,0 +1,73 @@
+From 8b166d8fc54833f070edb5111e761a1eb6254d25 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Wed, 1 Jun 2022 10:07:14 +0200
+Subject: [PATCH] distinguish wakeup type in AlarmObject
+
+---
+ src/alarmobject.cpp | 8 ++++++--
+ src/alarmobject.h   | 3 ++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/src/alarmobject.cpp b/src/alarmobject.cpp
+index bd16a20..ea6aec6 100644
+--- a/src/alarmobject.cpp
++++ b/src/alarmobject.cpp
+@@ -196,14 +196,14 @@
+ 
+ AlarmObject::AlarmObject(QObject *parent)
+     : QObject(parent), m_hour(0), m_minute(0), m_second(0), m_enabled(false),
+-      m_createdDate(QDateTime::currentDateTime()), m_countdown(false), m_reminder(false), m_triggerTime(0),
++      m_createdDate(QDateTime::currentDateTime()), m_countdown(false), m_reminder(false), m_wakeup(false), m_triggerTime(0),
+       m_elapsed(0), m_cookie(0), m_timeoutSnoozeCounter(0), m_maximalTimeoutSnoozeCount(0)
+ {
+ }
+ 
+ AlarmObject::AlarmObject(const QMap<QString,QString> &data, QObject *parent)
+     : QObject(parent), m_hour(0), m_minute(0), m_second(0), m_enabled(false),
+-      m_createdDate(QDateTime::currentDateTime()), m_countdown(false), m_reminder(false), m_triggerTime(0),
++      m_createdDate(QDateTime::currentDateTime()), m_countdown(false), m_reminder(false), m_wakeup(false), m_triggerTime(0),
+       m_elapsed(0), m_cookie(0)
+ {
+     for (QMap<QString,QString>::ConstIterator it = data.begin(); it != data.end(); it++) {
+@@ -256,6 +256,8 @@ AlarmObject::AlarmObject(const QMap<QString,QString> &data, QObject *parent)
+             m_phoneNumber = it.value();
+         } else if (it.key() == QLatin1String("type") && it.value() == QLatin1String("reminder")) {
+             m_reminder = true;
++        } else if (it.key() == QLatin1String("type") && it.value() == QLatin1String("wakeup")) {
++            m_wakeup = true;
+         }
+     }
+ 
+@@ -359,6 +361,8 @@ int AlarmObject::type() const
+ {
+     if (m_reminder)
+         return Reminder;
++    else if (m_wakeup)
++        return WakeUp;
+     else if (m_startDate.isValid() && m_endDate.isValid())
+         return Calendar;
+     else if (m_countdown)
+diff --git a/src/alarmobject.h b/src/alarmobject.h
+index 5e1447e..8a120e0 100644
+--- a/src/alarmobject.h
++++ b/src/alarmobject.h
+@@ -70,7 +70,7 @@ public:
+     AlarmObject(QObject *parent = 0);
+     AlarmObject(const QMap<QString,QString> &data, QObject *parent = 0);
+ 
+-    enum Type { Calendar, Clock, Countdown, Reminder };
++    enum Type { Calendar, Clock, Countdown, Reminder, WakeUp };
+     Q_ENUMS(Type)
+ 
+     QString title() const { return m_title; }
+@@ -157,6 +157,7 @@ protected:
+     QDateTime m_createdDate;
+     bool m_countdown;
+     bool m_reminder;
++    bool m_wakeup;
+     uint m_triggerTime;
+     uint m_elapsed;
+     QDateTime m_startDate, m_endDate;
+-- 
+2.36.1
+
