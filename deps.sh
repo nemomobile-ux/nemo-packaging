@@ -9,6 +9,7 @@ have+="libphonenumber tracker3 tracker3-miners ofono connman check kmod signond 
 have+="libcanberra python-pyxdg libsoup json-glib libmm-glib avahi geocode-glib gobject-introspection vala meson libnotify libxml2 pkgconf "
 have+="bluez dbus modemmanager mobile-broadband-provider-info qt5-networkauth "
 have+="cmake qt5-tools automake autoconf libtool doxygen bison flex libxft libjpeg libxpm extra-cmake-modules libxslt graphviz gtk-doc python-setuptools unixodbc libxinerama " # makedepends
+have+="make pkgconfig gtk2 gtk3 boost boost-libs protobuf "
 have+=" " # must end with space
 
 
