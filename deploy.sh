@@ -24,6 +24,7 @@ fi
 
 # NemoMobile packages
 eval "$BUILD nemo-theme-glacier"
+eval "$BUILD abseil-cpp"
 eval "$BUILD libphonenumber"
 eval "$BUILD libglibutil"
 eval "$BUILD libwspcodec"
@@ -152,7 +153,6 @@ eval "$BUILD glacier-settings-accounts-git"
 if [ "$BUILDARCH" != "aarch64" ]; then
     eval "$BUILD python-otherside"
 fi
-eval "$BUILD abseil-cpp"
 eval "$BUILD gpxpy"
 eval "$BUILD s2geometry"
 eval "$BUILD maplibre-gl-native"
