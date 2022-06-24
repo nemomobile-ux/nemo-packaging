@@ -10,6 +10,7 @@ have+="libcanberra python-pyxdg libsoup json-glib libmm-glib avahi geocode-glib 
 have+="bluez dbus modemmanager mobile-broadband-provider-info qt5-networkauth "
 have+="cmake qt5-tools automake autoconf libtool doxygen bison flex libxft libjpeg libxpm extra-cmake-modules libxslt graphviz gtk-doc python-setuptools unixodbc libxinerama " # makedepends
 have+="make pkgconfig gtk2 gtk3 boost boost-libs protobuf "
+have+="tinyxml2 marisa hunspell cppunit "
 have+=" " # must end with space
 
 
