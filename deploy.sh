@@ -116,8 +116,8 @@ eval "$BUILD nemo-qml-plugin-alarms"
 eval "$BUILD nemo-qml-plugin-calendar"
 eval "$BUILD nemo-qml-plugin-fingerprint"
 eval "$BUILD nemo-qml-plugin-signon"
-eval "$BUILD presage2-lang"
 eval "$BUILD presage2"
+eval "$BUILD presage2-lang"
 
 #Glacier UX packages
 eval "$BUILD nemo-theme-openmoko-git"
