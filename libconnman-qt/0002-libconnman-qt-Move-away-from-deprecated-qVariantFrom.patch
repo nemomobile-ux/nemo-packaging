@@ -1,0 +1,116 @@
+From 582c58ca7812ad419b380fb1a195027f5e182f2c Mon Sep 17 00:00:00 2001
+From: Herman van Hazendonk <github.com@herrie.org>
+Date: Sat, 28 May 2022 20:36:11 +0200
+Subject: [PATCH 2/6] libconnman-qt: Move away from deprecated
+ qVariantFromValue
+
+qVariantFromValue has been deprecated as per https://doc.qt.io/qt-5/qvariant-obsolete.html#qVariantFromValue
+
+Replace by QVariant::fromValue.
+
+Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+---
+ libconnman-qt/networkmanager.cpp | 16 ++++++++--------
+ libconnman-qt/networkservice.cpp |  2 +-
+ libconnman-qt/networksession.cpp |  4 ++--
+ libconnman-qt/sessionagent.cpp   |  4 ++--
+ 4 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/libconnman-qt/networkmanager.cpp b/libconnman-qt/networkmanager.cpp
+index 81f98e8..87a6e6f 100644
+--- a/libconnman-qt/networkmanager.cpp
++++ b/libconnman-qt/networkmanager.cpp
+@@ -313,27 +313,27 @@ public:
+     QDBusPendingCall GetProperties()
+         { return asyncCall("GetProperties"); }
+     QDBusPendingCall SetProperty(QString name, QVariant value)
+-        { return asyncCall("SetProperty", name, qVariantFromValue(QDBusVariant(value))); }
++        { return asyncCall("SetProperty", name, QVariant::fromValue(QDBusVariant(value))); }
+     QDBusPendingCall GetTechnologies()
+         { return asyncCall("GetTechnologies"); }
+     QDBusPendingCall GetServices()
+         { return asyncCall("GetServices"); }
+     QDBusPendingCall RegisterAgent(const QString &path)
+-        { return asyncCall("RegisterAgent", qVariantFromValue(QDBusObjectPath(path))); }
++        { return asyncCall("RegisterAgent", QVariant::fromValue(QDBusObjectPath(path))); }
+     QDBusPendingCall UnregisterAgent(const QString &path)
+-        { return asyncCall("UnregisterAgent", qVariantFromValue(QDBusObjectPath(path))); }
++        { return asyncCall("UnregisterAgent", QVariant::fromValue(QDBusObjectPath(path))); }
+     QDBusPendingCall RegisterCounter(const QString &path, uint accuracy, uint period)
+-        { return asyncCall("RegisterCounter", qVariantFromValue(QDBusObjectPath(path)), accuracy, period); }
++        { return asyncCall("RegisterCounter", QVariant::fromValue(QDBusObjectPath(path)), accuracy, period); }
+     QDBusPendingCall ResetCounters(const QString &type)
+         { return asyncCall("ResetCounters", type); }
+     QDBusPendingCall UnregisterCounter(const QString &path)
+-        { return asyncCall("UnregisterCounter", qVariantFromValue(QDBusObjectPath(path))); }
++        { return asyncCall("UnregisterCounter", QVariant::fromValue(QDBusObjectPath(path))); }
+     QDBusPendingReply<QDBusObjectPath> CreateSession(const QVariantMap &settings, const QString &path)
+-        { return asyncCall("CreateSession", settings, qVariantFromValue(QDBusObjectPath(path))); }
++        { return asyncCall("CreateSession", settings, QVariant::fromValue(QDBusObjectPath(path))); }
+     QDBusPendingCall DestroySession(const QString &path)
+-        { return asyncCall("DestroySession", qVariantFromValue(QDBusObjectPath(path))); }
++        { return asyncCall("DestroySession", QVariant::fromValue(QDBusObjectPath(path))); }
+     QDBusPendingReply<QDBusObjectPath> CreateService(const QString &type, const QString &device, const QString &network, const StringPairArray &settings)
+-        { return asyncCall("CreateService", type, device, network, qVariantFromValue(settings)); }
++        { return asyncCall("CreateService", type, device, network, QVariant::fromValue(settings)); }
+ 
+ Q_SIGNALS:
+     void PropertyChanged(const QString &name, const QDBusVariant &value);
+diff --git a/libconnman-qt/networkservice.cpp b/libconnman-qt/networkservice.cpp
+index 970f949..ca6154e 100644
+--- a/libconnman-qt/networkservice.cpp
++++ b/libconnman-qt/networkservice.cpp
+@@ -321,7 +321,7 @@ public Q_SLOTS:
+     QDBusPendingCall GetProperty(const QString &name)
+         { return asyncCall("GetProperty", name); }
+     QDBusPendingCall SetProperty(const QString &name, QVariant value)
+-        { return asyncCall("SetProperty", name, qVariantFromValue(QDBusVariant(value))); }
++        { return asyncCall("SetProperty", name, QVariant::fromValue(QDBusVariant(value))); }
+     QDBusPendingCall ClearProperty(const QString &name)
+         { return asyncCall("ClearProperty", name); }
+     QDBusPendingCall Connect()
+diff --git a/libconnman-qt/networksession.cpp b/libconnman-qt/networksession.cpp
+index 6affbe5..084b1bc 100644
+--- a/libconnman-qt/networksession.cpp
++++ b/libconnman-qt/networksession.cpp
+@@ -75,13 +75,13 @@ QString NetworkSession::connectionType() const
+ 
+ void NetworkSession::setAllowedBearers(const QStringList &bearers)
+ {
+-    settingsMap.insert("AllowedBearers", qVariantFromValue(bearers));
++    settingsMap.insert("AllowedBearers", QVariant::fromValue(bearers));
+     m_sessionAgent->setAllowedBearers(bearers);
+ }
+ 
+ void NetworkSession::setConnectionType(const QString &type)
+ {
+-    settingsMap.insert("ConnectionType", qVariantFromValue(type));
++    settingsMap.insert("ConnectionType", QVariant::fromValue(type));
+     m_sessionAgent->setConnectionType(type);
+ }
+ 
+diff --git a/libconnman-qt/sessionagent.cpp b/libconnman-qt/sessionagent.cpp
+index 8359e1c..6eff289 100644
+--- a/libconnman-qt/sessionagent.cpp
++++ b/libconnman-qt/sessionagent.cpp
+@@ -44,7 +44,7 @@ void SessionAgent::setAllowedBearers(const QStringList &bearers)
+     if (!m_session)
+         return;
+     QVariantMap map;
+-    map.insert("AllowedBearers",  qVariantFromValue(bearers));
++    map.insert("AllowedBearers",  QVariant::fromValue(bearers));
+     QDBusPendingReply<> reply = m_session->Change("AllowedBearers",QDBusVariant(bearers));
+     // hope this is not a lengthy task
+     reply.waitForFinished();
+@@ -59,7 +59,7 @@ void SessionAgent::setConnectionType(const QString &type)
+     if (!m_session)
+         return;
+     QVariantMap map;
+-    map.insert("ConnectionType",  qVariantFromValue(type));
++    map.insert("ConnectionType",  QVariant::fromValue(type));
+     m_session->Change("ConnectionType",QDBusVariant(type));
+ }
+ 
+-- 
+2.36.1
+

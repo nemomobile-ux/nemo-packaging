@@ -1,0 +1,37 @@
+From 74338ca0711a20d3aaed56b742b9172205321bae Mon Sep 17 00:00:00 2001
+From: Herman van Hazendonk <github.com@herrie.org>
+Date: Sat, 28 May 2022 20:31:47 +0200
+Subject: [PATCH 1/6] networkmanager.cpp: Move away from deprecated QRegExp
+
+QRegExp has been deprecated as of Qt6 in favor of QRegularExpression which was introduced in Qt5. https://doc-snapshots.qt.io/qt6-dev/qregexp.html
+
+Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+---
+ libconnman-qt/networkmanager.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libconnman-qt/networkmanager.cpp b/libconnman-qt/networkmanager.cpp
+index 20c1dbf..81f98e8 100644
+--- a/libconnman-qt/networkmanager.cpp
++++ b/libconnman-qt/networkmanager.cpp
+@@ -10,7 +10,7 @@
+ #include "networkmanager.h"
+ 
+ #include "libconnman_p.h"
+-#include <QRegExp>
++#include <QRegularExpression>
+ 
+ // ==========================================================================
+ // NetworkManagerFactory
+@@ -853,7 +853,7 @@ void NetworkManager::updateDefaultRoute()
+              QTextStream ipv6in(&ipv6routeFile);
+              QString ipv6line = ipv6in.readLine();
+              while (!ipv6line.isNull()) {
+-                 QStringList ipv6lineList = ipv6line.split(QRegExp("\\s+"));
++                 QStringList ipv6lineList = ipv6line.split(QRegularExpression("\\s+"));
+                  if (ipv6lineList.size() >= 10) {
+                      if (ipv6lineList.at(0) == "00000000000000000000000000000000" &&
+                         (ipv6lineList.at(8).endsWith("3") || (ipv6lineList.at(8).endsWith("1")))) {
+-- 
+2.36.1
+

@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libconnman-qt
-pkgver=1.2.43
+pkgver=1.2.45
 pkgrel=1
 pkgdesc='Qt Quick wrappers for connman'
 arch=('x86_64' 'aarch64')
@@ -13,8 +13,33 @@ url="https://github.com/sailfishos/libconnman-qt"
 license=('GPL')
 depends=('qt5-declarative' 'connman')
 makedepends=('qt5-tools')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('80ed9900e9368b40325219d1d9848e1b80bf43570ac2c8c2d8e151c46ab80640')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-networkmanager.cpp-Move-away-from-deprecated-QRegExp.patch'
+    '0002-libconnman-qt-Move-away-from-deprecated-qVariantFrom.patch'
+    '0003-clockmodel.cpp-Move-away-from-deprecated-toTime_t.patch'
+    '0004-counter.cpp-Move-away-from-deprecated-qsrand.patch'
+    '0005-marshalutils.cpp-Fix-error-no-match-for-operator-ope.patch'
+    '0006-Conditionally-use-Q_MOC_INCLUDE-for-forward-class-de.patch'
+)
+sha256sums=('f07062f63433073a1fc5db121251ffd8733c3fafc96fd7a8a133203d9de663e2'
+    '6ea6c587b5a65be1ee5e49df00213f7d5814617d1d3384c4456a39c7223340b4'
+    '65b20b9fe902aeb71e87c702b4cd736ea6b7bd4b4301f313d5e73c9cecc5c128'
+    '051648c388be3eb0aba67465f073ddb9b854db3a37e88344449bfc121b0369e4'
+    '3019b6a5fb24297a5b62d1b79d60bee1c038f1276e922a47884253b23b9bc48c'
+    '6e79a1d40667ceca6f0b973d28b7ccd4a19c1c8bc075450faea9498a5bd54282'
+    'dc5a9021df39ed79549d48c7f3b40f00d873f4b03da52254942bcdec1866857b'
+)
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-networkmanager.cpp-Move-away-from-deprecated-QRegExp.patch"
+    patch -p1 --input="${srcdir}/0002-libconnman-qt-Move-away-from-deprecated-qVariantFrom.patch"
+    patch -p1 --input="${srcdir}/0003-clockmodel.cpp-Move-away-from-deprecated-toTime_t.patch"
+    patch -p1 --input="${srcdir}/0004-counter.cpp-Move-away-from-deprecated-qsrand.patch"
+    patch -p1 --input="${srcdir}/0005-marshalutils.cpp-Fix-error-no-match-for-operator-ope.patch"
+    patch -p1 --input="${srcdir}/0006-Conditionally-use-Q_MOC_INCLUDE-for-forward-class-de.patch"
+}
+
 
 build() {
     cd $pkgname-$pkgver

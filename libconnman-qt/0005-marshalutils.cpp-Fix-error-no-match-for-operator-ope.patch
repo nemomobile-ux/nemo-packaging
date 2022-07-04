@@ -1,0 +1,59 @@
+From a1c462ebd38a5628aba20b30baa76a79fd8bdf6a Mon Sep 17 00:00:00 2001
+From: Herman van Hazendonk <github.com@herrie.org>
+Date: Sat, 28 May 2022 21:02:29 +0200
+Subject: [PATCH 5/6] marshalutils.cpp: Fix error: no match for 'operator<<'
+ (operand types are 'QDBusArgument' and 'const RouteStructure')
+
+This appears with clang-11 and gcc 12:
+
+Fixes: In file included from ../../recipe-sysroot/usr/include/QtDBus/QDBusMetaType:1,
+                 from ../../git/libconnman-qt/marshalutils.cpp:34:
+../../recipe-sysroot/usr/include/QtDBus/qdbusmetatype.h: In instantiation of 'QMetaType qDBusRegisterMetaType() [with T = RouteStructure]':
+../../git/libconnman-qt/marshalutils.cpp:194:42:   required from here
+../../recipe-sysroot/usr/include/QtDBus/qdbusmetatype.h:71:59: error: no match for 'operator<<' (operand types are 'QDBusArgument' and 'const RouteStructure')
+   71 |     auto mf = [](QDBusArgument &arg, const void *t) { arg << *static_cast<const T *>(t); };
+      |                                                       ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ../../recipe-sysroot/usr/include/QtDBus/qdbusmetatype.h:45,
+                 from ../../recipe-sysroot/usr/include/QtDBus/QDBusMetaType:1,
+                 from ../../git/libconnman-qt/marshalutils.cpp:34:
+/mnt/5ba5d474-0b2d-49d6-a5a6-9de20c3ac967/honister-qt6/webos-ports/tmp-glibc/work/core2-64-webos-linux/libconnman-qt/1.2.35+gitAUTOINC+088350de01-r0/recipe-sysroot/usr/include/QtDBus/qdbusargument.h:87:20: note: candidate: 'QDBusArgument& QDBusArgument::operator<<(uchar)'
+   87 |     QDBusArgument &operator<<(uchar arg);
+
+Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+---
+ libconnman-qt/marshalutils.cpp | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/libconnman-qt/marshalutils.cpp b/libconnman-qt/marshalutils.cpp
+index 79ba4bd..062699a 100644
+--- a/libconnman-qt/marshalutils.cpp
++++ b/libconnman-qt/marshalutils.cpp
+@@ -31,11 +31,16 @@
+  */
+ 
+ #include <QDebug>
+-#include <QDBusMetaType>
++#include <QDBusArgument> 
+ #include "vpnconnection.h"
+ 
+ #include "marshalutils.h"
+ 
++#if defined(__clang__) &&  __clang_major__ >= 11 || __GNUC__ >= 12
++Q_DBUS_EXPORT const QDBusArgument &operator>>(const QDBusArgument &a, RouteStructure &v);
++Q_DBUS_EXPORT QDBusArgument &operator<<(QDBusArgument &a, const RouteStructure &v);
++#endif
++
+ // Empty namespace for local static functions
+ namespace {
+ 
+@@ -183,6 +188,7 @@ QVariantMap MarshalUtils::propertiesToQml(const QVariantMap &fromDBus)
+     return rv;
+ }
+ 
++#include <QDBusMetaType>
+ // Conversion to/from DBus/QML
+ QHash<QString, MarshalUtils::conversionFunction> MarshalUtils::propertyConversions()
+ {
+-- 
+2.36.1
+
