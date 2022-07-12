@@ -1,7 +1,7 @@
 # $Id$
 
 pkgname=glacier-settings-accounts-git
-pkgver=0.0.1.r11.g0f41049
+pkgver=0.0.2.r0.ge4fe00d
 pkgrel=1
 pkgdesc="Accounts settings plugin for glacier-settings"
 arch=('x86_64' 'aarch64')
