@@ -1,7 +1,7 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgname=libphonenumber
-pkgver=8.12.48
+pkgver=8.12.51
 pkgrel=2
 epoch=1
 pkgdesc="Google's common library for parsing, formatting, and validating international phone numbers"
@@ -12,7 +12,7 @@ depends=('icu=71.1' protobuf boost-libs abseil-cpp)
 makedepends=(boost cmake gtest git)
 source=("https://github.com/google/libphonenumber/archive/refs/tags/v${pkgver}.tar.gz"
 	"0001-Fix-geocoding-build-when-static-libraries-are-off.patch")
-sha256sums=('4bd2b7c89f1cba8dc78038395f4cc3236dd5aa62118feb4c354a8890634faea9'
+sha256sums=('a375c51a2eefb041fb1135bcbd6ddf6ff2c9a031d098393630665f5ec7b10257'
             '9743019766135003c5290d3b0c2c8c27b813ece9033fd3e587501129d3ab4098')
 
 prepare() {
@@ -24,9 +24,12 @@ build() {
   cd $pkgname-$pkgver
   CXXFLAGS+=" -Wno-error=deprecated-declarations"  # readdir_r deprecation
   CXXFLAGS+=" -Wno-error=unused-variable"          # this is nuts
+  
   cmake -S cpp -B build \
     -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_CXX_FLAGS="-std=c++14" \
     -DCMAKE_INSTALL_LIBDIR=lib \
+    -DABSL_PROPAGATE_CXX_STD=ON \
     -DREGENERATE_METADATA=OFF \
     -DBUILD_STATIC_LIB=OFF \
     -DUSE_ICU_REGEXP=ON \
@@ -35,7 +38,7 @@ build() {
     -DUSE_PROTOBUF_LITE=ON \
     -DBUILD_GEOCODER=ON
 
-  cmake --build build
+  cmake --build build -v
 }
 
 package() {
