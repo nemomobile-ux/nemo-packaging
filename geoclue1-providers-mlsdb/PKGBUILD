@@ -2,7 +2,7 @@
 
 pkgname=geoclue1-providers-mlsdb
 pkgver=0.1.7
-pkgrel=3
+pkgrel=4
 pkgdesc="Geoinformation Service from Mozilla Location Services Database Provider"
 arch=('x86_64' 'aarch64')
 url="https://github.com/mer-hybris/geoclue-providers-mlsdb";
@@ -34,4 +34,5 @@ build() {
 package() {
     cd $srcdir/geoclue-providers-mlsdb-${pkgver}
     make INSTALL_ROOT=$pkgdir install
+    rm -r $pkgdir/usr/share/geoclue-provider-mlsdb
 }
