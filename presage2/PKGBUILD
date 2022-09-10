@@ -13,11 +13,17 @@ makedepends=('automake'
 		'marisa'
 		'hunspell>=1.5.1'
 		'cppunit')
-source=("${url}/archive/$pkgver/prestrage-$pkgver.tar.gz")
-sha256sums=('13c96ea97d4fadf8db2ff38b3590f4c2795089ca59bbd678c6a06c269a4bb11a')
+source=("${url}/archive/$pkgver/presage-$pkgver.tar.gz"
+    '0001-fix-compilation-with-Werror-format-security.patch'
+    )
+sha256sums=('13c96ea97d4fadf8db2ff38b3590f4c2795089ca59bbd678c6a06c269a4bb11a'
+    '41acf602bea722487ff1696462d253ae0afa5f1d1ff1730f7049c75fb493b6a4'
+)
 
 prepare() {
     cd "$srcdir/presage-${pkgver}"
+    patch -p1 --input="${srcdir}/0001-fix-compilation-with-Werror-format-security.patch"
+
 }
 
 build() {
