@@ -13,7 +13,7 @@ makedepends=('automake'
 		'marisa'
 		'hunspell>=1.5.1'
 		'cppunit')
-source=("${url}/archive/$pkgver/prestrage-$pkgver.tar.gz"
+source=("${url}/archive/$pkgver/presage-$pkgver.tar.gz"
     '0001-fix-compilation-with-Werror-format-security.patch'
     )
 sha256sums=('13c96ea97d4fadf8db2ff38b3590f4c2795089ca59bbd678c6a06c269a4bb11a'
