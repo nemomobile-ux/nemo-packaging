@@ -32,6 +32,7 @@ eval "$BUILD libdbusaccess"
 eval "$BUILD libdbuslog"
 eval "$BUILD ofono"
 
+eval "$BUILD nemo-qml-plugin-dbus"
 eval "$BUILD geoclue1"
 eval "$BUILD nemo-qml-plugin-settings"
 eval "$BUILD nemo-qml-plugin-folderlistmodel"
@@ -150,6 +151,7 @@ eval "$BUILD glacier-calendar-git"
 eval "$BUILD glacier-alarmclock-git"
 eval "$BUILD glacier-alarm-listener-git"
 eval "$BUILD glacier-settings-accounts-git"
+eval "$BUILD glacier-settings-developermode-git"
 
 # pure-maps packages
 if [ "$BUILDARCH" != "aarch64" ]; then
