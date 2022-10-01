@@ -15,7 +15,7 @@ pkgdesc="Contains the reference input method plugins, such as the Maliit Keyboar
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD')
-depends=('maliit-framework' 'glacier-settings-git' 'hunspell' 'hunspell-en_us' 'presage2' 'presage2-lang-en_US')
+depends=('maliit-framework' 'glacier-settings-git' 'hunspell' 'hunspell-en_us' 'presage2' 'presage2-lang-en_US' 'marisa')
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
