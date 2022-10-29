@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 _basever=0.86.0
-_merver=58
+_merver=59
 
 _dbus_glib_commit=d42176ae4763e5288ef37ea314fe58387faf2005
 
@@ -29,7 +29,7 @@ source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
 	'0001-use_etc-hw-release.patch'
 	"https://github.com/sailfishos-mirror/dbus-glib/archive/${_dbus_glib_commit}.tar.gz"
 )
-sha256sums=('787e4a2efc79a5737b0ae2c0ef4815d08bff5e58ab66f388a9ba6241271769c4'
+sha256sums=('bcce0694df731e8960e39cbffb78b6fb60e190f5f283bb6a1971ee040341a9da'
 	'a2408b6692339595f98fd5e46398da794019b4818ee865fd22953576f26366c9'
 	'e340d6a21b94518ebb16b6ab76b0a12f197e5b5ae0861c1c46201f863a3b971f'
 	'f4c28d4740ac90863082e81c869e5178d25238b179747984faf0509e40d1afef'
