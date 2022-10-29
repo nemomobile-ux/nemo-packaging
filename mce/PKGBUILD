@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=mce
-pkgver=1.111.0
+pkgver=1.112.0
 pkgrel=1
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
@@ -17,11 +17,11 @@ makedepends=('git'
 	'libdsme'
 	'libsystemd'
 	'usb-moded'
-	'mce-headers>=1.30')
+	'mce-headers>=1.31')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	'0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch'
 	'0002-Handle_KEY_WAKEUP.patch')
-sha256sums=('17aa48f17322b42bb058ae1b64da8cde1d0c3b20f0d118faa8243b15d3afe6d2'
+sha256sums=('3ddb62ad31203cfe7159b92d73a3fefe06d10497ff0a263b9105d34b37d5991c'
 	'8ed260853165760423b4c6764ae9fb129e0506403d070fced60f576d9185e5f4'
 	'595ddbfda22a802a47f0239b24f53a28aa785abe128ae56cfbdbcac0d0deae2d')
 
