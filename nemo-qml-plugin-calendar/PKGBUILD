@@ -2,7 +2,7 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-calendar
-pkgver=0.6.47
+pkgver=0.6.48
 pkgrel=1
 pkgdesc="Calendar plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
@@ -15,7 +15,7 @@ depends=('qt5-base'
 
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-disable_werror.patch")
-sha256sums=('3fc4195675b6e65603f99693121b5c54eb73acbd4c527b6c6121397d6c8f678c'
+sha256sums=('c83d0ccade63432c1244fe74a552d29588e069854aa9af174c17177a3982b008'
     '5497ca6cf4dc9dad821ae4b0614da789c92efcb74837dc99a006938aaa6bfc36')
 
 prepare() {
