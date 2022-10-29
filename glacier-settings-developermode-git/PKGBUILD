@@ -1,7 +1,7 @@
 # $Id$
 
 pkgname=glacier-settings-developermode-git
-pkgver=0.0.3.r0.g37fcdc5
+pkgver=0.0.3.r14.g90033d0
 pkgrel=1
 pkgdesc="developermode settings plugin for glacier-settings"
 arch=('x86_64' 'aarch64')

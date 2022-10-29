@@ -1,6 +1,6 @@
 # $Id$
 pkgname=cutiepi-cutoff-git
-pkgver=r25.e0f98dc
+pkgver=r28.73d056a
 pkgrel=1
 pkgdesc="Cutiepie Cutoff - send power off to hardware on shutdown"
 arch=('x86_64' 'aarch64')

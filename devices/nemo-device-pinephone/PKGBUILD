@@ -9,7 +9,7 @@ _branch=master
 _gitname=$_basename
 pkgname=nemo-device-pinephone
 
-pkgver=0.8.5
+pkgver=0.11.r14.g75d1281
 pkgrel=1
 pkgdesc="PinePhone specific files for GlacierUX"
 arch=('aarch64')
