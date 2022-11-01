@@ -5,7 +5,7 @@
 
 pkgname=nemo-qml-plugin-contacts
 pkgver=0.3.23
-pkgrel=2
+pkgrel=3
 pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-contacts"
@@ -16,7 +16,7 @@ depends=('libphonenumber'
 	'mce-headers'
 	'qtcontacts-sqlite'
 	'buteo-sync-plugin-carddav'
-	'icu=71.1')
+	'icu=72.1')
 
 makedepends=('qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
