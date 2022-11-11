@@ -13,7 +13,7 @@ _branch=master
 _gitname=qt$_basename
 pkgname=qt5-$_basename-git
 
-pkgver=5.7.4.r6.gdc0b1df
+pkgver=5.7.4.r11.gedca4c5
 
 pkgrel=1
 pkgdesc="Nemomobile Qt Quick Controls"
@@ -35,17 +35,11 @@ pkgver() {
   ) 2>/dev/null
 }
 
-prepare() {
-    # TODO: upstream building examples optional
-    # https://t.me/NemoMobile/17555
-    cd "${srcdir}/${pkgname}"
-    sed -i.bak 's/add_subdirectory[(]examples[)]//' CMakeLists.txt
-}
-
 build() {
     cmake \
         -B "${pkgname}/build" \
         -S "${pkgname}" \
+        -DBUILD_EXAMPLES=OFF -DBUILD_CONTROLS=ON \
         -DCMAKE_INSTALL_PREFIX:PATH='/usr'
     make -C "${pkgname}/build" all
 }
