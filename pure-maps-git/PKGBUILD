@@ -1,7 +1,7 @@
 # $Id$
 
 pkgname=pure-maps-git
-pkgver=3.1.0.r3.ga62de4a8
+pkgver=3.1.1.r15.g5f315dfe
 pkgrel=1
 pkgdesc="Pure Maps"
 arch=('x86_64' 'aarch64')

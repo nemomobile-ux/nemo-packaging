@@ -2,14 +2,14 @@
 
 pkgname=glacier-testtool-git
 
-pkgver=0.1.r56.g327865b
+pkgver=0.2.1.r4.g6a2e02b
 
 pkgrel=1
 pkgdesc="Nemo hardware tester"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/glacier-testtool"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
-depends=('qt5-glacier-app-git' 'qt5-sensors-sensorfw' 'qt5-charts')
+depends=('qt5-glacier-app' 'qt5-sensors-sensorfw' 'qt5-charts')
 makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")

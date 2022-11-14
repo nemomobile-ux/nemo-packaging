@@ -12,14 +12,14 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.1.4.r0.g7a5182e
+pkgver=0.1.4.r3.gc38d78b
 
 pkgrel=1
 pkgdesc="Glacier Camera"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.0-or-later')
-depends=('qt5-glacier-app-git' 'nemo-qml-plugin-settings')
+depends=('qt5-glacier-app' 'nemo-qml-plugin-settings')
 optdepends=()
 makedepends=('git' 'qt5-tools' 'cmake')
 provides=("${pkgname%-git}")

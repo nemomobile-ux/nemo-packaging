@@ -8,14 +8,14 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.1.r0.g4b59f74
+pkgver=0.1.r5.gab4aa8e
 
 pkgrel=1
 pkgdesc="Nemo alarm clock"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('qt5-glacier-app-git'
+depends=('qt5-glacier-app'
     'timed'
     'nemo-qml-plugin-alarms')
 makedepends=('git' 'cmake' 'qt5-tools')
