@@ -8,14 +8,14 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.5.r15.gcfc95fd
+pkgver=0.5.1.r8.gfbdcb4b
 
 pkgrel=1
 pkgdesc="QML based dialer application for nemomobile"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname"
 license=('BSD-3-Clause')
-depends=('qt5-glacier-app-git'
+depends=('qt5-glacier-app'
     'nemo-qml-plugin-contacts'
     'voicecall'
     'commhistory-daemon'

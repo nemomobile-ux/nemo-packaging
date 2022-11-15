@@ -11,7 +11,7 @@ pkgdesc="Glacier Wayland session"
 arch=('any')
 url="https://github.com/nemomobile-ux/glacier-wayland-session.git"
 license=('GPL-3.0-or-later')
-depends=('lipstick-glacier-home-git' 
+depends=('lipstick-glacier-home'
 	'lightdm'
 	'glacier-devicelock-plugin'
 	'pulseaudio-module-keepalive'

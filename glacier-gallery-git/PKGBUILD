@@ -12,14 +12,14 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.3.r3.gfaa2a3d
+pkgver=0.3.1.r6.gd1aeba0
 
 pkgrel=1
 pkgdesc="The Glacier image gallery"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('qt5-glacier-app-git' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-thumbnailer' 'libresourceqt' 'qtdocgallery')
+depends=('qt5-glacier-app' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-thumbnailer' 'libresourceqt' 'qtdocgallery')
 optdepends=()
 makedepends=('git' 'qt5-tools' 'cmake')
 provides=("${pkgname%-git}")

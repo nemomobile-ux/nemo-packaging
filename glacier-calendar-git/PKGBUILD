@@ -8,14 +8,14 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.0.2.r0.g1017346
+pkgver=0.0.2.r6.g8e6c351
 
 pkgrel=1
 pkgdesc="Nemo calendar"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
-depends=('qt5-glacier-app-git' 'nemo-qml-plugin-calendar')
+depends=('qt5-glacier-app' 'nemo-qml-plugin-calendar')
 makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
