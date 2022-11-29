@@ -33,6 +33,7 @@ makedepends=('git'
 	'pkgconfig')
 
 provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
