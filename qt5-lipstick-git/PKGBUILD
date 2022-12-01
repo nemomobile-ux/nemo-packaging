@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt5-lipstick-git
-pkgver=0.46.1.r3.g88f0766f
+pkgver=0.46.2.r0.g3ece3a88
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
@@ -52,7 +52,7 @@ build() {
   git submodule update
   mkdir -p build
   cd build
-  qmake ..
+  qmake VERSION=${pkgver} ..
   make
 }
 
