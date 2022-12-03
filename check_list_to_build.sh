@@ -5,24 +5,14 @@ declare -a PACKAGES_FILES
 declare -a PACKAGES_TO_ADD
 declare -a PACKAGES_TO_REMOVE
 
-function check_add() {
-    PACKAGES_BUILD+=("$1")
-}
-BUILDARCH=aarch64
-export BUILD_USER="$(whoami)"
-export BUILD="check_add"
-export -f check_add
-
-source ./deploy.sh
-BUILDARCH=x86_64
-source ./deploy.sh
-
+eval $(./list_of_pkgs.sh) # list of packages are loaded into PACKAGES_BUILD see # declare -p PACKAGES_BUILD
 
 for pkgfile in $(find . -name 'PKGBUILD'); do
     pkg=$(dirname "$pkgfile")
     pkg=${pkg:2}
     PACKAGES_FILES+=("$pkg")
 done
+
 
 for pkg in ${PACKAGES_FILES[@]}; do
     found=0
@@ -64,3 +54,11 @@ print_arr "${PACKAGES_TO_ADD[*]}"
 echo "========== REMOVED =========="
 print_arr "${PACKAGES_TO_REMOVE[*]}"
 
+
+remove_count=${#PACKAGES_TO_REMOVE[*]}
+add_count=${#PACKAGES_TO_ADD[*]}
+
+echo "Summary: remove_count = $remove_count; add_count = $add_count"
+if [ "$((add_count + remove_count))" -gt 0 ]; then
+    exit 1
+fi
