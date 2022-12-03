@@ -1,7 +1,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=contactsd
-pkgver=1.4.10
+pkgver=1.4.13
 pkgrel=1
 pkgdesc="Telepathy <> QtContacts bridge for contacts"
 arch=('x86_64' 'aarch64')
@@ -23,7 +23,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-KcalendarCore_not_provide_pc_files.patch"
     "0002-plugins-requires-QIcon-which-is-in-gui-module.patch"
     "contactsd.service")
-sha256sums=('bf4036ee51614a4e7dfe36c7f68268dca1d672dbdcd52ca38c5442dc5bdc918b'
+sha256sums=('57bb9fd3ac68562580bfd01bb29951aca1eb774b0accec86870ff8db1d2a0377'
     '5475ddc2c885cdd8c5a8c9489801a0392183b14d3ee5bf56ccd60958e5b11db7'
     'b2598d9410684dfd9b903469ed2a3ea088bfa3ebadbbe66ac4c3c15bb1393cdb'
     'd9898e7dada3fb0c68d9f63d13c233d9875501b48dafac0dadeb226043bf6b70')
