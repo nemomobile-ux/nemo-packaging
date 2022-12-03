@@ -8,6 +8,24 @@ export CUSTOM_REPO_NAME=nemomobile
 export CUSTOM_REPO_URL="http://localhost/build-results"
 export BUILD_CHROOT=/var/lib/manjaro-arm-tools/pkg/aarch64
 
+export USE_GIT_PACKAGES=0
+
+SED_EXPR=""
+if [ "$USE_GIT_PACKAGES" = 1 ]; then
+
+    eval $(./list_of_pkgs.sh) # list of packages are loaded into PACKAGES_BUILD see # declare -p PACKAGES_BUILD
+
+    for pkg in ${PACKAGES_BUILD[@]}; do
+        pkg=$(basename "$pkg")
+        non_git=${pkg%-git}
+        if [ "$pkg" = "$non_git" ]; then
+            continue
+        fi
+        SED_EXPR+="s/'$non_git'/'$pkg'/g;"
+    done
+fi
+export SED_EXPR
+
 #
 # $1 name of repo to build e.g. 'tut-git'
 #
@@ -29,6 +47,10 @@ function build_directory() {
         rm -rvf "${results_dir}/${CUSTOM_REPO_NAME}".files*
         repo-add -q "$results_dir/$CUSTOM_REPO_NAME.db.tar.xz" "$results_dir"/*.pkg.tar.*
         manjaro-chroot "$BUILD_CHROOT/" pacman -Syyu --noconfirm
+
+        if [ -n "$SED_EXPR" ]; then
+            sed -i "$SED_EXPR" "$1/PKGBUILD"
+        fi
 
         buildarmpkg -k -p $*
     ) 2>&1 | tee "$log_name"
