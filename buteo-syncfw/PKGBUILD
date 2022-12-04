@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=buteo-syncfw
-pkgver=0.10.16
+pkgver=0.11.0
 pkgrel=1
 pkgdesc="Synchronization backend"
 arch=('x86_64' 'aarch64')
@@ -15,7 +15,7 @@ depends=('libiphb' 'nemo-keepalive' 'libmce-qt' 'signond' 'libaccounts-qt')
 makedepends=('qt5-tools' 'doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	"msyncd.service")
-sha256sums=('8d6c1bdfacc23654487c7a6b573a025a2c8ffa7e7496ea2eb11df566db2f8e7e'
+sha256sums=('92aa485fce934d7365fc0da7a061243a4beb0dafd90a5cac61b2e6bd29112078'
 	'bd37f105cd64ebac3dc2c991bfc8f7b989c8311800b92dd8e50add996aebc133')
 
 build() {
