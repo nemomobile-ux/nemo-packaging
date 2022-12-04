@@ -8,7 +8,7 @@ export CUSTOM_REPO_NAME=nemomobile
 export CUSTOM_REPO_URL="http://localhost/build-results"
 export BUILD_CHROOT=/var/lib/manjaro-arm-tools/pkg/aarch64
 
-export USE_GIT_PACKAGES=0
+export USE_GIT_PACKAGES="${USE_GIT_PACKAGES-0}"
 
 SED_EXPR=""
 if [ "$USE_GIT_PACKAGES" = 1 ]; then
