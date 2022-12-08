@@ -143,8 +143,9 @@ eval "$BUILD glacier-packagemanager-git"
 eval "$BUILD glacier-gallery-git"
 eval "$BUILD qt5-quickcontrols-nemo-examples-git"
 eval "$BUILD glacier-pinquery-git"
-eval "$BUILD qt5-lipstick-git"
 eval "$BUILD glacier-settings-git"
+eval "$BUILD glacier-settings-developermode-git"
+eval "$BUILD qt5-lipstick-git"
 eval "$BUILD maliit-nemo-keyboard-git"
 eval "$BUILD maliit-input-context-gtk"
 eval "$BUILD glacier-testtool-git"
@@ -160,7 +161,6 @@ eval "$BUILD glacier-calendar-git"
 eval "$BUILD glacier-alarmclock-git"
 eval "$BUILD glacier-alarm-listener-git"
 eval "$BUILD glacier-settings-accounts-git"
-eval "$BUILD glacier-settings-developermode-git"
 
 # pure-maps packages
 if [ "$BUILDARCH" != "aarch64" ]; then
