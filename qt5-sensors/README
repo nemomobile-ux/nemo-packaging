@@ -1,0 +1,3 @@
+Package is missing in x86 and is needed by for qt5-sensors-sensorfw and consequently lipstick
+downloaded from
+https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/qt5-sensors/trunk/PKGBUILD
