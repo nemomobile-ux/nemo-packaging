@@ -34,6 +34,9 @@ eval "$BUILD libwspcodec"
 eval "$BUILD libdbusaccess"
 eval "$BUILD libdbuslog"
 eval "$BUILD ofono"
+if [ "$BUILDARCH" != "aarch64" ]; then
+    eval "$BUILD telepathy-ofono"
+fi
 
 eval "$BUILD nemo-qml-plugin-dbus"
 eval "$BUILD geoclue1"
@@ -67,6 +70,9 @@ eval "$BUILD mce"
 eval "$BUILD libmce-qt"
 eval "$BUILD buteo-syncfw"
 eval "$BUILD sensorfw"
+if [ "$BUILDARCH" != "aarch64" ]; then
+    eval "$BUILD qt5-sensors"
+fi
 eval "$BUILD qt5-sensors-sensorfw"
 eval "$BUILD qtcontacts-sqlite"
 eval "$BUILD nemo-qml-plugin-notifications"

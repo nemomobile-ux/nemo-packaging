@@ -1,0 +1,37 @@
+# Maintainer: Dan Johansen <strit@manjaro.org>
+# Maintainer: Furkan Kardame <furkan@fkardame.com>
+
+pkgname=telepathy-ofono
+pkgver=20210417
+pkgrel=1
+pkgdesc='Telepathy oFono connection manager'
+arch=('aarch64')
+url="https://github.com/TelepathyIM/telepathy-ofono"
+license=('LGPL')
+depends=('ofono' 'libofono-qt' 'qt5-feedback')
+makedepends=('cmake' 'qt5-base' 'libphonenumber' 'telepathy-qt' 'sqlite' 'telepathy-mission-control' 'libofono-qt' 'debianutils')
+_commit="8436bc4c4d1c6156bf6c573e701e9650f5faacf0"
+source=("$pkgname-$_commit.tar.gz::https://github.com/TelepathyIM/telepathy-ofono/archive/$_commit.tar.gz")
+md5sums=('8043c6eba3b0ba043d76fdddafd73274')
+
+#pkgver() {
+#  cd $pkgname-$_commit
+#  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+#}
+
+
+build() {
+  cd $pkgname-$_commit
+	cmake \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DOFONO_ON_RING=ON
+	make
+}
+
+package() {
+  cd $pkgname-$_commit
+    DESTDIR="$pkgdir" make install
+}
+
