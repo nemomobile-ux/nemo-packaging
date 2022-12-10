@@ -1,30 +1,21 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <james@nulogicsystems.com>
 
-_host="github.com"
-_project=nemomobile-packages
-_basename=google-opensans-fonts
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
-pkgver=1.1
+pkgname=google-opensans-fonts
+pkgver=0.1
 
 pkgrel=1
 pkgdesc="Open Sans is a humanist sans serif typeface designed by Steve Matteson, Type Director of Ascender Corp"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/nemomobile-packages/google-opensans-fonts"
 license=('Apache License 2.0')
 makedepends=('git')
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('19b331e6bf943d3293ad597e13b005cc29f30342e34d608ddafaac1bf5e1417e')
 
 
 package() {
-    cd "${srcdir}/${pkgname}"
+    cd $pkgname-$pkgver
     mkdir -p "$pkgdir"/usr/share/fonts/google-opensans/ 
     cp *.ttf "$pkgdir"/usr/share/fonts/google-opensans/ 
 }
