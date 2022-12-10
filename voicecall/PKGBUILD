@@ -2,17 +2,23 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=voicecall
-pkgver=0.7.14
+pkgver=0.8.0
 pkgrel=1
 pkgdesc="Dialer engine for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/voicecall"
 license=('LGPL-2.1-only AND Apache-2.0')
-depends=('libpulse' 'nemo-qml-plugin-devicelock' 'libresourceqt' 'libqofono-qt5' 'qt5-multimedia' 'libngf-qt' 'telepathy-qt')
-makedepends=('git' 'cmake')
+depends=('libpulse'
+	 'nemo-qml-plugin-devicelock'
+	 'libresourceqt'
+	 'libqofono-qt5'
+	 'qt5-multimedia'
+	 'libngf-qt'
+	 'telepathy-qt')
+makedepends=('cmake')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	'voicecall-manager.service')
-sha256sums=('78241c14d8678bcf987951e0beb4b4608399f14c8eec8d5d9503f101906e8d51'
+sha256sums=('6c97f72f8daf15af925f6745705bcafb9a35b057b96acd63bd00608b8fb2e9db'
     '2b23389872552e88b061d170271ec35c1c0cec68f38c1a770c14c79c3491fb8d')
 
 build() {

@@ -9,6 +9,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libdsme"
 license=('LGPL')
 depends=('glib2')
+makedepends=('check')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('bfac9557bee964ab014166867442ea962b46cbf0fa57e8bbc95382ff01af56a5')
 

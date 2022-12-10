@@ -2,38 +2,35 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=pulseaudio-module-keepalive
-pkgver=1.0.1
-pkgrel=3
+pkgver=1.1.0
+pkgrel=4
 pkgdesc="PulseAudio keepalive module"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/pulseaudio-module-keepalive"
 license=('LGPLv2+')
 depends=('libpulse'
     'pulseaudio')
-makedepends=('automake' 'autoconf' 'pulsecore-headers')
+makedepends=('meson' 'pulsecore-headers')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-fix_build.patch")
-sha256sums=('243f31373ff096fdd999aa46b07c8abb7e3c0af1652ac8040b596a9b41912ef1'
-    '52d4e39066e07044f287622d54bfc353510cd409e908624d90b486f499300a80')
+sha256sums=('05263a72cc687b409ffe85b144ed1ac67f0fee472a58a68a51e72a30eb48b643'
+    'eb58c11da7e8b6f6a82db51bbcd18041c7784ffd20305610a551eaf2aaacb7d9')
 
 prepare() {
     cd $pkgname-$pkgver
     patch -p1 --input="${srcdir}/0001-fix_build.patch"
-
 }
 
 build() {
   cd $pkgname-$pkgver
-  echo 15.0 > .tarball-version
-  ./bootstrap.sh
-  ./configure --prefix=/usr \
-    --sysconfdir=/etc \
-    --sbindir=/usr/bin \
-    --disable-static
-    make
+  pulseaudio --version | sed 's/pulseaudio \|//' > .tarball-version
+  meson --prefix=/usr build
+  cd build
+  ninja
 }
 
 package() {
-  cd $pkgname-$pkgver
-  make DESTDIR="${pkgdir}" install
+  cd $pkgname-$pkgver/build
+  mkdir -p ${pkgdir}/usr/lib/pulseaudio/modules
+  cp src/*.so ${pkgdir}/usr/lib/pulseaudio/modules/
 }

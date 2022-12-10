@@ -5,9 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 _basever=0.86.0
-_merver=59
-
-_dbus_glib_commit=d42176ae4763e5288ef37ea314fe58387faf2005
+_merver=62
 
 pkgname=usb-moded
 pkgver=$_basever+mer$_merver
@@ -16,30 +14,27 @@ pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/usb-moded"
 license=('GPL')
-depends=('libdsme'
-    'dbus-glib'
+depends=('dbus-glib'
     'udev'
     'kmod'
     'sailfish-access-control'
     'dhcp'
+    'dsme>=0.65.0'
     'net-tools')
 optdepends=('buteo-mtp: mtp sync support')
 source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
+	'https://github.com/sailfishos-mirror/dbus-glib/archive/d42176ae4763e5288ef37ea314fe58387faf2005.tar.gz'
 	'dhcpd.conf'
-	'0001-use_etc-hw-release.patch'
-	"https://github.com/sailfishos-mirror/dbus-glib/archive/${_dbus_glib_commit}.tar.gz"
-)
-sha256sums=('bcce0694df731e8960e39cbffb78b6fb60e190f5f283bb6a1971ee040341a9da'
-	'a2408b6692339595f98fd5e46398da794019b4818ee865fd22953576f26366c9'
-	'e340d6a21b94518ebb16b6ab76b0a12f197e5b5ae0861c1c46201f863a3b971f'
+	'0001-use_etc-hw-release.patch')
+sha256sums=('661d8a383191482fd75a6dbf691d261747628fa39c79a28db68cefd37a3419f6'
 	'f4c28d4740ac90863082e81c869e5178d25238b179747984faf0509e40d1afef'
-)
+	'a2408b6692339595f98fd5e46398da794019b4818ee865fd22953576f26366c9'
+	'e340d6a21b94518ebb16b6ab76b0a12f197e5b5ae0861c1c46201f863a3b971f')
 
 prepare() {
     cd $pkgname-mer-$_basever-mer$_merver
     patch -p1 --input="${srcdir}/0001-use_etc-hw-release.patch"
-    rm -rf dbus-gmain
-    mv "../dbus-glib-${_dbus_glib_commit}" ./dbus-gmain
+    cp -r ../dbus-glib-d42176ae4763e5288ef37ea314fe58387faf2005/* dbus-gmain/
 }
 
 build() {

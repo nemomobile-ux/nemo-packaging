@@ -21,40 +21,28 @@ optdepends=('unixodbc: for using the odbc4pl library'
             'libxft: for using the pl2xpce library'
             'java-environment: for interfacing java with the jpl package')
 #options=('!makeflags')
-source=("git+https://github.com/SWI-Prolog/swipl.git")
-sha256sums=('SKIP')
+source=("https://github.com/SWI-Prolog/swipl/archive/refs/tags/V$pkgver.tar.gz")
+sha256sums=('02fa31f0cd587deda6f3446e2e045aa45afe3d845834fb295ae8eb535bfdc533')
 conflicts=('swi-prolog')
 
-prepare() {
-  cd "$srcdir/swipl"
-  # fix submodules url
-  git checkout V${pkgver}
-  sed -i -e 's,\.\.,https://github.com/SWI-Prolog,g' .gitmodules
-  git submodule update --init
-}
-
 build() {
-  cd "${srcdir}/swipl/src"
+  cd "${srcdir}/swipl-$pkgver/src/"
+  echo "warn" > .doc-action
 
   autoheader
   autoconf
 
-  echo "warn" > .doc-action
-  
   ./configure --prefix=/usr \
     --disable-static        \
     --enable-shared
-    
-  make
+   make
 }
 
 package() {
-  cd "${srcdir}/swipl/src"
+  cd "${srcdir}/swipl-$pkgver/src/"
   make DESTDIR="$pkgdir" install
 
-  _tag=$(git describe --abbrev=0 --tags | sed -r 's/^V//g')
-
   # Fix for FS#20873
-  chmod +x "$pkgdir/usr/lib/swipl-${_tag}/library/dialect/sicstus/swipl-lfr.pl"
+  chmod +x "$pkgdir/usr/lib/swipl-${pkgver}/library/dialect/sicstus/swipl-lfr.pl"
 }
 
