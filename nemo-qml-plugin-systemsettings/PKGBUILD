@@ -5,25 +5,27 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-systemsettings
-pkgver=0.8.0
-pkgrel=4
+pkgver=0.10.0
+pkgrel=2
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-systemsettings"
 license=('BSD')
 depends=('qt5-systems'
+	'openssl'
 	'libusb-moded-qt'
 	'profiled'
 	'timed'
 	'nemo-qml-plugin-models'
-	'libconnman-qt'
+	'libconnman-qt>=1.2.38'
 	'mlite'
-	'mce'
+	'mce>=1.113.0'
 	'nemo-qml-plugin-dbus'
 	'libqofono-qt5>=0.105'
-	'qt5-xmlpatterns')
+	'qt5-xmlpatterns'
+	'openssl>=3.0')
 
-makedepends=('qt5-tools' 'mce-headers' 'pkgconf')
+makedepends=('qt5-tools' 'mce-headers>=1.32.0' 'pkgconf')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-disable-libsailfishkeyprovider.patch"
     "0002-disable-ssu.patch"
@@ -35,7 +37,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0009-fix-supported-lanauges-directory.patch"
 )
 
-sha256sums=('c570eb433f2ce85700c118a859bf4071d1900633fbc61b65c1a163420d8d1e34'
+sha256sums=('87280a710deb380aad1730148d0614e77028d477005c1ebb56fd4aedd79682c8'
 	    '95b628b623631eb3d1b9d43a8d28140eb98e491df8fd85dea527b3a68b272ac1'
 	    'c81267a18e0cd9d6b23d5ef2e8d9e60fd662ac4fe8a3035418a1e0205e556fd3'
 	    'ed9f7ccc5e8a1fe31419c11972fbcc4a9d54fe76f3d0fc4de6758b856ad6df27'
