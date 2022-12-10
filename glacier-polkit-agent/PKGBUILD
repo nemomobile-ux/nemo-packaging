@@ -3,23 +3,18 @@
 
 _host="github.com"
 _project=nemomobile-ux
-_basename=glacier-polkit-agent
-_branch=master
 
-_gitname=$_basename
-pkgname=$_basename
-
-pkgver=0.1.1
-
+pkgname=glacier-polkit-agent
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="Nemo polkit agent"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://$_host/$_project/$pkgname"
 license=('BSD-3-Clause')
 depends=('qt5-glacier-app' 'polkit-qt5')
 makedepends=('cmake' 'qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=("ceee7fb65b4940d6c92aa9ae4fc40c0e2717efc6d6c3ed78404dadc813711eae")
+sha256sums=("94b047a36d219cee6dc3cc4a581b0c9baca5927dd4a8cf510c8c79da4d28f401")
 
 build() {
     cd $pkgname-$pkgver
