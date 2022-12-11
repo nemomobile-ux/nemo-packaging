@@ -35,6 +35,7 @@ eval "$BUILD libdbusaccess"
 eval "$BUILD libdbuslog"
 eval "$BUILD ofono"
 if [ "$BUILDARCH" != "aarch64" ]; then
+    eval "$BUILD libofono-qt"
     eval "$BUILD telepathy-ofono"
 fi
 
