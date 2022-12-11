@@ -12,8 +12,8 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/mce"
 license=('LGPLv2')
 depends=('libngf>=0.24'
-	 'libiphb'
-	 'dsme>=0.79')
+	'libiphb'
+)
 makedepends=('doxygen'
 	'libdsme'
 	'libsystemd'
