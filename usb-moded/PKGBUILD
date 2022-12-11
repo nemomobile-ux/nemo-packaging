@@ -19,7 +19,6 @@ depends=('dbus-glib'
     'kmod'
     'sailfish-access-control'
     'dhcp'
-    'dsme>=0.65.0'
     'net-tools')
 optdepends=('buteo-mtp: mtp sync support')
 source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
