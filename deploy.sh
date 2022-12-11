@@ -131,7 +131,7 @@ eval "$BUILD presage2"
 eval "$BUILD presage2-lang"
 
 #Glacier UX packages
-eval "$BUILD nemo-theme-openmoko-git"
+eval "$BUILD nemo-theme-openmoko"
 eval "$BUILD google-opensans-fonts"
 eval "$BUILD qt5-glacier-app-git"
 eval "$BUILD qt5-quickcontrols-nemo-git"
