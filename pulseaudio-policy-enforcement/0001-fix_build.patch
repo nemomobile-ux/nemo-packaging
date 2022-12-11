@@ -1,0 +1,14 @@
+diff --git a/Makefile.am b/Makefile.am
+index dc70f42..d68a233 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -11,9 +11,6 @@ MAINTAINERCLEANFILES = \
+         build-stamp compile depcomp acinclude.m4 aclocal.m4 \
+ 	stamp-h1 
+ 
+-clean-local:
+-	dh_clean
+-
+ $(top_srcdir)/.version:
+ 	echo $(VERSION) > $@-t && mv $@-t $@
+ 
