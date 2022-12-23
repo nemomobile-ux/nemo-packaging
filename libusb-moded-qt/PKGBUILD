@@ -6,7 +6,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libusb-moded-qt
-pkgver=1.10
+pkgver=1.11
 pkgrel=1
 pkgdesc="A library of Qt5 bindings for usb_moded"
 arch=('x86_64' 'aarch64')
@@ -14,7 +14,7 @@ url="https://github.com/sailfishos/libusb-moded-qt"
 license=('BSD-2-Clause')
 depends=('qt5-base' 'usb-moded')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('7a3863e0bd83be48eaa28d9e24f36edf7957ea91a4e7a4849299c90d078ed017')
+sha256sums=('0af17dbb23dfec10133e9e734322cc8399bedfc45166437f91cd955674819db2')
 
 build() {
     cd $pkgname-$pkgver
