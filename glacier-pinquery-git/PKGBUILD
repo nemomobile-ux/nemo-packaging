@@ -45,4 +45,7 @@ build() {
 
 package() {
     make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
+
+    mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
+    ln -s ../glacier-pinquery.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
 }
