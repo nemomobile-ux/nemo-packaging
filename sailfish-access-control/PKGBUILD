@@ -4,7 +4,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=sailfish-access-control
-pkgver=0.0.6
+pkgver=0.0.7
 pkgrel=1
 pkgdesc="Sailfish Access Control library"
 arch=('x86_64' 'aarch64')
@@ -12,7 +12,7 @@ url="https://github.com/sailfishos/sailfish-access-control"
 license=('GPL')
 depends=('glib2')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('3abb5eff483c308abafa856599f079e08daccf71d13e451c9acbd4ff395a522b')
+sha256sums=('16da68e4ae925ff3e9454b7d4242455ea1e1d9aa99002c861a8054a7bc061db2')
 
 build() {
 	cd $pkgname-$pkgver/glib
