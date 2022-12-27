@@ -9,7 +9,7 @@ _merver=62
 
 pkgname=usb-moded
 pkgver=$_basever+mer$_merver
-pkgrel=4
+pkgrel=5
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/usb-moded"
@@ -73,6 +73,7 @@ package() {
 	install -m 644 -D config/run-diag/* "$pkgdir"/etc/usb-moded/run-diag/
 	install -m 644 -D config/mass-storage-jolla.ini "$pkgdir"/etc/usb-moded/
 	install -m 644 -D config/10-usb-moded-defaults.ini "$pkgdir"/etc/usb-moded/
+	sed -i 's/\[mode_group\]/[mode_group]\ndeveloper_mode = wheel/g' "$pkgdir"/etc/usb-moded/10-usb-moded-defaults.ini
 
 	install -d $pkgdir/etc/tmpfiles.d
 	install -m 644 -D systemd/usb-moded.conf $pkgdir/etc/tmpfiles.d/
