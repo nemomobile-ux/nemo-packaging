@@ -56,4 +56,5 @@ build() {
 package() {
     cd "${srcdir}/${pkgname}/ofono"
     make DESTDIR="$pkgdir" install
+    sed 's/user="radio"/group="network"/g' -i ${pkgdir}/etc/dbus-1/system.d/ofono.conf
 }
