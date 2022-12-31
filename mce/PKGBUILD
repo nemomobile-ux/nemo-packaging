@@ -17,7 +17,7 @@ depends=('libngf>=0.24'
 makedepends=('doxygen'
 	'libdsme'
 	'libsystemd'
-	'usb-moded'
+	'glib2'
 	'mce-headers>=1.32')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	"https://github.com/sailfishos-mirror/dbus-glib/archive/d42176ae4763e5288ef37ea314fe58387faf2005.tar.gz"
