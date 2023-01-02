@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libconnman-qt
-pkgver=1.2.46
+pkgver=1.3.0
 pkgrel=1
 pkgdesc='Qt Quick wrappers for connman'
 arch=('x86_64' 'aarch64')
@@ -14,7 +14,7 @@ license=('GPL')
 depends=('qt5-declarative' 'connman')
 makedepends=('qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('c38a935a99f8e548c7012b0e91a465f6127e3c400e8bc59c7f6f1683d524e26c')
+sha256sums=('e32035966726ca4731d3b75b31d0dd3ca77d19f6e267f8832287055d4b911bd7')
 
 build() {
     cd $pkgname-$pkgver
