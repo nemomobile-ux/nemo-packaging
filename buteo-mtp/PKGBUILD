@@ -3,7 +3,7 @@
 
 pkgname=buteo-mtp
 pkgver=0.9.7
-pkgrel=1
+pkgrel=2
 pkgdesc="MTP library"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/$pkgname"
@@ -34,5 +34,6 @@ build() {
 package() {
     cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
+    sed 's#/home/nemo#%h#' -i $pkgdir/etc/fsstorage.d/phone-memory.xml
     rm -rf $pkgdir/opt
 }
