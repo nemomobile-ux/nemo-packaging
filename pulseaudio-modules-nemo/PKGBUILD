@@ -3,7 +3,8 @@
 
 pkgname=pulseaudio-modules-nemo
 pkgver=16.1
-pkgrel=1
+PA_MODULE_VERSION=30
+pkgrel=2
 pkgdesc="PulseAudio modules for Nemo"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/pulseaudio-modules-nemo"
@@ -15,7 +16,7 @@ sha256sums=('a48b016367d4876895b2084b1b70170266c49a5541302026437efc2959d2286e')
 
 prepare() {
     cd $pkgname-$pkgver
-    pulseaudio --version | sed 's/pulseaudio \|//' > .tarball-version
+    echo "$(pulseaudio --version | sed 's/pulseaudio \|//').${PA_MODULE_VERSION}" > .tarball-version
 }
 
 build() {
