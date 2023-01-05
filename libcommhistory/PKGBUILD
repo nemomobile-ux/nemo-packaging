@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=libcommhistory
-pkgver=1.11.13
+pkgver=1.12.0
 pkgrel=1
 pkgdesc="Communications event history database API"
 arch=('x86_64' 'aarch64')
@@ -14,7 +14,7 @@ depends=('libphonenumber'
     'nemo-qml-plugin-contacts')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-fix-warnings-and-api.patch")
-sha256sums=('8ec0f6af9ec28a83aaceaa40b2afb93d372aef780f6b003e8932b507f9789d7a'
+sha256sums=('92ae530a1e4b3f1f08db7a5bc54503729bb25d84a79f8395ac0e5ea7bc37d4c9'
     '1bf3fe3d5b2ecaeb15155c9b2f4df1b0a12c6ea611e416c60ee7ab19cc7038a0')
 
 prepare() {
