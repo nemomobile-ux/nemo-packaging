@@ -4,7 +4,7 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=libqofono-qt5
-pkgver=0.117
+pkgver=0.118
 pkgrel=1
 pkgdesc="A library for accessing the ofono daemon, and a declarative plugin for it. This allows accessing ofono in qtquick and friends."
 arch=('aarch64' 'x86_64')
@@ -19,7 +19,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
         "context-preferred.patch"
         "mtk_settings_binding.patch")
 
-sha256sums=('8206f5ce8e85612df0434c46c985844fcd6267ae12899d30e5ccc5a34516396d'
+sha256sums=('58408be5e6e5d5be3e161ab34d328681ead7e6ce1891f7be8fb555c87c2eeb5a'
          'f793347078553903c7e6f6b235091c1863b18cd9b4078f34addc7a3ded7f2bd8'
          '1f63b04d05be4988498cba96c9700d6f4b6237325d65e508cf6fa2f21247a765')
 
