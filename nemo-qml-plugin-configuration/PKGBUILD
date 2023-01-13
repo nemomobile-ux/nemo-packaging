@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-configuration
-pkgver=0.2.6
+pkgver=0.2.7
 pkgrel=1
 pkgdesc="Configuration plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
@@ -13,7 +13,7 @@ url="https://github.com/sailfishos/nemo-qml-plugin-configuration"
 license=('BSD')
 depends=('mlite' 'nemo-qml-plugin-dbus')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('5d619e6185e7a8a46212bb73c0cbfcead374c4565de8c2e32319a36ce7c5aa2a')
+sha256sums=('23b26e861f62f37709802ebc96049f30cfbef71d0c9b16433ef828fb7bea7e6b')
 
 build() {
     cd $pkgname-$pkgver

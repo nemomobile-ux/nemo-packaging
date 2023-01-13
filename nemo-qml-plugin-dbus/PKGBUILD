@@ -1,7 +1,7 @@
 # Maintainer: Bernhard Landauer <bernhard@manjaro.org>
 
 pkgname=nemo-qml-plugin-dbus
-pkgver=2.1.30
+pkgver=2.1.31
 pkgrel=1
 pkgdesc="Nemo Mobile D-Bus QML Plugin."
 arch=('x86_64' 'aarch64')
@@ -9,7 +9,7 @@ url="https://github.com/sailfishos/$pkgname"
 license=('LGPL2')
 depends=('qt5-base' 'qt5-declarative')
 source=("$url/archive/refs/tags/$pkgver.tar.gz")
-md5sums=('74fc6c2e773fdf09d02e38215c677f63')
+sha256sums=('d964c9eeb46e0ed3521fa0d5401e3aa487106a366871a29601ed2935e33fd637')
 
 build() {
     cd $pkgname-$pkgver
