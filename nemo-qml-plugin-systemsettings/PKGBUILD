@@ -5,8 +5,8 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-systemsettings
-pkgver=0.10.0
-pkgrel=2
+pkgver=0.10.1
+pkgrel=1
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-systemsettings"
@@ -37,7 +37,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0009-fix-supported-lanauges-directory.patch"
 )
 
-sha256sums=('87280a710deb380aad1730148d0614e77028d477005c1ebb56fd4aedd79682c8'
+sha256sums=('3a9a36ac73e7ff7f7955086fdaca175ab60e76e5ff1c61c200c96e70fbd18631'
 	    '95b628b623631eb3d1b9d43a8d28140eb98e491df8fd85dea527b3a68b272ac1'
 	    'c81267a18e0cd9d6b23d5ef2e8d9e60fd662ac4fe8a3035418a1e0205e556fd3'
 	    'ed9f7ccc5e8a1fe31419c11972fbcc4a9d54fe76f3d0fc4de6758b856ad6df27'
