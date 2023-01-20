@@ -6,7 +6,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-keepalive
-pkgver=1.8.7
+pkgver=1.8.9
 pkgrel=1
 pkgdesc="CPU and display keepalive and scheduling library"
 arch=('x86_64' 'aarch64')
@@ -14,7 +14,7 @@ url="https://github.com/sailfishos/nemo-keepalive"
 license=('LGPL-2.1-or-later')
 depends=('qt5-declarative' 'libiphb' 'mce-headers')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('b49d8c4f53024250774f3f47f7c5da9d701db03b464c3c800b460375fe073dcc')
+sha256sums=('120478bf093e9c829699be84b314d899a8a7ab446c3f060abea4b0048432750f')
 
 build() {
     cd $pkgname-$pkgver
