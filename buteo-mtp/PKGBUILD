@@ -2,8 +2,8 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=buteo-mtp
-pkgver=0.9.7
-pkgrel=2
+pkgver=0.9.8
+pkgrel=1
 pkgdesc="MTP library"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/$pkgname"
@@ -15,7 +15,7 @@ depends=('mlite'
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-disable_ssu.patch"
     '0002-disable-storage-test.patch')
-sha256sums=('2f6730f9cc29da465f1790b4ffc3628e6bf4fec5b6369f592f8bb087a3b7689b'
+sha256sums=('49652ff59dce4e0b29ccc605acd3693a773b82e9de4903fdb8f5a3ed3b932637'
     'eb46ea60f45151893d210d3e5e2a9229cec7455f25e1ee278287bfd1eda433d3'
     '190b7b2eb1aa7e588d35ccdbed2e5787b17098799f3933a4a3ddec11f06c1bc3')
 
