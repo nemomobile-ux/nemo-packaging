@@ -4,8 +4,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-contacts
-pkgver=0.3.25
-pkgrel=3
+pkgver=0.3.26
+pkgrel=1
 pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-contacts"
@@ -20,7 +20,7 @@ depends=('libphonenumber'
 
 makedepends=('qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('8c000afd6ded5e2f08cbae186cfbc78f01508c8217a987d112edbd6556569be9')
+sha256sums=('b9f1d35f834e4860ee7eeae9b70a5d5fae78f21c5eb58b686972913f7836aedc')
 
 build() {
   cd $pkgname-$pkgver
