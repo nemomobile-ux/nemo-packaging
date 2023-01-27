@@ -7,12 +7,12 @@
 
 pkgname=timed
 pkgver=3.6.17
-pkgrel=1
+pkgrel=2
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/timed"
 license=('LGPL-2.1-or-later')
-depends=('sailfish-access-control' 'libiodata' 'tzdata-timed' 'connman' 'ofono')
+depends=('sailfish-access-control' 'libiodata' 'tzdata-timed' 'connman' 'ofono' 'pcre')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-Fixes-build.patch"
     "0002-Fixes-access.patch")
