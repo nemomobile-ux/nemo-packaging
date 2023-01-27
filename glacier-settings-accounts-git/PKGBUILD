@@ -10,6 +10,7 @@ license=('BSD-3-Clause')
 depends=('glacier-settings'
     'nemo-qml-plugin-accounts'
     'nemo-qml-plugin-signon'
+    'nemo-qml-plugin-social'
     'qt5-networkauth'
     'qt5-declarative')
 
