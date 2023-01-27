@@ -1,0 +1,24 @@
+## $Id$
+
+pkgname=nemo-qml-plugin-social
+pkgver=0.1.3
+pkgrel=1
+pkgdesc="Social plugin for Nemo Mobile"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/nemo-qml-plugin-social"
+license=('BSD')
+depends=('qt5-base')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('68d9ec52e1e53d8aad2850d44462fcbd18eebbbb36adf49f8aebdfc003827d9d')
+
+build() {
+    cd $pkgname-$pkgver
+    qmake
+    make
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
+    rm -rf $pkgdir/opt
+}
