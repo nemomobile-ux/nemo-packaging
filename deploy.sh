@@ -39,6 +39,7 @@ if [ "$BUILDARCH" != "aarch64" ]; then
     eval "$BUILD telepathy-ofono"
 fi
 
+eval "$BUILD nemo-qml-plugin-social"
 eval "$BUILD nemo-qml-plugin-dbus"
 eval "$BUILD geoclue1"
 eval "$BUILD nemo-qml-plugin-settings"
