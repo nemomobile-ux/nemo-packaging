@@ -18,7 +18,7 @@ depends=('qt5-base'
     'libqofono-qt5'
     'libngf-qt'
     'nemo-qml-plugin-contacts'
-    'nemo-qml-plugin-notifications'
+    'nemo-qml-plugin-notifications>=1.0.12'
     'libqofonoext')
 makedepends=('qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
