@@ -2,7 +2,7 @@
 
 pkgname=ofono
 pkgver=1.34
-pkgrel=2
+pkgrel=4
 pkgdesc="Infrastructure for building mobile telephony (GSM/UMTS) applications"
 url="https://github.com/neochapay/ofono-new"
 arch=('x86_64' 'aarch64')
@@ -18,8 +18,12 @@ depends=("bluez"
 	"libglibutil>=1.0.51"
 	"libwspcodec"
 	"libdbuslog")
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
+source=("${pkgname}::git+${url}"
+	"ofono.conf"
+	"dbusaccess.conf")
+sha256sums=('SKIP'
+	    'f166196e9794f906911de63c8290e13315d741de860040d628b20486408ac850'
+	    '95a847dc79a2032835f01dad4a76bcdb163537a4b2287e750e13bc6c25ff98e5')
 
 prepare() {
     cd "${srcdir}/${pkgname}/ofono"
@@ -56,5 +60,8 @@ build() {
 package() {
     cd "${srcdir}/${pkgname}/ofono"
     make DESTDIR="$pkgdir" install
-    sed 's/user="radio"/group="network"/g' -i ${pkgdir}/etc/dbus-1/system.d/ofono.conf
+    rm ${pkgdir}/etc/dbus-1/system.d/ofono.conf
+    cp ${srcdir}/ofono.conf ${pkgdir}/etc/dbus-1/system.d/ofono.conf
+    mkdir -p ${pkgdir}/etc/ofono/
+    cp ${srcdir}/dbusaccess.conf ${pkgdir}/etc/ofono/
 }
