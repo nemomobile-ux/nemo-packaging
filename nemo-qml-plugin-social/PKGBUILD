@@ -7,7 +7,7 @@ pkgdesc="Social plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-social"
 license=('BSD')
-depends=('qt5-base')
+depends=('qt5-base' 'qt5-declarative')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('68d9ec52e1e53d8aad2850d44462fcbd18eebbbb36adf49f8aebdfc003827d9d')
 
