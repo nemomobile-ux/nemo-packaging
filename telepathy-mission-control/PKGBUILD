@@ -25,7 +25,7 @@ source=("https://github.com/TelepathyIM/telepathy-mission-control/archive/telepa
 sha256sums=('63653aa4d5690037398c5b812740fa8ea1ee775440c5262fe50c269faff87f8e'
 	'08421f3151416c46ecf41cf70c318281369f8aacdadcae913714db70d30cd74f'
 	'773518101fcfadcaedfebd335a26f25697ded5b766b022fe5ced593e3d32141c'
-	'363caf84707625259a54ab82805885c7698b7170a29924b912c83a73986e7c10')
+	'd1571a423e126aef7ad9505d69c80b73e577403c63d20b3f5f5fb465d19d0ccc')
 
 prepare() {
     cd $pkgname-$pkgname-$pkgver
@@ -52,5 +52,6 @@ package() {
     make DESTDIR="$pkgdir" install
 
     mkdir -p $pkgdir/usr/lib/systemd/user/graphical-session.wants/
-    ln -s ../mission-control-5.service $pkgdir/usr/lib/systemd/user/graphical-session.target.wants/mission-control-5.service
+    cd $pkgdir/usr/lib/systemd/user/graphical-session.wants/
+    ln -s ../mission-control-5.service .
 }

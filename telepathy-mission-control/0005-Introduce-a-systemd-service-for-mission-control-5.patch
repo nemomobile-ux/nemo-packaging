@@ -67,7 +67,7 @@ index 00000000..88439f31
 +Requires=dbus.socket
 +
 +[Service]
-+ExecStart=@lib@/telepathy/mission-control-5
++ExecStart=/usr/lib/telepathy/mission-control-5
 +Type=dbus
 +BusName=org.freedesktop.Telepathy.AccountManager
 +
