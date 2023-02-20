@@ -7,7 +7,7 @@
 
 pkgname=telepathy-mission-control
 pkgver=5.16.6
-pkgrel=1
+pkgrel=2
 pkgdesc="A Telepathy component providing abstraction of some of the details of connection managers."
 arch=('x86_64' 'aarch64')
 url="http://telepathy.freedesktop.org/wiki/Mission Control"
@@ -51,6 +51,6 @@ package() {
     cd $pkgname-$pkgname-$pkgver
     make DESTDIR="$pkgdir" install
 
-    mkdir -p $pkgdir/usr/lib/systemd/user/user-session.target.wants/
-    ln -s ../mission-control-5.service $pkgdir/usr/lib/systemd/user/user-session.target.wants/mission-control-5.service
+    mkdir -p $pkgdir/usr/lib/systemd/user/graphical-session.wants/
+    ln -s ../mission-control-5.service $pkgdir/usr/lib/systemd/user/graphical-session.target.wants/mission-control-5.service
 }
