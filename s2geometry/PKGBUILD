@@ -1,31 +1,28 @@
 # $Id$
 
 pkgname=s2geometry
-pkgver=0.9.0
+pkgver=0.10.0
 pkgrel=1
 pkgdesc="S2 is primarily designed to work with spherical geometry,"
 arch=('x86_64' 'aarch64')
 url="https://github.com/google/s2geometry"
 license=('Apache-2.0 License')
-depends=('qt5-base' 'abseil-cpp' 'openssl' 'gtest')
+depends=('abseil-cpp' 'openssl' 'gtest')
 makedepends=('git' 'cmake')
 source=("${url}/archive/refs/tags/v${pkgver}.tar.gz"
-    'fix-uint-handling.patch'
     'fix-newer-openssl.patch'
-    '0001-CMake-add-version-information-to-the-library.patch'
+    'cxxstd.patch'
 )
 sha256sums=(
-    '54c09b653f68929e8929bffa60ea568e26f3b4a51e1b1734f5c3c037f1d89062'
-    '752d03b17f3467984a98c99de2cf6d60bd6d2acf5b4112abf1f61311b63b69b8'
+    '1c17b04f1ea20ed09a67a83151ddd5d8529716f509dde49a8190618d70532a3d'
     '92a8a692282cf23f68274c8beef73186a876bde4f97a2ddd12c8b9669830cdbc'
-    'b468d95624b10d61def850ff308970667e6df59e4bf853a32f64cb7a4d0b9750'
+    'beade6eba912ca130548f95014d0cf0b5b7219d4de2d11a7cbe392a00dc3b676'
 )
 
 prepare() {
     cd "$srcdir/${pkgname}-${pkgver}"
-    patch -p1 --input="${srcdir}/fix-uint-handling.patch"
     patch -p1 --input="${srcdir}/fix-newer-openssl.patch"
-    patch -p1 --input="${srcdir}/0001-CMake-add-version-information-to-the-library.patch"
+    patch -p1 --input="${srcdir}/cxxstd.patch"
 }
 
 build() {
