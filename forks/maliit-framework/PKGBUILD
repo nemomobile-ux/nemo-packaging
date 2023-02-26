@@ -8,7 +8,7 @@ pkgdesc="Framework for Maliit"
 arch=('aarch64' 'x86_64')
 url="https://github.com/maliit/framework"
 license=('LGPL')
-depends=('qt5-declarative' 'wayland-protocols')
+depends=('qt5-declarative' 'wayland-protocols' 'qt5-wayland')
 makedepends=('cmake' 'doxygen' 'graphviz')
 source=("${url}/archive/refs/tags/${pkgver}.tar.gz"
 	"581adc21b3cfd87aa13fa7cf2e9574c1111fa50b.patch"
