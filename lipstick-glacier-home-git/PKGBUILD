@@ -5,14 +5,11 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=lipstick-glacier-home-git
-_host="github.com"
-_project=nemomobile-ux
-_branch=master
-pkgver=0.37.7.r12.gf38c5d2
+pkgver=0.40.4.r2.gcc8199d
 pkgrel=1
 pkgdesc="A nice homescreen for Glacier experience"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/glacier-home"
+url="https://github.com/nemomobile-ux/glacier-home"
 license=('BSD-3-Clause AND MIT')
 depends=('bluez-qt'
 	'qt5-graphicaleffects'
@@ -28,20 +25,22 @@ depends=('bluez-qt'
 	'nemo-qml-plugin-notifications'
 	'nemo-qml-plugin-connectivity'
 	'glacier-settings'
+	'geoclue1'
 	'mlite'
 	'qt-mobility-haptics-ffmemless'
 	'ngfd'
-	'pulseaudio-module-keepalive')
-
-makedepends=('git'
-	'extra-cmake-modules'
-	'qt5-wayland'
-	'qt5-tools'
 	'nemo-qml-plugin-devicelock'
 	'bluez-qt'
+	'qt5-wayland'
 	'polkit-qt5'
-	'mce-headers>=1.30.0')
-optdepends=('geoclue1')
+	'pulseaudio-module-keepalive'
+	'glacier-settings-developermode')
+
+makedepends=(
+	'git'
+	'extra-cmake-modules'
+	'mce-headers>=1.30.0'
+	'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
@@ -53,10 +52,6 @@ pkgver() {
     git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
     printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
   ) 2>/dev/null
-}
-
-prepare() {
-    cd "${srcdir}/${pkgname}"
 }
 
 build() {
@@ -74,4 +69,3 @@ package() {
   cd "${srcdir}/${pkgname}"
   DESTDIR="$pkgdir" make -C build install
 }
- 

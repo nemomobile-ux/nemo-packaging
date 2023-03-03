@@ -9,4 +9,4 @@ ExecStart=/usr/bin/commhistoryd
 Restart=always
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=user-session.target

@@ -5,7 +5,7 @@ _host="github.com"
 _project=nemomobile-ux
 
 pkgname=glacier-polkit-agent
-pkgver=0.1.2
+pkgver=0.1.4
 pkgrel=1
 pkgdesc="Nemo polkit agent"
 arch=('x86_64' 'aarch64')
@@ -14,7 +14,7 @@ license=('BSD-3-Clause')
 depends=('qt5-glacier-app' 'polkit-qt5')
 makedepends=('cmake' 'qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=("94b047a36d219cee6dc3cc4a581b0c9baca5927dd4a8cf510c8c79da4d28f401")
+sha256sums=("01408b2a9b1408fa9841f4899c3bae2b282f67de5f8a3c3f4209467198b3880f")
 
 build() {
     cd $pkgname-$pkgver
@@ -25,6 +25,6 @@ build() {
 package() {
     cd $pkgname-$pkgver
     make DESTDIR="$pkgdir" install
-    mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
-    ln -s ../glacier-polkit-agent.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
+    mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+    ln -s ../glacier-polkit-agent.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
 }

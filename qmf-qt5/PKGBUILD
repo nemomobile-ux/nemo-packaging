@@ -1,8 +1,8 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=qmf-qt5
-pkgver=4.0.4+git135
-pkgrel=1
+pkgver=4.0.4+git136
+pkgrel=2
 pkgdesc="Qt Messaging Framework (QMF) Qt5"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/messagingframework"
@@ -19,15 +19,15 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "messageserver5.service"
     "messageserver5-accounts-check.service")
 
-sha256sums=('2765ab5de81544b3b2ad80ebffb0e4bfe0de852b3eb626653fe3073881876dc8'
+sha256sums=('844e7232cb8520e38a6cacd4e6e0cfdb0584641daee096f6741b803b4737fdd9'
     'a839b7130aec6f06291aea0ddb2c739f6641a209ab90877be6eb954d49f537e8'
     'becad4f91271b383ad1e687a6aec9410043e0ede58922ab0c158ac9344073977'
     'b2b219fd0a88e26f2f62223cd2142232131924fa3d78a7942677f4598e4e0b5e'
-    '052120996fd1b0548b4a40b6a2c36e5d2d94266028f6566b20d9d486d78850c1'
-    'd55c0361dd9a17a386157f5de40380b82161d3987c1bd2485ad62883a1296846')
+    '943d9b6d0eecd3b340742238cf9e7dd46b6ea5166f349d930609808a00bb31b2'
+    'b619e1b888b1de43c051a39daf75b0d1e3d04a9ed52987dad599efeb0b5d116e')
 
 prepare() {
-  cd messagingframework-4.0.4-git135
+  cd messagingframework-4.0.4-git136
   rm upstream -rf
   git clone https://code.qt.io/qt-labs/messagingframework.git upstream
   cd upstream/
@@ -73,7 +73,7 @@ prepare() {
 }
 
 build() {
-  cd messagingframework-4.0.4-git135/upstream
+  cd messagingframework-4.0.4-git136/upstream
   qmake \
     QT_BUILD_PARTS+=tests \
     QMF_INSTALL_ROOT=/usr \
@@ -89,7 +89,7 @@ build() {
 }
 
 package() {
-  cd messagingframework-4.0.4-git135/upstream
+  cd messagingframework-4.0.4-git136/upstream
   make -j 1 INSTALL_ROOT="${pkgdir}" install
   rm "${pkgdir}/usr/lib/systemd/user/messageserver5.service"
   rm "${pkgdir}/usr/lib/systemd/user/messageserver5-accounts-check.service"
@@ -97,7 +97,7 @@ package() {
   cp ${srcdir}/messageserver5.service "${pkgdir}/usr/lib/systemd/user/messageserver5.service"
   cp ${srcdir}/messageserver5-accounts-check.service "${pkgdir}/usr/lib/systemd/user/messageserver5-accounts-check.service"
 
-  mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
-  ln -s ../messageserver5.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
-  ln -s ../messageserver5-accounts-check.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+  mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+  ln -s ../messageserver5.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+  ln -s ../messageserver5-accounts-check.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
 }

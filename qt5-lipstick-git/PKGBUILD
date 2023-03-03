@@ -21,8 +21,9 @@ depends=('qt5-sensors-sensorfw'
 	    'libngf-qt'
 	    'nemo-qml-plugin-devicelock'
 	    'nemo-qml-plugin-systemsettings'
-	    'glacier-settings-developermode'
 	    'pulseaudio'
+	    'pulseaudio-modules-nemo'
+	    'pulseaudio-policy-enforcement'
 	    'bluez-qt')
 
 makedepends=('git'

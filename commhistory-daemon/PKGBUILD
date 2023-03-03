@@ -3,7 +3,7 @@
 
 pkgname=commhistory-daemon
 pkgver=0.8.44
-pkgrel=1
+pkgrel=2
 pkgdesc="Communications event history database daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/commhistory-daemon"
@@ -25,7 +25,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "commhistoryd.service"
     "0001-revert_adjust_to_new_messages_bus_names.patch")
 sha256sums=('b6f6a2e8d31b97b206239c93a5b40608c584ca9e63fa0a4948040df97ba7759a'
-    '2f39b6d9dc9796cfcfb3c2a970de005101cbc79b5e8dd4686113c21cd8fceda7'
+    '9443be6743da6d81a2b95669e04ae6cf7ea94bffbb4d4ba7bd1cb8f5b799202d'
     'a13eb14b6d31e39aad365ba0b59e325520e8e30666fa7d4299711dcb16299112')
 
 prepare() {
@@ -55,6 +55,6 @@ package() {
 #we use own service
   rm -rf ${pkgdir}/usr/lib/systemd/user/commhistoryd.service
   cp ${srcdir}/commhistoryd.service ${pkgdir}/usr/lib/systemd/user/commhistoryd.service
-  mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
-  ln -s ../commhistoryd.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+  mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+  ln -s ../commhistoryd.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
 }

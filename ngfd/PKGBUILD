@@ -3,7 +3,7 @@
 
 pkgname=ngfd
 pkgver=1.4.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Non-Graphic Feedback daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/ngfd"
@@ -43,8 +43,8 @@ package() {
     rm -f ${pkgdir}/usr/lib/systemd/user/ngfd.service
     mkdir -p ${pkgdir}/usr/lib/systemd/user/
     cp rpm/ngfd.service ${pkgdir}/usr/lib/systemd/user/ngfd.service
-    mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
-    ln -s ../ngfd.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
+    mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants
+    ln -s ../ngfd.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants
 
     # fix dbus config path
     mkdir -p ${pkgdir}/etc/dbus-1/system.d

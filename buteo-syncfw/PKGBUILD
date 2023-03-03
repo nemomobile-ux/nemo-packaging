@@ -6,7 +6,7 @@
 
 pkgname=buteo-syncfw
 pkgver=0.11.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Synchronization backend"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/buteo-syncfw"
@@ -16,7 +16,7 @@ makedepends=('qt5-tools' 'doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	"msyncd.service")
 sha256sums=('bf3ecad907d58f672b709fd9e75ddaf9f430bd8853aab9647685d1a7085a48bf'
-	'bd37f105cd64ebac3dc2c991bfc8f7b989c8311800b92dd8e50add996aebc133')
+	'3781f5d9c22f1f8a3c32e30bb6ef7f07371e4b7a9d2c7d20720df338d3cd002e')
 
 build() {
   cd $pkgname-$pkgver
@@ -31,8 +31,8 @@ package() {
   rm "${pkgdir}/usr/lib/systemd/user/msyncd.service"
   cp ${srcdir}/msyncd.service "${pkgdir}/usr/lib/systemd/user/msyncd.service"
 
-  mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
-  ln -s ../msyncd.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+  mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+  ln -s ../msyncd.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
 
   # Remove installed tests
   rm -r "$pkgdir"/opt
