@@ -7,7 +7,7 @@
 
 pkgname=timed
 pkgver=3.6.17
-pkgrel=2
+pkgrel=3
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/timed"
@@ -55,6 +55,6 @@ package() {
   ln -sf /var/lib/timed/localtime ${pkgdir}/etc/localtime
 
   #setup services
-  install -d ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
-  ln -s ../timed-qt5.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+  install -d ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+  ln -s ../timed-qt5.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
 }
