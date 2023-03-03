@@ -1,7 +1,7 @@
 [Unit]
 Description=Sync FW daemon
 Requires=dbus.socket
-After=graphical-session-pre.target
+After=user-session-pre.target
 
 [Service]
 # -G (--global-syms) so that msyncd's plugins can find symbols in msyncd and
@@ -10,4 +10,4 @@ ExecStart=/usr/bin/msyncd
 Restart=always
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=user-session.target
