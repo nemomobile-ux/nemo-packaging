@@ -1,19 +1,11 @@
 # Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="github.com"
-_project=nemomobile-ux
-_basename=glacier-dialer
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
-pkgver=0.5.1.r8.gfbdcb4b
-
+pkgname=glacier-dialer-git
+pkgver=0.5.4.r0.ga0023c5
 pkgrel=1
 pkgdesc="QML based dialer application for nemomobile"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://github.com/nemomobile-ux/glacier-dialer"
 license=('BSD-3-Clause')
 depends=('qt5-glacier-app'
     'nemo-qml-plugin-contacts'
@@ -48,8 +40,8 @@ build() {
 package() {
     make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
 
-    mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
-    ln -s ../voicecall-ui-prestart.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+    mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants
+    ln -s ../voicecall-ui-prestart.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
 
     mkdir -p ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/
     cd ${pkgdir}/usr/share/themes/glacier/meegotouch/icons/

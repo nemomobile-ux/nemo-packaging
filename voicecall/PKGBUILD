@@ -3,7 +3,7 @@
 
 pkgname=voicecall
 pkgver=0.8.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Dialer engine for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/voicecall"
@@ -19,7 +19,7 @@ makedepends=('cmake')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	'voicecall-manager.service')
 sha256sums=('f2af4f5cdc89dd658413d724a56631df11dce14f002becd3ffc5b15d36040f33'
-    '2b23389872552e88b061d170271ec35c1c0cec68f38c1a770c14c79c3491fb8d')
+    '61c9da6be16743334d608f19a7a7cd3d104264e3409f212078b6a60c1d628dce')
 
 build() {
     cd $pkgname-$pkgver
@@ -33,6 +33,6 @@ package() {
 
     rm "${pkgdir}/usr/lib/systemd/user/voicecall-manager.service"
     cp ${srcdir}/voicecall-manager.service "${pkgdir}/usr/lib/systemd/user/voicecall-manager.service"
-    mkdir -p ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants
-    ln -s ../voicecall-manager.service ${pkgdir}/usr/lib/systemd/user/graphical-session.target.wants/
+    mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants
+    ln -s ../voicecall-manager.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
 }
