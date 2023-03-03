@@ -5,23 +5,16 @@
 # Contributor: Chupligin Sergey <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="github.com"
-_project=nemomobile-ux
-_basename=quickcontrols-nemo
-_branch=master
-
-_gitname=qt$_basename
-pkgname=qt5-$_basename-git
-
-pkgver=5.7.4.r11.gedca4c5
+pkgname=qt5-quickcontrols-nemo-git
+pkgver=5.7.6.r0.gf3755c7
 
 pkgrel=1
 pkgdesc="Nemomobile Qt Quick Controls"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/nemomobile-ux/qtquickcontrols-nemo"
 license=('LGPL-2.1-only AND Apache-2.0')
-depends=('qt5-quickcontrols' 'nemo-theme-default' 'qt5-svg' 'google-opensans-fonts' 'mlite')
-makedepends=('git' 'cmake' 'qt5-glacier-app')
+depends=('qt5-quickcontrols' 'nemo-theme-default' 'qt5-svg' 'google-opensans-fonts')
+makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
