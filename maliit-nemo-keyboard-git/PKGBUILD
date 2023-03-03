@@ -1,26 +1,25 @@
 # $Id$
-
-_host="github.com"
-_project=nemomobile-ux
-_basename=maliit-nemo-keyboard
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
-pkgver=0.103.r11.ge232225a
-
+pkgname=maliit-nemo-keyboard-git
+pkgver=0.105.r0.gaff46418
 pkgrel=1
-pkgdesc="Contains the reference input method plugins, such as the Maliit Keyboard. "
+pkgdesc="Contains nemoobile mallit keyboard"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/nemomobile-ux/maliit-nemo-keyboard"
 license=('BSD')
-depends=('maliit-framework' 'glacier-settings' 'hunspell' 'hunspell-en_us' 'presage2' 'presage2-lang-en_US' 'marisa')
+depends=(
+    'maliit-framework'
+    'glacier-settings'
+    'hunspell'
+    'hunspell-en_us'
+    'presage2'
+    'presage2-lang-en_US'
+    'marisa'
+)
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}" "nemo-keyboard.service")
-sha256sums=('SKIP' 'SKIP')
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -40,7 +39,6 @@ build() {
 
 package() {
     make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
-    mkdir -p $pkgdir/usr/lib/systemd/user/graphical-session.target.wants/
-    cp ${srcdir}/nemo-keyboard.service $pkgdir/usr/lib/systemd/user/
-    ln -s ../nemo-keyboard.service $pkgdir/usr/lib/systemd/user/graphical-session.target.wants/
+    mkdir -p $pkgdir/usr/lib/systemd/user/user-session.target.wants/
+    ln -s ../maliit-server.service $pkgdir/usr/lib/systemd/user/user-session.target.wants/
 }
