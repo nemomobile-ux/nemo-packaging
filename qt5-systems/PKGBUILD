@@ -2,28 +2,30 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=qt5-systems
-pkgver=5.12
+pkgver=5.4.0.20181230
+_commit=e3332ee38d27a134cef6621fdaf36687af1b6f4a
 pkgrel=1
-pkgdesc='Qt System modules'
+pkgdesc="Qt Publish and Subscribe Add-on Module"
 arch=('x86_64' 'aarch64')
-url="https://github.com/sailfishos/qtsystems"
-license=('GPL')
-depends=('qt5-declarative' 'ofono' 'libmce-qt')
-makedepends=('git' 'qt5-tools')
-source=("${pkgname}::git+${url}")
-sha256sums=('SKIP')
+url="https://github.com/qt/qtsystems"
+license=('GPL3' 'LGPL' 'FDL')
+depends=('bluez-libs' 'qt5-declarative')
+source=("$pkgname-$_commit.tar.gz::https://github.com/qtproject/qtsystems/archive/$_commit.tar.gz")
+sha256sums=('5259cf350e5e1f755c53bcba066dd40fea7b20f4e661b0973b24ae46454a9e75')
 
 build() {
-    cd ${srcdir}/${pkgname}
-    qmake CONFIG+=ofono CONFIG+=battery_mce CONFIG-=bluez
+  cd qtsystems-$_commit
+
+  qmake-qt5 CONFIG+=git_build CONFIG+=ofono CONFIG+=battery_mce CONFIG-=bluez
     make
 }
 
 package() {
-    cd ${srcdir}/${pkgname}
-    make -j 1 INSTALL_ROOT="$pkgdir" install
+  cd qtsystems-$_commit
 
-    # Drop QMAKE_PRL_BUILD_DIR because it references the build dir
-    find "$pkgdir/usr/lib" -type f -name '*.prl' \
-    -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+  make INSTALL_ROOT="$pkgdir" install
+
+  ## Drop QMAKE_PRL_BUILD_DIR because it references the build dir
+  #find "$pkgdir/usr/lib" -type f -name '*.prl' \
+  #-exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
 }
