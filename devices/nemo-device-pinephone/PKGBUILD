@@ -3,7 +3,7 @@
 
 pkgname=nemo-device-pinephone-git
 
-pkgver=0.13.1
+pkgver=0.13.2.r0.g5f414a9
 pkgrel=1
 pkgdesc="PinePhone specific files for GlacierUX"
 arch=('aarch64')
@@ -46,6 +46,6 @@ conflicts=("usb-tethering")
 
 package() {
     mkdir -p ${pkgdir}
-    cp -r $_basename-$pkgver/sparse/* ${pkgdir}/
-    sed -r "s/NEMOVER/${pkgver}/" $_basename-$pkgver/sparse/etc/hw-release > ${pkgdir}/etc/hw-release
+    cp -r ${pkgname}/sparse/* ${pkgdir}/
+    sed -r "s/NEMOVER/${pkgver}/" ${pkgname}/sparse/etc/hw-release > ${pkgdir}/etc/hw-release
 }
