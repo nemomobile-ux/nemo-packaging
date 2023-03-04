@@ -15,7 +15,7 @@ depends=(
     'presage2-lang-en_US'
     'marisa'
 )
-makedepends=('git' 'cmake')
+makedepends=('git' 'cmake' 'qt5-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
