@@ -27,9 +27,7 @@ eval "$BUILD nemo-theme-glacier"
 eval "$BUILD abseil-cpp"
 eval "$BUILD forks/maliit-framework"
 
-if [ "$BUILDARCH" != "aarch64" ]; then
-eval "$BUILD libphonenumber"
-fi
+eval "$BUILD libphonenumber-nemo"
 eval "$BUILD libglibutil"
 eval "$BUILD libwspcodec"
 eval "$BUILD libdbusaccess"
