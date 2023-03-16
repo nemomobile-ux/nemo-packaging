@@ -1,0 +1,52 @@
+From c0f5b8ff6371efb7e234b58740ab3d29d195a045 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Mon, 13 Mar 2023 14:13:09 +0100
+Subject: [PATCH] stream-restore-nemo fix path for -L
+ /usr/lib/pulseaudio/modules
+
+---
+ meson.build                         | 2 +-
+ src/common/libmeego-common.pc.in    | 2 +-
+ src/stream-restore-nemo/meson.build | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 3211fc4..72c2dc2 100644
+--- a/meson.build
++++ b/meson.build
+@@ -39,7 +39,7 @@ rpath_dirs = join_paths(privlibdir) + ':' + join_paths(modlibexecdir)
+ cdata = configuration_data()
+ cdata.set_quoted('PACKAGE', meson.project_name())
+ cdata.set_quoted('PACKAGE_NAME', meson.project_name())
+-cdata.set_quoted('PACKAGE_VERSION', pa_version_str)
++cdata.set_quoted('PACKAGE_VERSION', pa_version_major_minor)
+ cdata.set_quoted('VERSION', pa_version_str)
+ cdata.set('HAVE_DBUS', 1)
+ 
+diff --git a/src/common/libmeego-common.pc.in b/src/common/libmeego-common.pc.in
+index a8e836a..0e0d82e 100644
+--- a/src/common/libmeego-common.pc.in
++++ b/src/common/libmeego-common.pc.in
+@@ -7,5 +7,5 @@ libexecdir=@libexecdir@
+ Name: libmeego-common
+ Description: Common Meego module building interface.
+ Version: @PA_MODULE_VERSION@
+-Libs: -L${libdir}/pulse-@PA_MAJORMINOR@/modules -lmeego-common
++Libs: -L${libdir}/pulseaudio/modules -lmeego-common
+ Cflags: -D_REENTRANT -I${includedir}/pulsecore/modules
+diff --git a/src/stream-restore-nemo/meson.build b/src/stream-restore-nemo/meson.build
+index 759eb38..7c139fa 100644
+--- a/src/stream-restore-nemo/meson.build
++++ b/src/stream-restore-nemo/meson.build
+@@ -1,7 +1,7 @@
+ module_stream_restore_nemo = library('module-stream-restore-nemo',
+   'module-stream-restore-nemo.c',
+   c_args : [pa_c_args, '-DPA_MODULE_NAME=module_stream_restore_nemo'],
+-  link_args : ['-L'+libdir+'/pulse-'+pa_version_major_minor+'/modules', '-lprotocol-native'],
++  link_args : ['-L'+libdir+'/pulseaudio/modules', '-lprotocol-native'],
+   install : true,
+   install_dir : modlibexecdir,
+   install_rpath : rpath_dirs,
+-- 
+2.39.2
+
