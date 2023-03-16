@@ -1,35 +1,54 @@
+# Maintainer: Dan Johansen <strit@manjaro.org>
+# Maintainer: Furkan Kardame <furkan@fkardame.com>
 
 pkgname=telepathy-ring
 pkgver=2.5.13
-pkgrel=2
-pkgdesc="Telepathy Ring"
-arch=('x86_64' 'aarch64')
-url="https://github.com/sailfishos/telepathy-ring"
-license=('LGPL-2.1')
-depends=('libngf' 'telepathy-mission-control')
-makedepends=('autoconf' 'automake'  'libxslt')
+pkgrel=1
+pkgdesc='GSM connection manager for the Telepathy framework'
+arch=('aarch64' 'x86_64')
+url="https://github.com/sailfishos/$pkgname"
+license=('LGPL')
+depends=('ofono' 'libofono-qt' 'qt5-feedback')
+makedepends=('cmake'
+		'qt5-base'
+		'libphonenumber-nemo'
+		'telepathy-qt'
+		'sqlite'
+		'telepathy-mission-control'
+		'libofono-qt'
+		'check')
+
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    '0001-use-wheel-or-network-group-instead-of-privileged-and.patch'
-)
-sha256sums=(
-    '54a781ea3ead7e1c7025e589e83761fa932d0d595f323fde7cbd5c041869f5da'
-    '16bbb7e8e69bfaefa0eb520063f20c0d3721d27b74366ac5f45b7e2c47ca679c'
-)
+	"telepathy-ring.service"
+	"0001-fixup_access.patch")
+sha256sums=('54a781ea3ead7e1c7025e589e83761fa932d0d595f323fde7cbd5c041869f5da'
+	    '3d0f29f35114cf009e83219a870afdb571653949c8a5025a754e8f636686e86e'
+	    '7e2918685655d0d09a9233983a5862219768e071330cbb693a360b84f4ee0d5e')
 
 prepare() {
     cd $pkgname-$pkgver
-    patch -p1 --input="${srcdir}/0001-use-wheel-or-network-group-instead-of-privileged-and.patch"
+    patch -p1 --input="rpm/0001-python3-changes.patch"
+    patch -p1 --input="${srcdir}/0001-fixup_access.patch"
 }
 
 build() {
-    cd $pkgname-$pkgver
-    patch -p1  < ./rpm/0001-python3-changes.patch
-    ./autogen.sh
-    ./configure --prefix=/usr
-    make  all
+	cd $pkgname-$pkgver
+	mkdir m4 || true
+	./autogen.sh --no-configure
+	./configure --prefix=/usr \
+	--libexecdir=/usr/bin \
+	--enable-debug
+	make
 }
 
 package() {
-    cd $pkgname-$pkgver
-    make DESTDIR="$pkgdir/" install
+	cd $pkgname-$pkgver
+	make DESTDIR="$pkgdir" install
+#remove tests
+	rm -rf $pkgdir/opt
+#remove service and replace to own
+	rm ${pkgdir}/usr/lib/systemd/user/telepathy-ring.service
+	cp ${srcdir}/telepathy-ring.service ${pkgdir}/usr/lib/systemd/user/
+#remove other stuff
+	rm ${pkgdir}/usr/lib/*.a
 }
