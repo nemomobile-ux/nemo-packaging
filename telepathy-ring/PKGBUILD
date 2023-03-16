@@ -1,0 +1,35 @@
+
+pkgname=telepathy-ring
+pkgver=2.5.13
+pkgrel=2
+pkgdesc="Telepathy Ring"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/telepathy-ring"
+license=('LGPL-2.1')
+depends=('libngf' 'telepathy-mission-control')
+makedepends=('autoconf' 'automake'  'libxslt')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-use-wheel-or-network-group-instead-of-privileged-and.patch'
+)
+sha256sums=(
+    '54a781ea3ead7e1c7025e589e83761fa932d0d595f323fde7cbd5c041869f5da'
+    '16bbb7e8e69bfaefa0eb520063f20c0d3721d27b74366ac5f45b7e2c47ca679c'
+)
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-use-wheel-or-network-group-instead-of-privileged-and.patch"
+}
+
+build() {
+    cd $pkgname-$pkgver
+    patch -p1  < ./rpm/0001-python3-changes.patch
+    ./autogen.sh
+    ./configure --prefix=/usr
+    make  all
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make DESTDIR="$pkgdir/" install
+}
