@@ -10,7 +10,7 @@ pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-contacts"
 license=('BSD-3-Clause')
-depends=('libphonenumber'
+depends=('libphonenumber-nemo'
 	'libmlocale'
 	'mce'
 	'mce-headers'
