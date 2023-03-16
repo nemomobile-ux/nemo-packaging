@@ -2,55 +2,37 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=pulseaudio-modules-nemo
-pkgver=16.1
+pkgver=14.2.31
 PA_MODULE_VERSION=30
-pkgrel=2
+pkgrel=1
 pkgdesc="PulseAudio modules for Nemo"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/pulseaudio-modules-nemo"
+url="https://github.com/sailfishos/pulseaudio-modules-nemo"
 license=('LGPLv2+')
 depends=('libpulse' 'alsa-lib' 'pulseaudio')
-makedepends=('automake' 'autoconf' 'pulsecore-headers' 'check')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('a48b016367d4876895b2084b1b70170266c49a5541302026437efc2959d2286e')
+makedepends=('meson' 'pulsecore-headers' 'check')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-stream-restore-nemo-fix-path-for-L-usr-lib-pulseaudi.patch'
+)
+sha256sums=('26e0906c41d1d647c0e7d37afb99070752a3d30e6a4c281ae106888e5a0d5896'
+    '10ef9e02d8238751d57c6b9631b5ef5b0b987d06055ef3ad633fa52c5cec3e4c'
+)
 
 prepare() {
     cd $pkgname-$pkgver
     echo "$(pulseaudio --version | sed 's/pulseaudio \|//').${PA_MODULE_VERSION}" > .tarball-version
+    patch -p1 --input="${srcdir}/0001-stream-restore-nemo-fix-path-for-L-usr-lib-pulseaudi.patch"
 }
 
 build() {
-  cd $pkgname-$pkgver
-  ./bootstrap.sh --prefix=/usr \
-    --sysconfdir=/etc \
-    --sbindir=/usr/bin \
-    PULSEAUDIO_LIBS="-lpulsecore-16.1 -lpulsecommon-16.1 -L/usr/lib/pulseaudio -L/usr/lib/pulseaudio/modules/" \
-    --with-module-dir=/usr/lib/pulseaudio/modules/
-    make
+    local meson_options=(
+        -D modlibexecdir=/usr/lib/pulseaudio/modules/
+    )
+    meson setup --prefix=/usr --buildtype=plain $pkgname-$pkgver build  "${meson_options[@]}"
+    meson compile -C build
 }
 
 package() {
-  cd $pkgname-$pkgver
-
-  mkdir -p ${pkgdir}/usr/lib/pulseaudio/modules/
-  cp src/voice/.libs/module-meego-voice.so ${pkgdir}/usr/lib/pulseaudio/modules/
-  cp src/record/.libs/module-meego-record.so ${pkgdir}/usr/lib/pulseaudio/modules/
-  cp src/music/.libs/module-meego-music.so ${pkgdir}/usr/lib/pulseaudio/modules/
-  cp src/mainvolume/.libs/module-meego-mainvolume.so ${pkgdir}/usr/lib/pulseaudio/modules/
-  cp src/stream-restore-nemo/.libs/module-stream-restore-nemo.so ${pkgdir}/usr/lib/pulseaudio/modules/
-  cp src/sidetone/.libs/module-meego-sidetone.so ${pkgdir}/usr/lib/pulseaudio/modules/
-  cp src/test/.libs/module-meego-test.so ${pkgdir}/usr/lib/pulseaudio/modules/
-  cp src/common/.libs/libmeego-common.so ${pkgdir}/usr/lib/pulseaudio/modules/
-  cp src/parameters/.libs/module-meego-parameters.so ${pkgdir}/usr/lib/pulseaudio/modules/
-
-  install -d ${pkgdir}/usr/include/pulsecore/modules/meego
-  install -m 644 src/common/include/meego/*.h ${pkgdir}/usr/include/pulsecore/modules/meego
-  install -m 644 src/voice/module-voice-api.h ${pkgdir}/usr/include/pulsecore/modules/meego
-  install -m 644 src/music/module-music-api.h ${pkgdir}/usr/include/pulsecore/modules/meego
-  install -m 644 src/record/module-record-api.h ${pkgdir}/usr/include/pulsecore/modules/meego
-  install -d ${pkgdir}/usr/include/pulsecore/modules/sailfishos
-  install -m 644 src/common/include/sailfishos/*.h ${pkgdir}/usr/include/pulsecore/modules/sailfishos
-  install -d ${pkgdir}/usr/lib/pkgconfig
-  install -m 644 src/common/*.pc ${pkgdir}/usr/lib/pkgconfig
+    meson install -C build --destdir "$pkgdir"
 }
 
