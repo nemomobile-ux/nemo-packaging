@@ -8,7 +8,7 @@ pkgdesc="Communications event history database API"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libcommhistory"
 license=('LGPL-2.1-only AND Apache-2.0')
-depends=('libphonenumber'
+depends=('libphonenumber-nemo'
     'qt5-base'
     'qtcontacts-sqlite'
     'nemo-qml-plugin-contacts')
