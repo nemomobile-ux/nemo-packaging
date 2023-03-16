@@ -1,27 +1,29 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
-pkgname=libphonenumber
-pkgver=8.13.4
-pkgrel=2
+pkgname=libphonenumber-nemo
+pkgver=8.13.7
+pkgrel=1
 epoch=1
 pkgdesc="Google's common library for parsing, formatting, and validating international phone numbers"
 url="https://github.com/googlei18n/libphonenumber"
-arch=(x86_64)
+arch=('x86_64' 'aarch64')
 license=(Apache)
 depends=('icu=72.1' protobuf abseil-cpp)
-makedepends=(cmake gtest git)
+makedepends=(cmake gtest)
 source=("https://github.com/google/libphonenumber/archive/refs/tags/v${pkgver}.tar.gz"
 	"0001-Fix-geocoding-build-when-static-libraries-are-off.patch")
-sha256sums=('7c9d1b7bc3320e1a234bdd9435486bc01fca181d74455e2866af19543289ae6c'
+sha256sums=('b51fca02fbc8dcb376ffb5d18c8fa8d91646680c7c6b445acfa8207d82a5b570'
             'f30e041e0030c483e1fcaa6ba365ea126473faa6aa11ca1bfd892393f68405db')
+provides=("libphonenumber")
 
 prepare() {
-  cd $pkgname-$pkgver
+  cd libphonenumber-$pkgver
+  sed -e 's|CMAKE_CXX_STANDARD 11|CMAKE_CXX_STANDARD 17|' -i tools/cpp/CMakeLists.txt # Fix build with abseil-cpp 2023
   patch -p1 --input="${srcdir}/0001-Fix-geocoding-build-when-static-libraries-are-off.patch"
 }
 
 build() {
-  cd $pkgname-$pkgver
+  cd libphonenumber-$pkgver
 
   cmake -S cpp -B build \
     -DCMAKE_INSTALL_PREFIX=/usr \
@@ -43,7 +45,7 @@ build() {
 }
 
 package() {
-  cd $pkgname-$pkgver
+  cd libphonenumber-$pkgver
   depends+=(libicu{uc,i18n}.so libprotobuf.so libboost_thread.so)
   provides+=(libgeocoding.so libphonenumber.so)
 
