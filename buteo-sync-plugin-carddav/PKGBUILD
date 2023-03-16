@@ -11,7 +11,7 @@ pkgdesc="Syncs contact data from CardDAV services"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/buteo-sync-plugin-carddav"
 license=('BSD-3-Clause')
-depends=('libphonenumber' 'libmlocale' 'buteo-syncfw' 'qtcontacts-sqlite')
+depends=('libphonenumber-nemo' 'libmlocale' 'buteo-syncfw' 'qtcontacts-sqlite')
 makedepends=('qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-remove-obsolete-QContact-IgnoreAccessConstraints.patch")

@@ -1,0 +1,25 @@
+From 18e27fafa1f049b124e351b2632d6c19e9138d75 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 10 Mar 2023 12:23:34 +0100
+Subject: [PATCH] use wheel or network group instead of privileged and
+ sailfish-radio
+
+---
+ src/access.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/access.c b/src/access.c
+index 65a7a68..9fecd9c 100644
+--- a/src/access.c
++++ b/src/access.c
+@@ -18,7 +18,7 @@
+  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+  */
+ 
+-#define POLICY "1;group(privileged) | group(sailfish-radio) = allow;"
++#define POLICY "1;group(wheel) | group(network) = allow;"
+ 
+ #include "access.h"
+ 
+-- 
+2.39.2
