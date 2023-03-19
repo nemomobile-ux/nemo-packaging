@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=buteo-sync-plugin-carddav
-pkgver=0.1.7
+pkgver=0.1.9
 pkgrel=1
 pkgdesc="Syncs contact data from CardDAV services"
 arch=('x86_64' 'aarch64')
@@ -15,7 +15,7 @@ depends=('libphonenumber-nemo' 'libmlocale' 'buteo-syncfw' 'qtcontacts-sqlite')
 makedepends=('qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-remove-obsolete-QContact-IgnoreAccessConstraints.patch")
-sha256sums=('377662fee4cd17702f21f1330179514cf92d93e1a5133450f2d8f2c82c471a73'
+sha256sums=('6107f5e22114a6e26be76a70be87e412b91c99b93603ad58b129a3ddbf51a969'
     '6db95ee545de7413aba5532bea875922a5f0d439ce24d55d46518101139def67')
 
 prepare() {
