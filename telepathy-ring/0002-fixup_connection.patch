@@ -1,0 +1,26 @@
+diff --git a/modem/tones.c b/modem/tones.c
+index 395e241..3c5b38a 100644
+--- a/modem/tones.c
++++ b/modem/tones.c
+@@ -40,7 +40,7 @@ G_DEFINE_TYPE(ModemTones, modem_tones, G_TYPE_OBJECT);
+ 
+ struct _ModemTonesPrivate
+ {
+-  DBusGConnection *connection;
++  DBusConnection *connection;
+   GTimer *timer;
+ 
+   NgfClient *ngf;
+@@ -107,10 +107,10 @@ modem_tones_init(ModemTones *self)
+ {
+   self->priv = G_TYPE_INSTANCE_GET_PRIVATE(
+     self, MODEM_TYPE_TONES, ModemTonesPrivate);
+-  self->priv->connection = dbus_g_bus_get(DBUS_BUS_SYSTEM, NULL);
++  self->priv->connection = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
+   self->priv->timer = g_timer_new();
+   self->priv->ngf = ngf_client_create(NGF_TRANSPORT_DBUS,
+-                                      dbus_g_connection_get_connection(self->priv->connection));
++                                      self->priv->connection);
+   ngf_client_set_callback(self->priv->ngf, ngf_callback, self);
+   self->priv->event_id = 0;
+   self->priv->notify_map = g_hash_table_new_full(g_int_hash,
