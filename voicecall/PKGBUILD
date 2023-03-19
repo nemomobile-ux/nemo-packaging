@@ -3,7 +3,7 @@
 
 pkgname=voicecall
 pkgver=0.8.1
-pkgrel=2
+pkgrel=3
 pkgdesc="Dialer engine for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/voicecall"
@@ -14,6 +14,8 @@ depends=('libpulse'
 	 'libqofono-qt5'
 	 'qt5-multimedia'
 	 'libngf-qt'
+	 'telepathy-ring'
+	 'telepathy-farstream'
 	 'telepathy-qt')
 makedepends=('cmake')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
@@ -23,7 +25,11 @@ sha256sums=('f2af4f5cdc89dd658413d724a56631df11dce14f002becd3ffc5b15d36040f33'
 
 build() {
     cd $pkgname-$pkgver
-    qmake CONFIG+=enable-ngf CONFIG+=enable-audiopolicy CONFIG+=enable-telepathy CONFIG+=enable-nemo-devicelock CONFIG+=install-servicefiles
+    qmake CONFIG+=enable-ngf \
+	CONFIG+=enable-audiopolicy \
+	CONFIG+=enable-telepathy \
+	CONFIG+=enable-nemo-devicelock \
+	CONFIG+=install-servicefiles
     make
 }
 
