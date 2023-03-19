@@ -9,11 +9,12 @@ arch=('aarch64' 'x86_64')
 url="https://github.com/sailfishos/$pkgname"
 license=('LGPL')
 depends=('ofono' 'libofono-qt' 'qt5-feedback')
-makedepends=('cmake'
+makedepends=('autoconf' 'automake'  'libxslt'
 		'qt5-base'
 		'libphonenumber-nemo'
 		'telepathy-qt'
 		'sqlite'
+		'libngf'
 		'telepathy-mission-control'
 		'libofono-qt'
 		'check')
