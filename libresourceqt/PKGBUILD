@@ -6,7 +6,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libresourceqt
-pkgver=1.31.0
+pkgver=1.32.0
 pkgrel=1
 pkgdesc="Resource Policy Qt API"
 arch=('x86_64' 'aarch64')
@@ -14,7 +14,7 @@ url="https://github.com/sailfishos/libresourceqt"
 license=('LGPL-2.1-or-later')
 depends=('qt5-base' 'libresource')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('5fc3d5d28c2c32fcab768136ed6f113271681dc7db7f109af4ddc53b1838c5f1')
+sha256sums=('575ef3445b300730b0ccb81df9cce11f04655571d87d06f70521a20406f013c1')
 
 build() {
     cd $pkgname-$pkgver

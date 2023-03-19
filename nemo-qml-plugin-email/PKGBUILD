@@ -1,7 +1,7 @@
 ## $Id$
 
 pkgname=nemo-qml-plugin-email
-pkgver=0.6.22
+pkgver=0.6.24
 pkgrel=1
 pkgdesc="Email plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
@@ -9,7 +9,7 @@ url="https://github.com/sailfishos/nemo-qml-plugin-email"
 license=('BSD')
 depends=('qt5-base' 'qmf-qt5')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('60fdbbf7d0de570074d959befc184f9aa364de3026c93750b22986fa99a485cd')
+sha256sums=('6abe09b8e36c1cc3f29951a7822d249ece044a18c9a03414903a9d224b76f9da')
 
 build() {
     cd $pkgname-$pkgver
