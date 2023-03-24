@@ -1,7 +1,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=libglibutil
-pkgver=1.0.62
+pkgver=1.0.68
 pkgrel=1
 pkgdesc="Library of glib utilities"
 arch=('x86_64' 'aarch64')
@@ -9,8 +9,7 @@ url="https://github.com/sailfishos/${pkgname}"
 license=('LGPLv2')
 depends=('glib2')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('611e154181459943b9e946e7e41268c940b53bfdd2fce1d7cbfde77190c73832')
-
+sha256sums=('f21df6fe6571f9e79ea2dd0d66c80016f400edd42a68dd7f61e381d103420099')
 
 build() {
     cd $pkgname-$pkgver
