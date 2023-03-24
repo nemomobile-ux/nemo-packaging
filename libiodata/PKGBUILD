@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libiodata
-pkgver=0.19.11+git2
+pkgver=0.19.12
 pkgrel=1
 pkgdesc="Mer library for input/output data"
 arch=('x86_64' 'aarch64')
@@ -14,22 +14,22 @@ license=('LGPL-2.1-or-later')
 depends=('qt5-base')
 makedepends=('bison' 'flex')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('a519553209c5037954454d167530b1b02c3e929f8d38547622aaaa922d89dd0f')
+sha256sums=('30e062e488cee10f1b991de2b5c0929ffeec07048564dcfe0c552dc820d77bc2')
 
 prepare() {
-  cd $pkgname-0.19.11-git2
+  cd "${pkgname}-${pkgver}"
   # Logging macro cause compilation to fail otherwise
   sed -i "s@define LOG_LEVEL LOG_WARNING@define LOG_LEVEL LOG_NONE@" src/log.h
 }
 
 build() {
-  cd $pkgname-0.19.11-git2
+  cd "${pkgname}-${pkgver}"
   export IODATA_VERSION=${pkgver}
   qmake
   make -j1
 }
 
 package() {
-  cd $pkgname-0.19.11-git2
+  cd "${pkgname}-${pkgver}"
   make -j 1 INSTALL_ROOT="${pkgdir}" install
 }
