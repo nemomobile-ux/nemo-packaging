@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=ohm-plugins-misc
-pkgver=1.9.1
+pkgver=1.10.0
 pkgrel=1
 pkgdesc="A miscallaneous set of OHM plugins"
 arch=('x86_64' 'aarch64')
@@ -11,7 +11,7 @@ license=('LGPL-2.1-only')
 depends=('glib2' 'ohm' 'libdres-ohm' 'libresource')
 makedepends=('automake' 'autoconf')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('b1e19d95e620b7675d73bb964d878d552c80be33e0dd83b1118078dbda1ddd37')
+sha256sums=('5cee527151cca74a97abf4244449f865a2f066871c07df8b91b60386535be190')
 
 prepare() {
     cd $pkgname-$pkgver
