@@ -1,8 +1,8 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=geoclue1-providers-mlsdb
-pkgver=0.1.7
-pkgrel=4
+pkgver=0.2.0
+pkgrel=1
 pkgdesc="Geoinformation Service from Mozilla Location Services Database Provider"
 arch=('x86_64' 'aarch64')
 url="https://github.com/mer-hybris/geoclue-providers-mlsdb";
@@ -15,7 +15,7 @@ depends=('geoclue1'
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-disable_libsailfiskeyprovider.patch"
     "0003-use_standart_path_for_location_config.patch")
-sha256sums=('ae5667d6150cedb1e79ef899ce62f01273f997b07a77d90acf1c28e5c5c9430e'
+sha256sums=('4f00e85b4ba62dda70c41f16ae271e71be3f56ef474d8ced1365f696850a7b9a'
     '5c769e6b19f155f4059b8c03ed682b3dc39468d8048e308a7efe5c0ed9460600'
     '200b85f0b682841b418686bf4e9e0ff5eca7229030f455dd0c2f6b63f7bc82cc')
 
