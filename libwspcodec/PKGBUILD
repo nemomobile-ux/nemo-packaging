@@ -1,7 +1,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=libwspcodec
-pkgver=2.2.5
+pkgver=2.2.6
 pkgrel=1
 pkgdesc="Library of glib utilities"
 arch=('x86_64' 'aarch64')
@@ -9,8 +9,7 @@ url="https://github.com/sailfishos/${pkgname}"
 license=('LGPLv2')
 depends=('glib2')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('ffd2a34aa8940953f3600eed6108fdd2413f4f93928d068edbbc3a14efb44ab1')
-
+sha256sums=('42944487f6c043f3bf46be4e8bc07fbd089cdd1e1d2a75ca91176db009e71261')
 
 build() {
     cd $pkgname-$pkgver
