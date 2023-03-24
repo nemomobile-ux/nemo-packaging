@@ -1,7 +1,7 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgname=libphonenumber-nemo
-pkgver=8.13.7
+pkgver=8.13.8
 pkgrel=1
 epoch=1
 pkgdesc="Google's common library for parsing, formatting, and validating international phone numbers"
@@ -12,7 +12,7 @@ depends=('icu=72.1' protobuf abseil-cpp)
 makedepends=(cmake gtest)
 source=("https://github.com/google/libphonenumber/archive/refs/tags/v${pkgver}.tar.gz"
 	"0001-Fix-geocoding-build-when-static-libraries-are-off.patch")
-sha256sums=('b51fca02fbc8dcb376ffb5d18c8fa8d91646680c7c6b445acfa8207d82a5b570'
+sha256sums=('b2a3723e0327d70c0f3b68496af306a1b8d5621a74f9aa6b871e528ac36ddf80'
             'f30e041e0030c483e1fcaa6ba365ea126473faa6aa11ca1bfd892393f68405db')
 provides=("libphonenumber")
 
