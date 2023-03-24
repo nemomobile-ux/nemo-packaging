@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=policy-settings-common
-pkgver=0.12.2
+pkgver=0.13.0
 pkgrel=1
 pkgdesc="Common policy settings"
 arch=('any')
@@ -11,7 +11,7 @@ license=('LGPL-2.1-only')
 depends=('glib2' 'libprolog' 'swi-prolog7' 'libdres-ohm')
 makedepends=('automake' 'autoconf')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('a5d2de78ac4a96ac1148c76a1557ccd23e51dcf19d1f496e5c77e5a852e0f981')
+sha256sums=('8e9fbd7fe8c79014b62e4b9dfa9e1da0059a526ef659bce2a461b8252582cd7b')
 
 prepare() {
     cd $pkgname-$pkgver
