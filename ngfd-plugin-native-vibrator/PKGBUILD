@@ -4,24 +4,20 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="github.com"
-_project=mer-hybris
 _basename=ngfd-plugin-droid-vibrator
-
-_gitname=$_basename
 pkgname=ngfd-plugin-native-vibrator
 
-pkgver=1.3.1
+pkgver=1.4.0
 pkgrel=1
 pkgdesc="Vibrator native plugin for ngfd"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://github.com/mer-hybris/ngfd-plugin-droid-vibrator"
 license=('LGPL-2.1')
 depends=('ngfd')
 makedepends=('cmake' 'glib2')
 conflicts=("ngfd-plugin-droid-vibrator")
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('c6fce10044f3a3dc10b59759ded2b9bc857167a8da8ba3ca83c4c99dfd2d33b7')
+sha256sums=('ecc89eb8e12f0fd53548a86ddf6aebfe64bb8e8951e8c43333f51453042b02c2')
 
 build() {
     cd $_basename-$pkgver
