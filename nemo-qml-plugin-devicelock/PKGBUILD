@@ -42,6 +42,10 @@ package() {
     mv usr/libexec/nemo-devicelock usr/bin/nemo-devicelock-daemon
     rm -rf usr/libexec
 
+    # move *.prf into right folder
+    mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
+    mv ${pkgdir}/usr/share/qt/mkspecs/features/nemo-devicelock-host.prf ${pkgdir}/usr/lib/qt/mkspecs/features/nemo-devicelock-host.prf
+
     #fixup systemd services
     rm -rf ${pkgdir}/usr/lib/systemd/system/nemo-devicelock.*
     cp ${srcdir}/nemo-devicelock* ${pkgdir}/usr/lib/systemd/system/
