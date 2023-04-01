@@ -3,7 +3,7 @@
 
 pkgname=sensorfw
 pkgver=0.14.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/sensorfw"
@@ -36,6 +36,10 @@ package() {
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     mv $pkgdir/usr/sbin/* $pkgdir/usr/bin/
     rm -rf $pkgdir/usr/sbin/
+
+    # move *.prf into right folder
+    mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
+    mv ${pkgdir}/usr/share/qt5/mkspecs/features/sensord.prf ${pkgdir}/usr/lib/qt/mkspecs/features/sensord.prf
 
     mkdir -p $pkgdir/usr/lib/systemd/system/graphical.target.wants
     cp ${srcdir}/sensorfwd.service $pkgdir/usr/lib/systemd/system/

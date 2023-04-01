@@ -7,7 +7,7 @@
 
 pkgname=timed
 pkgver=3.6.18
-pkgrel=1
+pkgrel=2
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/timed"
@@ -53,6 +53,10 @@ package() {
   # Make /etc/localtime a link to /var/lib/timed/localtime to make system time zone follow timed.
   install -d ${pkgdir}/etc/
   ln -sf /var/lib/timed/localtime ${pkgdir}/etc/localtime
+
+  install -d ${pkgdir}/usr/lib/qt/mkspecs/features/
+  mv ${pkgdir}/usr/share/qt/mkspecs/features/timed-qt5.prf ${pkgdir}/usr/lib/qt/mkspecs/features/timed-qt5.prf
+  mv ${pkgdir}/usr/share/qt/mkspecs/features/timed-voland-qt5.prf ${pkgdir}/usr/lib/qt/mkspecs/features/timed-voland-qt5.prf
 
   #setup services
   install -d ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/

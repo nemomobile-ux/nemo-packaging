@@ -5,7 +5,7 @@
 
 pkgname=libqofono-qt5
 pkgver=0.120
-pkgrel=1
+pkgrel=2
 pkgdesc="A library for accessing the ofono daemon, and a declarative plugin for it. This allows accessing ofono in qtquick and friends."
 arch=('aarch64' 'x86_64')
 url="https://github.com/sailfishos/libqofono"
@@ -44,5 +44,10 @@ build() {
 package() {
     cd libqofono-$pkgver/build
     make -j 1 INSTALL_ROOT="$pkgdir/" install
+
+    # move *.prf into right folder
+    mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
+    mv ${pkgdir}/usr/share/qt5/mkspecs/features/qofono-qt5.prf ${pkgdir}/usr/lib/qt/mkspecs/features/qofono-qt5.prf
+
     rm -r "$pkgdir/opt"
 }
