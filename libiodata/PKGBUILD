@@ -6,7 +6,7 @@
 
 pkgname=libiodata
 pkgver=0.19.12
-pkgrel=1
+pkgrel=2
 pkgdesc="Mer library for input/output data"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libiodata"
@@ -32,4 +32,8 @@ build() {
 package() {
   cd "${pkgname}-${pkgver}"
   make -j 1 INSTALL_ROOT="${pkgdir}" install
+
+  # move *.prf into right folder
+  mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
+  mv ${pkgdir}/usr/share/qt/mkspecs/features/iodata-qt5.prf ${pkgdir}/usr/lib/qt/mkspecs/features/iodata-qt5.prf
 }
