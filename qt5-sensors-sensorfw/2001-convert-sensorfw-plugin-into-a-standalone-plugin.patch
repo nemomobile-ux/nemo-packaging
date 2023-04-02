@@ -1,0 +1,40 @@
+Description: Convert SensorFw plugin into a standalone plugin
+ - Usage of internal Qt's QMake "feature" is replaced with a standard
+   "lib" template + "plugin" config.
+ - "sensors-private" is replaced by just "sensors". Apparently this
+   plugin doesn't really use any of QtSensors' private headers.
+ - SensorFw dependency is converted to use a standard pkg-config,
+   instead of configure.json's detection result.
+Author: Ratchanan Srirattanamet <ratchanan@ubports.com>
+Origin: vendor
+Bug-UBports: https://gitlab.com/ubports/core/focal-projectmanagement-missing-packages/-/issues/57
+Forwarded: not-needed
+Last-Update: 2022-04-06
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/plugins/sensors/sensorfw/sensorfw.pro
++++ b/src/plugins/sensors/sensorfw/sensorfw.pro
+@@ -1,9 +1,13 @@
++TEMPLATE = lib
++CONFIG += plugin
++
+ TARGET = qtsensors_sensorfw
+-QT = core sensors-private network dbus
++QT = core sensors network dbus
+ 
+ include(sensorfw.pri)
+ 
+-QMAKE_USE += sensorfw
++CONFIG += link_pkgconfig
++PKGCONFIG += sensord-qt5
+ 
+ CONFIGFILES.files = Sensors.conf
+ CONFIGFILES.path = /etc/xdg/QtProject/
+@@ -13,4 +17,6 @@
+ 
+ PLUGIN_TYPE = sensors
+ PLUGIN_CLASS_NAME = sensorfwSensorPlugin
+-load(qt_plugin)
++
++target.path = $$[QT_INSTALL_PLUGINS]/$$PLUGIN_TYPE
++INSTALLS += target

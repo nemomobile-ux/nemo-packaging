@@ -4,7 +4,7 @@
 pkgname=qt5-sensors-sensorfw
 _basever=5.15.8
 pkgver=5.15.8
-pkgrel=1
+pkgrel=2
 _commit=6add85fa1a234a7e1943ba175c6fc799ccbae48e
 arch=('x86_64' 'aarch64')
 url='https://www.qt.io'
@@ -14,20 +14,25 @@ depends=('sensorfw' 'qt5-sensors')
 makedepends=('qt5-declarative' 'git')
 optdepends=('qt5-declarative: QML bindings')
 groups=('qt' 'qt5')
-_pkgfqn=qtsensors
-source=(git+https://invent.kde.org/qt/qt/$_pkgfqn#commit=$_commit)
-sha256sums=('SKIP')
+source=("git+https://invent.kde.org/qt/qt/qtsensors#commit=$_commit"
+    '2001-convert-sensorfw-plugin-into-a-standalone-plugin.patch'
+)
+sha256sums=('SKIP'
+    'c25263818273153c5de14b075e00283b364ddbc286c4d18901922ebed21b1949'
+)
+
+prepare() {
+    cd qtsensors
+    patch -p1 --input="${srcdir}/2001-convert-sensorfw-plugin-into-a-standalone-plugin.patch"
+}
 
 build() {
-  cd qtsensors
-  qmake CONFIG+=sensorfw
-  cd src/plugins/sensors/sensorfw
+  cd qtsensors/src/plugins/sensors/sensorfw
   qmake
   make
 }
 
 package() {
   cd qtsensors/src/plugins/sensors/sensorfw
-  mkdir -p $pkgdir/usr/lib/qt/plugins/sensors/
-  cp ../../../../plugins/sensors/libqtsensors_sensorfw.so $pkgdir/usr/lib/qt/plugins/sensors/
+  make -j 1 INSTALL_ROOT="${pkgdir}" install
 }
