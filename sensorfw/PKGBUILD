@@ -3,7 +3,7 @@
 
 pkgname=sensorfw
 pkgver=0.14.0
-pkgrel=2
+pkgrel=3
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/sensorfw"
@@ -17,7 +17,7 @@ sha256sums=('5dc0c86761cbc062be99d5431a49723b524c6e9a681357385a3e0e4fb3095d88'
 
 prepare() {
     cd $pkgname-$pkgver
-    sed "s=@LIB@=/usr/lib=g" sensord-qt5.pc.in > sensord-qt5.pc
+    sed "s=@LIB@=lib=g" sensord-qt5.pc.in > sensord-qt5.pc
     sed "s=@LIBDIR@=/usr/lib=g" tests/tests.xml.in > tests/tests.xml
     unset LD_AS_NEEDED
     export LD_RUN_PATH=/usr/lib/sensord-qt5/
