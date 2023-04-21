@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=sensorfw
-pkgver=0.14.2
+pkgver=0.14.3
 pkgrel=1
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')
@@ -12,7 +12,7 @@ depends=('libngf' 'libiphb' 'mlite')
 makedepends=('doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "sensorfwd.service")
-sha256sums=('08b494aa4a9d07fe643354f5943d2430b543958d8697ff10951e43860c5d525e'
+sha256sums=('2246b0d18735ebd0f4cf6bdea248256772dcb2c19784d6cd5f63450f3edc9223'
     '1fd8fb7c0f073b562957b10ee6351137c612f8250eaf64bffe72328bf60641d3')
 
 prepare() {
