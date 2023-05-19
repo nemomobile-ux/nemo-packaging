@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libngf-qt
-pkgver=0.8.4
+pkgver=0.8.5
 pkgrel=1
 pkgdesc="Qt-based client library for Non-Graphic Feedback daemon"
 arch=('x86_64' 'aarch64')
@@ -13,8 +13,7 @@ url="https://github.com/sailfishos/libngf-qt"
 license=('GPL')
 depends=('qt5-declarative' 'libngf' 'qt5-feedback')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('cfac32f032cdcd510e259c2a4d971847657d633b506024b0a03b297fce490569')
-
+sha256sums=('ab520fac38357ba8c5592ec6bf323e75ee742af76953ac91bf72ca4eeedf747a')
 
 build() {
     cd $pkgname-$pkgver
