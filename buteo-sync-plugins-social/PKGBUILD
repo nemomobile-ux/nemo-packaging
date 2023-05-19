@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=buteo-sync-plugins-social
-pkgver=0.4.20
+pkgver=0.4.21
 pkgrel=1
 pkgdesc="Syncs contact data from CardDAV services"
 arch=('x86_64' 'aarch64')
@@ -21,7 +21,7 @@ depends=('libsocialcache'
 makedepends=('qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-fix_build.patch")
-sha256sums=('055a740c66f40ea4018d872f96cf6ee2d62ff07a7b9106ac4e8daa27cbf2b01e'
+sha256sums=('7b7bebbe855a0347ef9b6fc3e794e8ced1ed37c203db4e107cc309dfc5f448a6'
     'c24e68d5e79f30fac73bfa0ee35b6fc307230f92cea6b53f6c50428024be42f7')
 
 prepare() {
