@@ -52,7 +52,7 @@ function build_directory() {
             sed -i "$SED_EXPR" "$1/PKGBUILD"
         fi
 
-        buildarmpkg -k -p $*
+        buildarmpkg ${BRANCH:+-b "${BRANCH}"} -k -p $* #"
     ) 2>&1 | tee "$log_name"
     ret="${PIPESTATUS[0]}"
 
