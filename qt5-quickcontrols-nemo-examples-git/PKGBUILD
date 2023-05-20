@@ -6,7 +6,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt5-quickcontrols-nemo-examples-git
-pkgver=5.7.6.r0.gf3755c7
+pkgver=5.7.7.r2.g5e992b6
 
 pkgrel=1
 pkgdesc="Nemomobile Qt Quick Controls"
@@ -15,7 +15,8 @@ url="https://github.com/nemomobile-ux/qtquickcontrols-nemo"
 license=('LGPL-2.1-only AND Apache-2.0')
 depends=('qt5-quickcontrols-nemo'
         'qt5-glacier-app'
-        'nemo-qml-plugin-statusnotifier')
+        'nemo-qml-plugin-statusnotifier'
+        'mlite')
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
