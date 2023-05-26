@@ -2,8 +2,8 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=voicecall
-pkgver=0.8.1
-pkgrel=3
+pkgver=0.8.2
+pkgrel=1
 pkgdesc="Dialer engine for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/voicecall"
@@ -20,7 +20,7 @@ depends=('libpulse'
 makedepends=('cmake')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	'voicecall-manager.service')
-sha256sums=('f2af4f5cdc89dd658413d724a56631df11dce14f002becd3ffc5b15d36040f33'
+sha256sums=('10b31a14bc93df68d8d16373adffffe5ae3d7b9dcdcacf3f65822d44a1e28a3e'
     '61c9da6be16743334d608f19a7a7cd3d104264e3409f212078b6a60c1d628dce')
 
 build() {
