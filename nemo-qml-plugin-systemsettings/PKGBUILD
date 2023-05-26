@@ -11,7 +11,7 @@ pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-systemsettings"
 license=('BSD')
-depends=('qt5-systems'
+depends=('qt6-systems'
 	'openssl'
 	'libusb-moded-qt'
 	'profiled'
@@ -21,11 +21,11 @@ depends=('qt5-systems'
 	'mlite'
 	'mce>=1.113.0'
 	'nemo-qml-plugin-dbus'
-	'libqofono-qt5>=0.105'
-	'qt5-xmlpatterns'
+	'libqofono-qt6>=0.105'
+	'qt6-xmlpatterns'
 	'openssl>=3.0')
 
-makedepends=('qt5-tools' 'mce-headers>=1.32.0' 'pkgconf')
+makedepends=('qt6-tools' 'mce-headers>=1.32.0' 'pkgconf')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-disable-libsailfishkeyprovider.patch"
     "0002-disable-ssu.patch"
@@ -62,7 +62,7 @@ prepare() {
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

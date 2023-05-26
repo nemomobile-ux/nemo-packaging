@@ -12,13 +12,13 @@ pkgdesc="Qt and QML MPRIS interface and adaptor"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/qtmpris"
 license=('LGPL-2.1-or-later')
-depends=('qt5-declarative')
+depends=('qt6-declarative')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('384eac76ec7d29d1de6fa93c45007ccd506d6cc0e4c69e19d4250e16cc0f34a2')
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

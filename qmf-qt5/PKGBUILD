@@ -1,9 +1,9 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-pkgname=qmf-qt5
+pkgname=qmf-qt6
 pkgver=4.0.4+git136
 pkgrel=2
-pkgdesc="Qt Messaging Framework (QMF) Qt5"
+pkgdesc="Qt Messaging Framework (QMF) qt6"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/messagingframework"
 license=('BSD-3-Clause')
@@ -74,7 +74,7 @@ prepare() {
 
 build() {
   cd messagingframework-4.0.4-git136/upstream
-  qmake \
+  qmake6 \
     QT_BUILD_PARTS+=tests \
     QMF_INSTALL_ROOT=/usr \
     DEFINES+=QMF_ENABLE_LOGGING \

@@ -10,7 +10,7 @@ pkgdesc="SQLite-based plugin for QtPIM Contacts"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/qtcontacts-sqlite"
 license=('BSD-3-Clause')
-depends=('qt5-pim' 'mlite')
+depends=('qt6-pim' 'mlite')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-fix-build-with-newer-qt.patch"
     "0002-remove-obsolete-QContact-IgnoreAccessConstraints.patch")
@@ -26,7 +26,7 @@ prepare() {
 
 build() {
     cd $pkgname-$pkgver
-    qmake-qt5 PREFIX=/usr "VERSION=${pkgver}"
+    qmake6 PREFIX=/usr "VERSION=${pkgver}"
     make
 }
 

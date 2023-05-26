@@ -8,7 +8,7 @@ pkgdesc="Framework for Maliit"
 arch=('aarch64' 'x86_64')
 url="https://github.com/maliit/framework"
 license=('LGPL')
-depends=('qt5-declarative' 'wayland-protocols' 'qt5-wayland')
+depends=('qt6-declarative' 'wayland-protocols' 'qt6-wayland')
 makedepends=('cmake' 'doxygen' 'graphviz')
 source=("${url}/archive/refs/tags/${pkgver}.tar.gz"
 	"581adc21b3cfd87aa13fa7cf2e9574c1111fa50b.patch"
@@ -33,8 +33,8 @@ build() {
     -DCMAKE_INSTALL_LIBEXECDIR=lib \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DLIB_INSTALL_DIR=lib \
-    -DQT5_PLUGINS_INSTALL_DIR=lib/qt/plugins \
-    -DQT5_MKSPECS_INSTALL_DIR=lib/qt/mkspecs \
+    -DQT6_PLUGINS_INSTALL_DIR=lib/qt/plugins \
+    -DQT6_MKSPECS_INSTALL_DIR=lib/qt/mkspecs \
     -Denable-docs=OFF \
     -Denable-tests=OFF \
     -DCMAKE_BUILD_TYPE=Release

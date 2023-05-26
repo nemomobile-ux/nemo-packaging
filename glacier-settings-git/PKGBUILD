@@ -19,8 +19,8 @@ pkgdesc="QML based settings application for nemomobile"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('qt5-glacier-app'
-	'qt5-location'
+depends=('qt6-glacier-app'
+	'qt6-location'
 	'nemo-qml-plugin-devicelock'
 	'nemo-qml-plugin-settings'
 	'libconnman-qt'
@@ -29,7 +29,7 @@ depends=('qt5-glacier-app'
 	'nemo-qml-plugin-configuration'
 	'nemo-qml-plugin-models>=0.2.1'
 	'nemo-qml-plugin-systemsettings>=0.8.0')
-makedepends=('git' 'qt5-tools' 'cmake')
+makedepends=('git' 'qt6-tools' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

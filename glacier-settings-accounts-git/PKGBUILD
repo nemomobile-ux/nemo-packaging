@@ -11,10 +11,10 @@ depends=('glacier-settings'
     'nemo-qml-plugin-accounts'
     'nemo-qml-plugin-signon'
     'nemo-qml-plugin-social'
-    'qt5-networkauth'
-    'qt5-declarative')
+    'qt6-networkauth'
+    'qt6-declarative')
 
-makedepends=('git' 'qt5-tools' 'cmake')
+makedepends=('git' 'qt6-tools' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

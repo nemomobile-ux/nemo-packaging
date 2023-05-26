@@ -4,15 +4,15 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt5-lipstick-git
+pkgname=qt6-lipstick-git
 pkgver=0.46.2.r0.g3ece3a88
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/lipstick.git"
 license=('LGPL-2.1-only')
-depends=('qt5-sensors-sensorfw'
-	    'qt5-wayland'
+depends=('qt6-sensors-sensorfw'
+	    'qt6-wayland'
 	    'nemo-keepalive'
 	    'libresourceqt'
 	    'libsystemd'
@@ -27,7 +27,7 @@ depends=('qt5-sensors-sensorfw'
 	    'bluez-qt')
 
 makedepends=('git'
-	'qt5-tools'
+	'qt6-tools'
 	'doxygen'
 	'graphviz'
 	'make'
@@ -53,7 +53,7 @@ build() {
   git submodule update
   mkdir -p build
   cd build
-  qmake VERSION=${pkgver} ..
+  qmake6 VERSION=${pkgver} ..
   make
 }
 

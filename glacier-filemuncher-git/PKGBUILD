@@ -19,9 +19,9 @@ pkgdesc="The Glacier file manager"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('qt5-glacier-app' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-folderlistmodel')
+depends=('qt6-glacier-app' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-folderlistmodel')
 optdepends=()
-makedepends=('git' 'cmake' 'qt5-tools')
+makedepends=('git' 'cmake' 'qt6-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

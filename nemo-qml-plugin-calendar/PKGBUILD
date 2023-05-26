@@ -8,7 +8,7 @@ pkgdesc="Calendar plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/$pkgname"
 license=('BSD')
-depends=('qt5-base'
+depends=('qt6-base'
     'libaccounts-qt'
     'mkcal'
     'kcalendarcore')
@@ -27,7 +27,7 @@ prepare() {
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

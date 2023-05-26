@@ -12,13 +12,13 @@ pkgdesc="Resource Policy Qt API"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libresourceqt"
 license=('LGPL-2.1-or-later')
-depends=('qt5-base' 'libresource')
+depends=('qt6-base' 'libresource')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('575ef3445b300730b0ccb81df9cce11f04655571d87d06f70521a20406f013c1')
 
 build() {
     cd $pkgname-$pkgver
-    qmake "VERSION=$pkgver"
+    qmake6 "VERSION=$pkgver"
     make
 }
 
@@ -26,7 +26,7 @@ package() {
     cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     # Remove tests and empty dirs
-    rm -rf "$pkgdir/usr/lib/libresourceqt-qt5-tests"
+    rm -rf "$pkgdir/usr/lib/libresourceqt-qt6-tests"
     rm -rf "$pkgdir/usr/share/doc"
     rm -rf "$pkgdir/usr/share/man"
 }

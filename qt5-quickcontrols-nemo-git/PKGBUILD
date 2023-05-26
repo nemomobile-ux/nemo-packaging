@@ -5,7 +5,7 @@
 # Contributor: Chupligin Sergey <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt5-quickcontrols-nemo-git
+pkgname=qt6-quickcontrols-nemo-git
 pkgver=5.7.7.r2.g5e992b6
 
 pkgrel=1
@@ -14,9 +14,9 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/qtquickcontrols-nemo"
 license=('LGPL-2.1-only AND Apache-2.0')
 depends=(
-    'qt5-quickcontrols'
+    'qt6-quickcontrols'
     'nemo-theme-default'
-    'qt5-svg'
+    'qt6-svg'
     'google-opensans-fonts'
     'mlite'
 )

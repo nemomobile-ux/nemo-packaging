@@ -15,8 +15,8 @@ pkgdesc="QML based contacts application for nemomobile"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('nemo-qml-plugin-thumbnailer' 'nemo-qml-plugin-contacts' 'nemo-qml-plugin-folderlistmodel' 'glacier-gallery' 'glacier-filemuncher' 'contactsd' 'nemo-qml-plugin-dbus' 'qt5-glacier-app')
-makedepends=('git' 'cmake' 'qt5-tools')
+depends=('nemo-qml-plugin-thumbnailer' 'nemo-qml-plugin-contacts' 'nemo-qml-plugin-folderlistmodel' 'glacier-gallery' 'glacier-filemuncher' 'contactsd' 'nemo-qml-plugin-dbus' 'qt6-glacier-app')
+makedepends=('git' 'cmake' 'qt6-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

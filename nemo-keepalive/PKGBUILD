@@ -12,14 +12,14 @@ pkgdesc="CPU and display keepalive and scheduling library"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-keepalive"
 license=('LGPL-2.1-or-later')
-depends=('qt5-declarative' 'libiphb' 'mce-headers')
+depends=('qt6-declarative' 'libiphb' 'mce-headers')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('120478bf093e9c829699be84b314d899a8a7ab446c3f060abea4b0048432750f')
 
 build() {
     cd $pkgname-$pkgver
     export VERSION=`echo ${pkgver} | sed 's/+.*//'`
-    qmake-qt5 VERSION=${VERSION}
+    qmake6 VERSION=${VERSION}
     make
 }
 

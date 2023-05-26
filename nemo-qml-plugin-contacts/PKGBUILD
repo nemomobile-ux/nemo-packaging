@@ -18,14 +18,14 @@ depends=('libphonenumber-nemo'
 	'buteo-sync-plugin-carddav'
 	'icu=72.1')
 
-makedepends=('qt5-tools')
+makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('b9f1d35f834e4860ee7eeae9b70a5d5fae78f21c5eb58b686972913f7836aedc')
 
 build() {
   cd $pkgname-$pkgver
   # Not possible to install in build subdir
-  qmake-qt5 VERSION=$pkgver
+  qmake6 VERSION=$pkgver
   make
 }
 

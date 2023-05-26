@@ -10,7 +10,7 @@ license=('BSD-3-Clause')
 depends=('glacier-settings'
 )
 
-makedepends=('git' 'qt5-tools' 'cmake')
+makedepends=('git' 'qt6-tools' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

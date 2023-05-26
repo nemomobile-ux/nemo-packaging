@@ -9,7 +9,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libsocialcache"
 license=('BSD-3-Clause')
 depends=('buteo-syncfw')
-makedepends=('qt5-tools')
+makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-use_mlite_for_keys.patch")
 sha256sums=('ff1110e9ccca5a1e8c6d5a70448bc061e5ba4b83a5dbae974d55241e8156573b'
@@ -22,7 +22,7 @@ prepare() {
 
 build() {
   cd $pkgname-$pkgver
-  qmake-qt5
+  qmake6
   make
 }
 

@@ -10,7 +10,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/maliit/inputcontext-gtk"
 license=('LGPL-2.1-only')
 depends=('maliit-framework')
-makedepends=('qt5-tools' 'gtk2' 'gtk3')
+makedepends=('qt6-tools' 'gtk2' 'gtk3')
 source=("${url}/archive/${_commit}.tar.gz")
 sha256sums=('60306af0acbef4ace2304e8ca79bfaeab485c21b536ed01d0039729749bd186f')
 

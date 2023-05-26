@@ -28,7 +28,7 @@ prepare() {
 
 build() {
     cd $pkgname-$pkgver
-    qmake "VERSION=${pkgver}"
+    qmake6 "VERSION=${pkgver}"
     make
 }
 

@@ -13,8 +13,8 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/glacier-pinquery"
 license=('BSD-3-Clause')
 # https://github.com/TelepathyIM/telepathy-qt/wiki/Connection-Managers#fragmentation-story-s01e03
-depends=('qt5-glacier-app' 'libqofono-qt5')
-makedepends=('git' 'cmake' 'qt5-tools')
+depends=('qt6-glacier-app' 'libqofono-qt6')
+makedepends=('git' 'cmake' 'qt6-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

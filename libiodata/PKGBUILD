@@ -11,7 +11,7 @@ pkgdesc="Mer library for input/output data"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libiodata"
 license=('LGPL-2.1-or-later')
-depends=('qt5-base')
+depends=('qt6-base')
 makedepends=('bison' 'flex')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('30e062e488cee10f1b991de2b5c0929ffeec07048564dcfe0c552dc820d77bc2')
@@ -25,7 +25,7 @@ prepare() {
 build() {
   cd "${pkgname}-${pkgver}"
   export IODATA_VERSION=${pkgver}
-  qmake
+  qmake6
   make -j1
 }
 
@@ -35,5 +35,5 @@ package() {
 
   # move *.prf into right folder
   mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
-  mv ${pkgdir}/usr/share/qt/mkspecs/features/iodata-qt5.prf ${pkgdir}/usr/lib/qt/mkspecs/features/iodata-qt5.prf
+  mv ${pkgdir}/usr/share/qt/mkspecs/features/iodata-qt6.prf ${pkgdir}/usr/lib/qt/mkspecs/features/iodata-qt6.prf
 }

@@ -9,7 +9,7 @@ pkgdesc="A library of Qt bindings for mce"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libmce-qt"
 license=('BSD-3-Clause')
-depends=('qt5-declarative')
+depends=('qt6-declarative')
 makedepends=('mce>=1.112' 'mce-headers')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('f05814a71551012edcc5fcd9d2861cbd2cb66f011ae61b5ff02b103fa01c74be')
@@ -18,7 +18,7 @@ build() {
   cd $pkgname-$pkgver
   mkdir -p build
   cd build
-  qmake ..
+  qmake6 ..
   make
 }
 

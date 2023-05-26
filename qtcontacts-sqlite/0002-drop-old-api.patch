@@ -58,8 +58,8 @@ index 8bbb896..18949ed 100644
  %setup -q -n %{name}-%{version}
  
  %build
--%qmake5 "VERSION=%{version}" QTPIM_VERSION=%{qtpim_verion}
-+%qmake5 "VERSION=%{version}"
+-%qmake6 "VERSION=%{version}" QTPIM_VERSION=%{qtpim_verion}
++%qmake6 "VERSION=%{version}"
  make %{?_smp_mflags}
  
  %install

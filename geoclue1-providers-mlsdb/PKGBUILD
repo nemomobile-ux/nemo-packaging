@@ -27,7 +27,7 @@ prepare() {
 
 build() {
     cd $srcdir/geoclue-providers-mlsdb-${pkgver}
-    qmake geoclue-providers-mlsdb.pro
+    qmake6 geoclue-providers-mlsdb.pro
     make
 }
 

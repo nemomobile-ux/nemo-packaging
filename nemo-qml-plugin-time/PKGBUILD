@@ -18,7 +18,7 @@ sha256sums=('782ff02030dbfed94a9875aabd5f56471e700d43094d3be602a79a0ad57e5b4a')
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

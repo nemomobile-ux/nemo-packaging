@@ -17,15 +17,15 @@ sha256sums=('2246b0d18735ebd0f4cf6bdea248256772dcb2c19784d6cd5f63450f3edc9223'
 
 prepare() {
     cd $pkgname-$pkgver
-    sed "s=@LIB@=lib=g" sensord-qt5.pc.in > sensord-qt5.pc
+    sed "s=@LIB@=lib=g" sensord-qt6.pc.in > sensord-qt6.pc
     sed "s=@LIBDIR@=/usr/lib=g" tests/tests.xml.in > tests/tests.xml
     unset LD_AS_NEEDED
-    export LD_RUN_PATH=/usr/lib/sensord-qt5/
+    export LD_RUN_PATH=/usr/lib/sensord-qt6/
 }
 
 build() {
     cd $pkgname-$pkgver
-    qmake \
+    qmake6 \
     CONFIG+=mce\
     PC_VERSION=`echo $pkgver | sed 's/+.*//'`
     make
@@ -39,7 +39,7 @@ package() {
 
     # move *.prf into right folder
     mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
-    mv ${pkgdir}/usr/share/qt5/mkspecs/features/sensord.prf ${pkgdir}/usr/lib/qt/mkspecs/features/sensord.prf
+    mv ${pkgdir}/usr/share/qt6/mkspecs/features/sensord.prf ${pkgdir}/usr/lib/qt/mkspecs/features/sensord.prf
 
     mkdir -p $pkgdir/usr/lib/systemd/system/graphical.target.wants
     cp ${srcdir}/sensorfwd.service $pkgdir/usr/lib/systemd/system/

@@ -18,7 +18,7 @@ pkgdesc="Nemo QML statusnotifier plugin"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname"
 license=('LGPL-2.0-or-later')
-depends=('qt5-declarative')
+depends=('qt6-declarative')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('dd952e1848358edc276861c8bd9939ffe64d3df813388d7d63e736e353afc8fc')
 
@@ -26,7 +26,7 @@ build() {
   cd $pkgname-$pkgver
   mkdir -p build
   cd build
-  qmake ..
+  qmake6 ..
   make
 }
 

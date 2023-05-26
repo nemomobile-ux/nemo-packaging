@@ -16,8 +16,8 @@ arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname"
 license=('LGPLv2')
 optdepends=()
-depends=('qt5-declarative' 'tracker3' 'tracker3-miners')
-makedepends=('qt5-tools')
+depends=('qt6-declarative' 'tracker3' 'tracker3-miners')
+makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
     '0001-workaround-missing-G_BEGIN-END_DECLS-in-tracker.patch')
 sha256sums=('3f18a69f62d3d60a566519784834af885419a4bbbdaa7f47392deb9e1e247b41'
@@ -32,7 +32,7 @@ prepare() {
 
 build() {
   cd ${pkgname}-mer-$_basever-git$_gitver
-  qmake-qt5 tracker_enabled=yes MODULE_VERSION=5.0.0
+  qmake6 tracker_enabled=yes MODULE_VERSION=5.0.0
   make -j1
 }
 

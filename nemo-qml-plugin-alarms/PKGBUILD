@@ -7,7 +7,7 @@ pkgdesc="alarms plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-alarms"
 license=('BSD')
-depends=('qt5-base' 'timed' 'qt5-declarative')
+depends=('qt6-base' 'timed' 'qt6-declarative')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-distinguish-wakeup-type-in-AlarmObject.patch')
 sha256sums=('8435d73b25e28f75e5bffc9aba6d7d0fab56253596a4f0340d26428fd45edd3b'
@@ -21,7 +21,7 @@ prepare() {
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

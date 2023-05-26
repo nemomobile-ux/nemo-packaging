@@ -24,7 +24,7 @@ pkgver() {
 build() {
     mkdir -p "$pkgname/cutoff/build"
     cd "$pkgname/cutoff/build"
-    qmake-qt5 ..
+    qmake6 ..
     make
 }
 
