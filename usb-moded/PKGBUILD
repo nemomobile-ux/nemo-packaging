@@ -9,7 +9,7 @@ _merver=64
 
 pkgname=usb-moded
 pkgver=$_basever+mer$_merver
-pkgrel=2
+pkgrel=1
 pkgdesc="Mer USB mode controller"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/usb-moded"
@@ -84,6 +84,7 @@ package() {
 #install systemd stuff
 	mkdir -p $pkgdir/usr/lib/systemd/system/basic.target.wants/
 	install -m 644 -D systemd/usb-moded.service $pkgdir/usr/lib/systemd/system/
+	sed -i "s#Type=notify#Type=notify\nExecStartPre=bash -c 'mkdir -p /run/systemd/boot-status; cut -d \" \" -f 1 < /proc/uptime > /run/systemd/boot-status/init-done'#g" $pkgdir/usr/lib/systemd/system/usb-moded.service
 	ln -s ../usb-moded.service $pkgdir/usr/lib/systemd/system/basic.target.wants/
 
 	mkdir -p $pkgdir/etc/modprobe.d
