@@ -1,3 +1,15 @@
+From 2b54667fce5d43774c88edf27ea024fa8077506d Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 23 Jun 2023 09:38:50 +0200
+Subject: [PATCH] Fixes build
+
+---
+ src/server/server.pro |  7 ++++---
+ src/server/timed.cpp  | 17 ++++++-----------
+ src/server/timed.h    |  8 ++++----
+ src/server/tzdata.cpp |  4 ++--
+ 4 files changed, 16 insertions(+), 20 deletions(-)
+
 diff --git a/src/server/server.pro b/src/server/server.pro
 index dc1cc8f..eaf92c0 100644
 --- a/src/server/server.pro
@@ -25,103 +37,106 @@ index dc1cc8f..eaf92c0 100644
  QMAKE_CXXFLAGS  += -Wall
  
 diff --git a/src/server/timed.cpp b/src/server/timed.cpp
-index 80b950a..2c535e9 100644
+index db56b1d..479cc2e 100644
 --- a/src/server/timed.cpp
 +++ b/src/server/timed.cpp
 @@ -39,11 +39,6 @@
  
  #include "../voland/interface.h"
  
--#include "queue.type.h"
 -#include "config.type.h"
 -#include "customization.type.h"
+-#include "queue.type.h"
 -#include "settings.type.h"
 -
  #if HAVE_DSME
  #include "interfaces.h"
  #endif
-@@ -251,7 +246,7 @@ void Timed::init_configuration()
-   const char *input_path = configuration_path();
-   iodata::storage *config_storage = new iodata::storage ;
-   config_storage->set_primary_path(input_path) ;
--  config_storage->set_validator(etc_timed_rc_validator(), "config_t") ;
-+  config_storage->set_validator(configuration_type(), "config_t") ;
+@@ -271,7 +266,7 @@ void Timed::init_configuration()
+     const char *input_path = configuration_path();
+     iodata::storage *config_storage = new iodata::storage;
+     config_storage->set_primary_path(input_path);
+-    config_storage->set_validator(etc_timed_rc_validator(), "config_t");
++    config_storage->set_validator(configuration_type(), "config_t");
  
-   /* Because config_storage->load() also sets up the default values, we
+     /* Because config_storage->load() also sets up the default values, we
     * must call it even if we know that the input file is not present ... */
-@@ -319,7 +314,7 @@ void Timed::init_customization()
-   const char *input_path = customization_path();
-   iodata::storage *storage = new iodata::storage ;
-   storage->set_primary_path(input_path) ;
--  storage->set_validator(customization_data_validator(), "customization_t") ;
-+  storage->set_validator(customization_type(), "customization_t") ;
+@@ -342,7 +337,7 @@ void Timed::init_customization()
+     const char *input_path = customization_path();
+     iodata::storage *storage = new iodata::storage;
+     storage->set_primary_path(input_path);
+-    storage->set_validator(customization_data_validator(), "customization_t");
++    storage->set_validator(customization_type(), "customization_t");
  
-   /* Because config_storage->load() also sets up the default values, we
+     /* Because config_storage->load() also sets up the default values, we
     * must call it even if we know that the input file is not present ... */
-@@ -433,7 +428,7 @@ void Timed::init_read_settings()
-   shared_settings_storage = new iodata::storage;
-   shared_settings_storage->set_primary_path(shared_settings_path.toStdString());
-   shared_settings_storage->set_secondary_path(shared_settings_path.toStdString() + ".bak");
--  shared_settings_storage->set_validator(settings_data_validator(), "settings_t");
-+  shared_settings_storage->set_validator(settings_file_type(), "settings_t");
+@@ -456,7 +451,7 @@ void Timed::init_read_settings()
+     shared_settings_storage = new iodata::storage;
+     shared_settings_storage->set_primary_path(shared_settings_path.toStdString());
+     shared_settings_storage->set_secondary_path(shared_settings_path.toStdString() + ".bak");
+-    shared_settings_storage->set_validator(settings_data_validator(), "settings_t");
++    shared_settings_storage->set_validator(settings_file_type(), "settings_t");
  
-   /* If possible, read shared settings file */
-   if (access(qUtf8Printable(shared_settings_path), R_OK) == 0
-@@ -451,7 +446,7 @@ void Timed::init_read_settings()
-     /* Private data has been migrated / is otherwise unreadable */
-     private_settings_storage->set_primary_path("/dev/null");
-   }
--  private_settings_storage->set_validator(settings_data_validator(), "settings_t");
-+  private_settings_storage->set_validator(settings_file_type(), "settings_t");
+     /* If possible, read shared settings file */
+     if (access(qUtf8Printable(shared_settings_path), R_OK) == 0
+@@ -474,7 +469,7 @@ void Timed::init_read_settings()
+         /* Private data has been migrated / is otherwise unreadable */
+         private_settings_storage->set_primary_path("/dev/null");
+     }
+-    private_settings_storage->set_validator(settings_data_validator(), "settings_t");
++    private_settings_storage->set_validator(settings_file_type(), "settings_t");
  
-   /* If reading shared settings file failed, read private / dummy data */
-   if (!tree) {
-@@ -571,7 +566,7 @@ void Timed::init_load_events()
-   shared_event_storage = new iodata::storage;
-   shared_event_storage->set_primary_path(shared_events_path.toStdString());
-   shared_event_storage->set_secondary_path(shared_events_path.toStdString() + ".bak");
--  shared_event_storage->set_validator(events_data_validator(), "event_queue_t");
-+  shared_event_storage->set_validator(event_queue_type(), "event_queue_t");
+     /* If reading shared settings file failed, read private / dummy data */
+     if (!tree) {
+@@ -619,7 +614,7 @@ void Timed::init_load_events()
+     shared_event_storage = new iodata::storage;
+     shared_event_storage->set_primary_path(shared_events_path.toStdString());
+     shared_event_storage->set_secondary_path(shared_events_path.toStdString() + ".bak");
+-    shared_event_storage->set_validator(events_data_validator(), "event_queue_t");
++    shared_event_storage->set_validator(event_queue_type(), "event_queue_t");
  
-   if (permissions_shared_events()) {
-     iodata::record *events = shared_event_storage->load();
-@@ -584,7 +579,7 @@ void Timed::init_load_events()
-   private_event_storage = new iodata::storage;
-   private_event_storage->set_primary_path(private_events_path.toStdString());
-   private_event_storage->set_secondary_path(private_events_path.toStdString() + ".bak");
--  private_event_storage->set_validator(events_data_validator(), "event_queue_t");
-+  private_event_storage->set_validator(event_queue_type(), "event_queue_t");
+     if (permissions_shared_events()) {
+         iodata::record *events = shared_event_storage->load();
+@@ -632,7 +627,7 @@ void Timed::init_load_events()
+     private_event_storage = new iodata::storage;
+     private_event_storage->set_primary_path(private_events_path.toStdString());
+     private_event_storage->set_secondary_path(private_events_path.toStdString() + ".bak");
+-    private_event_storage->set_validator(events_data_validator(), "event_queue_t");
++    private_event_storage->set_validator(event_queue_type(), "event_queue_t");
  
-   if (permissions_private_events()) {
-     iodata::record *events = private_event_storage->load();
+     if (permissions_private_events()) {
+         iodata::record *events = private_event_storage->load();
 diff --git a/src/server/timed.h b/src/server/timed.h
-index 7a65592..71200fb 100644
+index 9e3efb8..0c064b1 100644
 --- a/src/server/timed.h
 +++ b/src/server/timed.h
-@@ -56,14 +56,14 @@ struct Timed : public QCoreApplication
+@@ -56,17 +56,17 @@ struct Timed : public QCoreApplication
  {
  public:
-   inline const char *configuration_path() { return  "/etc/timed-qt5.rc" ; }
--  // inline const char *configuration_type() { return  "/usr/share/timed/typeinfo/config.type" ; }
-+  inline const char *configuration_type() { return  "/usr/share/timed/typeinfo/config.type" ; }
+     inline const char *configuration_path() { return "/etc/timed-qt5.rc"; }
+-    // inline const char *configuration_type() { return  "/usr/share/timed/typeinfo/config.type" ; }
++    inline const char *configuration_type() { return  "/usr/share/timed/typeinfo/config.type" ; }
  
-   inline const char *customization_path() { return  "/usr/share/timed/customization.data" ; } // TODO: make it configurable
--  // inline const char *customization_type() { return  "/usr/share/timed/typeinfo/customization.type" ; }
-+  inline const char *customization_type() { return  "/usr/share/timed/typeinfo/customization.type" ; }
+     inline const char *customization_path()
+     {
+         return "/usr/share/timed/customization.data";
+     } // TODO: make it configurable
+-    // inline const char *customization_type() { return  "/usr/share/timed/typeinfo/customization.type" ; }
++    inline const char *customization_type() { return  "/usr/share/timed/typeinfo/customization.type" ; }
  
--  // inline const char *settings_file_type() { return  "/usr/share/timed/typeinfo/settings.type" ; }
-+  inline const char *settings_file_type() { return  "/usr/share/timed/typeinfo/settings.type" ; }
+-    // inline const char *settings_file_type() { return  "/usr/share/timed/typeinfo/settings.type" ; }
++    inline const char *settings_file_type() { return  "/usr/share/timed/typeinfo/settings.type" ; }
  
--  // inline const char *event_queue_type() { return  "/usr/share/timed/typeinfo/queue.type" ; }
-+  inline const char *event_queue_type() { return  "/usr/share/timed/typeinfo/queue.type" ; }
+-    // inline const char *event_queue_type() { return  "/usr/share/timed/typeinfo/queue.type" ; }
++    inline const char *event_queue_type() { return  "/usr/share/timed/typeinfo/queue.type" ; }
  
  private:
-   bool format24_by_default ;
+     bool format24_by_default;
 diff --git a/src/server/tzdata.cpp b/src/server/tzdata.cpp
-index e911bca..51b33cc 100644
+index 06d816e..9aa0d8e 100644
 --- a/src/server/tzdata.cpp
 +++ b/src/server/tzdata.cpp
-@@ -140,13 +140,13 @@ string tzdata::set_str(const set<olson*> &x)
+@@ -142,13 +142,13 @@ string tzdata::set_str(const set<olson *> &x)
  
  // --- initialization ---
  
@@ -130,10 +145,13 @@ index e911bca..51b33cc 100644
  
  static iodata::record *open_database(const char *path, const char *type)
  {
-   log_notice("opening file '%s', reading record of type '%s'", path, type) ;
-   iodata::storage file ;
--  file.set_validator(tzdata_validator(), type) ;
-+  file.set_validator(tzdata_validator, type) ;
-   file.set_primary_path(path) ;
-   if (iodata::record *res = file.load())
-     return res ;
+     log_notice("opening file '%s', reading record of type '%s'", path, type);
+     iodata::storage file;
+-    file.set_validator(tzdata_validator(), type);
++    file.set_validator(tzdata_validator, type);
+     file.set_primary_path(path);
+     if (iodata::record *res = file.load())
+         return res;
+-- 
+2.40.1
+
