@@ -6,8 +6,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=timed
-pkgver=3.6.18
-pkgrel=2
+pkgver=3.6.20
+pkgrel=1
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/timed"
@@ -17,8 +17,8 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-Fixes-build.patch"
     "0002-Fixes-access.patch")
 
-sha256sums=('8899c6b4d684492ecdba68f998df161ba1416b45f167c80d1d7e9826e19cf737'
-	'deb706820ce9b76c0994d35e72394bac8c739d0593736a1713736c491ecd513a'
+sha256sums=('413728c9224074b84fb37216fcd8b671de8557315fa1c4a7821517d2ab42b923'
+	'54743cf63e8f3e6622b38a66032f584672ca38102d3c85496e58e30157b05156'
 	'cf81d073f2618fd914fbd5f55152580c7e3bf14f53eaf0950cb7998fd9460e02')
 
 prepare() {
