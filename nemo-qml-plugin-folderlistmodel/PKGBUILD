@@ -6,7 +6,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-folderlistmodel
-pkgver=0.15
+pkgver=0.16
 pkgrel=1
 pkgdesc="Folder list model plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
@@ -14,7 +14,7 @@ url="https://github.com/nemomobile-ux/nemo-qml-plugin-folderlistmodel"
 license=('BSD-3-Clause')
 depends=('qt6-declarative')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('3bfdb17c0a24cc7f751ae31851fca0d40b5231671905444dbac13000f4ba4977')
+sha256sums=('8316edeb16c8e16066e3e99f84de21cba01ed522be4e2887c0e8aa963cb43863')
 
 build() {
   cd $pkgname-$pkgver
