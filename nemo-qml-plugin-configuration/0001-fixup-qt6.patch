@@ -1,0 +1,54 @@
+diff --git a/src/configurationgroup.cpp b/src/configurationgroup.cpp
+index 26e861c..1cba23a 100644
+--- a/src/configurationgroup.cpp
++++ b/src/configurationgroup.cpp
+@@ -140,13 +140,19 @@ void ConfigurationGroup::data_append(QQmlListProperty<QObject> *property, QObjec
+     if (MDConfGroup *child = qobject_cast<MDConfGroup *>(value))
+         child->setScope(settings);
+ }
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ QObject *ConfigurationGroup::data_at(QQmlListProperty<QObject> *property, int index)
++#else
++QObject *ConfigurationGroup::data_at(QQmlListProperty<QObject> *property, qsizetype index)
++#endif
+ {
+     return static_cast<ConfigurationGroup *>(property->object)->m_data.at(index);
+ }
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ int ConfigurationGroup::data_count(QQmlListProperty<QObject> *property)
++#else
++qsizetype ConfigurationGroup::data_count(QQmlListProperty<QObject> *property)
++#endif
+ {
+     return static_cast<ConfigurationGroup *>(property->object)->m_data.count();
+ }
+diff --git a/src/configurationgroup.h b/src/configurationgroup.h
+index 4b71ab5..04dcab1 100644
+--- a/src/configurationgroup.h
++++ b/src/configurationgroup.h
+@@ -57,8 +57,13 @@ public:
+     QQmlListProperty<QObject> data();
+ 
+     static void data_append(QQmlListProperty<QObject> *property, QObject *value);
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     static QObject *data_at(QQmlListProperty<QObject> *property, int index);
+     static int data_count(QQmlListProperty<QObject> *property);
++#else
++    static QObject *data_at(QQmlListProperty<QObject> *property, qsizetype index);
++    static qsizetype data_count(QQmlListProperty<QObject> *property);
++#endif
+     static void data_clear(QQmlListProperty<QObject> *property);
+ 
+     QList<QObject *> m_data;
+diff --git a/src/src.pro b/src/src.pro
+index f9d5925..ab67444 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -25,4 +25,4 @@ HEADERS += configurationgroup.h \
+            configurationvalue.h
+ 
+ CONFIG += link_pkgconfig
+-PKGCONFIG += mlite5
++PKGCONFIG += mlite$${QT_MAJOR_VERSION}
