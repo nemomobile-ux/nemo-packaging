@@ -4,7 +4,7 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-models
-pkgver=0.2.4
+pkgver=0.2.5
 pkgrel=1
 pkgdesc="Nemo QML models plugin"
 arch=('x86_64' 'aarch64')
@@ -12,7 +12,7 @@ url="https://github.com/sailfishos/nemo-qml-plugin-models"
 license=('BSD')
 depends=('nemo-qml-plugin-dbus' 'libmlocale')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('7bc9843ba4da057016b8efe9e5eb68cf2099b90d68bef2810d828434b06e6004')
+sha256sums=('1baed689a277bcf7980c06f384af483ced441a01a502f67dd78b333f4c3ce22e')
 
 build() {
     cd $pkgname-$pkgver

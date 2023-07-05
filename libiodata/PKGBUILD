@@ -5,8 +5,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libiodata
-pkgver=0.19.12
-pkgrel=2
+pkgver=0.19.13
+pkgrel=1
 pkgdesc="Mer library for input/output data"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libiodata"
@@ -14,7 +14,8 @@ license=('LGPL-2.1-or-later')
 depends=('qt6-base')
 makedepends=('bison' 'flex')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('30e062e488cee10f1b991de2b5c0929ffeec07048564dcfe0c552dc820d77bc2')
+sha256sums=('56e18738992d55893434052a9b8e5e60f6731e3daa932afcb1ec0776eda0d01a')
+
 
 prepare() {
   cd "${pkgname}-${pkgver}"
