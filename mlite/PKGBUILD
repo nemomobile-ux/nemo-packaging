@@ -3,18 +3,23 @@
 
 pkgname=mlite
 pkgver=0.4.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Useful classes originating from MeeGo Touch"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/mlite";
 license=('LGPL')
 depends=('qt6-base' 'dconf')
 makedepends=('qt6-tools')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('6403c5b7551fae31bfa8d0cc5173905873ffc0ef34d377f09ab10af7bf833aba')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-Fixup-build-on-qt6.patch'
+)
+sha256sums=('6403c5b7551fae31bfa8d0cc5173905873ffc0ef34d377f09ab10af7bf833aba'
+    '2a191ec52f73699a1d77b9e4e346a49fb265b6040eba513d27a058be56af9efa'
+)
 
 prepare() {
   cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-Fixup-build-on-qt6.patch"
   sed -i -e 's|/usr/libexec|/usr/lib|' \
       tools/mliteremoteaction/mliteremoteaction.pro \
       tools/mliteremoteaction/main.cpp \

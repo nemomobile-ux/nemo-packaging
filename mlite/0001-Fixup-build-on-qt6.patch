@@ -1,0 +1,252 @@
+From fb43171712f885273260dfb69b4a92d5a3161c0b Mon Sep 17 00:00:00 2001
+From: Sergey Chupligin <neochapay@gmail.com>
+Date: Thu, 20 Oct 2022 14:36:05 +0300
+Subject: [PATCH] Fixup build on qt6
+
+---
+ common.pri                                    |  4 +--
+ src/mdesktopentry.cpp                         |  2 +-
+ src/mlite6.pc.in                              | 11 ++++++++
+ src/mpermission.cpp                           | 27 +++++++++++++++++++
+ tests/ut_mdesktopentry.cpp                    | 22 ++++++++++++---
+ .../mlitenotificationtool.cpp                 | 11 ++++----
+ 6 files changed, 64 insertions(+), 13 deletions(-)
+ create mode 100644 src/mlite6.pc.in
+
+diff --git a/common.pri b/common.pri
+index 17ea4da..9a720b5 100644
+--- a/common.pri
++++ b/common.pri
+@@ -37,9 +37,9 @@ defineTest(configure) {
+     export(QMAKE_EXTRA_TARGETS)
+ }
+ 
+-DASH_QT_VERSION = "-qt5"
++DASH_QT_VERSION = "-qt$${QT_MAJOR_VERSION}"
+ CONFIG_SUBST += DASH_QT_VERSION
+-NODASH_QT_VERSION = "5"
++NODASH_QT_VERSION = $${QT_MAJOR_VERSION}
+ CONFIG_SUBST += NODASH_QT_VERSION
+ 
+ }
+diff --git a/src/mdesktopentry.cpp b/src/mdesktopentry.cpp
+index eae5f1d..dc00e31 100644
+--- a/src/mdesktopentry.cpp
++++ b/src/mdesktopentry.cpp
+@@ -19,7 +19,7 @@
+ #include <QDebug>
+ #include <QFile>
+ #include <QStringList>
+-#include <QTextCodec>
++#include <QLocale>
+ #include <QTextStream>
+ #include <QTimer>
+ #include <QTranslator>
+diff --git a/src/mlite6.pc.in b/src/mlite6.pc.in
+new file mode 100644
+index 0000000..7212b0f
+--- /dev/null
++++ b/src/mlite6.pc.in
+@@ -0,0 +1,11 @@
++prefix=/usr
++exec_prefix=${prefix}
++libdir=${exec_prefix}/lib
++includedir=${prefix}/include/mlite6
++
++Name: mlite
++Description: Selected classes pulled from the MeeGo Touch Framework
++Version: @VERSION@
++Cflags: -I${includedir}
++Libs: -L${libdir} -lmlite6
++Requires: Qt6DBus
+diff --git a/src/mpermission.cpp b/src/mpermission.cpp
+index 35e1e90..86e8f68 100644
+--- a/src/mpermission.cpp
++++ b/src/mpermission.cpp
+@@ -11,6 +11,7 @@
+ 
+ #include <QDebug>
+ #include <QFile>
++#include <QLocale>
+ #include <QTextStream>
+ #include <QTranslator>
+ 
+@@ -32,6 +33,7 @@ const auto TranslationSeparator = QStringLiteral("-");
+ const auto SailjailSection = QStringLiteral("X-Sailjail");
+ const auto SailjailPermissionsKey = QStringLiteral("Permissions");
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+ QPair<QStringRef, QStringRef> getField(const QString &line)
+ {
+     QStringRef remaining = line.midRef(0).trimmed();
+@@ -51,6 +53,27 @@ QPair<QStringRef, QStringRef> getField(const QString &line)
+     QStringRef value = remaining.mid(separator+1).trimmed();
+     return QPair<QStringRef, QStringRef>(key, value);
+ }
++#else
++QPair<QStringView, QStringView> getField(const QString &line)
++{
++    QStringView remaining = line.mid(0).trimmed();
++    if (!remaining.startsWith('#'))
++        return QPair<QStringView, QStringView>();
++
++    remaining = remaining.mid(1).trimmed();
++    if (!remaining.startsWith(Prefix))
++        return QPair<QStringView, QStringView>();
++
++    remaining = remaining.mid(Prefix.length());
++    int separator = remaining.indexOf('=');
++    if (separator == -1)
++        return QPair<QStringView, QStringView>();
++
++    QStringView key = remaining.left(separator).trimmed();
++    QStringView value = remaining.mid(separator+1).trimmed();
++    return QPair<QStringView, QStringView>(key, value);
++}
++#endif
+ } // namespace
+ 
+ QHash<QString, QTranslator *> MPermissionPrivate::s_translators;
+@@ -82,7 +105,11 @@ MPermissionPrivate::MPermissionPrivate(const QString &fileName) :
+     };
+     while (!stream.atEnd() && missing()) {
+         QString line = stream.readLine();
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+         QPair<QStringRef, QStringRef> field = getField(line);
++#else
++        QPair<QStringView, QStringView> field = getField(line);
++#endif
+         if (field.first.isEmpty()) {
+             continue;
+         } else if (field.first == Description) {
+diff --git a/tests/ut_mdesktopentry.cpp b/tests/ut_mdesktopentry.cpp
+index 0ba3d30..94f9fcd 100644
+--- a/tests/ut_mdesktopentry.cpp
++++ b/tests/ut_mdesktopentry.cpp
+@@ -6,6 +6,12 @@
+ 
+ #include "mdesktopentry.h"
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
++#define ENDL endl
++#else
++#define ENDL Qt::endl
++#endif
++
+ namespace Tests {
+ 
+ class UtMDesktopEntry : public QObject
+@@ -284,9 +290,13 @@ void UtMDesktopEntry::values()
+     } else if (key == "Hidden") {
+         QCOMPARE(entry.hidden() ? QString("true") : QString("false"), expected);
+     } else if (key == "OnlyShowIn") {
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+         QCOMPARE(entry.onlyShowIn(), expected.split(QRegExp("\\s*;\\s*"), QString::SkipEmptyParts));
++#endif
+     } else if (key == "NotShowIn") {
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+         QCOMPARE(entry.notShowIn(), expected.split(QRegExp("\\s*;\\s*"), QString::SkipEmptyParts));
++#endif
+     } else if (key == "TryExec") {
+         QCOMPARE(entry.tryExec(), expected);
+     } else if (key == "Exec") {
+@@ -296,9 +306,13 @@ void UtMDesktopEntry::values()
+     } else if (key == "Terminal") {
+         QCOMPARE(entry.terminal() ? QString("true") : QString("false"), expected);
+     } else if (key == "MimeType") {
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+         QCOMPARE(entry.mimeType(), expected.split(QRegExp("\\s*;\\s*"), QString::SkipEmptyParts));
++#endif
+     } else if (key == "Categories") {
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+         QCOMPARE(entry.categories(), expected.split(QRegExp("\\s*;\\s*"), QString::SkipEmptyParts));
++#endif
+     } else if (key == "StartupNotify") {
+         QCOMPARE(entry.startupNotify() ? QString("true") : QString("false"), expected);
+     } else if (key == "StartupWMClass") {
+@@ -465,21 +479,21 @@ QString UtMDesktopEntry::createDesktopEntry(const Values &values)
+     QTextStream out(m_temporaryFile);
+ 
+     if (values.contains("__head__")) {
+-        out << values.value("__head__") << endl;
++        out << values.value("__head__") << ENDL;
+     } else {
+-        out << "[Desktop Entry]" << endl;
++        out << "[Desktop Entry]" << ENDL;
+     }
+ 
+     QMapIterator<QString, QString> it(values);
+     while (it.hasNext()) {
+         it.next();
+         if (!it.key().startsWith("__")) {
+-            out << it.key() << '=' << it.value() << endl;
++            out << it.key() << '=' << it.value() << ENDL;
+         }
+     }
+ 
+     if (values.contains("__tail__")) {
+-        out << values.value("__tail__") << endl;
++        out << values.value("__tail__") << ENDL;
+     }
+ 
+     return m_temporaryFile->fileName();
+diff --git a/tools/mlitenotificationtool/mlitenotificationtool.cpp b/tools/mlitenotificationtool/mlitenotificationtool.cpp
+index 510fef6..88acd06 100644
+--- a/tools/mlitenotificationtool/mlitenotificationtool.cpp
++++ b/tools/mlitenotificationtool/mlitenotificationtool.cpp
+@@ -27,7 +27,6 @@
+ #include <MNotificationGroup>
+ #include <QString>
+ #include <QStringList>
+-#include <QRegExp>
+ #include <QDateTime>
+ 
+ // Subclasses to gain access to the IDs
+@@ -254,7 +253,7 @@ int main(int argc, char *argv[])
+                              toolNotification->image().toUtf8().constData() << "\t" <<
+                              toolNotification->count() << "\t" <<
+                              toolNotification->identifier().toUtf8().constData() << "\t" <<
+-                             toolNotification->timestamp().toTime_t() << "\t" << std::endl;
++                             toolNotification->timestamp().toMSecsSinceEpoch() / 1000 << "\t" << std::endl;
+                 delete notification;
+             }
+         }
+@@ -287,7 +286,7 @@ int main(int argc, char *argv[])
+             QList<QVariant> arguments;
+ 
+             for (int i = optind + 8; i < argc; ++i) {
+-                arguments.append(QVariant(argv[i]));
++                arguments.append(QVariant(QString(argv[i])));
+             }
+             remoteAction = new MRemoteAction(serviceName, objectPath, interface, methodName, arguments);
+         } else {
+@@ -313,7 +312,7 @@ int main(int argc, char *argv[])
+                     notification.setCount(count);
+                     notification.setIdentifier(identifier);
+                     if (timestamp != 0) {
+-                        notification.setTimestamp(QDateTime::fromTime_t(timestamp));
++                        notification.setTimestamp(QDateTime::fromSecsSinceEpoch(timestamp));
+                     }
+                     notification.publish();
+                     result = notification.id();
+@@ -324,7 +323,7 @@ int main(int argc, char *argv[])
+                     notification.setCount(count);
+                     notification.setIdentifier(identifier);
+                     if (timestamp != 0) {
+-                        notification.setTimestamp(QDateTime::fromTime_t(timestamp));
++                        notification.setTimestamp(QDateTime::fromSecsSinceEpoch(timestamp));
+                     }
+                     notification.publish();
+                     result = notification.id();
+@@ -352,7 +351,7 @@ int main(int argc, char *argv[])
+                 notification.setCount(count);
+                 notification.setIdentifier(identifier);
+                 if (timestamp != 0) {
+-                    notification.setTimestamp(QDateTime::fromTime_t(timestamp));
++                    notification.setTimestamp(QDateTime::fromSecsSinceEpoch(timestamp));
+                 }
+                 notification.publish();
+             }
+-- 
+2.40.1
+
