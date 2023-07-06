@@ -1,4 +1,4 @@
-Reason: qmake6 includes deprecated-declerations, which causes deprecated warnings
+Reason: qmake includes deprecated-declerations, which causes deprecated warnings
 to result in errors. This is something for upstream to solve, so disable.
 Upstream: no
 diff --git a/mkspecs/common.pri b/mkspecs/common.pri
