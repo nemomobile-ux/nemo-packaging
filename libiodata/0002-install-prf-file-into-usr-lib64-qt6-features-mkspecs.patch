@@ -1,0 +1,29 @@
+From 141400833714e218b2d78c9a8bf3be656c6d26ae Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Thu, 6 Jul 2023 08:21:37 +0000
+Subject: [PATCH] install prf file into /usr/lib64/qt6/features/mkspecs
+
+---
+ root.pro | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/root.pro b/root.pro
+index b08561e..0009c8f 100644
+--- a/root.pro
++++ b/root.pro
+@@ -2,7 +2,11 @@ TEMPLATE = subdirs
+ 
+ SUBDIRS = src tests type-to-cxx
+ 
+-prf.path =  $$[QT_INSTALL_DATA]/mkspecs/features
++greaterThan(QT_MAJOR_VERSION, 4) {
++    prf.path = $$[QT_HOST_DATA]/mkspecs/features
++} else {
++    prf.path = $$[QT_INSTALL_DATA]/mkspecs/features
++}
+ equals(QT_MAJOR_VERSION, 4): prf.files = iodata.prf
+ equals(QT_MAJOR_VERSION, 5): prf.files = iodata-qt5.prf
+ equals(QT_MAJOR_VERSION, 6): prf.files = iodata-qt6.prf
+-- 
+2.40.1
+

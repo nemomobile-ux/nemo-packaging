@@ -1,0 +1,156 @@
+From b925100180a6ce0d1806da43fa430a13329df7cf Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Mon, 12 Dec 2022 10:33:30 +0000
+Subject: [PATCH] Fixup qt6 build
+
+---
+ iodata-qt6.prf              | 15 +++++++++++++++
+ root.pro                    |  1 +
+ src/iodata                  |  4 +++-
+ src/src.pro                 |  2 ++
+ src/storage                 |  4 +++-
+ src/validator               |  4 +++-
+ tests/tests.pro             |  1 +
+ type-to-cxx/type-to-cxx.cpp |  4 +++-
+ type-to-cxx/type-to-cxx.pro |  2 ++
+ 9 files changed, 33 insertions(+), 4 deletions(-)
+ create mode 100644 iodata-qt6.prf
+
+diff --git a/iodata-qt6.prf b/iodata-qt6.prf
+new file mode 100644
+index 0000000..0bfb5ae
+--- /dev/null
++++ b/iodata-qt6.prf
+@@ -0,0 +1,15 @@
++LIBS += -liodata-qt6
++
++QMAKE_EXTRA_COMPILERS += iodata_type_to_cxx iodata_type_to_h
++
++iodata_type_to_cxx.input = IODATA_TYPES
++iodata_type_to_cxx.output = iodata_${QMAKE_FILE_IN_BASE}.cpp
++iodata_type_to_cxx.variable_out = SOURCES
++iodata_type_to_cxx.commands = iodata-qt6-type-to-c++ ${QMAKE_FILE_IN} -o iodata_${QMAKE_FILE_IN_BASE}.cpp -d ${QMAKE_FILE_IN}.h
++
++iodata_type_to_h.input = IODATA_TYPES
++iodata_type_to_h.output = ${QMAKE_FILE_IN}.h
++iodata_type_to_h.variable_out = HEADERS
++iodata_type_to_h.commands = iodata-qt6-type-to-c++ ${QMAKE_FILE_IN} -o iodata_${QMAKE_FILE_IN_BASE}.cpp -d ${QMAKE_FILE_IN}.h
++
++# iodata-qt6-type-to-c++ ${QMAKE_FILE_IN} -d ${QMAKE_FILE_OUT}
+diff --git a/root.pro b/root.pro
+index 27b6a01..b08561e 100644
+--- a/root.pro
++++ b/root.pro
+@@ -5,6 +5,7 @@ SUBDIRS = src tests type-to-cxx
+ prf.path =  $$[QT_INSTALL_DATA]/mkspecs/features
+ equals(QT_MAJOR_VERSION, 4): prf.files = iodata.prf
+ equals(QT_MAJOR_VERSION, 5): prf.files = iodata-qt5.prf
++equals(QT_MAJOR_VERSION, 6): prf.files = iodata-qt6.prf
+ 
+ INSTALLS = prf
+ 
+diff --git a/src/iodata b/src/iodata
+index 53c5b82..13ce684 100644
+--- a/src/iodata
++++ b/src/iodata
+@@ -1,5 +1,7 @@
+ #include <QtGlobal>
+-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <iodata-qt6/iodata.h>
++#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+ #include <iodata-qt5/iodata.h>
+ #else
+ #include <iodata/iodata.h>
+diff --git a/src/src.pro b/src/src.pro
+index 0365e8b..03744de 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -7,11 +7,13 @@ SOURCES = iodata.cpp validator.cpp storage.cpp misc.cpp
+ 
+ equals(QT_MAJOR_VERSION, 4): TARGET = iodata
+ equals(QT_MAJOR_VERSION, 5): TARGET = iodata-qt5
++equals(QT_MAJOR_VERSION, 6): TARGET = iodata-qt6
+ target.path = $$[QT_INSTALL_LIBS]
+ 
+ devheaders.files = iodata.h validator.h storage.h iodata validator storage
+ equals(QT_MAJOR_VERSION, 4): devheaders.path  = /usr/include/iodata
+ equals(QT_MAJOR_VERSION, 5): devheaders.path  = /usr/include/iodata-qt5
++equals(QT_MAJOR_VERSION, 6): devheaders.path  = /usr/include/iodata-qt6
+ 
+ INSTALLS = target devheaders
+ 
+diff --git a/src/storage b/src/storage
+index c24b5e6..92c5589 100644
+--- a/src/storage
++++ b/src/storage
+@@ -1,5 +1,7 @@
+ #include <QtGlobal>
+-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <iodata-qt6/storage.h>
++#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+ #include <iodata-qt5/storage.h>
+ #else
+ #include <iodata/storage.h>
+diff --git a/src/validator b/src/validator
+index a1b3dc9..94953ae 100644
+--- a/src/validator
++++ b/src/validator
+@@ -1,5 +1,7 @@
+ #include <QtGlobal>
+-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <iodata-qt6/validator.h>
++#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+ #include <iodata-qt5/validator.h>
+ #else
+ #include <iodata/validator.h>
+diff --git a/tests/tests.pro b/tests/tests.pro
+index c14da29..b22d4b9 100644
+--- a/tests/tests.pro
++++ b/tests/tests.pro
+@@ -4,6 +4,7 @@ QT -= gui
+ 
+ equals(QT_MAJOR_VERSION, 4): PACKAGENAME = iodata
+ equals(QT_MAJOR_VERSION, 5): PACKAGENAME = iodata-qt5
++equals(QT_MAJOR_VERSION, 6): PACKAGENAME = iodata-qt6
+ 
+ TARGET = $${PACKAGENAME}-test
+ 
+diff --git a/type-to-cxx/type-to-cxx.cpp b/type-to-cxx/type-to-cxx.cpp
+index 8d79823..ccffa45 100644
+--- a/type-to-cxx/type-to-cxx.cpp
++++ b/type-to-cxx/type-to-cxx.cpp
+@@ -14,7 +14,9 @@ using namespace std ;
+ 
+ void dump_h(ostringstream &h, iodata::validator *v)
+ {
+-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++  h << "#include <iodata-qt6/validator>" << endl ;
++#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+   h << "#include <iodata-qt5/validator>" << endl ;
+ #else
+   h << "#include <iodata/validator>" << endl ;
+diff --git a/type-to-cxx/type-to-cxx.pro b/type-to-cxx/type-to-cxx.pro
+index 47290c9..cce85d7 100644
+--- a/type-to-cxx/type-to-cxx.pro
++++ b/type-to-cxx/type-to-cxx.pro
+@@ -3,11 +3,13 @@ TEMPLATE = app
+ QT -= gui
+ equals(QT_MAJOR_VERSION, 4): TARGET = iodata-type-to-c++
+ equals(QT_MAJOR_VERSION, 5): TARGET = iodata-qt5-type-to-c++
++equals(QT_MAJOR_VERSION, 6): TARGET = iodata-qt6-type-to-c++
+ 
+ INSTALLS = target
+ 
+ equals(QT_MAJOR_VERSION, 4): LIBS += -liodata -lcrypt
+ equals(QT_MAJOR_VERSION, 5): LIBS += -liodata-qt5 -lcrypt
++equals(QT_MAJOR_VERSION, 6): LIBS += -liodata-qt6 -lcrypt
+ QMAKE_LIBDIR_FLAGS += -L../src
+ 
+ SOURCES = type-to-cxx.cpp
+-- 
+2.40.1
+
