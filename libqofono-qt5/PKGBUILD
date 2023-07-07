@@ -12,16 +12,20 @@ url="https://github.com/sailfishos/libqofono"
 license=('LGPL')
 provides=('libqofono')
 depends=('qt6-declarative'
-    'qt6-xmlpatterns'
+#    'qt6-xmlpatterns'
     'ofono>=1.29')
 
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-        "context-preferred.patch"
-        "mtk_settings_binding.patch")
+    "context-preferred.patch"
+    "mtk_settings_binding.patch"
+    "0001-Allow-build-with-qt6.patch"
+)
 
 sha256sums=('f024fb34a7e834053c84031a3baf9a9b3f4243168fb6fd5844dfef412882f4ec'
-         'f793347078553903c7e6f6b235091c1863b18cd9b4078f34addc7a3ded7f2bd8'
-         '1f63b04d05be4988498cba96c9700d6f4b6237325d65e508cf6fa2f21247a765')
+    'f793347078553903c7e6f6b235091c1863b18cd9b4078f34addc7a3ded7f2bd8'
+    '1f63b04d05be4988498cba96c9700d6f4b6237325d65e508cf6fa2f21247a765'
+    '0322a2264a718c237252740dd4dc2ba577a8407601501076b72b4b3cfe85ff7f'
+)
 
 prepare() {
     cd libqofono-$pkgver
@@ -33,6 +37,7 @@ prepare() {
     # Not upstreamed patches
     patch -Np1 -i "${srcdir}/context-preferred.patch"
     patch -Np1 -i "${srcdir}/mtk_settings_binding.patch"
+    patch -Np1 -i "${srcdir}/0001-Allow-build-with-qt6.patch"
 }
 
 build() {
