@@ -7,6 +7,7 @@
 
 pkgname=qt6-quickcontrols-nemo-examples-git
 pkgver=5.7.7.r2.g5e992b6
+_branch=qt6
 
 pkgrel=1
 pkgdesc="Nemomobile Qt Quick Controls"
@@ -20,8 +21,8 @@ depends=('qt6-quickcontrols-nemo'
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
-md5sums=('SKIP')
+source=("${pkgname}::git+${url}#branch=${_branch}")
+sha256sums=('SKIP')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
