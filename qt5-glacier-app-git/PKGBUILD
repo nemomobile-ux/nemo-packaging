@@ -36,6 +36,7 @@ build() {
     mkdir -p build
     cd build
     cmake \
+	-DUSE_QT6:BOOL=true \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	-DCMAKE_INSTALL_LIBDIR=lib \
