@@ -11,8 +11,19 @@ url="https://github.com/sailfishos/libmce-qt"
 license=('BSD-3-Clause')
 depends=('qt6-declarative')
 makedepends=('mce>=1.112' 'mce-headers')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('f05814a71551012edcc5fcd9d2861cbd2cb66f011ae61b5ff02b103fa01c74be')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-Allow-build-with-qt6.patch'
+)
+sha256sums=('f05814a71551012edcc5fcd9d2861cbd2cb66f011ae61b5ff02b103fa01c74be'
+    '7e39698e46841406d4cd896c91cda904dc1ec6a7ae2dded1acad07aede9d06e3')
+
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-Allow-build-with-qt6.patch"
+}
+
+
 
 build() {
   cd $pkgname-$pkgver
