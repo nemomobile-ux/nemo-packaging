@@ -2,33 +2,30 @@
 
 
 pkgname=libofono-qt
-pkgver=0.54_git20190116
+pkgver=0.54_git20230526
 pkgrel=1
 pkgdesc='This package contains ofono-qt, a Qt-based library that providesbindings to oFono'
 arch=('aarch64' 'x86_64')
 url="https://github.com/Kaffeine/libofono-qt"
 license=('LGPL')
 makedepends=('qt6-base' 'doxygen')
-_commit="8132b5ff5035c468807c291b4fa30d7e0a54cba4"
+_commit="1d3fa9d7523a07fc117f96c89b5f66bb03e0acd4"
 source=("$pkgname-$_commit.tar.gz::https://github.com/Kaffeine/$pkgname/archive/$_commit.tar.gz")
-md5sums=('445bd89a988abb6698321ab95e3197da')
+sha256sums=('90e62e4056e6b5f5992623ff3d34a21f03e7a65d637ebf9b419f9e7c16e47ccb')
 
 #pkgver() {
 #  cd $pkgname-$_commit
 #  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
 #}
 
-
 build() {
-  cd $pkgname-$_commit
+    cd $pkgname-$_commit
     qmake6
-	make
-
+    make
 }
 
 package() {
-  cd $pkgname-$_commit
+    cd $pkgname-$_commit
     INSTALL_ROOT="$pkgdir" make install
-
 }
 
