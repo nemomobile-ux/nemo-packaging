@@ -11,7 +11,7 @@ depends=(
     'qt6-base'
     'curl'
     'maplibre-gl-native'
-    'qt6-location'
+    'qt6-positioning'
     'qt6-svg'
 )
 makedepends=('cmake')
