@@ -12,7 +12,7 @@ _branch=master
 _gitname=lib${_basename//-/}
 pkgname=qt6-$_basename-git
 
-pkgver=0.8.2.r17.ge28022e
+pkgver=0.9.2.r6.g628f0db
 
 pkgrel=1
 pkgdesc="Glacier Application library"

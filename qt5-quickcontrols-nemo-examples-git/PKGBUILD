@@ -6,7 +6,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt6-quickcontrols-nemo-examples-git
-pkgver=5.7.7.r2.g5e992b6
+pkgver=5.7.7.r22.gee24cab
 _branch=qt6
 
 pkgrel=1
