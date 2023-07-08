@@ -1,0 +1,93 @@
+From 88c2f11cf4c042ad416c554d0a736daca9ebf052 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sat, 8 Jul 2023 16:13:42 +0000
+Subject: [PATCH] allow compilation with qt6
+
+---
+ .gitignore        | 11 +++++++++++
+ plugin/plugin.pro | 13 ++++++++++---
+ src/src.pro       | 14 ++++++++++----
+ 3 files changed, 31 insertions(+), 7 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 439ae67..27569ca 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -2,3 +2,14 @@
+ build
+ .DS_Store
+ *.pro.user
++.qmake.stash
++Makefile
++plugin/Makefile
++plugin/libqofonoextdeclarative*.so*
++src/Makefile
++src/libqofonoext*.prl
++src/libqofonoext*.so*
++src/pkgconfig/
++moc_*
++*.o
++*.moc
+diff --git a/plugin/plugin.pro b/plugin/plugin.pro
+index e1334c5..1123007 100644
+--- a/plugin/plugin.pro
++++ b/plugin/plugin.pro
+@@ -1,14 +1,21 @@
+-TARGET=qofonoextdeclarative
++equals(QT_MAJOR_VERSION, 6) {
++    QOFONOEXT_SUFFIX = 6
++} else {
++    QOFONOEXT_SUFFIX =
++}
++
++
++TARGET=qofonoextdeclarative$${QOFONOEXT_SUFFIX}
+ TEMPLATE = lib
+ CONFIG += plugin link_pkgconfig
+-PKGCONFIG += qofono-qt5
++PKGCONFIG += qofono-qt$${QT_MAJOR_VERSION}
+ QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-psabi
+ 
+ QT_VERSION=$$[QT_VERSION]
+ 
+ QT += qml dbus
+ QT -= gui
+-LIBS += -L../src -lqofonoext
++LIBS += -L../src -lqofonoext$${QOFONOEXT_SUFFIX}
+ 
+ INCLUDEPATH += ../src
+ 
+diff --git a/src/src.pro b/src/src.pro
+index 42f6543..ec999e2 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -1,6 +1,12 @@
+-TARGET = qofonoext
++equals(QT_MAJOR_VERSION, 6) {
++    QOFONOEXT_SUFFIX = 6
++} else {
++    QOFONOEXT_SUFFIX =
++}
++
++TARGET = qofonoext$${QOFONOEXT_SUFFIX}
+ CONFIG += create_pc create_prl no_install_prl link_pkgconfig
+-PKGCONFIG += qofono-qt5
++PKGCONFIG += qofono-qt$${QT_MAJOR_VERSION}
+ 
+ QT += dbus
+ QT -= gui
+@@ -43,9 +49,9 @@ HEADERS += \
+ target.path = $$[QT_INSTALL_LIBS]
+ 
+ headers.files = $$PUBLIC_HEADERS
+-headers.path = $$INSTALL_ROOT$$PREFIX/include/qofonoext
++headers.path = $$INSTALL_ROOT$$PREFIX/include/qofonoext$${QOFONOEXT_SUFFIX}
+ 
+-pkgconfig.files = qofonoext.pc
++pkgconfig.files = qofonoext$${QOFONOEXT_SUFFIX}.pc
+ pkgconfig.path = $$[QT_INSTALL_LIBS]/pkgconfig
+ 
+ QMAKE_PKGCONFIG_NAME = $$TARGET
+-- 
+2.40.1
+
