@@ -4,27 +4,20 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="github.com"
-_project=nemomobile-ux
-_basename=glacier-filemuncher
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
-pkgver=0.3.2.r5.gd604c62
-
+_branch=qt6
+pkgname=glacier-filemuncher-git
+pkgver=0.3.3.r1.g74215dc
 pkgrel=1
 pkgdesc="The Glacier file manager"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/nemomobile-ux/glacier-filemuncher"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-folderlistmodel')
 optdepends=()
 makedepends=('git' 'cmake' 'qt6-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
+source=("${pkgname}::git+${url}#branch=$_branch")
 sha256sums=('SKIP')
 
 pkgver() {
