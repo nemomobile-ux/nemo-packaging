@@ -22,7 +22,6 @@ depends=('qt6-systems'
 	'mce>=1.113.0'
 	'nemo-qml-plugin-dbus'
 	'libqofono-qt6>=0.105'
-	'qt6-xmlpatterns'
 	'openssl>=3.0')
 
 makedepends=('qt6-tools' 'mce-headers>=1.32.0' 'pkgconf')
