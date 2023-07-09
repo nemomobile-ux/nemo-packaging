@@ -1,7 +1,7 @@
-From 7ed58e95d9ae8bf1ebe7216a5f29bd2f2ab24a99 Mon Sep 17 00:00:00 2001
+From d7bc5e889f2adc634633f72c939d50802373717b Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
-Date: Sun, 9 Jul 2023 11:23:51 +0000
-Subject: [PATCH 2/2] features/mkspecs must go to /usr/share/
+Date: Sun, 9 Jul 2023 11:37:22 +0000
+Subject: [PATCH] features/mkspecs must go to /usr/lib
 
 ---
  src/nemo-devicelock/host/host.pro | 2 +-

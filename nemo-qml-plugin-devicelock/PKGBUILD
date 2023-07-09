@@ -15,12 +15,12 @@ license=('BSD-3-Clause')
 depends=('nemo-qml-plugin-dbus' 'nemo-keepalive')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	'0001-Build-with-qt6-qmlRegisterType-is-obsolete.patch'
-	'0002-features-mkspecs-must-go-to-usr-share.patch'
+	'0002-features-mkspecs-must-go-to-usr-lib.patch'
 	"nemo-devicelock.service"
 	"nemo-devicelock.socket")
 sha256sums=('34f15fbfebba912579e07d013ef695712560e86d85002ca9a519be194a82900a'
 	'8817d715178f6d7b5231afc0965ec15eb7aedb27fc57abe02e9c2ad4e852e21c'
-	'efa4d338bcd8183c67c87d5206021091293fa8a61c9a427868cd502655bd48b5'
+	'68cbac01103d4ffe0ce6885199976903a1cbf1f3c8eb731595d59a032044f886'  
 	'460a0ad1d48f16d31ee26828536ce8bc6745f37de1b1a725d6b6c0e186eabb8e'
 	'cd9c280bf80a62c5a67b1369b085328ccc2886addcacd2c18eb3498f41d0fee1')
 
@@ -29,7 +29,7 @@ prepare() {
     sed -i "s|libsystemd-daemon|libsystemd|g" ./src/nemo-devicelock/host/host.pro
     sed -i "s|libsystemd-daemon|libsystemd|g" ./src/daemon/daemon.pro
     patch -p1 --input="${srcdir}/0001-Build-with-qt6-qmlRegisterType-is-obsolete.patch"
-    patch -p1 --input="${srcdir}/0002-features-mkspecs-must-go-to-usr-share.patch"
+    patch -p1 --input="${srcdir}/0002-features-mkspecs-must-go-to-usr-lib.patch"
 }
 
 build() {
