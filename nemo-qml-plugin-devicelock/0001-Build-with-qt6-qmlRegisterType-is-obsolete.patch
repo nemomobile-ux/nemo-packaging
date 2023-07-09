@@ -1,0 +1,28 @@
+From 18d5c35e2af3ec7c8e063bf319c62aa0798cc39a Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 9 Jul 2023 11:18:23 +0000
+Subject: [PATCH] Build with qt6: qmlRegisterType is obsolete
+
+---
+ src/plugin/plugin.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/plugin/plugin.cpp b/src/plugin/plugin.cpp
+index aeb4600..e661d0b 100644
+--- a/src/plugin/plugin.cpp
++++ b/src/plugin/plugin.cpp
+@@ -75,7 +75,11 @@ public:
+         qDBusRegisterMetaType<NemoDeviceLock::Fingerprint>();
+         qDBusRegisterMetaType<QVector<NemoDeviceLock::Fingerprint>>();
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        qmlRegisterAnonymousType<NemoDeviceLock::FingerprintModel>(uri, 1);
++#else
+         qmlRegisterType<NemoDeviceLock::FingerprintModel>();
++#endif
+ 
+         qmlRegisterSingletonType<NemoDeviceLock::DeviceLock>(uri, 1, 0, "DeviceLock", createDeviceLock);
+ 
+-- 
+2.40.1
+
