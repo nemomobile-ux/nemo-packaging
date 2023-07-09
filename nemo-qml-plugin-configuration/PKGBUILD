@@ -34,10 +34,5 @@ build() {
 package() {
     cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
-    cd "$pkgdir"
-    mkdir -p ${pkgdir}/usr/lib/qt6/qml/org/nemomobile/configuration/
-    ln -sf /usr/lib/qt6/qml/Nemo/Configuration/libnemoconfiguration.so ${pkgdir}/usr/lib/qt6/qml/org/nemomobile/configuration/
-    sed 's/Nemo.Configuration/org.nemomobile.configuration/' < ${pkgdir}/usr/lib/qt6/qml/Nemo/Configuration/qmldir > ${pkgdir}/usr/lib/qt6/qml/org/nemomobile/configuration/qmldir
-
     rm -rf $pkgdir/opt
 }
