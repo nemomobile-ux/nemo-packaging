@@ -4,7 +4,7 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_branch=qt6
+_branch=master
 pkgname=glacier-filemuncher-git
 pkgver=0.3.3.r1.g74215dc
 pkgrel=1

@@ -1,6 +1,6 @@
 # $Id$
 
-_branch=qt6
+_branch=master
 pkgname=glacier-browser-git
 pkgver=0.1.3.r1.g1629ff9
 pkgrel=1

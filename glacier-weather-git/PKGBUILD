@@ -1,6 +1,6 @@
 # $Id$
 
-_branch=qt6
+_branch=master
 pkgname=glacier-weather-git
 pkgver=0.1.r20.gc88bed0
 pkgrel=1
