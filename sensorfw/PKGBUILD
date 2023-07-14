@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=sensorfw
-pkgver=0.14.3
+pkgver=0.14.4
 pkgrel=1
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')
@@ -11,13 +11,17 @@ license=('LGPLv2')
 depends=('libngf' 'libiphb' 'mlite')
 makedepends=('doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-fix-build-with-qt6.patch'
     "sensorfwd.service")
-sha256sums=('2246b0d18735ebd0f4cf6bdea248256772dcb2c19784d6cd5f63450f3edc9223'
-    '1fd8fb7c0f073b562957b10ee6351137c612f8250eaf64bffe72328bf60641d3')
+sha256sums=('f087b15051aad15f038844a6306d560da7fedb5f9a0b2d6fc647a297dd06b853'
+    '9a02e545a52ba505a5a5e421783c035212162e2a63c4dcbfef55c9169a303cdf'
+    '1fd8fb7c0f073b562957b10ee6351137c612f8250eaf64bffe72328bf60641d3'
+)
 
 prepare() {
     cd $pkgname-$pkgver
-    sed "s=@LIB@=lib=g" sensord-qt5.pc.in > sensord-qt5.pc
+    patch -p1 --input="${srcdir}/0001-fix-build-with-qt6.patch"
+    sed "s=@LIB@=lib=g" sensord-qt6.pc.in > sensord-qt6.pc
     sed "s=@LIBDIR@=/usr/lib=g" tests/tests.xml.in > tests/tests.xml
     unset LD_AS_NEEDED
     export LD_RUN_PATH=/usr/lib/sensord-qt6/
@@ -36,10 +40,6 @@ package() {
     make -j 1 INSTALL_ROOT="$pkgdir/" install
     mv $pkgdir/usr/sbin/* $pkgdir/usr/bin/
     rm -rf $pkgdir/usr/sbin/
-
-    # move *.prf into right folder
-    mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
-    mv ${pkgdir}/usr/share/qt6/mkspecs/features/sensord.prf ${pkgdir}/usr/lib/qt/mkspecs/features/sensord.prf
 
     mkdir -p $pkgdir/usr/lib/systemd/system/graphical.target.wants
     cp ${srcdir}/sensorfwd.service $pkgdir/usr/lib/systemd/system/
