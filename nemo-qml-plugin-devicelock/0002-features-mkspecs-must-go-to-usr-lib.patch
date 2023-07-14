@@ -1,4 +1,4 @@
-From d7bc5e889f2adc634633f72c939d50802373717b Mon Sep 17 00:00:00 2001
+From a3e55f02fa5653ee7ddcd3cb4fe2f2a5325de779 Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Sun, 9 Jul 2023 11:37:22 +0000
 Subject: [PATCH] features/mkspecs must go to /usr/lib
@@ -8,7 +8,7 @@ Subject: [PATCH] features/mkspecs must go to /usr/lib
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/nemo-devicelock/host/host.pro b/src/nemo-devicelock/host/host.pro
-index f51a127..c0f2484 100644
+index f51a127..4d3a6d2 100644
 --- a/src/nemo-devicelock/host/host.pro
 +++ b/src/nemo-devicelock/host/host.pro
 @@ -60,7 +60,7 @@ headers.path = /usr/include/nemo-devicelock/host
@@ -16,7 +16,7 @@ index f51a127..c0f2484 100644
  # publish dependencies in a maintainable way instead.
  prf.files = nemo-devicelock-host.prf
 -prf.path = $$[QT_INSTALL_DATA]/mkspecs/features
-+prf.path = $$[QT_INSTALL_HOST]/mkspecs/features
++prf.path = $$[QT_HOST_DATA]/mkspecs/features
  
  target.path = $$[QT_INSTALL_LIBS]
  

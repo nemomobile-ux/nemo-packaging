@@ -7,7 +7,7 @@
 
 pkgname=nemo-qml-plugin-devicelock
 pkgver=0.3.8
-pkgrel=1
+pkgrel=2
 pkgdesc="Device lock plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-devicelock"
@@ -20,7 +20,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	"nemo-devicelock.socket")
 sha256sums=('34f15fbfebba912579e07d013ef695712560e86d85002ca9a519be194a82900a'
 	'8817d715178f6d7b5231afc0965ec15eb7aedb27fc57abe02e9c2ad4e852e21c'
-	'68cbac01103d4ffe0ce6885199976903a1cbf1f3c8eb731595d59a032044f886'  
+	'7e509ec46fb9bfc977a170e4494d14a23e5c23de05ded6c4690104c087472d5e'
 	'460a0ad1d48f16d31ee26828536ce8bc6745f37de1b1a725d6b6c0e186eabb8e'
 	'cd9c280bf80a62c5a67b1369b085328ccc2886addcacd2c18eb3498f41d0fee1')
 
