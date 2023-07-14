@@ -13,8 +13,17 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/qtmpris"
 license=('LGPL-2.1-or-later')
 depends=('qt6-declarative')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('384eac76ec7d29d1de6fa93c45007ccd506d6cc0e4c69e19d4250e16cc0f34a2')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-fix-build-with-qt6.patch'
+)
+sha256sums=('384eac76ec7d29d1de6fa93c45007ccd506d6cc0e4c69e19d4250e16cc0f34a2'
+    '7b7d81deed68b7eb0d72ec34f773c2375ccc30ff427a2379bc281578dac3a016'  
+)
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-fix-build-with-qt6.patch"
+}
 
 build() {
     cd $pkgname-$pkgver
