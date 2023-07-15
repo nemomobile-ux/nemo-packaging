@@ -6,7 +6,7 @@
 
 pkgname=libqofonoext
 pkgver=1.0.30
-pkgrel=1
+pkgrel=2
 pkgdesc="A Qt library for accessing nemomobile specific ofono extensions"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libqofonoext"
@@ -16,7 +16,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-allow-compilation-with-qt6.patch'
 )
 sha256sums=('f971732a80263cf05c8e85c37eac22b0ef2d10cc10b48bafdce0f3dd7440a25e'
-    'bd03dd0b5f400758f605a3a21f03fab44c6a9799ac0803ca92fbb6f2911c2c39'
+    'd083f78ceb4a30d9ec8e5efe674d26ec7a8a4447d2bf1ea048e34b4d0107d174'
 )
 
 prepare() {
