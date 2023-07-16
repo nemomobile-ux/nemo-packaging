@@ -10,13 +10,23 @@ url="https://github.com/Kaffeine/libofono-qt"
 license=('LGPL')
 makedepends=('qt6-base' 'doxygen')
 _commit="1d3fa9d7523a07fc117f96c89b5f66bb03e0acd4"
-source=("$pkgname-$_commit.tar.gz::https://github.com/Kaffeine/$pkgname/archive/$_commit.tar.gz")
-sha256sums=('90e62e4056e6b5f5992623ff3d34a21f03e7a65d637ebf9b419f9e7c16e47ccb')
+source=("$pkgname-$_commit.tar.gz::https://github.com/Kaffeine/$pkgname/archive/$_commit.tar.gz"
+    '0001-operator-const.patch'
+)
+sha256sums=('90e62e4056e6b5f5992623ff3d34a21f03e7a65d637ebf9b419f9e7c16e47ccb'
+    '4f07a8b0d7e53d5af38377a20d35c84236550a4f12337d58e458ef4b7530845b'
+)
 
 #pkgver() {
 #  cd $pkgname-$_commit
 #  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
 #}
+
+
+prepare() {
+  cd $pkgname-$_commit
+  patch -p1 --input="${srcdir}/0001-operator-const.patch"
+}
 
 build() {
     cd $pkgname-$_commit
