@@ -11,7 +11,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libmlocale"
 license=('LGPLv2')
 depends=('qt6-base'
-	'icu=72.1')
+	'icu=73.2')
 makedepends=( 'qt6-tools')
 source=(
   "${url}/archive/refs/tags/$pkgver.tar.gz"
