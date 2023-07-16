@@ -8,8 +8,18 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-social"
 license=('BSD')
 depends=('qt6-base' 'qt6-declarative')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('0f65c035946346e6d005d3c240226a4719079b932ac770ce628cab0e8d964131')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-build-with-Qt6.patch'
+)
+sha256sums=('0f65c035946346e6d005d3c240226a4719079b932ac770ce628cab0e8d964131'
+    'c471febdd407ede128eaf472206fab3d201cc1a23e5ac8b75a436d8c87048070'
+)
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-build-with-Qt6.patch"
+}
+
 
 build() {
     cd $pkgname-$pkgver
