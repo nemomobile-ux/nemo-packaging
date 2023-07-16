@@ -16,7 +16,7 @@ depends=('libphonenumber-nemo'
 	'mce-headers'
 	'qtcontacts-sqlite'
 	'buteo-sync-plugin-carddav'
-	'icu=72.1')
+	'icu=73.2')
 
 makedepends=('qt5-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
