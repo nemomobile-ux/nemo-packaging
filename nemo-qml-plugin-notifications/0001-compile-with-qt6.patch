@@ -1,0 +1,48 @@
+From 4c17372b8f3711828a4e10cc175b192bedb515fa Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 16 Jul 2023 12:06:07 +0000
+Subject: [PATCH] compile with qt6
+
+---
+ src/plugin/plugin.pro | 2 +-
+ src/src.pro           | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/plugin/plugin.pro b/src/plugin/plugin.pro
+index 2d90052..7837f62 100644
+--- a/src/plugin/plugin.pro
++++ b/src/plugin/plugin.pro
+@@ -8,7 +8,7 @@ CONFIG += qt plugin hide_symbols
+ QT += qml
+ 
+ INCLUDEPATH += ..
+-LIBS += -L.. -lnemonotifications-qt5
++LIBS += -L.. -lnemonotifications-qt$${QT_MAJOR_VERSION}
+ SOURCES += plugin.cpp
+ 
+ target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
+diff --git a/src/src.pro b/src/src.pro
+index 5b383ba..96cee9e 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -1,7 +1,7 @@
+ system($$[QT_HOST_BINS]/qdbusxml2cpp org.freedesktop.Notifications.xml -p notificationmanagerproxy -c NotificationManagerProxy -i notification_p.h)
+ 
+ TEMPLATE = lib
+-TARGET = nemonotifications-qt5
++TARGET = nemonotifications-qt$${QT_MAJOR_VERSION}
+ CONFIG += qt hide_symbols create_pc create_prl
+ QT += dbus
+ 
+@@ -17,7 +17,7 @@ target.path = $$[QT_INSTALL_LIBS]
+ pkgconfig.files = $$TARGET.pc
+ pkgconfig.path = $$target.path/pkgconfig
+ headers.files = notification.h notification_p.h
+-headers.path = /usr/include/nemonotifications-qt5
++headers.path = /usr/include/nemonotifications-qt$${QT_MAJOR_VERSION}
+ 
+ QMAKE_PKGCONFIG_NAME = lib$$TARGET
+ QMAKE_PKGCONFIG_DESCRIPTION = Convenience library for sending notifications
+-- 
+2.41.0
+
