@@ -51,7 +51,7 @@ package() {
 
     # move *.prf into right folder
     mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
-    mv ${pkgdir}/usr/share/qt6/mkspecs/features/qofono-qt6.prf ${pkgdir}/usr/lib/qt/mkspecs/features/qofono-qt6.prf
+    mv ${pkgdir}/usr/share/qt6/mkspecs/features/qofono-qt6.prf ${pkgdir}/usr/lib/qt6/mkspecs/features/qofono-qt6.prf
 
     rm -r "$pkgdir/opt"
 }
