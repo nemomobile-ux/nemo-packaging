@@ -50,7 +50,7 @@ package() {
     make -j 1 INSTALL_ROOT="$pkgdir/" install
 
     # move *.prf into right folder
-    mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
+    mkdir -p ${pkgdir}/usr/lib/qt6/mkspecs/features/
     mv ${pkgdir}/usr/share/qt6/mkspecs/features/qofono-qt6.prf ${pkgdir}/usr/lib/qt6/mkspecs/features/qofono-qt6.prf
 
     rm -r "$pkgdir/opt"
