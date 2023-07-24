@@ -1,0 +1,27 @@
+From 654576eeb6424808ee8d782bad1cceb18bc85d56 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Mon, 24 Jul 2023 17:12:01 +0000
+Subject: [PATCH] usb_moded-dbus interface should define either direction or
+ add annotation for both
+
+---
+ src/usb_moded-dbus.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/usb_moded-dbus.c b/src/usb_moded-dbus.c
+index 537a866..22a5451 100644
+--- a/src/usb_moded-dbus.c
++++ b/src/usb_moded-dbus.c
+@@ -1032,7 +1032,8 @@ static const member_info_t usb_moded_members[] =
+                "      <arg name=\"mode\" type=\"s\"/>\n"),
+     ADD_SIGNAL(USB_MODE_TARGET_CONFIG_SIGNAL_NAME,
+                "      <arg name=\"config\" type=\"a{sv}\"/>\n"
+-               "      <annotation name=\"org.qtproject.QtDBus.QtTypeName.In0\" value=\"QVariantMap\"/>\n"),
++               "      <annotation name=\"org.qtproject.QtDBus.QtTypeName.In0\" value=\"QVariantMap\"/>\n"
++               "      <annotation name=\"org.qtproject.QtDBus.QtTypeName.Out0\" value=\"QVariantMap\"/>\n"),
+     ADD_SIGNAL(USB_MODE_EVENT_SIGNAL_NAME,
+                "      <arg name=\"event\" type=\"s\"/>\n"),
+     ADD_SIGNAL(USB_MODE_CONFIG_SIGNAL_NAME,
+-- 
+2.41.0
+
