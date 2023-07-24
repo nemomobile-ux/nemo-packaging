@@ -25,11 +25,11 @@ prepare() {
   mkdir -p src/h/timed-qt6/
   cp src/lib/qmacro.h src/h/timed-qt6/qmacro.h
   sed -i "s|libsystemd-daemon|libsystemd|g" ./src/server/server.pro
-  iodata-qt6-type-to-c++ -o src/server/tzdata.type.h src/server/tzdata.type
-  iodata-qt6-type-to-c++ -o src/server/config.type.h src/server/config.type
-  iodata-qt6-type-to-c++ -o src/server/customization.type.h src/server/customization.type
-  iodata-qt6-type-to-c++ -o src/server/queue.type.h src/server/queue.type
-  iodata-qt6-type-to-c++ -o src/server/settings.type.h src/server/settings.type
+  iodata-qt6-type-to-c++ -o src/server/tzdata.type.cpp -d src/server/tzdata.type.h src/server/tzdata.type
+  iodata-qt6-type-to-c++ -o src/server/config.type.cpp -d src/server/config.type.h src/server/config.type
+  iodata-qt6-type-to-c++ -o src/server/customization.type.cpp -d src/server/customization.type.h src/server/customization.type
+  iodata-qt6-type-to-c++ -o src/server/queue.type.cpp -d src/server/queue.type.h src/server/queue.type
+  iodata-qt6-type-to-c++ -o src/server/settings.type.cpp -d src/server/settings.type.h src/server/settings.type
 }
 
 build() {
