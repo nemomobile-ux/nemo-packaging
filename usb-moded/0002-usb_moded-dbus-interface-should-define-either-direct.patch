@@ -1,13 +1,26 @@
-From 654576eeb6424808ee8d782bad1cceb18bc85d56 Mon Sep 17 00:00:00 2001
+From 0c48875866cd8e675240054ec1da23fb326366d8 Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Mon, 24 Jul 2023 17:12:01 +0000
 Subject: [PATCH] usb_moded-dbus interface should define either direction or
  add annotation for both
 
 ---
- src/usb_moded-dbus.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ src/com.meego.usb_moded.xml | 1 +
+ src/usb_moded-dbus.c        | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/src/com.meego.usb_moded.xml b/src/com.meego.usb_moded.xml
+index 9459bd5..ed4d967 100644
+--- a/src/com.meego.usb_moded.xml
++++ b/src/com.meego.usb_moded.xml
+@@ -82,6 +82,7 @@
+     <signal name="sig_usb_taget_mode_config_ind">
+       <arg name="config" type="a{sv}"/>
+       <annotation name="org.qtproject.QtDBus.QtTypeName.In0" value="QVariantMap"/>
++      <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
+     </signal>
+     <signal name="sig_usb_event_ind">
+       <arg name="event" type="s"/>
 diff --git a/src/usb_moded-dbus.c b/src/usb_moded-dbus.c
 index 537a866..22a5451 100644
 --- a/src/usb_moded-dbus.c
