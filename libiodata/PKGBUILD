@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libiodata
-pkgver=0.19.12
+pkgver=0.19.13
 pkgrel=1
 pkgdesc="Mer library for input/output data"
 arch=('x86_64' 'aarch64')
@@ -15,18 +15,18 @@ depends=('qt6-base')
 makedepends=('bison' 'flex')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-Fixup-qt6-build.patch'
-    '0002-install-prf-file-into-usr-lib64-qt6-features-mkspecs.patch'
+    '0002-Fixup-patches.patch'
 )
-sha256sums=('30e062e488cee10f1b991de2b5c0929ffeec07048564dcfe0c552dc820d77bc2'
-    'e731c59d31afea941bc0bc10aa354ce0974ddbdb9c2043cefbbd5aea3c2d1fbe'
-    'f4339880ad5c8159f5c73894288663236bc6d9425384c384a7a4a54d6a78f1cf'
+sha256sums=('56e18738992d55893434052a9b8e5e60f6731e3daa932afcb1ec0776eda0d01a'
+    '87b5ae0f6db982529d6122bda7f1eb6ccd39f37fdaab0d56b65a3897007ee3d4'
+    '0cf0f48a70bde6b9adf428ea784517dc290dfc69ce01483fecef91187a89ef91'
 )
 
 
 prepare() {
   cd "${pkgname}-${pkgver}"
   patch -p1 --input="${srcdir}/0001-Fixup-qt6-build.patch"
-  patch -p1 --input="${srcdir}/0002-install-prf-file-into-usr-lib64-qt6-features-mkspecs.patch"
+  patch -p1 --input="${srcdir}/0002-Fixup-patches.patch"
   # Logging macro cause compilation to fail otherwise
   sed -i "s@define LOG_LEVEL LOG_WARNING@define LOG_LEVEL LOG_NONE@" src/log.h
 }

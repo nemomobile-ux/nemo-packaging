@@ -1,0 +1,42 @@
+From 224d8eb20a350e8451341f5069e34fb921a26e6e Mon Sep 17 00:00:00 2001
+From: Sergey Chupligin <neochapay@gmail.com>
+Date: Mon, 24 Jul 2023 11:26:34 +0300
+Subject: [PATCH 2/2] Fixup patches
+
+---
+ root.pro                    | 2 +-
+ type-to-cxx/type-to-cxx.cpp | 4 ++++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/root.pro b/root.pro
+index 5318fca..b02e0e8 100644
+--- a/root.pro
++++ b/root.pro
+@@ -2,7 +2,7 @@ TEMPLATE = subdirs
+ 
+ SUBDIRS = src tests type-to-cxx
+ 
+-prf.path =  $$[QT_INSTALL_DATA]/mkspecs/features
++prf.path =  $$[QT_HOST_DATA]/mkspecs/features
+ 
+ equals(QT_MAJOR_VERSION, 5): prf.files = iodata-qt5.prf
+ equals(QT_MAJOR_VERSION, 6): prf.files = iodata-qt6.prf
+diff --git a/type-to-cxx/type-to-cxx.cpp b/type-to-cxx/type-to-cxx.cpp
+index 686ee38..613bfb4 100644
+--- a/type-to-cxx/type-to-cxx.cpp
++++ b/type-to-cxx/type-to-cxx.cpp
+@@ -192,7 +192,11 @@ int main_try(int ac, char **av)
+     }
+ 
+     if (not c_output.empty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        string include = "#include <iodata-qt6/validator>\n";
++#else
+         string include = "#include <iodata-qt5/validator>\n";
++#endif
+ 
+         if (not h_output.empty())
+             include += "#include \"" + h_output + "\"\n";
+-- 
+2.41.0
+
