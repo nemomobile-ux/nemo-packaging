@@ -13,8 +13,17 @@ url="https://github.com/sailfishos/libconnman-qt"
 license=('GPL')
 depends=('qt6-declarative' 'connman')
 makedepends=('qt6-tools')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('9ae031c4248b8ca48383204c12d89e18a9e6680ddd69ba7c94da46fd5ad6cc90')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-Fixup-build-on-qt-6.4.patch'
+)
+sha256sums=('9ae031c4248b8ca48383204c12d89e18a9e6680ddd69ba7c94da46fd5ad6cc90'
+    '77fb0765ff6ae72c084482f0931ec2d8dfb14c107cfc1c2fd069e7891a727fc0'
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-Fixup-build-on-qt-6.4.patch"
+}
 
 build() {
     cd $pkgname-$pkgver
