@@ -1,0 +1,121 @@
+From dbb7bedaa52e4a3c3a9f4d2c50e861bd0ac29ebc Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Mon, 24 Jul 2023 20:48:11 +0000
+Subject: [PATCH] Fixup build on qt6
+
+---
+ src/daemon/daemon.pro                             | 2 +-
+ src/nemo-devicelock/host/host.pro                 | 4 ++--
+ src/nemo-devicelock/host/hostservice.cpp          | 4 +++-
+ src/nemo-devicelock/host/nemo-devicelock-host.prf | 2 +-
+ src/nemo-devicelock/lib.pro                       | 2 +-
+ src/plugin/plugin.cpp                             | 2 +-
+ src/plugin/plugin.pro                             | 2 +-
+ 7 files changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/src/daemon/daemon.pro b/src/daemon/daemon.pro
+index dcc3109..2f88a48 100644
+--- a/src/daemon/daemon.pro
++++ b/src/daemon/daemon.pro
+@@ -5,7 +5,7 @@ QT -= gui
+ QT += dbus
+ 
+ CONFIG += \
+-        c++11 \
++        c++17 \
+         link_pkgconfig
+ 
+ PKGCONFIG += \
+diff --git a/src/nemo-devicelock/host/host.pro b/src/nemo-devicelock/host/host.pro
+index f51a127..1013bbb 100644
+--- a/src/nemo-devicelock/host/host.pro
++++ b/src/nemo-devicelock/host/host.pro
+@@ -3,11 +3,11 @@ TARGET  = nemodevicelock-host
+ 
+ CONFIG += \
+         static \
+-        c++11 \
++        c++17 \
+         link_pkgconfig
+ 
+ QT -= gui
+-QT += dbus
++QT += core dbus
+ 
+ PKGCONFIG += \
+         dbus-1 \
+diff --git a/src/nemo-devicelock/host/hostservice.cpp b/src/nemo-devicelock/host/hostservice.cpp
+index 0204ecb..77708ca 100644
+--- a/src/nemo-devicelock/host/hostservice.cpp
++++ b/src/nemo-devicelock/host/hostservice.cpp
+@@ -53,7 +53,9 @@ namespace NemoDeviceLock
+ 
+ class ConnectionMonitor : public QObject
+ {
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     Q_OBJECT
++#endif
+ public:
+     ConnectionMonitor(HostService *service, const QString &connectionName)
+         : QObject(service)
+@@ -201,4 +203,4 @@ void HostService::nameLost(const QString &name)
+ 
+ }
+ 
+-#include "hostservice.moc"
++//#include "hostservice.moc"
+diff --git a/src/nemo-devicelock/host/nemo-devicelock-host.prf b/src/nemo-devicelock/host/nemo-devicelock-host.prf
+index 41033fd..0c49a7a 100644
+--- a/src/nemo-devicelock/host/nemo-devicelock-host.prf
++++ b/src/nemo-devicelock/host/nemo-devicelock-host.prf
+@@ -2,7 +2,7 @@
+ QT *= dbus
+ 
+ CONFIG *= \
+-        c++11 \
++        c++17 \
+         link_pkgconfig
+ 
+ PKGCONFIG += \
+diff --git a/src/nemo-devicelock/lib.pro b/src/nemo-devicelock/lib.pro
+index 9a4d781..ad72ced 100644
+--- a/src/nemo-devicelock/lib.pro
++++ b/src/nemo-devicelock/lib.pro
+@@ -2,7 +2,7 @@ TEMPLATE = lib
+ TARGET  = nemodevicelock
+ 
+ CONFIG += \
+-        c++11 \
++        c++17 \
+         hide_symbols \
+         link_pkgconfig \
+         create_pc \
+diff --git a/src/plugin/plugin.cpp b/src/plugin/plugin.cpp
+index aeb4600..feef39f 100644
+--- a/src/plugin/plugin.cpp
++++ b/src/plugin/plugin.cpp
+@@ -75,7 +75,7 @@ public:
+         qDBusRegisterMetaType<NemoDeviceLock::Fingerprint>();
+         qDBusRegisterMetaType<QVector<NemoDeviceLock::Fingerprint>>();
+ 
+-        qmlRegisterType<NemoDeviceLock::FingerprintModel>();
++//        qmlRegisterType<NemoDeviceLock::FingerprintModel>();
+ 
+         qmlRegisterSingletonType<NemoDeviceLock::DeviceLock>(uri, 1, 0, "DeviceLock", createDeviceLock);
+ 
+diff --git a/src/plugin/plugin.pro b/src/plugin/plugin.pro
+index 4dad788..7873851 100644
+--- a/src/plugin/plugin.pro
++++ b/src/plugin/plugin.pro
+@@ -10,7 +10,7 @@ QT += dbus qml
+ CONFIG += \
+         plugin \
+         hide_symbols \
+-        c++11 \
++        c++17 \
+         link_pkgconfig
+ 
+ INCLUDEPATH += \
+-- 
+2.41.0
+
