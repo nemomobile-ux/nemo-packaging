@@ -7,7 +7,7 @@
 
 pkgname=qt6-quickcontrols-nemo-git
 pkgver=5.7.7.r22.gee24cab
-_branch=qt6
+_branch=master
 
 pkgrel=1
 pkgdesc="Nemomobile Qt Quick Controls"

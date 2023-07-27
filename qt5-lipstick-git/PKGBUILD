@@ -4,7 +4,7 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_branch=qt6
+_branch=master
 pkgname=qt6-lipstick-git
 pkgver=0.46.2.r0.g3ece3a88
 pkgrel=1

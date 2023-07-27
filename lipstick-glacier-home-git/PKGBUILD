@@ -4,6 +4,7 @@
 # Contributor: Chipligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
+_branch=master
 pkgname=lipstick-glacier-home-git
 pkgver=0.40.4.r2.gcc8199d
 pkgrel=1
@@ -43,7 +44,7 @@ makedepends=(
 	'qt6-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
+source=("${pkgname}::git+${url}#branch=${_branch}")
 sha512sums=('SKIP')
 
 pkgver() {
