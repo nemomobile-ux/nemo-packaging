@@ -1,4 +1,4 @@
-From 6a5ad149c0002a12def29209ce4287f17ae44fb2 Mon Sep 17 00:00:00 2001
+From 4e068ffd97b7fed01c9897f6e12aafb8c3851c7d Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 14 Jul 2023 16:07:29 +0000
 Subject: [PATCH] fix build with qt6
@@ -35,6 +35,7 @@ Subject: [PATCH] fix build with qt6
  qt-api/qt-api.pro                             |  2 +-
  qt-api/sensormanager_i.cpp                    | 14 ++++++
  sensord-qt5.pc.in                             |  8 ++--
+ sensord-qt6.pc.in                             | 10 +++++
  sensord.prf                                   |  6 +--
  sensord/sensord.pro                           |  2 +-
  sensorfw.pro                                  | 16 +++----
@@ -65,7 +66,8 @@ Subject: [PATCH] fix build with qt6
  .../standbyoverridetests.pro                  |  2 +-
  tests/testapp/testapp.pro                     |  2 +-
  tests/testutils/datafaker/main.cpp            |  4 ++
- 61 files changed, 219 insertions(+), 49 deletions(-)
+ 62 files changed, 229 insertions(+), 49 deletions(-)
+ create mode 100644 sensord-qt6.pc.in
 
 diff --git a/adaptors/alsadaptor/alsadaptor.cpp b/adaptors/alsadaptor/alsadaptor.cpp
 index f9ee790..9647038 100644
@@ -656,6 +658,22 @@ index 6317481..2e0695a 100644
 -Libs: -L${libdir} -lsensorclient-qt5 -lsensordatatypes-qt5
 +Libs: -L${libdir} -lsensorclient-qt$${QT_MAJOR_VERSION} -lsensordatatypes-qt$${QT_MAJOR_VERSION}
  Cflags: -I${includedir} -I${includedir}/datatypes
+diff --git a/sensord-qt6.pc.in b/sensord-qt6.pc.in
+new file mode 100644
+index 0000000..2e0695a
+--- /dev/null
++++ b/sensord-qt6.pc.in
+@@ -0,0 +1,10 @@
++prefix=/usr
++includedir=${prefix}/include/sensord-qt$${QT_MAJOR_VERSION}
++libdir=${prefix}/@LIB@
++
++Name: Sensorfw-qt$${QT_MAJOR_VERSION}
++Description: Sensord for Qt $${QT_MAJOR_VERSION}
++Version: 0.14.4
++Requires:
++Libs: -L${libdir} -lsensorclient-qt$${QT_MAJOR_VERSION} -lsensordatatypes-qt$${QT_MAJOR_VERSION}
++Cflags: -I${includedir} -I${includedir}/datatypes
 diff --git a/sensord.prf b/sensord.prf
 index cb55398..4426447 100644
 --- a/sensord.prf
@@ -1097,5 +1115,5 @@ index 41c2c31..093aba9 100644
              qDebug() << "Too many / too few numbers on line, skipping:" << line;
          }
 -- 
-2.40.1
+2.41.0
 
