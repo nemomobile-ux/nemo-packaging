@@ -1,0 +1,120 @@
+From 2254bbe7b5344e01e508c5fb91e7ac85f857d40c Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Mon, 31 Jul 2023 18:43:26 +0000
+Subject: [PATCH 2/3] Qt6 compatibility
+
+---
+ fingerterm.pro | 2 ++
+ keyloader.cpp  | 4 ++++
+ main.cpp       | 2 ++
+ terminal.cpp   | 8 ++++----
+ textrender.cpp | 4 ++++
+ 5 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/fingerterm.pro b/fingerterm.pro
+index 3007d49..8a79613 100644
+--- a/fingerterm.pro
++++ b/fingerterm.pro
+@@ -1,5 +1,7 @@
+ QT = core gui qml quick
+ 
++greaterThan(QT_MAJOR_VERSION,5) QT += core5compat
++
+ CONFIG += link_pkgconfig
+ 
+ enable-feedback {
+diff --git a/keyloader.cpp b/keyloader.cpp
+index fc04e58..3124d9a 100644
+--- a/keyloader.cpp
++++ b/keyloader.cpp
+@@ -99,7 +99,11 @@ bool KeyLoader::loadLayoutInternal(QIODevice &from)
+             line.replace("\\x5D", "]");
+             line.replace("\\x5C", "\\");
+ 
++#if QT_VERSION < 0x051500
+             QStringList parts = line.split(",", QString::KeepEmptyParts);
++#else
++            QStringList parts = line.split(",", Qt::KeepEmptyParts);
++#endif
+             if(parts.count()>=2) {
+                 bool ok = true;
+                 key.label = parts.at(0);
+diff --git a/main.cpp b/main.cpp
+index cd13a69..e1cdb43 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
+     app.installTranslator(engineeringEnglish.data());
+     app.installTranslator(translator.data());
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     QScreen* sc = app.primaryScreen();
+     if(sc){
+         QFlags<Qt::ScreenOrientation> mask = Qt::PrimaryOrientation
+@@ -109,6 +110,7 @@ int main(int argc, char *argv[])
+         }
+         sc->setOrientationUpdateMask(mask);
+     }
++#endif
+ 
+     qmlRegisterType<TextRender>("FingerTerm", 1, 0, "TextRender");
+     qmlRegisterUncreatableType<Util>("FingerTerm", 1, 0, "Util", "Util is created by app");
+diff --git a/terminal.cpp b/terminal.cpp
+index 754ea2e..c3869b1 100644
+--- a/terminal.cpp
++++ b/terminal.cpp
+@@ -325,7 +325,7 @@ void Terminal::keyPress(int key, int modifiers, const QString& text)
+ 
+         if (asciiVal >= 0x41 && asciiVal <= 0x5f) {
+             // Turn uppercase characters into their control code equivalent
+-            toWrite.append(asciiVal - 0x40);
++            toWrite.append((char)(asciiVal - 0x40));
+         } else {
+             qWarning() << "Ctrl+" << c << " does not translate into a control code";
+         }
+@@ -1312,7 +1312,7 @@ const QStringList Terminal::grabURLsFromBuffer()
+         for (int i=0; i<iBackBuffer.size(); i++) {
+             for (int j=0; j<iBackBuffer[i].size(); j++) {
+                 if (iBackBuffer[i][j].c.isPrint())
+-                    buf.append(iBackBuffer[i][j].c);
++                    buf.append(iBackBuffer[i][j].c.toLatin1());
+                 else if (iBackBuffer[i][j].c == 0)
+                     buf.append(' ');
+             }
+@@ -1325,7 +1325,7 @@ const QStringList Terminal::grabURLsFromBuffer()
+     for (int i=0; i<buffer().size(); i++) {
+         for (int j=0; j<buffer()[i].size(); j++) {
+             if (buffer()[i][j].c.isPrint())
+-                buf.append(buffer()[i][j].c);
++                buf.append(buffer()[i][j].c.toLatin1());
+             else if (buffer()[i][j].c == 0)
+                 buf.append(' ');
+         }
+@@ -1340,7 +1340,7 @@ const QStringList Terminal::grabURLsFromBuffer()
+     foreach(QString prot, lookFor) {
+         int ind=0;
+         while( ind != -1 ) {
+-            ind = buf.indexOf(prot, ind);
++            ind = buf.indexOf(prot.toUtf8(), ind);
+             if(ind!=-1) {
+                 int ind2 = buf.indexOf(" ",ind);
+                 int l=-1;
+diff --git a/textrender.cpp b/textrender.cpp
+index fe17be3..5a26245 100644
+--- a/textrender.cpp
++++ b/textrender.cpp
+@@ -76,7 +76,11 @@ TextRender::TextRender(QQuickItem *parent) :
+     iShowBufferScrollIndicator = false;
+ 
+     iFont = QFont(sUtil->fontFamily(), sUtil->fontSize());
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     iFont.setStyleHint(QFont::Monospace, QFont::StyleStrategy(QFont::PreferDefault | QFont::ForceIntegerMetrics));
++#else
++    iFont.setStyleHint(QFont::Monospace, QFont::StyleStrategy(QFont::PreferDefault));
++#endif
+     iFont.setBold(false);
+     QFontMetrics fontMetrics(iFont);
+     iFontHeight = fontMetrics.height();
+-- 
+2.41.0
+
