@@ -8,7 +8,7 @@ pkgdesc="fingerterm is a terminal emulator designed for touch-based interaction,
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/fingerterm"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
-depends=('qt6-declarative')
+depends=('qt6-declarative' 'qt6-5compat')
 makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
   '0001-use-lupdate-and-lrelease-from-QT_INSTALL_BINS.patch'
