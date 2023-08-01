@@ -14,7 +14,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-fix-build-with-qt6.patch'
     "sensorfwd.service")
 sha256sums=('f087b15051aad15f038844a6306d560da7fedb5f9a0b2d6fc647a297dd06b853'
-    '9ef61de71b01010a861add02c9b1e47563f06c16647374d2d8b274df662bddf3'
+    '3a208daffd14a1d18cd37079fb9414ea93ba65112c2b9a880f826f06554641be'
     '1fd8fb7c0f073b562957b10ee6351137c612f8250eaf64bffe72328bf60641d3'
 )
 

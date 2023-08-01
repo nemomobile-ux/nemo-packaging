@@ -1,4 +1,4 @@
-From 59a05f1cff42b0a92293d1d3b62248dae312a3c7 Mon Sep 17 00:00:00 2001
+From b6e7f390962e5e5fa3677a393a6fb7ba46f2d67b Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 14 Jul 2023 16:07:29 +0000
 Subject: [PATCH] fix build with qt6
@@ -37,7 +37,7 @@ Subject: [PATCH] fix build with qt6
  sensord-qt6.pc.in                             | 10 +++++
  sensord.prf                                   |  6 +--
  sensord/sensord.pro                           |  2 +-
- sensorfw.pro                                  | 16 +++----
+ sensorfw.pro                                  | 17 +++----
  .../accelerometerplugin.cpp                   |  4 ++
  sensors/alssensor/alsplugin.cpp               |  4 ++
  sensors/compasssensor/compassplugin.cpp       |  4 ++
@@ -65,7 +65,7 @@ Subject: [PATCH] fix build with qt6
  .../standbyoverridetests.pro                  |  2 +-
  tests/testapp/testapp.pro                     |  2 +-
  tests/testutils/datafaker/main.cpp            |  4 ++
- 61 files changed, 225 insertions(+), 45 deletions(-)
+ 61 files changed, 226 insertions(+), 45 deletions(-)
  create mode 100644 sensord-qt6.pc.in
 
 diff --git a/adaptors/alsadaptor/alsadaptor.cpp b/adaptors/alsadaptor/alsadaptor.cpp
@@ -681,10 +681,10 @@ index 3fd453d..8bb22f4 100644
  SOURCES += main.cpp \
             parser.cpp \
 diff --git a/sensorfw.pro b/sensorfw.pro
-index c8ce491..e66e1d3 100644
+index c8ce491..b740a36 100644
 --- a/sensorfw.pro
 +++ b/sensorfw.pro
-@@ -80,15 +80,15 @@ contains(CONFIG,hybris) {
+@@ -80,15 +80,16 @@ contains(CONFIG,hybris) {
      include( common-install.pri )
      include( common-config.pri )
  
@@ -693,7 +693,8 @@ index c8ce491..e66e1d3 100644
 -    QTCONFIGFILES.path = /usr/share/qt5/mkspecs/features
 +    PKGCONFIGFILES.files = sensord-qt$${QT_MAJOR_VERSION}.pc
 +    PKGCONFIGFILES.commands = 'sed -i "s/Version:.*/Version: $$PC_VERSION/" $$_PRO_FILE_PWD_/sensord-qt$${QT_MAJOR_VERSION}.pc'
-+    QTCONFIGFILES.path = $${QT_HOST_DATA}/mkspecs/features
++    QTCONFIGFILES.path = $$[QT_HOST_DATA]/mkspecs/features
++
  }
  
  
@@ -704,7 +705,7 @@ index c8ce491..e66e1d3 100644
  
  
  !contains(CONFIG,hybris) {
-@@ -111,9 +111,9 @@ contains(CONFIG,systemdunit) {
+@@ -111,9 +112,9 @@ contains(CONFIG,systemdunit) {
      INSTALLS += SENSORSYSTEMD
  }
  
