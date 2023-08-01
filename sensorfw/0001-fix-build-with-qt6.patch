@@ -1,4 +1,4 @@
-From 4e068ffd97b7fed01c9897f6e12aafb8c3851c7d Mon Sep 17 00:00:00 2001
+From 59a05f1cff42b0a92293d1d3b62248dae312a3c7 Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 14 Jul 2023 16:07:29 +0000
 Subject: [PATCH] fix build with qt6
@@ -34,7 +34,6 @@ Subject: [PATCH] fix build with qt6
  qt-api/abstractsensor_i.h                     |  4 ++
  qt-api/qt-api.pro                             |  2 +-
  qt-api/sensormanager_i.cpp                    | 14 ++++++
- sensord-qt5.pc.in                             |  8 ++--
  sensord-qt6.pc.in                             | 10 +++++
  sensord.prf                                   |  6 +--
  sensord/sensord.pro                           |  2 +-
@@ -66,7 +65,7 @@ Subject: [PATCH] fix build with qt6
  .../standbyoverridetests.pro                  |  2 +-
  tests/testapp/testapp.pro                     |  2 +-
  tests/testutils/datafaker/main.cpp            |  4 ++
- 62 files changed, 229 insertions(+), 49 deletions(-)
+ 61 files changed, 225 insertions(+), 45 deletions(-)
  create mode 100644 sensord-qt6.pc.in
 
 diff --git a/adaptors/alsadaptor/alsadaptor.cpp b/adaptors/alsadaptor/alsadaptor.cpp
@@ -639,40 +638,21 @@ index 0f27acc..70da911 100644
      QDBusPendingReply <bool> reply = asyncCallWithArgumentList(QLatin1String("releaseSensor"), argumentList);
      QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
      connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
-diff --git a/sensord-qt5.pc.in b/sensord-qt5.pc.in
-index 6317481..2e0695a 100644
---- a/sensord-qt5.pc.in
-+++ b/sensord-qt5.pc.in
-@@ -1,10 +1,10 @@
- prefix=/usr
--includedir=${prefix}/include/sensord-qt5
-+includedir=${prefix}/include/sensord-qt$${QT_MAJOR_VERSION}
- libdir=${prefix}/@LIB@
- 
--Name: Sensorfw-qt5
--Description: Sensord for Qt 5
-+Name: Sensorfw-qt$${QT_MAJOR_VERSION}
-+Description: Sensord for Qt $${QT_MAJOR_VERSION}
- Version: 0.14.4
- Requires:
--Libs: -L${libdir} -lsensorclient-qt5 -lsensordatatypes-qt5
-+Libs: -L${libdir} -lsensorclient-qt$${QT_MAJOR_VERSION} -lsensordatatypes-qt$${QT_MAJOR_VERSION}
- Cflags: -I${includedir} -I${includedir}/datatypes
 diff --git a/sensord-qt6.pc.in b/sensord-qt6.pc.in
 new file mode 100644
-index 0000000..2e0695a
+index 0000000..8e0f6fd
 --- /dev/null
 +++ b/sensord-qt6.pc.in
 @@ -0,0 +1,10 @@
 +prefix=/usr
-+includedir=${prefix}/include/sensord-qt$${QT_MAJOR_VERSION}
++includedir=${prefix}/include/sensord-qt6
 +libdir=${prefix}/@LIB@
 +
-+Name: Sensorfw-qt$${QT_MAJOR_VERSION}
-+Description: Sensord for Qt $${QT_MAJOR_VERSION}
++Name: Sensorfw-qt6
++Description: Sensord for Qt 6
 +Version: 0.14.4
 +Requires:
-+Libs: -L${libdir} -lsensorclient-qt$${QT_MAJOR_VERSION} -lsensordatatypes-qt$${QT_MAJOR_VERSION}
++Libs: -L${libdir} -lsensorclient-qt6 -lsensordatatypes-qt6
 +Cflags: -I${includedir} -I${includedir}/datatypes
 diff --git a/sensord.prf b/sensord.prf
 index cb55398..4426447 100644
