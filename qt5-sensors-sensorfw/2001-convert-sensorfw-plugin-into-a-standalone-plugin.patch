@@ -1,40 +1,88 @@
-Description: Convert SensorFw plugin into a standalone plugin
- - Usage of internal Qt's QMake "feature" is replaced with a standard
-   "lib" template + "plugin" config.
- - "sensors-private" is replaced by just "sensors". Apparently this
-   plugin doesn't really use any of QtSensors' private headers.
- - SensorFw dependency is converted to use a standard pkg-config,
-   instead of configure.json's detection result.
-Author: Ratchanan Srirattanamet <ratchanan@ubports.com>
-Origin: vendor
-Bug-UBports: https://gitlab.com/ubports/core/focal-projectmanagement-missing-packages/-/issues/57
-Forwarded: not-needed
-Last-Update: 2022-04-06
----
-This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
---- a/src/plugins/sensors/sensorfw/sensorfw.pro
-+++ b/src/plugins/sensors/sensorfw/sensorfw.pro
-@@ -1,9 +1,13 @@
-+TEMPLATE = lib
-+CONFIG += plugin
+diff --git a/src/plugins/sensors/sensorfw/CMakeLists.txt b/src/plugins/sensors/sensorfw/CMakeLists.txt
+index cc5e9dad..fed82ab4 100644
+--- a/src/plugins/sensors/sensorfw/CMakeLists.txt
++++ b/src/plugins/sensors/sensorfw/CMakeLists.txt
+@@ -1,38 +1,51 @@
+-# Copyright (C) 2022 The Qt Company Ltd.
+-# SPDX-License-Identifier: BSD-3-Clause
++cmake_minimum_required(VERSION 3.5)
++project(sensorfwSensorPlugin)
+ 
+-#####################################################################
+-## sensorfwSensorPlugin Plugin:
+-#####################################################################
++set(CMAKE_AUTOMOC ON)
+ 
+-qt_internal_add_plugin(sensorfwSensorPlugin
++find_package(Qt6 REQUIRED COMPONENTS Core Sensors Network DBus)
 +
- TARGET = qtsensors_sensorfw
--QT = core sensors-private network dbus
-+QT = core sensors network dbus
- 
- include(sensorfw.pri)
- 
--QMAKE_USE += sensorfw
-+CONFIG += link_pkgconfig
-+PKGCONFIG += sensord-qt5
- 
- CONFIGFILES.files = Sensors.conf
- CONFIGFILES.path = /etc/xdg/QtProject/
-@@ -13,4 +17,6 @@
- 
- PLUGIN_TYPE = sensors
- PLUGIN_CLASS_NAME = sensorfwSensorPlugin
--load(qt_plugin)
++find_package(PkgConfig REQUIRED)
++pkg_check_modules(SENSORFW sensord-qt6 REQUIRED IMPORTED_TARGET)
 +
-+target.path = $$[QT_INSTALL_PLUGINS]/$$PLUGIN_TYPE
-+INSTALLS += target
++qt_add_plugin(qtsensors_sensorfw SHARED
+     OUTPUT_NAME qtsensors_sensorfw
+-    PLUGIN_TYPE sensors
+-    SOURCES
+         main.cpp
+-        sensorfwaccelerometer.cpp sensorfwaccelerometer.h
+-        sensorfwals.cpp sensorfwals.h
+-        sensorfwcompass.cpp sensorfwcompass.h
+-        sensorfwgyroscope.cpp sensorfwgyroscope.h
+-        sensorfwirproximitysensor.cpp sensorfwirproximitysensor.h
+-        sensorfwlidsensor.cpp sensorfwlidsensor.h
+-        sensorfwlightsensor.cpp sensorfwlightsensor.h
+-        sensorfwmagnetometer.cpp sensorfwmagnetometer.h
+-        sensorfworientationsensor.cpp sensorfworientationsensor.h
+-        sensorfwproximitysensor.cpp sensorfwproximitysensor.h
+-        sensorfwrotationsensor.cpp sensorfwrotationsensor.h
+-        sensorfwsensorbase.cpp sensorfwsensorbase.h
+-        sensorfwtapsensor.cpp sensorfwtapsensor.h
+-    LIBRARIES
+-        Qt::Core
+-        Qt::DBus
+-        Qt::Network
+-        Qt::SensorsPrivate
+-        sensorfw
++        sensorfwaccelerometer.cpp
++        sensorfwaccelerometer.h
++        sensorfwals.cpp
++        sensorfwals.h
++        sensorfwcompass.cpp
++        sensorfwcompass.h
++        sensorfwgyroscope.cpp
++        sensorfwgyroscope.h
++        sensorfwirproximitysensor.cpp
++        sensorfwirproximitysensor.h
++        sensorfwlidsensor.cpp
++        sensorfwlidsensor.h
++        sensorfwlightsensor.cpp
++        sensorfwlightsensor.h
++        sensorfwmagnetometer.cpp
++        sensorfwmagnetometer.h
++        sensorfworientationsensor.cpp
++        sensorfworientationsensor.h
++        sensorfwproximitysensor.cpp
++        sensorfwproximitysensor.h
++        sensorfwrotationsensor.cpp
++        sensorfwrotationsensor.h
++        sensorfwsensorbase.cpp
++        sensorfwsensorbase.h
++        sensorfwtapsensor.cpp
++        sensorfwtapsensor.h
+ )
+ 
+-#### Keys ignored in scope 1:.:.:sensorfw.pro:<TRUE>:
+-# CONFIGFILES.files = "Sensors.conf"
+-# CONFIGFILES.path = "/etc/xdg/QtProject/"
+-# INSTALLS = "CONFIGFILES"
+-# OTHER_FILES = "plugin.json"
++target_link_libraries(qtsensors_sensorfw
++	PUBLIC
++	Qt::Core
++	Qt::Network
++	Qt::Sensors
++	Qt::DBus
++	PkgConfig::SENSORFW)
++
++install(TARGETS qtsensors_sensorfw LIBRARY
++    DESTINATION ${CMAKE_INSTALL_LIBDIR}/qt6/plugins/sensors)

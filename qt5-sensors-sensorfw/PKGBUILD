@@ -2,10 +2,8 @@
 # Contributor: Andrea Scarpino <andrea@archlinux.org>
 
 pkgname=qt6-sensors-sensorfw
-_basever=5.15.9
-pkgver=5.15.9
+pkgver=6.5.2
 pkgrel=1
-_commit=391c710b88865a3e0311b61d93fcdbbfd6996d46
 arch=('x86_64' 'aarch64')
 url='https://www.qt.io'
 license=('GPL3' 'LGPL3' 'FDL' 'custom')
@@ -14,25 +12,25 @@ depends=('sensorfw' 'qt6-sensors')
 makedepends=('qt6-declarative' 'git')
 optdepends=('qt6-declarative: QML bindings')
 groups=('qt' 'qt6')
-source=("git+https://invent.kde.org/qt/qt/qtsensors#commit=$_commit"
+source=("https://github.com/qt/qtsensors/archive/refs/tags/v${pkgver}.tar.gz"
     '2001-convert-sensorfw-plugin-into-a-standalone-plugin.patch'
 )
-sha256sums=('SKIP'
-    'c25263818273153c5de14b075e00283b364ddbc286c4d18901922ebed21b1949'
+sha256sums=('1468d3c26e835aef0b020529a760d1040ce1e6300747894ffd7408d5048e8375'
+    '71d42ab07c7dff329f9bd156e0fc5b154097aab1f3caa095734a3c021a433814'
 )
 
 prepare() {
-    cd qtsensors
+    cd qtsensors-${pkgver}
     patch -p1 --input="${srcdir}/2001-convert-sensorfw-plugin-into-a-standalone-plugin.patch"
 }
 
 build() {
-  cd qtsensors/src/plugins/sensors/sensorfw
-  qmake6
+  cd qtsensors-${pkgver}/src/plugins/sensors/sensorfw
+  cmake . -DCMAKE_INSTALL_PREFIX=/usr
   make
 }
 
 package() {
-  cd qtsensors/src/plugins/sensors/sensorfw
+  cd qtsensors-${pkgver}/src/plugins/sensors/sensorfw
   make -j 1 INSTALL_ROOT="${pkgdir}" install
 }
