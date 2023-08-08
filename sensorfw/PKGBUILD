@@ -9,7 +9,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/sensorfw"
 license=('LGPLv2')
 depends=('libngf' 'libiphb' 'mlite')
-makedepends=('doxygen')
+makedepends=('doxygen' 'qt6-base')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-fix-build-with-qt6.patch'
     "sensorfwd.service")
