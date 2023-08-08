@@ -12,18 +12,15 @@ depends=('libngf' 'libiphb' 'mlite')
 makedepends=('doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-fix-build-with-qt6.patch'
-    '0002-loader.cpp-Fix-plugin-suffix-for-Qt6.patch'
     "sensorfwd.service")
 sha256sums=('f087b15051aad15f038844a6306d560da7fedb5f9a0b2d6fc647a297dd06b853'
-    '3a208daffd14a1d18cd37079fb9414ea93ba65112c2b9a880f826f06554641be'
-    '37d3cc209b810edf9827c3411a793e09ad163932ee064439fe546d6298e95458'
+    'cfc375fbf7c0fba6b750a40be7ed435ad727d151102173b4d29d35e8c1f3c26c'
     '1fd8fb7c0f073b562957b10ee6351137c612f8250eaf64bffe72328bf60641d3'
 )
 
 prepare() {
     cd $pkgname-$pkgver
     patch -p1 --input="${srcdir}/0001-fix-build-with-qt6.patch"
-    patch -p1 --input="${srcdir}/0002-loader.cpp-Fix-plugin-suffix-for-Qt6.patch"
     sed "s=@LIB@=lib=g" sensord-qt6.pc.in > sensord-qt6.pc
     sed "s=@LIBDIR@=/usr/lib=g" tests/tests.xml.in > tests/tests.xml
     unset LD_AS_NEEDED

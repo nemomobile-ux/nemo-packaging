@@ -1,8 +1,9 @@
-From b6e7f390962e5e5fa3677a393a6fb7ba46f2d67b Mon Sep 17 00:00:00 2001
+From fc84fcce1136d32ea77ea386e92839964389f60c Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 14 Jul 2023 16:07:29 +0000
 Subject: [PATCH] fix build with qt6
 
+Co-authored-by: Christophe Chapuis <chris.chapuis@gmail.com>
 ---
  adaptors/alsadaptor/alsadaptor.cpp            |  2 +-
  .../hybrisaccelerometer.pro                   |  2 +-
@@ -25,6 +26,7 @@ Subject: [PATCH] fix build with qt6
  common.pri                                    |  2 +-
  core/core.pro                                 |  6 +--
  core/hybris.pro                               |  2 +-
+ core/loader.cpp                               |  4 ++
  core/nodebase.cpp                             |  4 ++
  doc/doc.pri                                   |  2 +-
  examples/chainplugin/samplechainplugin.cpp    |  4 ++
@@ -65,7 +67,7 @@ Subject: [PATCH] fix build with qt6
  .../standbyoverridetests.pro                  |  2 +-
  tests/testapp/testapp.pro                     |  2 +-
  tests/testutils/datafaker/main.cpp            |  4 ++
- 61 files changed, 226 insertions(+), 45 deletions(-)
+ 62 files changed, 230 insertions(+), 45 deletions(-)
  create mode 100644 sensord-qt6.pc.in
 
 diff --git a/adaptors/alsadaptor/alsadaptor.cpp b/adaptors/alsadaptor/alsadaptor.cpp
@@ -361,6 +363,22 @@ index 4567bb0..a9c87dc 100644
  
  CONFIG += link_pkgconfig
  
+diff --git a/core/loader.cpp b/core/loader.cpp
+index aae6055..e8b2e1b 100644
+--- a/core/loader.cpp
++++ b/core/loader.cpp
+@@ -55,7 +55,11 @@ Loader& Loader::instance()
+ 
+ #define PLUGIN_PREFIX_ENV "SENSORFW_LIBRARY_PATH"
+ #define PLUGIN_PREFIX     "lib"
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#define PLUGIN_SUFFIX     "-qt6.so"
++#else
+ #define PLUGIN_SUFFIX     "-qt5.so"
++#endif
+ #define SENSOR_SUFFIX     "sensor"
+ 
+ static QString getPluginDirectory()
 diff --git a/core/nodebase.cpp b/core/nodebase.cpp
 index c776102..c2be172 100644
 --- a/core/nodebase.cpp
@@ -681,7 +699,7 @@ index 3fd453d..8bb22f4 100644
  SOURCES += main.cpp \
             parser.cpp \
 diff --git a/sensorfw.pro b/sensorfw.pro
-index c8ce491..b740a36 100644
+index c8ce491..462624f 100644
 --- a/sensorfw.pro
 +++ b/sensorfw.pro
 @@ -80,15 +80,16 @@ contains(CONFIG,hybris) {
@@ -693,7 +711,7 @@ index c8ce491..b740a36 100644
 -    QTCONFIGFILES.path = /usr/share/qt5/mkspecs/features
 +    PKGCONFIGFILES.files = sensord-qt$${QT_MAJOR_VERSION}.pc
 +    PKGCONFIGFILES.commands = 'sed -i "s/Version:.*/Version: $$PC_VERSION/" $$_PRO_FILE_PWD_/sensord-qt$${QT_MAJOR_VERSION}.pc'
-+    QTCONFIGFILES.path = $$[QT_HOST_DATA]/mkspecs/features
++    QTCONFIGFILES.path = $$[QT_INSTALL_ARCHDATA]/mkspecs/features
 +
  }
  
