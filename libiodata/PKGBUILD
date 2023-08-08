@@ -14,16 +14,16 @@ license=('LGPL-2.1-or-later')
 depends=('qt6-base')
 makedepends=('bison' 'flex')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    '0001-Fixup-qt6-build.patch'
+    '0001-Allow-build-with-qt6.patch'
 )
 sha256sums=('56e18738992d55893434052a9b8e5e60f6731e3daa932afcb1ec0776eda0d01a'
-    '8bfecfe7978c47bf4f6080f2b70c28d45e5b783326359782939c4006cca6a73c'
+    '5600153f115a00aae33214e418c4a4d58f363d45e3b36b6e0dc8e18f26299358'
 )
 
 
 prepare() {
   cd "${pkgname}-${pkgver}"
-  patch -p1 --input="${srcdir}/0001-Fixup-qt6-build.patch"
+  patch -p1 --input="${srcdir}/0001-Allow-build-with-qt6.patch"
   # Logging macro cause compilation to fail otherwise
   sed -i "s@define LOG_LEVEL LOG_WARNING@define LOG_LEVEL LOG_NONE@" src/log.h
 }

@@ -1,3 +1,21 @@
+From 967a0204f19b85009dac1fb54681f9bb8d2e9407 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Mon, 7 Aug 2023 08:32:07 +0000
+Subject: [PATCH] Allow build with qt6
+
+---
+ iodata-qt6.prf              | 15 +++++++++++++++
+ root.pro                    |  6 ++++--
+ src/iodata                  |  5 +++++
+ src/src.pro                 |  6 ++++--
+ src/storage                 |  5 +++++
+ src/validator               |  5 +++++
+ tests/tests.pro             |  3 ++-
+ type-to-cxx/type-to-cxx.cpp |  8 ++++++++
+ type-to-cxx/type-to-cxx.pro |  7 +++++--
+ 9 files changed, 53 insertions(+), 7 deletions(-)
+ create mode 100644 iodata-qt6.prf
+
 diff --git a/iodata-qt6.prf b/iodata-qt6.prf
 new file mode 100644
 index 0000000..0bfb5ae
@@ -29,7 +47,7 @@ index c5fecb7..b02e0e8 100644
  
 -prf.path =  $$[QT_INSTALL_DATA]/mkspecs/features
 -prf.files = iodata-qt5.prf
-+prf.path =  $$[QT_HOST_DATA]/mkspecs/features
++prf.path =  $$[QT_INSTALL_ARCHDATA]/mkspecs/features
 +
 +equals(QT_MAJOR_VERSION, 5): prf.files = iodata-qt5.prf
 +equals(QT_MAJOR_VERSION, 6): prf.files = iodata-qt6.prf
@@ -152,3 +170,6 @@ index fa735d4..e74e9cd 100644
  QMAKE_LIBDIR_FLAGS += -L../src
  
  SOURCES = type-to-cxx.cpp
+-- 
+2.41.0
+
