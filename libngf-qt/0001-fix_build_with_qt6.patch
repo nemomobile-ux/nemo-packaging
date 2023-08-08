@@ -1,0 +1,165 @@
+diff --git a/build/.gitignore b/build/.gitignore
+deleted file mode 100644
+index 72e8ffc..0000000
+--- a/build/.gitignore
++++ /dev/null
+@@ -1 +0,0 @@
+-*
+diff --git a/declarative/declarative.pro b/declarative/declarative.pro
+index f6b8d53..ca79d09 100644
+--- a/declarative/declarative.pro
++++ b/declarative/declarative.pro
+@@ -3,7 +3,7 @@ include(../common.pri)
+ TARGET = ngf-declarative
+ PLUGIN_IMPORT_PATH = Nemo/Ngf
+ 
+-LIBS += -L../src/ -lngf-qt5
++LIBS += -L../src/ -lngf-qt$${QT_MAJOR_VERSION}
+ 
+ INCLUDEPATH += ../src/include
+ 
+diff --git a/declarative/src/declarativengfevent.cpp b/declarative/src/declarativengfevent.cpp
+index eaa2ec0..fd26ca9 100644
+--- a/declarative/src/declarativengfevent.cpp
++++ b/declarative/src/declarativengfevent.cpp
+@@ -290,13 +290,19 @@ void DeclarativeNgfEvent::appendProperty(QQmlListProperty<DeclarativeNgfEventPro
+ {
+     reinterpret_cast< DeclarativeNgfEvent* >(list->data)->appendProperty(property);
+ }
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ int DeclarativeNgfEvent::propertyCount(QQmlListProperty<DeclarativeNgfEventProperty>* list)
++#else
++qsizetype DeclarativeNgfEvent::propertyCount(QQmlListProperty<DeclarativeNgfEventProperty>* list)
++#endif
+ {
+     return reinterpret_cast< DeclarativeNgfEvent* >(list->data)->propertyCount();
+ }
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ DeclarativeNgfEventProperty* DeclarativeNgfEvent::property(QQmlListProperty<DeclarativeNgfEventProperty> *list, int i)
++#else
++DeclarativeNgfEventProperty* DeclarativeNgfEvent::property(QQmlListProperty<DeclarativeNgfEventProperty> *list, qsizetype i)
++#endif
+ {
+     return reinterpret_cast< DeclarativeNgfEvent* >(list->data)->property(i);
+ }
+diff --git a/declarative/src/declarativengfevent.h b/declarative/src/declarativengfevent.h
+index 7e9b6a7..6310ea1 100644
+--- a/declarative/src/declarativengfevent.h
++++ b/declarative/src/declarativengfevent.h
+@@ -116,11 +116,15 @@ private slots:
+     bool m_autostart;
+ 
+     static void appendProperty(QQmlListProperty<DeclarativeNgfEventProperty>*, DeclarativeNgfEventProperty*);
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     static int propertyCount(QQmlListProperty<DeclarativeNgfEventProperty>*);
+     static DeclarativeNgfEventProperty* property(QQmlListProperty<DeclarativeNgfEventProperty>*, int);
++#else
++    static qsizetype propertyCount(QQmlListProperty<DeclarativeNgfEventProperty>*);
++    static DeclarativeNgfEventProperty* property(QQmlListProperty<DeclarativeNgfEventProperty>*, qsizetype);
++#endif
+     static void clearProperties(QQmlListProperty<DeclarativeNgfEventProperty>*);
+     QVector<DeclarativeNgfEventProperty*> m_properties;
+ };
+ 
+ #endif
+-
+diff --git a/feedback/feedback.pro b/feedback/feedback.pro
+index 50c63ac..2291eb1 100644
+--- a/feedback/feedback.pro
++++ b/feedback/feedback.pro
+@@ -1,15 +1,17 @@
+ TEMPLATE = lib
+ 
+-QT += core feedback
++QT += core
+ CONFIG += qt plugin hide_symbols
+ QT -= gui
+ 
+ TARGET = $$qtLibraryTarget(qtfeedback_libngf)
+ PLUGIN_TYPE = feedback
+ 
+-LIBS += -L../src/ -lngf-qt5
++LIBS += -L../src/ -lngf-qt$${QT_MAJOR_VERSION}
+ INCLUDEPATH += ../src/include
+ 
++equals(QT_MAJOR_VERSION, 6): INCLUDEPATH += /usr/include/qt6/QtFeedback/
++
+ HEADERS += ngffeedback.h
+ 
+ SOURCES += ngffeedback.cpp
+diff --git a/libngf-qt.pro b/libngf-qt.pro
+index 18f5975..ff0cf51 100644
+--- a/libngf-qt.pro
++++ b/libngf-qt.pro
+@@ -2,7 +2,7 @@ isEmpty(PREFIX) {
+     PREFIX = /usr/local
+ }
+ TEMPLATE = subdirs
+-SUBDIRS += src declarative tests feedback
++SUBDIRS += src declarative feedback
+ 
+ declarative.depends = src
+ tests.depends = src declarative
+@@ -13,6 +13,10 @@ count(EXAMPLE, 1) {
+     SUBDIRS += example
+ }
+ 
++count(TEST, 1) {
++    SUBDIRS += tests
++}
++
+ include(doc/doc.pri)
+ 
+ # adds 'coverage' make target
+diff --git a/src/src.pro b/src/src.pro
+index 7129ded..929e038 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -5,7 +5,7 @@ TEMPLATE = lib
+ QT -= gui
+ QT += core dbus
+ 
+-TARGET = ngf-qt5
++TARGET = ngf-qt$${QT_MAJOR_VERSION}
+ DEFINES += NGFCLIENT_LIBRARY
+ CONFIG += create_pc create_prl no_install_prl
+ 
+@@ -13,10 +13,10 @@ INCLUDEPATH += include
+ include(dbus/dbus.pri)
+ 
+ target.path = $$[QT_INSTALL_LIBS]
+-headers.path = $$PREFIX/include/ngf-qt5
++headers.path = $$PREFIX/include/ngf-qt$${QT_MAJOR_VERSION}
+ headers.files = include/*
+ 
+-QMAKE_PKGCONFIG_NAME = libngf-qt5
++QMAKE_PKGCONFIG_NAME = libngf-qt$${QT_MAJOR_VERSION}
+ QMAKE_PKGCONFIG_PREFIX = $$PREFIX
+ QMAKE_PKGCONFIG_DESCRIPTION = "Qt-based client library for NGF daemon."
+ QMAKE_PKGCONFIG_LIBDIR = $$target.path
+diff --git a/tests/testapplication.pri b/tests/testapplication.pri
+index 18dae1e..333b674 100644
+--- a/tests/testapplication.pri
++++ b/tests/testapplication.pri
+@@ -12,7 +12,7 @@ HEADERS = testbase.h
+ SOURCES = $${pro_file_basename}.cpp
+ 
+ INCLUDEPATH += ../src/include
+-LIBS += -L../src -lngf-qt5
++LIBS += -L../src -lngf-qt$${QT_MAJOR_VERSION}
+ 
+ target.path = $${INSTALL_TESTDIR}
+ INSTALLS += target
+diff --git a/tests/tests_common.pri b/tests/tests_common.pri
+index 5b4b23d..6dd4916 100644
+--- a/tests/tests_common.pri
++++ b/tests/tests_common.pri
+@@ -1,5 +1,5 @@
+ include(../common.pri)
+ 
+-INSTALL_TESTDIR = /opt/tests/libngf-qt5
++INSTALL_TESTDIR = /opt/tests/libngf-qt$${QT_MAJOR_VERSION}
+ CONFIG_SUBST += INSTALL_TESTDIR
+ QT -= gui
