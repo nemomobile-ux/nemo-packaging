@@ -1,0 +1,25 @@
+From 28daf4f35177eae8f7782bfaaf5df5a4b529b17a Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 9 Jul 2023 11:37:22 +0000
+Subject: [PATCH] features/mkspecs must go to QT_INSTALL_ARCHDATA
+
+---
+ src/nemo-devicelock/host/host.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/nemo-devicelock/host/host.pro b/src/nemo-devicelock/host/host.pro
+index f51a127..6325b83 100644
+--- a/src/nemo-devicelock/host/host.pro
++++ b/src/nemo-devicelock/host/host.pro
+@@ -60,7 +60,7 @@ headers.path = /usr/include/nemo-devicelock/host
+ # the auto generated pkgconfig file includes paths from the build tree, use a .prf to
+ # publish dependencies in a maintainable way instead.
+ prf.files = nemo-devicelock-host.prf
+-prf.path = $$[QT_INSTALL_DATA]/mkspecs/features
++prf.path = $$[QT_INSTALL_ARCHDATA]/mkspecs/features
+ 
+ target.path = $$[QT_INSTALL_LIBS]
+ 
+-- 
+2.41.0
+
