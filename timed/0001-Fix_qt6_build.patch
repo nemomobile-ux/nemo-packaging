@@ -1,0 +1,679 @@
+diff --git a/src/lib/event b/src/lib/event
+index dfa8f33..328de71 100644
+--- a/src/lib/event
++++ b/src/lib/event
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-qt6/event-declarations.h>
++#else
+ #include <timed-qt5/event-declarations.h>
++#endif
+diff --git a/src/lib/event-declarations.h b/src/lib/event-declarations.h
+index 7d92212..d609578 100644
+--- a/src/lib/event-declarations.h
++++ b/src/lib/event-declarations.h
+@@ -331,9 +331,12 @@ class Maemo::Timed::Event::List
+     List(const event_list_io_t &eeio);
+     QVariant dbus_output() const;
+ };
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::Event::Triggers &x);
++const QDBusArgument &operator>>(const QDBusArgument &in, Maemo::Timed::Event::Triggers &x);
++#else
+ declare_qtdbus_io(Maemo::Timed::Event::Triggers);
+-
++#endif
+ class Maemo::Timed::Event::Triggers : public QMap<quint32, quint32>
+ {
+ public:
+@@ -341,6 +344,9 @@ class Maemo::Timed::Event::Triggers : public QMap<quint32, quint32>
+         : QMap<quint32, quint32>()
+     {}
+ };
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++Q_DECLARE_METATYPE(Maemo::Timed::Event::Triggers)
++#endif
+ 
+ #if NOT_DONE_YET
+ void foo()
+diff --git a/src/lib/event-io.h b/src/lib/event-io.h
+index cee3b30..4eb6b4b 100644
+--- a/src/lib/event-io.h
++++ b/src/lib/event-io.h
+@@ -118,7 +118,28 @@ struct Maemo::Timed::event_list_io_t
+ {
+     QVector<event_io_t> ee;
+ };
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::attribute_io_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in,Maemo::Timed::attribute_io_t &x);
+ 
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::cred_modifier_io_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in,Maemo::Timed::cred_modifier_io_t &x);
++
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::action_io_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in,Maemo::Timed::action_io_t &x);
++
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::button_io_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in,Maemo::Timed::button_io_t &x);
++
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::recurrence_io_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in,Maemo::Timed::recurrence_io_t &x);
++
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::event_io_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in,Maemo::Timed::event_io_t &x);
++
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::event_list_io_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in,Maemo::Timed::event_list_io_t &x);
++#else
+ declare_qtdbus_io(Maemo::Timed::attribute_io_t);
+ declare_qtdbus_io(Maemo::Timed::cred_modifier_io_t);
+ declare_qtdbus_io(Maemo::Timed::action_io_t);
+@@ -126,5 +147,5 @@ declare_qtdbus_io(Maemo::Timed::button_io_t);
+ declare_qtdbus_io(Maemo::Timed::recurrence_io_t);
+ declare_qtdbus_io(Maemo::Timed::event_io_t);
+ declare_qtdbus_io(Maemo::Timed::event_list_io_t);
+-
++#endif
+ #endif
+diff --git a/src/lib/hidden/exception b/src/lib/hidden/exception
+index 386aa7e..49134e9 100644
+--- a/src/lib/hidden/exception
++++ b/src/lib/hidden/exception
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-qt6/exception.h>
++#else
+ #include <timed-qt5/exception.h>
++#endif
+\ No newline at end of file
+diff --git a/src/lib/lib.pro b/src/lib/lib.pro
+index 3868694..5591c6d 100644
+--- a/src/lib/lib.pro
++++ b/src/lib/lib.pro
+@@ -3,7 +3,7 @@ TEMPLATE = lib
+ QT += dbus
+ QT -= gui
+ 
+-TARGET = timed-qt5
++TARGET = timed-qt$${QT_MAJOR_VERSION}
+ 
+ VERSION = 0.$$(TIMED_VERSION)
+ 
+@@ -20,14 +20,14 @@ devheaders.files += hidden/exception exception.h qmacro.h
+ devheaders.files += interface interface.h
+ devheaders.files += event event-declarations.h
+ devheaders.files += wallclock wall-declarations.h
+-devheaders.path = /usr/include/timed-qt5
++devheaders.path = /usr/include/timed-qt$${QT_MAJOR_VERSION}
+ devheaders.path  = /usr/include/$$TARGET
+ 
+ pc.path = $$[QT_INSTALL_LIBS]/pkgconfig
+-pc.files = timed-qt5.pc
++pc.files = timed-qt$${QT_MAJOR_VERSION}.pc
+ 
+ prf.path =  $$[QT_INSTALL_DATA]/mkspecs/features
+-prf.files = timed-qt5.prf
++prf.files = timed-qt$${QT_MAJOR_VERSION}.prf
+ 
+ INSTALLS = target devheaders prf pc
+ 
+diff --git a/src/lib/nanotime.h b/src/lib/nanotime.h
+index 575dfb9..dd5653e 100644
+--- a/src/lib/nanotime.h
++++ b/src/lib/nanotime.h
+@@ -159,7 +159,10 @@ QTextStream &operator<<(QTextStream &os, const QVector<T> &x)
+     os << "]";
+     return os;
+ }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++QDBusArgument &operator<<(QDBusArgument &out, const nanotime_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in, nanotime_t &x);
++#else
+ declare_qtdbus_io(nanotime_t);
+-
++#endif
+ #endif
+diff --git a/src/lib/qmacro.h b/src/lib/qmacro.h
+index 28e00b1..6eff940 100644
+--- a/src/lib/qmacro.h
++++ b/src/lib/qmacro.h
+@@ -42,12 +42,12 @@ inline QString Maemo::Timed::c2q(const char *c)
+ {
+     return QString::fromLatin1(c);
+ }
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #define declare_qtdbus_io(type_name) \
+     QDBusArgument &operator<<(QDBusArgument &out, const type_name &x); \
+     const QDBusArgument &operator>>(const QDBusArgument &in, type_name &x); \
+     Q_DECLARE_METATYPE(type_name)
+-
++#endif
+ #define declare_qtdbus_io_friends(type_name) \
+     friend QDBusArgument & ::operator<<(QDBusArgument &, const type_name &); \
+     friend const QDBusArgument & ::operator>>(const QDBusArgument &in, type_name &x);
+diff --git a/src/lib/timed-qt6.pc b/src/lib/timed-qt6.pc
+new file mode 100644
+index 0000000..de8809f
+--- /dev/null
++++ b/src/lib/timed-qt6.pc
+@@ -0,0 +1,5 @@
++Name: libtimed-qt6
++Description: timed communication library
++Version: 3.6
++Requires: Qt6DBus
++Libs: -ltimed-qt6
+diff --git a/src/lib/timed-qt6.prf b/src/lib/timed-qt6.prf
+new file mode 100644
+index 0000000..1fe1923
+--- /dev/null
++++ b/src/lib/timed-qt6.prf
+@@ -0,0 +1,2 @@
++LIBS += -ltimed-qt6
++QT += dbus
+diff --git a/src/lib/wall-declarations.h b/src/lib/wall-declarations.h
+index 933cada..f2b1eaa 100644
+--- a/src/lib/wall-declarations.h
++++ b/src/lib/wall-declarations.h
+@@ -43,9 +43,12 @@ enum OffsetSource { OffsetManual, OffsetNitz };
+ } // namespace WallClock
+ } // namespace Timed
+ } // namespace Maemo
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::WallClock::Info &x);
++const QDBusArgument &operator>>(const QDBusArgument &in, Maemo::Timed::WallClock::Info &x);
++#else
+ declare_qtdbus_io(Maemo::Timed::WallClock::Info);
+-
++#endif
+ class Maemo::Timed::WallClock::Info
+ {
+     declare_qtdbus_io_friends(Info);
+@@ -89,8 +92,13 @@ class Maemo::Timed::WallClock::Info
+     QString defaultTimezone() const;
+ 
+     QString str() const;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    declare_qtdbus_io_friends(Info);
++#endif
+ };
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++Q_DECLARE_METATYPE(Maemo::Timed::WallClock::Info)
++#endif
+ // struct wall_settings_pimple_t ;
+ 
+ class Maemo::Timed::WallClock::Settings
+diff --git a/src/lib/wall-info.cpp b/src/lib/wall-info.cpp
+index 7c2adf3..5372d36 100644
+--- a/src/lib/wall-info.cpp
++++ b/src/lib/wall-info.cpp
+@@ -209,7 +209,12 @@ QString Maemo::Timed::WallClock::Info::str() const
+     os << " clock_back=" << p->systime_diff;
+     os << " nitz_supported=" << p->nitz_supported;
+     os << " default_timezone=" << p->default_timezone.toStdString().c_str();
+-    os << "}" << flush;
++    os << "}" ;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    os << Qt::flush;
++#else
++    os << flush;
++#endif
+     return res;
+ }
+ 
+diff --git a/src/lib/wall-settings.cpp b/src/lib/wall-settings.cpp
+index 025dc63..b78e612 100644
+--- a/src/lib/wall-settings.cpp
++++ b/src/lib/wall-settings.cpp
+@@ -158,7 +158,12 @@ QString Maemo::Timed::WallClock::wall_settings_pimple_t::str() const
+     os << "time_at_zero=" << time_at_zero.str().c_str() << ", ";
+     os << "offset=" << offset << ", ";
+     os << "zone='" << zone << "', ";
+-    os << "valid=" << valid << "}" << flush;
++    os << "valid=" << valid << "}";
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    os << Qt::flush;
++#else
++    os << flush;
++#endif
+     return res;
+ }
+ 
+diff --git a/src/lib/wall-settings.h b/src/lib/wall-settings.h
+index ade3c68..d7a182a 100644
+--- a/src/lib/wall-settings.h
++++ b/src/lib/wall-settings.h
+@@ -47,6 +47,12 @@ struct Maemo::Timed::WallClock::wall_settings_pimple_t
+     QString str() const;
+ };
+ 
+-declare_qtdbus_io(Maemo::Timed::WallClock::wall_settings_pimple_t);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::WallClock::wall_settings_pimple_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in, Maemo::Timed::WallClock::wall_settings_pimple_t &x);
+ 
++Q_DECLARE_METATYPE(Maemo::Timed::WallClock::wall_settings_pimple_t)
++#else
++declare_qtdbus_io(Maemo::Timed::WallClock::wall_settings_pimple_t);
++#endif
+ #endif
+diff --git a/src/lib/wallclock b/src/lib/wallclock
+index f90759b..4943780 100644
+--- a/src/lib/wallclock
++++ b/src/lib/wallclock
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-qt6/wall-declarations.h>
++#else
+ #include <timed-qt5/wall-declarations.h>
++#endif
+diff --git a/src/server/cellular.cpp b/src/server/cellular.cpp
+index d60144b..1b7dbbd 100644
+--- a/src/server/cellular.cpp
++++ b/src/server/cellular.cpp
+@@ -122,7 +122,11 @@ cellular_time_t::cellular_time_t(const NetworkTimeInfo &cnti)
+     , ts(0)
+ {
+     if (cnti.isValid() and cnti.dateTime().isValid()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        value = cnti.dateTime().toSecsSinceEpoch();
++#else
+         value = cnti.dateTime().toTime_t();
++#endif
+         ts = nanotime_t::from_timespec(*cnti.timestamp());
+     }
+     log_debug("constructed %s out of %s",
+@@ -178,7 +182,11 @@ cellular_offset_t::cellular_offset_t(const NetworkTimeInfo &cnti)
+ 
+         if (cnti.dateTime().isValid() and cnti.dateTime().timeSpec() == Qt::UTC) {
+             sender_time = true;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            timestamp = cnti.dateTime().toSecsSinceEpoch();
++#else
+             timestamp = cnti.dateTime().toTime_t();
++#endif
+         } else {
+             // the exact moment of sending isn't clear, let's guess it
+             nanotime_t monotonic_received = nanotime_t::from_timespec(*cnti.timestamp());
+diff --git a/src/server/credentials.h b/src/server/credentials.h
+index bff3cc4..cb3629a 100644
+--- a/src/server/credentials.h
++++ b/src/server/credentials.h
+@@ -36,7 +36,11 @@ using namespace std;
+ #include <QDBusConnection>
+ #include <QDBusMessage>
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <iodata-qt6/iodata>
++#else
+ #include <iodata-qt5/iodata>
++#endif
+ 
+ uint32_t get_name_owner_from_dbus_sync(const QDBusConnection &bus, const QString &name);
+ 
+diff --git a/src/server/event.h b/src/server/event.h
+index b148cae..c6d0eb7 100644
+--- a/src/server/event.h
++++ b/src/server/event.h
+@@ -34,7 +34,11 @@ using namespace std;
+ 
+ #include <QDBusPendingCallWatcher>
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <iodata-qt6/iodata>
++#else
+ #include <iodata-qt5/iodata>
++#endif
+ 
+ #include "../lib/event-declarations.h"
+ #include "../lib/event-io.h"
+diff --git a/src/server/server.pro b/src/server/server.pro
+index dc1cc8f..228e6d1 100644
+--- a/src/server/server.pro
++++ b/src/server/server.pro
+@@ -3,14 +3,14 @@ QT += dbus
+ 
+ TEMPLATE = app
+ 
+-TARGET = timed-qt5
++TARGET = timed-qt$${QT_MAJOR_VERSION}
+ 
+ VERSION = $$(TIMED_VERSION)
+ 
+ INCLUDEPATH += ../h
+ 
+ QMAKE_LIBDIR_FLAGS += -L../lib -L../voland
+-LIBS += -ltimed-qt5 -ltimed-voland-qt5
++LIBS += -ltimed-qt$${QT_MAJOR_VERSION} -ltimed-voland-qt$${QT_MAJOR_VERSION} -liodata-qt$${QT_MAJOR_VERSION}
+ 
+ IODATA_TYPES = queue.type config.type settings.type customization.type tzdata.type
+ 
+@@ -81,7 +81,7 @@ HEADERS += tz.h
+ SOURCES += notification.cpp
+ HEADERS += notification.h
+ 
+-CONFIG += link_pkgconfig iodata-qt5
++CONFIG += link_pkgconfig iodata-qt$${QT_MAJOR_VERSION}
+ PKGCONFIG += libpcrecpp libsystemd
+ PKGCONFIG += sailfishaccesscontrol
+ 
+@@ -92,16 +92,16 @@ CONFIG(dsme_dbus_if) {
+ target.path = $$(DESTDIR)/usr/bin
+ 
+ timedrc.path  = $$(DESTDIR)/etc
+-timedrc.files = timed-qt5.rc
++timedrc.files = timed-qt$${QT_MAJOR_VERSION}.rc
+ 
+ dbusconf.path  = $$(DESTDIR)/etc/dbus-1/system.d
+-dbusconf.files = timed-qt5.conf
++dbusconf.files = timed-qt$${QT_MAJOR_VERSION}.conf
+ 
+ systemd.path = $$(DESTDIR)/usr/lib/systemd/user
+-systemd.files = timed-qt5.service
++systemd.files = timed-qt$${QT_MAJOR_VERSION}.service
+ 
+ oneshot.path = $$(DESTDIR)/usr/lib/oneshot.d
+-oneshot.files = setcaps-timed-qt5.sh
++oneshot.files = setcaps-timed-qt$${QT_MAJOR_VERSION}.sh
+ 
+ INSTALLS += target xml timedrc dbusconf systemd oneshot
+ 
+diff --git a/src/server/setcaps-timed-qt6.sh b/src/server/setcaps-timed-qt6.sh
+new file mode 100644
+index 0000000..7f9bb22
+--- /dev/null
++++ b/src/server/setcaps-timed-qt6.sh
+@@ -0,0 +1,7 @@
++#!/bin/sh
++if [ "$MIC_RUN" != "" ]; then
++        echo "setcaps-timed-qt6.sh - returning FAIL to postpone oneshot to first boot"
++        exit 1
++fi
++
++setcap cap_sys_time+ep /usr/bin/timed-qt6
+diff --git a/src/server/settings.h b/src/server/settings.h
+index 5608eb1..4051ed0 100644
+--- a/src/server/settings.h
++++ b/src/server/settings.h
+@@ -25,9 +25,13 @@
+ #define SETTINGS_H
+ 
+ #include <string>
++#include <QtGlobal>
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <iodata-qt6/iodata>
++#else
+ #include <iodata-qt5/iodata>
+-#include <QtGlobal>
++#endif
+ 
+ #include "../lib/nanotime.h"
+ #include "../lib/wall-declarations.h"
+diff --git a/src/server/timed-qt6.conf b/src/server/timed-qt6.conf
+new file mode 100644
+index 0000000..14e80f6
+--- /dev/null
++++ b/src/server/timed-qt6.conf
+@@ -0,0 +1,13 @@
++<!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
++ "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
++<busconfig>
++
++  <policy group="users">
++    <allow own="com.nokia.time"/>
++  </policy>
++
++  <policy context="default">
++    <allow send_destination="com.nokia.time"/>
++  </policy>
++
++</busconfig>
+diff --git a/src/server/timed-qt6.rc b/src/server/timed-qt6.rc
+new file mode 100644
+index 0000000..90dc236
+--- /dev/null
++++ b/src/server/timed-qt6.rc
+@@ -0,0 +1,5 @@
++data_directory = ".config/timed",
++shared_events_directory = "/var/lib/timed/shared_events",
++shared_settings_directory = "/var/lib/timed/shared_settings",
++events_file = "events.data",
++settings_file = "settings.data" .
+diff --git a/src/server/timed-qt6.service b/src/server/timed-qt6.service
+new file mode 100644
+index 0000000..f89a043
+--- /dev/null
++++ b/src/server/timed-qt6.service
+@@ -0,0 +1,14 @@
++[Unit]
++Description=Time Daemon
++Requires=dbus.socket
++After=dbus.socket
++
++# Service type should be dbus, but timed dbus API is on the system bus, which systemd does not detect
++[Service]
++Type=notify
++ExecStart=/usr/bin/timed-qt6 --systemd
++Restart=always
++RestartSec=1
++
++[Install]
++WantedBy=pre-user-session.target
+diff --git a/src/server/timed.h b/src/server/timed.h
+index 9e3efb8..402dd1a 100644
+--- a/src/server/timed.h
++++ b/src/server/timed.h
+@@ -30,10 +30,13 @@
+ #include <QDBusConnectionInterface>
+ #include <QDBusServiceWatcher>
+ #include <QMetaMethod>
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <iodata-qt6/storage>
++#include <iodata-qt6/validator>
++#else
+ #include <iodata-qt5/storage>
+ #include <iodata-qt5/validator>
+-
++#endif
+ #include "event.h"
+ #include "machine.h"
+ #include "settings.h"
+diff --git a/src/server/timeutil.h b/src/server/timeutil.h
+index cbd1041..e3b8db9 100644
+--- a/src/server/timeutil.h
++++ b/src/server/timeutil.h
+@@ -27,8 +27,11 @@
+ #include <string>
+ #include <QObject>
+ using namespace std;
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <iodata-qt6/iodata>
++#else
+ #include <iodata-qt5/iodata>
++#endif
+ 
+ struct recurrence_pattern_t;
+ 
+diff --git a/src/server/tzdata.cpp b/src/server/tzdata.cpp
+index 06d816e..d8356ad 100644
+--- a/src/server/tzdata.cpp
++++ b/src/server/tzdata.cpp
+@@ -21,10 +21,14 @@
+ **   License along with Timed. If not, see http://www.gnu.org/licenses/   **
+ **                                                                        **
+ ***************************************************************************/
+-
++#include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <iodata-qt6/validator>
++#include <iodata-qt6/storage>
++#else
+ #include <iodata-qt5/storage>
+ #include <iodata-qt5/validator>
+-#include <QtGlobal>
++#endif
+ 
+ #include <map>
+ #include <set>
+diff --git a/src/voland/reminder-pimple.h b/src/voland/reminder-pimple.h
+index 44e1eab..62afa1d 100644
+--- a/src/voland/reminder-pimple.h
++++ b/src/voland/reminder-pimple.h
+@@ -50,7 +50,12 @@ struct reminder_pimple_t
+ } // namespace Voland
+ } // namespace Timed
+ } // namespace Maemo
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::Voland::button_io_t &x);
++const QDBusArgument &operator>>(const QDBusArgument &in, Maemo::Timed::Voland::button_io_t &x);
+ 
++Q_DECLARE_METATYPE(Maemo::Timed::Voland::button_io_t)
++#else
+ declare_qtdbus_io(Maemo::Timed::Voland::button_io_t);
+-
++#endif
+ #endif
+diff --git a/src/voland/reminder.h b/src/voland/reminder.h
+index 7f54e90..2dd09b5 100644
+--- a/src/voland/reminder.h
++++ b/src/voland/reminder.h
+@@ -37,9 +37,12 @@ class Reminder;
+ }
+ } // namespace Timed
+ } // namespace Maemo
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++QDBusArgument &operator<<(QDBusArgument &out, const Maemo::Timed::Voland::Reminder &x);
++const QDBusArgument &operator>>(const QDBusArgument &in, Maemo::Timed::Voland::Reminder &x);
++#else
+ declare_qtdbus_io(Maemo::Timed::Voland::Reminder);
+-
++#endif
+ namespace Maemo {
+ namespace Timed {
+ namespace Voland {
+@@ -63,9 +66,14 @@ class Reminder
+     bool isMissed() const;
+     QString buttonAttr(int x, const QString &key) const;
+     ~Reminder();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    declare_qtdbus_io_friends(Reminder);
++#endif
+ };
+ } // namespace Voland
+ } // namespace Timed
+ } // namespace Maemo
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++Q_DECLARE_METATYPE(Maemo::Timed::Voland::Reminder)
++#endif
+ #endif
+diff --git a/src/voland/timed-voland-qt6.pc b/src/voland/timed-voland-qt6.pc
+new file mode 100644
+index 0000000..0ab01e9
+--- /dev/null
++++ b/src/voland/timed-voland-qt6.pc
+@@ -0,0 +1,5 @@
++Name: libtimed-voland-qt6
++Description: timed-voland communication library
++Version: 3.6
++Libs: -ltimed-voland-qt6
++
+diff --git a/src/voland/timed-voland-qt6.prf b/src/voland/timed-voland-qt6.prf
+new file mode 100644
+index 0000000..0560652
+--- /dev/null
++++ b/src/voland/timed-voland-qt6.prf
+@@ -0,0 +1,2 @@
++LIBS += -ltimed-voland-qt6
++QT += dbus
+diff --git a/src/voland/voland.pro b/src/voland/voland.pro
+index ffd2ddf..4b22f82 100644
+--- a/src/voland/voland.pro
++++ b/src/voland/voland.pro
+@@ -3,7 +3,7 @@ TEMPLATE = lib
+ QT += dbus
+ QT -= gui
+ 
+-TARGET = timed-voland-qt5
++TARGET = timed-voland-qt$${QT_MAJOR_VERSION}
+ VERSION = 0.$$(TIMED_VERSION)
+ 
+ HEADERS = interface.h
+@@ -14,13 +14,13 @@ INCLUDEPATH += ../h
+ target.path = $$[QT_INSTALL_LIBS]
+ 
+ devheaders.files = reminder interface ta_interface reminder.h interface.h
+-devheaders.path  = /usr/include/timed-voland-qt5
++devheaders.path  = /usr/include/timed-voland-qt$${QT_MAJOR_VERSION}
+ 
+ pc.path = $$[QT_INSTALL_LIBS]/pkgconfig
+-pc.files = timed-voland-qt5.pc
++pc.files = timed-voland-qt$${QT_MAJOR_VERSION}.pc
+ 
+ prf.path =  $$[QT_INSTALL_DATA]/mkspecs/features
+-prf.files = timed-voland-qt5.prf
++prf.files = timed-voland-qt$${QT_MAJOR_VERSION}.prf
+ 
+ INSTALLS = target devheaders prf pc
+ 
+diff --git a/tests/tst_events/tst_events.cpp b/tests/tst_events/tst_events.cpp
+index 6e453cc..7172e30 100644
+--- a/tests/tst_events/tst_events.cpp
++++ b/tests/tst_events/tst_events.cpp
+@@ -88,7 +88,7 @@ Maemo::Timed::Event tst_Events::createEvent(const qint64 timestamp, const int du
+     event.setReminderFlag();
+     QDateTime dateTime;
+     dateTime.setMSecsSinceEpoch(timestamp);
+-    event.setTicker(dateTime.toTime_t() + dueInSeconds);
++    event.setTicker(dateTime.toSecsSinceEpoch() + dueInSeconds);
+ 
+     // Add an action to the event, the action writes a message to a file when the event is triggered
+     Maemo::Timed::Event::Action &act = event.addAction();
+diff --git a/tools/timedclient/timedclient.cpp b/tools/timedclient/timedclient.cpp
+index 0d254c9..ecd4916 100644
+--- a/tools/timedclient/timedclient.cpp
++++ b/tools/timedclient/timedclient.cpp
+@@ -1322,7 +1322,11 @@ static QList<uint> do_search(char *args)
+             fprintf(stderr, "missing attribute key or value: %s=%s\n", key, val);
+             continue;
+         }
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        attributes.insert(key, QChar(*val));
++#else
+         attributes.insert(key, val);
++#endif
+     }
+ 
+     QList<uint> cookieList = cookies_get(attributes);
+diff --git a/tools/timedclient/timedclient.pro b/tools/timedclient/timedclient.pro
+index b754a47..19db9bc 100644
+--- a/tools/timedclient/timedclient.pro
++++ b/tools/timedclient/timedclient.pro
+@@ -3,13 +3,13 @@ QT 	+= dbus
+ 
+ TEMPLATE = app
+ 
+-TARGET   = timedclient-qt5
++TARGET   = timedclient-qt$${QT_MAJOR_VERSION}
+ SOURCES += timedclient.cpp
+ 
+ INCLUDEPATH += ../../src/h
+ QMAKE_LIBDIR_FLAGS += -L../../src/lib
+ 
+-LIBS += -ltimed-qt5
++LIBS += -ltimed-qt$${QT_MAJOR_VERSION}
+ 
+ INSTALLS += target
+ target.path = $$(DESTDIR)/usr/bin

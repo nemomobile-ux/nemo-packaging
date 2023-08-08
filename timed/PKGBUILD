@@ -14,27 +14,26 @@ url="https://github.com/sailfishos/timed"
 license=('LGPL-2.1-or-later')
 depends=('sailfish-access-control' 'libiodata' 'tzdata-timed' 'connman' 'ofono' 'pcre')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    "0001-Fix_qt6_build.patch"
     "0002-Fixes-access.patch")
 
 sha256sums=('413728c9224074b84fb37216fcd8b671de8557315fa1c4a7821517d2ab42b923'
+	'a640eab5dba3af3be43e51784c00b6afb7b8e235f638b19a6ea2fbc32d9768e7'
 	'cf81d073f2618fd914fbd5f55152580c7e3bf14f53eaf0950cb7998fd9460e02')
 
 prepare() {
   cd $pkgname-$pkgver
+  patch -Np1 -i "${srcdir}/0001-Fix_qt6_build.patch"
   patch -Np1 -i "${srcdir}/0002-Fixes-access.patch"
   mkdir -p src/h/timed-qt6/
   cp src/lib/qmacro.h src/h/timed-qt6/qmacro.h
   sed -i "s|libsystemd-daemon|libsystemd|g" ./src/server/server.pro
-  iodata-qt6-type-to-c++ -o src/server/tzdata.type.cpp -d src/server/tzdata.type.h src/server/tzdata.type
-  iodata-qt6-type-to-c++ -o src/server/config.type.cpp -d src/server/config.type.h src/server/config.type
-  iodata-qt6-type-to-c++ -o src/server/customization.type.cpp -d src/server/customization.type.h src/server/customization.type
-  iodata-qt6-type-to-c++ -o src/server/queue.type.cpp -d src/server/queue.type.h src/server/queue.type
-  iodata-qt6-type-to-c++ -o src/server/settings.type.cpp -d src/server/settings.type.h src/server/settings.type
 }
 
 build() {
   cd $pkgname-$pkgver
-  qmake6
+  export TIMED_VERSION=${pkgver}
+  qmake6 -recursive "CONFIG += dsme_dbus_if ofono"
   make
 }
 
@@ -56,9 +55,9 @@ package() {
   install -d ${pkgdir}/etc/
   ln -sf /var/lib/timed/localtime ${pkgdir}/etc/localtime
 
-  install -d ${pkgdir}/usr/lib/qt/mkspecs/features/
-  mv ${pkgdir}/usr/share/qt/mkspecs/features/timed-qt6.prf ${pkgdir}/usr/lib/qt/mkspecs/features/timed-qt6.prf
-  mv ${pkgdir}/usr/share/qt/mkspecs/features/timed-voland-qt6.prf ${pkgdir}/usr/lib/qt/mkspecs/features/timed-voland-qt6.prf
+  install -d ${pkgdir}/usr/lib/qt6/mkspecs/features/
+  mv ${pkgdir}/usr/share/qt6/mkspecs/features/timed-qt6.prf ${pkgdir}/usr/lib/qt6/mkspecs/features/timed-qt6.prf
+  mv ${pkgdir}/usr/share/qt6/mkspecs/features/timed-voland-qt6.prf ${pkgdir}/usr/lib/qt6/mkspecs/features/timed-voland-qt6.prf
 
   #setup services
   install -d ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
