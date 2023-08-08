@@ -11,7 +11,9 @@ makedepends=('git')
 source=("git+https://github.com/qtproject/qtfeedback.git#commit=$_commit"
 	"0001-allow_build_with_qt6.patch")
 sha256sums=('SKIP'
-    '2f13ac4a98e9350fe6ecbb9be284e7d7b97cee457c7f803c103e7431fe62ef1c')
+    '2f13ac4a98e9350fe6ecbb9be284e7d7b97cee457c7f803c103e7431fe62ef1c'
+    'qt_lib_feedback.pri')
+
 prepare() {
   cd qtfeedback
   patch -Np1 -i "${srcdir}/0001-allow_build_with_qt6.patch"
@@ -27,7 +29,8 @@ package() {
   cd qtfeedback
 
   make INSTALL_ROOT="${pkgdir}" install
-
   install -D -m644 LGPL_EXCEPTION.txt \
     "${pkgdir}"/usr/share/licenses/${pkgname}/LGPL_EXCEPTION.txt
+  mkdir -p ${pkgdir}/usr/lib/qt6/mkspecs/modules/
+  cp ${srcdir}/qt_lib_feedback.pri ${pkgdir}/usr/lib/qt6/mkspecs/modules/
 }
