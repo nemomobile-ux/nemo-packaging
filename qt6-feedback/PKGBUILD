@@ -9,10 +9,12 @@ license=('GPL3' 'LGPL' 'FDL' 'custom')
 depends=('qt6-declarative')
 makedepends=('git')
 source=("git+https://github.com/qtproject/qtfeedback.git#commit=$_commit"
-	"0001-allow_build_with_qt6.patch")
+	"0001-allow_build_with_qt6.patch"
+	'qt_lib_feedback.pri'
+	)
 sha256sums=('SKIP'
     '2f13ac4a98e9350fe6ecbb9be284e7d7b97cee457c7f803c103e7431fe62ef1c'
-    'qt_lib_feedback.pri')
+    'SKIP')
 
 prepare() {
   cd qtfeedback
