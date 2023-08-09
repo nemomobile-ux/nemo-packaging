@@ -1,6 +1,6 @@
 PKGBUILD-*
 *.log
 *.tar.zst
-*.tag.gz
+*.tar.gz
 src/
 list_of_pkgs.cache
