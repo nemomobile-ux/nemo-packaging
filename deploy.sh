@@ -32,6 +32,7 @@ eval "$BUILD libglibutil"
 eval "$BUILD libwspcodec"
 eval "$BUILD libdbusaccess"
 eval "$BUILD libdbuslog"
+eval "$BUILD qt6-feedback"
 eval "$BUILD ofono"
 if [ "$BUILDARCH" != "aarch64" ]; then
     eval "$BUILD libofono-qt"
