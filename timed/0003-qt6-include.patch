@@ -1,0 +1,92 @@
+From 3d3fb354bad59f28a7d1ee6f2e848e4f57877e23 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Wed, 9 Aug 2023 04:52:20 +0000
+Subject: [PATCH] qt6 include
+
+---
+ src/voland/interface.h                  | 5 +++++
+ src/voland/reminder.h                   | 4 ++++
+ tests/tests.pro                         | 2 +-
+ tests/tst_events/tst_events.pro         | 4 ++--
+ tests/ut_networktime/ut_networktime.pro | 2 +-
+ 5 files changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/src/voland/interface.h b/src/voland/interface.h
+index 9574000..628031d 100644
+--- a/src/voland/interface.h
++++ b/src/voland/interface.h
+@@ -32,7 +32,12 @@
+ #include <QList>
+ #include <QVector>
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-qt6/qmacro.h>
++#else
+ #include <timed-qt5/qmacro.h>
++#endif
++
+ #include <QtGlobal>
+ 
+ #include "reminder.h"
+diff --git a/src/voland/reminder.h b/src/voland/reminder.h
+index 2dd09b5..9ca426b 100644
+--- a/src/voland/reminder.h
++++ b/src/voland/reminder.h
+@@ -27,7 +27,11 @@
+ #include <QDBusMetaType>
+ #include <QString>
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-qt6/qmacro.h>
++#else
+ #include <timed-qt5/qmacro.h>
++#endif
+ #include <QtGlobal>
+ 
+ namespace Maemo {
+diff --git a/tests/tests.pro b/tests/tests.pro
+index cb3a3fe..97d8b11 100644
+--- a/tests/tests.pro
++++ b/tests/tests.pro
+@@ -1,4 +1,4 @@
+-PACKAGENAME = timed-qt5
++PACKAGENAME = timed-qt$${QT_MAJOR_VERSION}
+ 
+ TEMPLATE = subdirs
+ 
+diff --git a/tests/tst_events/tst_events.pro b/tests/tst_events/tst_events.pro
+index 0966274..b910235 100644
+--- a/tests/tst_events/tst_events.pro
++++ b/tests/tst_events/tst_events.pro
+@@ -7,7 +7,7 @@ QT -= gui
+ INCLUDEPATH += ../../src/h
+ 
+ QMAKE_LIBDIR_FLAGS += -L../../src/lib -L../../src/voland
+-LIBS += -ltimed-qt5 -ltimed-voland-qt5
++LIBS += -ltimed-qt$${QT_MAJOR_VERSION} -ltimed-voland-qt$${QT_MAJOR_VERSION}
+ 
+ HEADERS += tst_events.h \
+            simplevolandadaptor.h
+@@ -15,5 +15,5 @@ HEADERS += tst_events.h \
+ SOURCES += tst_events.cpp \
+            simplevolandadaptor.cpp
+ 
+-target.path = $$(DESTDIR)/opt/tests/timed-qt5-tests
++target.path = $$(DESTDIR)/opt/tests/timed-qt$${QT_MAJOR_VERSION}-tests
+ INSTALLS += target
+diff --git a/tests/ut_networktime/ut_networktime.pro b/tests/ut_networktime/ut_networktime.pro
+index 0d80107..a2ebe4a 100644
+--- a/tests/ut_networktime/ut_networktime.pro
++++ b/tests/ut_networktime/ut_networktime.pro
+@@ -34,7 +34,7 @@ SOURCES += ut_networktime.cpp \
+ 
+ OTHER_FILES += fakeofono/org.fakeofono.conf
+ 
+-target.path = $$(DESTDIR)/opt/tests/timed-qt5-tests
++target.path = $$(DESTDIR)/opt/tests/timed-qt$${QT_MAJOR_VERSION}-tests
+ dbusconf.files = fakeofono/org.fakeofono.conf
+ dbusconf.path  = $$(DESTDIR)/etc/dbus-1/system.d
+ 
+-- 
+2.41.0
+
