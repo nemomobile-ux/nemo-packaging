@@ -1,21 +1,65 @@
-From 3d3fb354bad59f28a7d1ee6f2e848e4f57877e23 Mon Sep 17 00:00:00 2001
+From 1e855062639bc0030c1c16dfd23f85bb45352771 Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
-Date: Wed, 9 Aug 2023 04:52:20 +0000
-Subject: [PATCH] qt6 include
+Date: Thu, 10 Aug 2023 05:21:05 +0000
+Subject: [PATCH] qt6 includes
 
 ---
- src/voland/interface.h                  | 5 +++++
+ src/lib/interface                       | 4 ++++
+ src/server/timed.h                      | 5 +++++
+ src/voland/interface                    | 4 ++++
+ src/voland/interface.h                  | 4 ++++
+ src/voland/reminder                     | 4 ++++
  src/voland/reminder.h                   | 4 ++++
+ src/voland/ta_interface                 | 4 ++++
  tests/tests.pro                         | 2 +-
  tests/tst_events/tst_events.pro         | 4 ++--
  tests/ut_networktime/ut_networktime.pro | 2 +-
- 5 files changed, 13 insertions(+), 4 deletions(-)
+ 10 files changed, 33 insertions(+), 4 deletions(-)
 
+diff --git a/src/lib/interface b/src/lib/interface
+index 980dc2c..0c6f079 100644
+--- a/src/lib/interface
++++ b/src/lib/interface
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-qt6/interface.h>
++#else
+ #include <timed-qt5/interface.h>
++#endif
+diff --git a/src/server/timed.h b/src/server/timed.h
+index 402dd1a..915ef8a 100644
+--- a/src/server/timed.h
++++ b/src/server/timed.h
+@@ -58,7 +58,12 @@ class csd_t;
+ struct Timed : public QCoreApplication
+ {
+ public:
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    inline const char *configuration_path() { return "/etc/timed-qt6.rc"; }
++#else
+     inline const char *configuration_path() { return "/etc/timed-qt5.rc"; }
++#endif
++
+     // inline const char *configuration_type() { return  "/usr/share/timed/typeinfo/config.type" ; }
+ 
+     inline const char *customization_path()
+diff --git a/src/voland/interface b/src/voland/interface
+index cddfc46..a9e2289 100644
+--- a/src/voland/interface
++++ b/src/voland/interface
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ #include <timed-voland-qt5/interface.h>
++#else
++#include <timed-voland-qt6/interface.h>
++#endif
 diff --git a/src/voland/interface.h b/src/voland/interface.h
-index 9574000..628031d 100644
+index 9574000..4487747 100644
 --- a/src/voland/interface.h
 +++ b/src/voland/interface.h
-@@ -32,7 +32,12 @@
+@@ -32,7 +32,11 @@
  #include <QList>
  #include <QVector>
  
@@ -24,10 +68,21 @@ index 9574000..628031d 100644
 +#else
  #include <timed-qt5/qmacro.h>
 +#endif
-+
  #include <QtGlobal>
  
  #include "reminder.h"
+diff --git a/src/voland/reminder b/src/voland/reminder
+index b58db33..93173eb 100644
+--- a/src/voland/reminder
++++ b/src/voland/reminder
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-voland-qt6/reminder.h>
++#else
+ #include <timed-voland-qt5/reminder.h>
++#endif
+\ No newline at end of file
 diff --git a/src/voland/reminder.h b/src/voland/reminder.h
 index 2dd09b5..9ca426b 100644
 --- a/src/voland/reminder.h
@@ -44,6 +99,18 @@ index 2dd09b5..9ca426b 100644
  #include <QtGlobal>
  
  namespace Maemo {
+diff --git a/src/voland/ta_interface b/src/voland/ta_interface
+index cddfc46..d29e58d 100644
+--- a/src/voland/ta_interface
++++ b/src/voland/ta_interface
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-voland-qt6/interface.h>
++#else
+ #include <timed-voland-qt5/interface.h>
++#endif
+\ No newline at end of file
 diff --git a/tests/tests.pro b/tests/tests.pro
 index cb3a3fe..97d8b11 100644
 --- a/tests/tests.pro
