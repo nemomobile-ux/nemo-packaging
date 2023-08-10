@@ -1,4 +1,4 @@
-From 1e855062639bc0030c1c16dfd23f85bb45352771 Mon Sep 17 00:00:00 2001
+From d175f1f335ef802e1b560f1ff4d5c201d2cd75db Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Thu, 10 Aug 2023 05:21:05 +0000
 Subject: [PATCH] qt6 includes
@@ -45,15 +45,15 @@ index 402dd1a..915ef8a 100644
  
      inline const char *customization_path()
 diff --git a/src/voland/interface b/src/voland/interface
-index cddfc46..a9e2289 100644
+index cddfc46..aace069 100644
 --- a/src/voland/interface
 +++ b/src/voland/interface
 @@ -1,2 +1,6 @@
  #include <QtGlobal>
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
- #include <timed-voland-qt5/interface.h>
-+#else
 +#include <timed-voland-qt6/interface.h>
++#else
+ #include <timed-voland-qt5/interface.h>
 +#endif
 diff --git a/src/voland/interface.h b/src/voland/interface.h
 index 9574000..4487747 100644
