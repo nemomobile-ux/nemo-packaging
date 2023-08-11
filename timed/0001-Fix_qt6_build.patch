@@ -90,6 +90,18 @@ index 386aa7e..49134e9 100644
  #include <timed-qt5/exception.h>
 +#endif
 \ No newline at end of file
+diff --git a/src/lib/interface b/src/lib/interface
+index 980dc2c..aec68c0 100644
+--- a/src/lib/interface
++++ b/src/lib/interface
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-qt6/interface.h>
++#else
+ #include <timed-qt5/interface.h>
++#endif
+\ No newline at end of file
 diff --git a/src/lib/lib.pro b/src/lib/lib.pro
 index 3868694..5591c6d 100644
 --- a/src/lib/lib.pro
@@ -526,6 +538,47 @@ index 06d816e..d8356ad 100644
  
  #include <map>
  #include <set>
+diff --git a/src/voland/interface b/src/voland/interface
+index cddfc46..d29e58d 100644
+--- a/src/voland/interface
++++ b/src/voland/interface
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-voland-qt6/interface.h>
++#else
+ #include <timed-voland-qt5/interface.h>
++#endif
+\ No newline at end of file
+diff --git a/src/voland/interface.h b/src/voland/interface.h
+index 9574000..6afe112 100644
+--- a/src/voland/interface.h
++++ b/src/voland/interface.h
+@@ -31,8 +31,11 @@
+ #include <QDBusConnection>
+ #include <QList>
+ #include <QVector>
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-qt6/qmacro.h>
++#else
+ #include <timed-qt5/qmacro.h>
++#endif
+ #include <QtGlobal>
+ 
+ #include "reminder.h"
+diff --git a/src/voland/reminder b/src/voland/reminder
+index b58db33..93173eb 100644
+--- a/src/voland/reminder
++++ b/src/voland/reminder
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-voland-qt6/reminder.h>
++#else
+ #include <timed-voland-qt5/reminder.h>
++#endif
+\ No newline at end of file
 diff --git a/src/voland/reminder-pimple.h b/src/voland/reminder-pimple.h
 index 44e1eab..62afa1d 100644
 --- a/src/voland/reminder-pimple.h
@@ -545,10 +598,23 @@ index 44e1eab..62afa1d 100644
 +#endif
  #endif
 diff --git a/src/voland/reminder.h b/src/voland/reminder.h
-index 7f54e90..2dd09b5 100644
+index 7f54e90..077e972 100644
 --- a/src/voland/reminder.h
 +++ b/src/voland/reminder.h
-@@ -37,9 +37,12 @@ class Reminder;
+@@ -26,8 +26,11 @@
+ 
+ #include <QDBusMetaType>
+ #include <QString>
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-qt6/qmacro.h>
++#else
+ #include <timed-qt5/qmacro.h>
++#endif
+ #include <QtGlobal>
+ 
+ namespace Maemo {
+@@ -37,9 +40,12 @@ class Reminder;
  }
  } // namespace Timed
  } // namespace Maemo
@@ -563,7 +629,7 @@ index 7f54e90..2dd09b5 100644
  namespace Maemo {
  namespace Timed {
  namespace Voland {
-@@ -63,9 +66,14 @@ class Reminder
+@@ -63,9 +69,14 @@ class Reminder
      bool isMissed() const;
      QString buttonAttr(int x, const QString &key) const;
      ~Reminder();
@@ -579,6 +645,18 @@ index 7f54e90..2dd09b5 100644
 +Q_DECLARE_METATYPE(Maemo::Timed::Voland::Reminder)
 +#endif
  #endif
+diff --git a/src/voland/ta_interface b/src/voland/ta_interface
+index cddfc46..d29e58d 100644
+--- a/src/voland/ta_interface
++++ b/src/voland/ta_interface
+@@ -1,2 +1,6 @@
+ #include <QtGlobal>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <timed-voland-qt6/interface.h>
++#else
+ #include <timed-voland-qt5/interface.h>
++#endif
+\ No newline at end of file
 diff --git a/src/voland/timed-voland-qt6.pc b/src/voland/timed-voland-qt6.pc
 new file mode 100644
 index 0000000..0ab01e9
@@ -628,6 +706,16 @@ index ffd2ddf..4b22f82 100644
  
  INSTALLS = target devheaders prf pc
  
+diff --git a/tests/tests.pro b/tests/tests.pro
+index cb3a3fe..97d8b11 100644
+--- a/tests/tests.pro
++++ b/tests/tests.pro
+@@ -1,4 +1,4 @@
+-PACKAGENAME = timed-qt5
++PACKAGENAME = timed-qt$${QT_MAJOR_VERSION}
+ 
+ TEMPLATE = subdirs
+ 
 diff --git a/tests/tst_events/tst_events.cpp b/tests/tst_events/tst_events.cpp
 index 6e453cc..7172e30 100644
 --- a/tests/tst_events/tst_events.cpp
@@ -641,6 +729,32 @@ index 6e453cc..7172e30 100644
  
      // Add an action to the event, the action writes a message to a file when the event is triggered
      Maemo::Timed::Event::Action &act = event.addAction();
+diff --git a/tests/tst_events/tst_events.pro b/tests/tst_events/tst_events.pro
+index 0966274..5b0469d 100644
+--- a/tests/tst_events/tst_events.pro
++++ b/tests/tst_events/tst_events.pro
+@@ -7,7 +7,7 @@ QT -= gui
+ INCLUDEPATH += ../../src/h
+ 
+ QMAKE_LIBDIR_FLAGS += -L../../src/lib -L../../src/voland
+-LIBS += -ltimed-qt5 -ltimed-voland-qt5
++LIBS += -ltimed-qt$${QT_MAJOR_VERSION} -ltimed-voland-qt$${QT_MAJOR_VERSION}
+ 
+ HEADERS += tst_events.h \
+            simplevolandadaptor.h
+diff --git a/tests/ut_networktime/ut_networktime.pro b/tests/ut_networktime/ut_networktime.pro
+index 0d80107..a2ebe4a 100644
+--- a/tests/ut_networktime/ut_networktime.pro
++++ b/tests/ut_networktime/ut_networktime.pro
+@@ -34,7 +34,7 @@ SOURCES += ut_networktime.cpp \
+ 
+ OTHER_FILES += fakeofono/org.fakeofono.conf
+ 
+-target.path = $$(DESTDIR)/opt/tests/timed-qt5-tests
++target.path = $$(DESTDIR)/opt/tests/timed-qt$${QT_MAJOR_VERSION}-tests
+ dbusconf.files = fakeofono/org.fakeofono.conf
+ dbusconf.path  = $$(DESTDIR)/etc/dbus-1/system.d
+ 
 diff --git a/tools/timedclient/timedclient.cpp b/tools/timedclient/timedclient.cpp
 index 0d254c9..ecd4916 100644
 --- a/tools/timedclient/timedclient.cpp

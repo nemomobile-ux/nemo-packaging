@@ -16,20 +16,18 @@ depends=('sailfish-access-control' 'libiodata' 'tzdata-timed' 'connman' 'ofono' 
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-Fix_qt6_build.patch"
     "0002-Fixes-access.patch"
-    '0003-qt6-include.patch'
 )
 
 sha256sums=('413728c9224074b84fb37216fcd8b671de8557315fa1c4a7821517d2ab42b923'
-	'a640eab5dba3af3be43e51784c00b6afb7b8e235f638b19a6ea2fbc32d9768e7'
+	'0417ebfc49afe7c4e42c8b4e0c3f20ff617cadbc35b56cb3cc1be1317d3fa0dc'
 	'cf81d073f2618fd914fbd5f55152580c7e3bf14f53eaf0950cb7998fd9460e02'
-	'290f662f5f9498eb86bc4a3a0d4a904c523b5f2484210f77297a3c56e8ca3644'
 )
 
 prepare() {
   cd $pkgname-$pkgver
   patch -Np1 -i "${srcdir}/0001-Fix_qt6_build.patch"
   patch -Np1 -i "${srcdir}/0002-Fixes-access.patch"
-  patch -Np1 -i "${srcdir}/0003-qt6-include.patch"
+
   mkdir -p src/h/timed-qt6/
   cp src/lib/qmacro.h src/h/timed-qt6/qmacro.h
   sed -i "s|libsystemd-daemon|libsystemd|g" ./src/server/server.pro
