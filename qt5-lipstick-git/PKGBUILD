@@ -34,7 +34,7 @@ makedepends=('git'
 	'graphviz'
 	'make'
 	'pkgconfig'
-	'timed-qt6')
+	'timed')
 
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
