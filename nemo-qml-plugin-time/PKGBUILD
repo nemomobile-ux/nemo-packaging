@@ -13,8 +13,17 @@ url="https://github.com/sailfishos/nemo-qml-plugin-time"
 license=('BSD')
 depends=('timed' 'nemo-qml-plugin-dbus')
 makedepends=('mce-headers')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('782ff02030dbfed94a9875aabd5f56471e700d43094d3be602a79a0ad57e5b4a')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-Fixup-build-on-qt6.patch'
+)
+sha256sums=('782ff02030dbfed94a9875aabd5f56471e700d43094d3be602a79a0ad57e5b4a'
+    '28ead2a9420a1870191c5f000600fd7a8cf3e114f334f80100bd35aad4a70a85'
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-Fixup-build-on-qt6.patch"
+}
 
 build() {
     cd $pkgname-$pkgver
