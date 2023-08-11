@@ -1,7 +1,7 @@
-From 8b166d8fc54833f070edb5111e761a1eb6254d25 Mon Sep 17 00:00:00 2001
+From 4853011d8143a5b308e3334d563a232030cb7b16 Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
-Date: Wed, 1 Jun 2022 10:07:14 +0200
-Subject: [PATCH] distinguish wakeup type in AlarmObject
+Date: Fri, 11 Aug 2023 07:30:55 +0000
+Subject: [PATCH 2/2] distinguish wakeup type in AlarmObject
 
 ---
  src/alarmobject.cpp | 8 ++++++--
@@ -9,10 +9,10 @@ Subject: [PATCH] distinguish wakeup type in AlarmObject
  2 files changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/src/alarmobject.cpp b/src/alarmobject.cpp
-index bd16a20..ea6aec6 100644
+index 284aa26..19fd186 100644
 --- a/src/alarmobject.cpp
 +++ b/src/alarmobject.cpp
-@@ -196,14 +196,14 @@
+@@ -201,14 +201,14 @@
  
  AlarmObject::AlarmObject(QObject *parent)
      : QObject(parent), m_hour(0), m_minute(0), m_second(0), m_enabled(false),
@@ -29,7 +29,7 @@ index bd16a20..ea6aec6 100644
        m_elapsed(0), m_cookie(0)
  {
      for (QMap<QString,QString>::ConstIterator it = data.begin(); it != data.end(); it++) {
-@@ -256,6 +256,8 @@ AlarmObject::AlarmObject(const QMap<QString,QString> &data, QObject *parent)
+@@ -261,6 +261,8 @@ AlarmObject::AlarmObject(const QMap<QString,QString> &data, QObject *parent)
              m_phoneNumber = it.value();
          } else if (it.key() == QLatin1String("type") && it.value() == QLatin1String("reminder")) {
              m_reminder = true;
@@ -38,17 +38,17 @@ index bd16a20..ea6aec6 100644
          }
      }
  
-@@ -359,6 +361,8 @@ int AlarmObject::type() const
- {
-     if (m_reminder)
-         return Reminder;
-+    else if (m_wakeup)
-+        return WakeUp;
-     else if (m_startDate.isValid() && m_endDate.isValid())
+@@ -372,6 +374,8 @@ int AlarmObject::type() const
          return Calendar;
      else if (m_countdown)
+         return Countdown;
++    else if (m_wakeup)
++        return WakeUp;
+     else
+         return Clock;
+ }
 diff --git a/src/alarmobject.h b/src/alarmobject.h
-index 5e1447e..8a120e0 100644
+index ccf2fb2..f567a41 100644
 --- a/src/alarmobject.h
 +++ b/src/alarmobject.h
 @@ -70,7 +70,7 @@ public:
@@ -60,14 +60,14 @@ index 5e1447e..8a120e0 100644
      Q_ENUMS(Type)
  
      QString title() const { return m_title; }
-@@ -157,6 +157,7 @@ protected:
+@@ -161,6 +161,7 @@ protected:
      QDateTime m_createdDate;
      bool m_countdown;
      bool m_reminder;
 +    bool m_wakeup;
-     uint m_triggerTime;
-     uint m_elapsed;
-     QDateTime m_startDate, m_endDate;
+ #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     qint64 m_triggerTime;
+     qint64 m_elapsed;
 -- 
-2.36.1
+2.41.0
 

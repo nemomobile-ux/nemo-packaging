@@ -9,14 +9,18 @@ url="https://github.com/sailfishos/nemo-qml-plugin-alarms"
 license=('BSD')
 depends=('qt6-base' 'timed' 'qt6-declarative')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    '0001-distinguish-wakeup-type-in-AlarmObject.patch')
+    '0001-Fix-build-with-qt6.patch'
+    '0002-distinguish-wakeup-type-in-AlarmObject.patch'
+)
 sha256sums=('8435d73b25e28f75e5bffc9aba6d7d0fab56253596a4f0340d26428fd45edd3b'
-    '4f943807ce77f347b1bf1ab322370023abfca243488a8ab3b55658eb895d64a2'
+    'ba96da5f773f8aadc196d5c8cc4ed437df32f4ae2199ee2b56920638c8a77f2b'
+    'b8e94c842fe3050ef742c69b5d1967d70e45fa4f308e3b9e185c5775a64a3e5d'
 )
 
 prepare() {
   cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-distinguish-wakeup-type-in-AlarmObject.patch"
+  patch -p1 --input="${srcdir}/0001-Fix-build-with-qt6.patch"
+  patch -p1 --input="${srcdir}/0002-distinguish-wakeup-type-in-AlarmObject.patch"
 }
 
 build() {
