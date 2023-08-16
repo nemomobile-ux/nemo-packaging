@@ -20,7 +20,7 @@ depends=(
 	    'libsystemd'
 	    'mce-headers'
 	    'libmce-qt>=1.5.0'
-	    'libngf-qt'
+	    'libngf-qt6'
 	    'nemo-qml-plugin-devicelock'
 	    'nemo-qml-plugin-systemsettings'
 	    'pulseaudio'
