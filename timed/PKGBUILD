@@ -6,26 +6,23 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=timed
-pkgver=3.6.20
-pkgrel=2
+pkgver=3.6.21
+pkgrel=1
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/timed"
 license=('LGPL-2.1-or-later')
 depends=('sailfish-access-control' 'libiodata' 'tzdata-timed' 'connman' 'ofono' 'pcre')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-Fix_qt6_build.patch"
     "0002-Fixes-access.patch"
 )
 
-sha256sums=('413728c9224074b84fb37216fcd8b671de8557315fa1c4a7821517d2ab42b923'
-	'0417ebfc49afe7c4e42c8b4e0c3f20ff617cadbc35b56cb3cc1be1317d3fa0dc'
+sha256sums=('1b6eb5351f29040ff4af5d91b0d2b8e5be0e91bb9c81d9d8c1a12782b074f915'
 	'cf81d073f2618fd914fbd5f55152580c7e3bf14f53eaf0950cb7998fd9460e02'
 )
 
 prepare() {
   cd $pkgname-$pkgver
-  patch -Np1 -i "${srcdir}/0001-Fix_qt6_build.patch"
   patch -Np1 -i "${srcdir}/0002-Fixes-access.patch"
 
   mkdir -p src/h/timed-qt6/
@@ -43,7 +40,7 @@ build() {
 package() {
   cd $pkgname-$pkgver
   make -j 1 INSTALL_ROOT="$pkgdir/" install
-  sed -i 's/WantedBy=pre-user-session.target/WantedBy=graphical-session-pre.target/' "${pkgdir}/usr/lib/systemd/user/timed-qt6.service"
+  sed -i 's/WantedBy=pre-user-session.target/WantedBy=graphical-session-pre.target/' "${pkgdir}/usr/lib/systemd/user/timed.service"
 
   # Remove tests
   rm -rf "$pkgdir/opt"
@@ -64,5 +61,5 @@ package() {
 
   #setup services
   install -d ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
-  ln -s ../timed-qt6.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
+  ln -s ../timed.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
 }
