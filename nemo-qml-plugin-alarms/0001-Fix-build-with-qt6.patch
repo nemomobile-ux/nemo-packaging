@@ -1,7 +1,7 @@
-From 097f0fe988b0d234469d4dd0793bd665250822d5 Mon Sep 17 00:00:00 2001
+From 9a8d95528cf1cfe1b07c9dcd17ec6658a73bafab Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 11 Aug 2023 07:20:33 +0000
-Subject: [PATCH 1/2] Fix build with qt6
+Subject: [PATCH] Fix build with qt6
 
 ---
  .gitignore                      |  1 +
@@ -9,13 +9,13 @@ Subject: [PATCH 1/2] Fix build with qt6
  src/alarmhandlerinterface.h     |  5 +++++
  src/alarmobject.cpp             | 22 ++++++++++++++++++++--
  src/alarmobject.h               |  9 +++++++++
- src/alarmsbackendmodel_p.cpp    |  4 ++++
+ src/alarmsbackendmodel_p.cpp    |  4 ++--
  src/enabledalarmsproxymodel.cpp |  4 ++++
  src/interface.h                 |  5 ++++-
  src/src.pro                     |  2 +-
  tests/common.pri                |  2 +-
  tests/tests.pro                 |  4 ++--
- 11 files changed, 55 insertions(+), 7 deletions(-)
+ 11 files changed, 53 insertions(+), 9 deletions(-)
 
 diff --git a/.gitignore b/.gitignore
 index 8229377..6874483 100644
@@ -143,18 +143,21 @@ index 5e1447e..ccf2fb2 100644
      QString m_uid;
      QString m_recurrenceId;
 diff --git a/src/alarmsbackendmodel_p.cpp b/src/alarmsbackendmodel_p.cpp
-index f0675b0..8156eeb 100644
+index f0675b0..e2e1b4a 100644
 --- a/src/alarmsbackendmodel_p.cpp
 +++ b/src/alarmsbackendmodel_p.cpp
-@@ -170,7 +170,11 @@ void AlarmsBackendModelPriv::alarmUpdated(AlarmObject *alarm)
+@@ -165,12 +165,12 @@ void AlarmsBackendModelPriv::alarmUpdated(AlarmObject *alarm)
+ {
+     int currentRow = alarms.indexOf(alarm);
+ 
+-    // qLowerBounds expects that the list is sorted, we do not know if that is the case after
++    // std::lower_bound expects that the list is sorted, we do not know if that is the case after
+     // the alarm has changed. Remove it temporarily from the list while calculating new row.
      if (currentRow >= 0)
          alarms.removeAt(currentRow);
  
-+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+-    QList<AlarmObject*>::iterator it = qLowerBound(alarms.begin(), alarms.end(), alarm, alarmSort);
 +    QList<AlarmObject*>::iterator it = std::lower_bound(alarms.begin(), alarms.end(), alarm, alarmSort);
-+#else
-     QList<AlarmObject*>::iterator it = qLowerBound(alarms.begin(), alarms.end(), alarm, alarmSort);
-+#endif
      int newRow = it - alarms.begin();
  
      if (currentRow >= 0)

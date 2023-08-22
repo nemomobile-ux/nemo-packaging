@@ -13,7 +13,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0002-distinguish-wakeup-type-in-AlarmObject.patch'
 )
 sha256sums=('8435d73b25e28f75e5bffc9aba6d7d0fab56253596a4f0340d26428fd45edd3b'
-    'ba96da5f773f8aadc196d5c8cc4ed437df32f4ae2199ee2b56920638c8a77f2b'
+    '6917bd1afc83af1c5c5a7d0e8f6d565c505855de037bbd4798e5e5b19ee8d2c6'
     'b8e94c842fe3050ef742c69b5d1967d70e45fa4f308e3b9e185c5775a64a3e5d'
 )
 
