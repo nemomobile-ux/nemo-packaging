@@ -16,17 +16,19 @@ makedepends=( 'qt6-tools')
 source=(
   "${url}/archive/refs/tags/$pkgver.tar.gz"
   "disable-werror.patch"
-  'fix-qt-build-part-one.patch'
+  'fix-qt-build.patch'
   )
 sha256sums=('1b0db667a124be67251af0c5a3d920798a77b83ff11b404852f7fcb12d0f17af'
     '74a0ea1a421144c1fe9d5c3624d8e4eb4977a6286137b724a0b24999b1b0643b'
-    '13a7e127dc36c791f69901bc64cc4ed8ebdcb5d1684ce77dd37fd875d2991d70'
+    'db9f253a885643c96fb5c675b2946cd95a54021850986215cf21fb56f9b63f73'
     )
 
 build() {
   cd $pkgname-$pkgver
   patch -p1 --input="${srcdir}/disable-werror.patch"
-  patch -p1 --input="${srcdir}/fix-qt-build-part-one.patch"
+  patch -p1 --input="${srcdir}/fix-qt-build.patch"
+  
+
   mkdir -p build
   cd build
   ../configure --prefix=/usr \
