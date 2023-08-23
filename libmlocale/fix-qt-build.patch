@@ -615,7 +615,7 @@ index 420c2458..277e9b0c 100644
  
  #include "micuconversions.h"
 diff --git a/src/src.pro b/src/src.pro
-index be536149..1b5aa8dc 100644
+index be536149..eec1b595 100644
 --- a/src/src.pro
 +++ b/src/src.pro
 @@ -6,7 +6,7 @@ include(common_top.pri)
@@ -627,6 +627,15 @@ index be536149..1b5aa8dc 100644
  
  INCLUDEPATH += .
  
+@@ -87,7 +87,7 @@ INSTALLS += target \
+ ###
+ 
+ # install MeeGo Touch feature files
+-install_prf.path = $$[QT_INSTALL_DATA]/mkspecs/features
++install_prf.path = $$[QT_INSTALL_ARCHDATA]/mkspecs/features
+ install_prf.files = \
+     $${M_SOURCE_TREE}/mkspecs/features/mlocale.prf \
+     $${M_SOURCE_TREE}/mkspecs/features/mlocale_common.prf \
 @@ -99,7 +99,7 @@ INSTALLS += install_prf
  
  # install pkgconfig file

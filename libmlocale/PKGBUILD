@@ -20,16 +20,15 @@ source=(
   )
 sha256sums=('1b0db667a124be67251af0c5a3d920798a77b83ff11b404852f7fcb12d0f17af'
     '74a0ea1a421144c1fe9d5c3624d8e4eb4977a6286137b724a0b24999b1b0643b'
-    'db9f253a885643c96fb5c675b2946cd95a54021850986215cf21fb56f9b63f73'
+    '7a7e3fb1da95d7734b7420c7bc9765c80733b7e70892a7c90ae17925222d2bd1'
     )
 
 build() {
+  mkdir -p $pkgname-$pkgver/build
   cd $pkgname-$pkgver
   patch -p1 --input="${srcdir}/disable-werror.patch"
   patch -p1 --input="${srcdir}/fix-qt-build.patch"
-  
 
-  mkdir -p build
   cd build
   ../configure --prefix=/usr \
     --disable-static \
@@ -38,17 +37,8 @@ build() {
 }
 
 package() {
-  cd $pkgname-$pkgver
-  cd build
+  cd $pkgname-$pkgver/build
   make INSTALL_ROOT="${pkgdir}" install
-
-  # move *.prf into right folder
-  mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
-  mv ${pkgdir}/usr/share/qt/mkspecs/features/mlocale_common.prf ${pkgdir}/usr/lib/qt/mkspecs/features/mlocale_common.prf
-  mv ${pkgdir}/usr/share/qt/mkspecs/features/mlocale_coverage.prf ${pkgdir}/usr/lib/qt/mkspecs/features/mlocale_coverage.prf
-  mv ${pkgdir}/usr/share/qt/mkspecs/features/mlocale_defines.prf ${pkgdir}/usr/lib/qt/mkspecs/features/mlocale_defines.prf
-  mv ${pkgdir}/usr/share/qt/mkspecs/features/mlocale.prf ${pkgdir}/usr/lib/qt/mkspecs/features/mlocale.prf
-  mv ${pkgdir}/usr/share/qt/mkspecs/features/mlocale_translations.prf ${pkgdir}/usr/lib/qt/mkspecs/features/mlocale_translations.prf
 
   # remove tests mess
   rm -rf "${pkgdir}/usr/lib/libmlocale-benchmarks5"
