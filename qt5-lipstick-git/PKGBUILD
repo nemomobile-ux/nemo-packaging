@@ -6,7 +6,7 @@
 
 _branch=master
 pkgname=qt6-lipstick-git
-pkgver=1.0.r2.g91efdabc
+pkgver=1.1.r1.g1c580f30
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
@@ -26,7 +26,7 @@ depends=(
 	    'pulseaudio'
 	    'pulseaudio-modules-nemo'
 	    'pulseaudio-policy-enforcement'
-	    'bluez-qt')
+	    'bluez-qt6')
 
 makedepends=('git'
 	'qt6-tools'
@@ -56,13 +56,11 @@ build() {
   git submodule update
   mkdir -p build
   cd build
-  qmake6 VERSION=${pkgver} ..
-  make
+  cmake ../  -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+  make  all
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  cd build
-  make -j 1 INSTALL_ROOT="${pkgdir}" install
+  cd "${srcdir}/${pkgname}/build"
+  make DESTDIR="$pkgdir" install
 }
- 
