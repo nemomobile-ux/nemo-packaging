@@ -12,9 +12,9 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.7.r4.g73546c5
+pkgver=0.8.r0.g31de862
 
-pkgrel=2
+pkgrel=1
 pkgdesc="QML based settings application for nemomobile"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
