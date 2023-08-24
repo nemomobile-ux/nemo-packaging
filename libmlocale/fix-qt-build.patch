@@ -116,9 +116,18 @@ index 7da413af..aac6d6cf 100644
  #include <QObject>
  #include <MLocale>
 diff --git a/configure b/configure
-index 4ebf56c6..3522d166 100755
+index 4ebf56c6..7d5d7ad3 100755
 --- a/configure
 +++ b/configure
+@@ -501,7 +501,7 @@ fi
+ 
+ # substitute prefix in .pc files
+ MEEGOTOUCH_PC_DIR="$outpath/src/data"
+-MEEGOTOUCH_PC_FILES="mlocale5"
++MEEGOTOUCH_PC_FILES="mlocale5 mlocale6"
+ 
+ # make sure the directory exists
+ if [ ! -d $MEEGOTOUCH_PC_DIR ]; then
 @@ -540,7 +540,12 @@ if [ -z "$QTDIR" ]; then
          if [ $? -eq 0 ]; then
              QMAKE_BIN=`which qmake-qt5`
@@ -135,7 +144,7 @@ index 4ebf56c6..3522d166 100755
  elif [ -f "$QTDIR/bin/qmake" ]; then
 diff --git a/src/data/mlocale6.pc.in b/src/data/mlocale6.pc.in
 new file mode 100644
-index 00000000..29d29bc9
+index 00000000..983a139f
 --- /dev/null
 +++ b/src/data/mlocale6.pc.in
 @@ -0,0 +1,11 @@
@@ -147,7 +156,7 @@ index 00000000..29d29bc9
 +Name: mlocale6
 +Description: MeeGo Locale Library
 +Version: @@M_VERSION@@
-+Requires: Qt5Gui
++Requires: Qt6Gui
 +Cflags: -I${includedir}
 +Libs: -L${libdir} -lmlocale6
 diff --git a/src/mcalendar.cpp b/src/mcalendar.cpp
