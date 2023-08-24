@@ -142,6 +142,37 @@ index 4ebf56c6..7d5d7ad3 100755
          fi
      fi
  elif [ -f "$QTDIR/bin/qmake" ]; then
+diff --git a/mkspecs/features/mlocale_common.prf b/mkspecs/features/mlocale_common.prf
+index 93c5ae34..a793cb14 100644
+--- a/mkspecs/features/mlocale_common.prf
++++ b/mkspecs/features/mlocale_common.prf
+@@ -4,7 +4,7 @@ macx {
+     INCLUDEPATH += /Library/Frameworks/mlocale.framework/Headers
+ }
+ 
+-ML_INC_DIR = $$ML_PREFIX/include/mlocale
++ML_INC_DIR = $$ML_PREFIX/include/mlocale$${QT_MAJOR_VERSION}
+ ML_LIB_DIR = $$ML_LIBDIR
+ 
+ INCLUDEPATH += $${ML_INC_DIR}
+diff --git a/mkspecs/features/mlocale_defines.prf.in b/mkspecs/features/mlocale_defines.prf.in
+index d5f409bb..97c57bf6 100644
+--- a/mkspecs/features/mlocale_defines.prf.in
++++ b/mkspecs/features/mlocale_defines.prf.in
+@@ -28,10 +28,10 @@ win32 {
+ ML_INSTALL_BIN = $$ML_PREFIX/bin
+ ML_INSTALL_LIBS = $$ML_LIBDIR
+ ML_INSTALL_DATA = $$ML_PREFIX/share
+-ML_INSTALL_HEADERS = $$ML_PREFIX/include/mlocale5
+-ML_TRANSLATION_DIR = $$ML_INSTALL_DATA/l10n/mlocale5
++ML_INSTALL_HEADERS = $$ML_PREFIX/include/mlocale$${QT_MAJOR_VERSION}
++ML_TRANSLATION_DIR = $$ML_INSTALL_DATA/l10n/mlocale$${QT_MAJOR_VERSION}
+ 
+-ML_ICUEXTRADATA_DIR = $$ML_INSTALL_DATA/mlocale5/icu
++ML_ICUEXTRADATA_DIR = $$ML_INSTALL_DATA/mlocale$${QT_MAJOR_VERSION}/icu
+ win32: ML_INSTALL_LIBS = $$ML_PREFIX/bin
+ 
+ defineReplace(mAddLibrary) {
 diff --git a/src/data/mlocale6.pc.in b/src/data/mlocale6.pc.in
 new file mode 100644
 index 00000000..983a139f
