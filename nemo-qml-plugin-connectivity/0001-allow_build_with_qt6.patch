@@ -1,0 +1,128 @@
+diff --git a/src/nemo-connectivity/connectionhelper.cpp b/src/nemo-connectivity/connectionhelper.cpp
+index 9d31433..67da8aa 100644
+--- a/src/nemo-connectivity/connectionhelper.cpp
++++ b/src/nemo-connectivity/connectionhelper.cpp
+@@ -39,10 +39,13 @@
+ #include <QtDBus/QDBusPendingReply>
+ #include <QtDBus/QDBusPendingCall>
+ #include <QtDBus/QDBusPendingCallWatcher>
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <connman-qt6/networkmanager.h>
++#include <connman-qt6/networktechnology.h>
++#else
+ #include <connman-qt5/networkmanager.h>
+ #include <connman-qt5/networktechnology.h>
+-
++#endif
+ namespace Nemo {
+ 
+ ConnectionHelper::ConnectionHelper(QObject *parent)
+@@ -252,11 +255,18 @@ void ConnectionHelper::performRequest()
+     // for a Captive Portal redirect, in which case we should consider network
+     // connectivity to be unavailable (as it requires user intervention).
+     connect(reply, &QNetworkReply::finished, this, &ConnectionHelper::handleCanaryRequestFinished);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    connect(reply, &QNetworkReply::error, this, &ConnectionHelper::handleCanaryRequestError);
++#else
+     connect(reply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+             this, &ConnectionHelper::handleCanaryRequestError);
++#endif
+ }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++void ConnectionHelper::handleCanaryRequestError()
++#else
+ void ConnectionHelper::handleCanaryRequestError(const QNetworkReply::NetworkError &)
++#endif
+ {
+     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+     reply->setProperty("isError", QVariant::fromValue<bool>(true));
+diff --git a/src/nemo-connectivity/connectionhelper.h b/src/nemo-connectivity/connectionhelper.h
+index 9bea3ed..c2ec8df 100644
+--- a/src/nemo-connectivity/connectionhelper.h
++++ b/src/nemo-connectivity/connectionhelper.h
+@@ -33,18 +33,23 @@
+ #define NEMO_CONNECTION_HELPER_H
+ 
+ #include <QObject>
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QNetworkConfigurationManager>
+ #include <QNetworkSession>
++#endif
+ #include <QNetworkAccessManager>
+ #include <QNetworkReply>
+ 
+ #include <nemo-connectivity/global.h>
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <connman-qt6/networkmanager.h>
++#include <connman-qt6/networktechnology.h>
++#include <connman-qt6/networkservice.h>
++#else
+ #include <connman-qt5/networkmanager.h>
+ #include <connman-qt5/networktechnology.h>
+ #include <connman-qt5/networkservice.h>
+-
++#endif
+ #include <QTimer>
+ 
+ QT_BEGIN_NAMESPACE
+@@ -88,7 +93,11 @@ class NEMO_CONNECTIVITY_EXPORT ConnectionHelper : public QObject
+ 
+ private Q_SLOTS:
+     void performRequest();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    void handleCanaryRequestError();
++#else
+     void handleCanaryRequestError(const QNetworkReply::NetworkError &error);
++#endif
+     void handleCanaryRequestFinished();
+     void emitFailureIfNeeded(); // due to timeout.
+ 
+diff --git a/src/nemo-connectivity/mobiledataconnection.h b/src/nemo-connectivity/mobiledataconnection.h
+index 540fd56..c7f5669 100644
+--- a/src/nemo-connectivity/mobiledataconnection.h
++++ b/src/nemo-connectivity/mobiledataconnection.h
+@@ -36,8 +36,11 @@
+ 
+ #include <QObject>
+ #include <QLoggingCategory>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <connman-qt6/networkservice.h>
++#else
+ #include <connman-qt5/networkservice.h>
+-
++#endif
+ Q_DECLARE_LOGGING_CATEGORY(CONNECTIVITY)
+ 
+ namespace Nemo {
+diff --git a/src/nemo-connectivity/nemo-connectivity.pro b/src/nemo-connectivity/nemo-connectivity.pro
+index 9f70010..b497d92 100644
+--- a/src/nemo-connectivity/nemo-connectivity.pro
++++ b/src/nemo-connectivity/nemo-connectivity.pro
+@@ -15,9 +15,9 @@ INCLUDEPATH += ..
+ 
+ DEFINES += NEMO_BUILD_CONNECTIVITY_LIBRARY
+ 
+-PKGCONFIG += connman-qt5 \
++PKGCONFIG += connman-qt$${QT_MAJOR_VERSION} \
+     qofonoext \
+-    qofono-qt5
++    qofono-qt$${QT_MAJOR_VERSION}
+ 
+ SOURCES += \
+         connectionhelper.cpp \
+diff --git a/src/plugin/plugin.pro b/src/plugin/plugin.pro
+index fb006a3..69fc9e6 100644
+--- a/src/plugin/plugin.pro
++++ b/src/plugin/plugin.pro
+@@ -4,7 +4,7 @@ PLUGIN_IMPORT_PATH = Nemo/Connectivity
+ TEMPLATE = lib
+ CONFIG += qt plugin hide_symbols
+ QT = qml dbus
+-LIBS += -lconnman-qt5 -L../nemo-connectivity -lnemoconnectivity
++LIBS += -lconnman-qt$${QT_MAJOR_VERSION} -L../nemo-connectivity -lnemoconnectivity
+ target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
+ INSTALLS += target
