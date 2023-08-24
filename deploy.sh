@@ -27,6 +27,10 @@ eval "$BUILD nemo-theme-glacier"
 eval "$BUILD abseil-cpp"
 eval "$BUILD forks/maliit-framework"
 
+eval "$BUILD extra-cmake-modules-git"
+eval "$BUILD bluez-qt6-git"
+eval "$BUILD polkit-qt6-git"
+
 eval "$BUILD libphonenumber-nemo"
 eval "$BUILD libglibutil"
 eval "$BUILD libwspcodec"
