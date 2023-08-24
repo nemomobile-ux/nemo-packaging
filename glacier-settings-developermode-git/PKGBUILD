@@ -1,14 +1,13 @@
 # $Id$
 
 pkgname=glacier-settings-developermode-git
-pkgver=0.0.3.r14.g90033d0
+pkgver=0.1.r1.g329355a
 pkgrel=1
 pkgdesc="developermode settings plugin for glacier-settings"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/glacier-settings-developermode/#branch=master"
 license=('BSD-3-Clause')
-depends=('glacier-settings'
-)
+depends=('glacier-settings')
 
 makedepends=('git' 'qt6-tools' 'cmake')
 provides=("${pkgname%-git}")
