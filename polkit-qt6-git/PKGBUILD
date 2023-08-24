@@ -1,0 +1,31 @@
+pkgname=polkit-qt6-git
+pkgver=v5.240
+pkgrel=1
+pkgdesc='A library that allows developers to access PolicyKit API with a nice Qt-style API'
+arch=('x86_64' 'aarch64')
+url='https://github.com/KDE/polkit-qt-1#branch=master'
+license=(GPL2)
+depends=(qt6-base polkit)
+makedepends=('extra-cmake-modules-git'
+	    'cmake'
+	    'git')
+provides=("polkit-qt6")
+conflicts=("polkit-qt6")
+groups=(kf6)
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
+
+build() {
+  cd "${srcdir}/${pkgname}"
+  mkdir -p build
+  cd build
+  cmake ../ \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DQT_MAJOR_VERSION=6
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}/build"
+  make DESTDIR="$pkgdir" install
+}
