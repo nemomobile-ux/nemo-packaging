@@ -13,7 +13,6 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/glacier-home"
 license=('BSD-3-Clause AND MIT')
 depends=('bluez-qt'
-	'qt6-graphicaleffects'
 	'qt6-multimedia'
 	'qt6-feedback'
 	'qtmpris'
@@ -31,7 +30,7 @@ depends=('bluez-qt'
 	'qt-mobility-haptics-ffmemless'
 	'ngfd'
 	'nemo-qml-plugin-devicelock'
-	'bluez-qt'
+	'bluez-qt6'
 	'qt6-wayland'
 	'polkit-qt6'
 	'pulseaudio-module-keepalive'
