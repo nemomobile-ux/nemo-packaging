@@ -13,8 +13,18 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-thumbnailer"
 license=('BSD-3-Clause')
 depends=('qt6-declarative' 'mlite')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('17f9e949b13d3bbc54f9038ee16a41711b3ef11e7377609bde08f90004d66a57')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-Fix-build-with-Qt6.patch'
+)
+sha256sums=('17f9e949b13d3bbc54f9038ee16a41711b3ef11e7377609bde08f90004d66a57'
+    'ec289ce1497346833527cc7148c25ff46670022c27c9ab39afa5d157b2311d1f'
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-Fix-build-with-Qt6.patch"
+}
+
 
 build() {
   cd $pkgname-$pkgver

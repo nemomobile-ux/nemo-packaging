@@ -1,0 +1,155 @@
+From dd90692fe48f82ce3245a652818715fabcb5b7c0 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 25 Aug 2023 09:29:46 +0000
+Subject: [PATCH] Fix build with Qt6
+
+---
+ src/lib/lib.pro                | 17 ++++++++++-------
+ src/lib/nemoimagemetadata.h    |  4 +++-
+ src/lib/nemothumbnailcache.cpp |  3 ++-
+ src/lib/nemothumbnailcache.h   |  4 +++-
+ src/lib/nemothumbnailexports.h | 10 ++++++++++
+ src/plugin/plugin.pro          |  4 ++--
+ 6 files changed, 30 insertions(+), 12 deletions(-)
+ create mode 100644 src/lib/nemothumbnailexports.h
+
+diff --git a/src/lib/lib.pro b/src/lib/lib.pro
+index 71ec1a8..bc35e93 100644
+--- a/src/lib/lib.pro
++++ b/src/lib/lib.pro
+@@ -1,19 +1,22 @@
+ TEMPLATE = lib
+-TARGET = nemothumbnailer-qt5
++TARGET = nemothumbnailer-qt$${QT_MAJOR_VERSION}
+ 
+-CONFIG += qt hide_symbols create_pc create_prl c++11 link_pkgconfig
++CONFIG += qt hide_symbols create_pc create_prl c++17 link_pkgconfig
+ 
+ QT += \
+     gui-private
+ 
+-packagesExist(mlite5) {
+-    message("Building with mlite5 support")
+-    PKGCONFIG += mlite5
++packagesExist(mlite$${QT_MAJOR_VERSION}) {
++    message("Building with mlite$${QT_MAJOR_VERSION} support")
++    PKGCONFIG += mlite$${QT_MAJOR_VERSION}
+     DEFINES += HAS_MLITE5
+ } else {
+-    warning("mlite5 not available;")
++    warning("mlite$${QT_MAJOR_VERSION} not available;")
+ }
+ 
++DEFINES += BUILD_NEMO_QML_PLUGIN_THUMBNAILER_LIB
++
++
+ SOURCES += \
+     nemoimagemetadata.cpp \
+     nemothumbnailcache.cpp
+@@ -25,7 +28,7 @@ PLUGIN_IMPORT_PATH = $$[QT_INSTALL_QML]/Nemo/Thumbnailer
+ DEFINES += NEMO_THUMBNAILER_DIR=\\\"$$PLUGIN_IMPORT_PATH/thumbnailers\\\"
+ 
+ target.path = $$[QT_INSTALL_LIBS]
+-headers.path = /usr/include/nemothumbnailer-qt5
++headers.path = /usr/include/nemothumbnailer-qt$${QT_MAJOR_VERSION}
+ headers.files =\
+     nemothumbnailcache.h \
+     nemoimagemetadata.h
+diff --git a/src/lib/nemoimagemetadata.h b/src/lib/nemoimagemetadata.h
+index ab07a3e..8172723 100644
+--- a/src/lib/nemoimagemetadata.h
++++ b/src/lib/nemoimagemetadata.h
+@@ -35,9 +35,11 @@
+ class QString;
+ class QByteArray;
+ 
++#include "nemothumbnailexports.h"
++
+ #include <QMetaType>
+ 
+-class Q_DECL_EXPORT NemoImageMetadata
++class NEMO_QML_PLUGIN_THUMBNAILER_EXPORT NemoImageMetadata
+ {
+ public:
+ 
+diff --git a/src/lib/nemothumbnailcache.cpp b/src/lib/nemothumbnailcache.cpp
+index 3346c51..429c181 100644
+--- a/src/lib/nemothumbnailcache.cpp
++++ b/src/lib/nemothumbnailcache.cpp
+@@ -29,7 +29,6 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+  */
+ 
+-#include "nemothumbnailcache.h"
+ 
+ #include <QLibrary>
+ #include <QFile>
+@@ -51,6 +50,8 @@
+ 
+ #include <QtGui/private/qimage_p.h>
+ 
++#include "nemothumbnailcache.h"
++
+ Q_LOGGING_CATEGORY(thumbnailer, "Nemo.Thumbnailer", QtWarningMsg)
+ 
+ namespace {
+diff --git a/src/lib/nemothumbnailcache.h b/src/lib/nemothumbnailcache.h
+index 65b7b5c..4a84cb3 100644
+--- a/src/lib/nemothumbnailcache.h
++++ b/src/lib/nemothumbnailcache.h
+@@ -32,6 +32,8 @@
+ #ifndef NEMOTHUMBNAILCACHE_H
+ #define NEMOTHUMBNAILCACHE_H
+ 
++#include "nemothumbnailexports.h"
++
+ #include <QImage>
+ #include <QSize>
+ #include <QString>
+@@ -40,7 +42,7 @@ QT_BEGIN_NAMESPACE
+ class QImageReader;
+ QT_END_NAMESPACE
+ 
+-class Q_DECL_EXPORT NemoThumbnailCache
++class NEMO_QML_PLUGIN_THUMBNAILER_EXPORT NemoThumbnailCache
+ {
+ public:
+     enum {
+diff --git a/src/lib/nemothumbnailexports.h b/src/lib/nemothumbnailexports.h
+new file mode 100644
+index 0000000..54b7572
+--- /dev/null
++++ b/src/lib/nemothumbnailexports.h
+@@ -0,0 +1,10 @@
++#ifndef NEMOTHUMBNAIL_EXPORTS_H
++#define NEMOTHUMBNAIL_EXPORTS_H
++
++#if defined(BUILD_NEMO_QML_PLUGIN_THUMBNAILER_LIB)
++    #define NEMO_QML_PLUGIN_THUMBNAILER_EXPORT Q_DECL_EXPORT
++#else
++    #define NEMO_QML_PLUGIN_THUMBNAILER_EXPORT Q_DECL_IMPORT
++#endif
++
++#endif // NEMOTHUMBNAIL_EXPORTS_H
+\ No newline at end of file
+diff --git a/src/plugin/plugin.pro b/src/plugin/plugin.pro
+index 78ab860..0b41e31 100644
+--- a/src/plugin/plugin.pro
++++ b/src/plugin/plugin.pro
+@@ -2,11 +2,11 @@ TARGET = nemothumbnailer
+ PLUGIN_IMPORT_PATH = Nemo/Thumbnailer
+ 
+ TEMPLATE = lib
+-CONFIG += qt plugin hide_symbols c++11 link_pkgconfig
++CONFIG += qt plugin hide_symbols c++17 link_pkgconfig
+ QT += qml quick
+ 
+ INCLUDEPATH += ../lib
+-LIBS += -L../lib -lnemothumbnailer-qt5
++LIBS += -L../lib -lnemothumbnailer-qt$${QT_MAJOR_VERSION}
+ 
+ target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
+ INSTALLS += target
+-- 
+2.41.0
+
