@@ -12,15 +12,15 @@ url="https://github.com/sailfishos/nemo-qml-plugin-models"
 license=('BSD')
 depends=('nemo-qml-plugin-dbus' 'libmlocale')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    '0001-build-with-qt6.patch'
+    '0001-Build-with-Qt6.patch'
 )
 sha256sums=('1baed689a277bcf7980c06f384af483ced441a01a502f67dd78b333f4c3ce22e'
-    '4e6683e5d246c8d0f1cf8ce1169029824e9f6006c79304308d9784f55d34f09d'
+    'a2ce7471c36417ff8938ca80fc5b1426db676bcadc6a05051155ea7c63397e15'
 )
 
 prepare() {
   cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-build-with-qt6.patch"
+  patch -p1 --input="${srcdir}/0001-Build-with-Qt6.patch"
 }
 
 

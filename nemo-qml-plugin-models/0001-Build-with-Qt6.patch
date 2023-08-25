@@ -1,0 +1,121 @@
+From 8d9d1f151b363d574f5a6aefd94e361a1681eda0 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 25 Aug 2023 07:29:45 +0000
+Subject: [PATCH] Build with Qt6
+
+---
+ src/lib/filtermodel.cpp                   | 6 +++---
+ src/lib/lib.pro                           | 4 ++--
+ src/lib/searchmodel.cpp                   | 8 ++++----
+ src/plugin/plugin.pro                     | 2 +-
+ tests/objectlistmodel/objectlistmodel.pro | 2 +-
+ 5 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/src/lib/filtermodel.cpp b/src/lib/filtermodel.cpp
+index ef1d226..e2e0cae 100644
+--- a/src/lib/filtermodel.cpp
++++ b/src/lib/filtermodel.cpp
+@@ -226,10 +226,10 @@ bool FilterModel::passesFilter(int sourceRow, const FilterData &filter) const
+         if ((value == filter.value_) == filter.negate_)
+             return false;
+     } else if (filter.comparator_ == FilterModel::LessThan) {
+-        if ((value < filter.value_) == filter.negate_)
++        if ((QVariant::compare(value, filter.value_) < 0) == filter.negate_)
+             return false;
+     } else if (filter.comparator_ == FilterModel::LessThanEqual) {
+-        if ((value <= filter.value_) == filter.negate_)
++        if ((QVariant::compare(value, filter.value_) <= 0) == filter.negate_)
+             return false;
+     } else if (filter.comparator_ == FilterModel::HasMatch) {
+         if (re.match(value.toString()).hasMatch() == filter.negate_)
+@@ -247,7 +247,7 @@ bool FilterModel::passesFilter(int sourceRow, const FilterData &filter) const
+         };
+ 
+         // List comparisons - fail only if no element meets the criterion
+-        if (static_cast<QMetaType::Type>(value.type()) == QMetaType::QStringList) {
++        if (static_cast<QMetaType::Type>(value.typeId()) == QMetaType::QStringList) {
+             const QStringList elements(value.value<QStringList>());
+             auto it = elements.cbegin(), end = elements.cend();
+             for ( ; it != end; ++it) {
+diff --git a/src/lib/lib.pro b/src/lib/lib.pro
+index 2282c72..28644af 100644
+--- a/src/lib/lib.pro
++++ b/src/lib/lib.pro
+@@ -1,5 +1,5 @@
+ TEMPLATE = lib
+-TARGET = nemomodels-qt5
++TARGET = nemomodels-qt$${QT_MAJOR_VERSION}
+ 
+ CONFIG += create_pc create_prl link_pkgconfig
+ 
+@@ -7,7 +7,7 @@ QT = \
+     core \
+     qml
+ 
+-PKGCONFIG += mlocale5
++PKGCONFIG += mlocale$${QT_MAJOR_VERSION}
+ 
+ INCLUDEPATH *= ../3rdparty
+ 
+diff --git a/src/lib/searchmodel.cpp b/src/lib/searchmodel.cpp
+index c2d2e93..f80bf1e 100644
+--- a/src/lib/searchmodel.cpp
++++ b/src/lib/searchmodel.cpp
+@@ -222,7 +222,7 @@ QStringList toStringList(const QVariant &value)
+ {
+     QStringList rv;
+ 
+-    if (static_cast<QMetaType::Type>(value.type()) == QMetaType::QStringList) {
++    if (static_cast<QMetaType::Type>(value.typeId()) == QMetaType::QStringList) {
+         rv = value.value<QStringList>();
+     } else if (value.canConvert<QVariantList>()) {
+         QSequentialIterable iterable = value.value<QSequentialIterable>();
+@@ -269,8 +269,8 @@ QList<QStringList> patternTokens(const QString &string, Qt::CaseSensitivity case
+ static const QChar *cbegin(const QString &s) { return s.cbegin(); }
+ static const QChar *cend(const QString &s) { return s.cend(); }
+ 
+-static const QChar *cbegin(const QStringRef &r) { return r.data(); }
+-static const QChar *cend(const QStringRef &r) { return r.data() + r.size(); }
++static const QChar *cbegin(const QStringView &r) { return r.data(); }
++static const QChar *cend(const QStringView &r) { return r.data() + r.size(); }
+ 
+ template <typename StringType>
+ bool partialMatch(const StringType &key, const QChar * const vbegin, const QChar * const vend)
+@@ -329,7 +329,7 @@ bool partialMatch(const std::vector<const QString *> &tokens, const QString &val
+             for (auto begin = token->cbegin(), it = begin, end = token->cend(); it != end; ) {
+                 it = std::find(it, end, *vbegin);
+                 if (it != end) {
+-                    const QStringRef key(token->midRef((it - begin)));
++                    const QStringView key = QStringView(&(*it), end - it);
+                     if (partialMatch(key, vbegin, vend))
+                         return true;
+ 
+diff --git a/src/plugin/plugin.pro b/src/plugin/plugin.pro
+index 35a6455..39f13d7 100644
+--- a/src/plugin/plugin.pro
++++ b/src/plugin/plugin.pro
+@@ -8,7 +8,7 @@ QT = \
+     qml
+ 
+ INCLUDEPATH += ../lib
+-LIBS += -L../lib -lnemomodels-qt5
++LIBS += -L../lib -lnemomodels-qt$${QT_MAJOR_VERSION}
+ 
+ target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
+ INSTALLS += target
+diff --git a/tests/objectlistmodel/objectlistmodel.pro b/tests/objectlistmodel/objectlistmodel.pro
+index 4e22a78..d274f23 100644
+--- a/tests/objectlistmodel/objectlistmodel.pro
++++ b/tests/objectlistmodel/objectlistmodel.pro
+@@ -11,7 +11,7 @@ SOURCES += \
+ 
+ LIBS += \
+     -L../../src/lib \
+-    -lnemomodels-qt5
++    -lnemomodels-qt$${QT_MAJOR_VERSION}
+ 
+ target.path = /opt/tests/nemo-qml-plugins/models
+ INSTALLS += target
+-- 
+2.41.0
+
