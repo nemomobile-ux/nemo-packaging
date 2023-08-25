@@ -1,16 +1,40 @@
-From 8d9d1f151b363d574f5a6aefd94e361a1681eda0 Mon Sep 17 00:00:00 2001
-From: Jozef Mlich <jmlich83@gmail.com>
-Date: Fri, 25 Aug 2023 07:29:45 +0000
-Subject: [PATCH] Build with Qt6
-
----
- src/lib/filtermodel.cpp                   | 6 +++---
- src/lib/lib.pro                           | 4 ++--
- src/lib/searchmodel.cpp                   | 8 ++++----
- src/plugin/plugin.pro                     | 2 +-
- tests/objectlistmodel/objectlistmodel.pro | 2 +-
- 5 files changed, 11 insertions(+), 11 deletions(-)
-
+diff --git a/src/lib/basefiltermodel.h b/src/lib/basefiltermodel.h
+index e28f7eb..8e7ee31 100644
+--- a/src/lib/basefiltermodel.h
++++ b/src/lib/basefiltermodel.h
+@@ -33,12 +33,14 @@
+ #ifndef BASEFILTERMODEL_H
+ #define BASEFILTERMODEL_H
+ 
++#include "nemomodels.h"
++
+ #include <QAbstractListModel>
+ #include <QMetaProperty>
+ 
+ #include <vector>
+ 
+-class Q_DECL_EXPORT BaseFilterModel : public QAbstractListModel
++class NEMO_QML_PLUGIN_MODELS_EXPORT BaseFilterModel : public QAbstractListModel
+ {
+     Q_OBJECT
+     Q_PROPERTY(QObject *sourceModel READ sourceModel WRITE setSourceModel NOTIFY sourceModelChanged)
+diff --git a/src/lib/compositemodel.h b/src/lib/compositemodel.h
+index de4d0e7..404a34b 100644
+--- a/src/lib/compositemodel.h
++++ b/src/lib/compositemodel.h
+@@ -33,10 +33,11 @@
+ #ifndef COMPOSITEMODEL_H
+ #define COMPOSITEMODEL_H
+ 
++#include "nemomodels.h"
+ #include <QAbstractListModel>
+ #include <QVector>
+ 
+-class Q_DECL_EXPORT CompositeModel : public QAbstractListModel
++class NEMO_QML_PLUGIN_MODELS_EXPORT CompositeModel : public QAbstractListModel
+ {
+     Q_OBJECT
+     Q_PROPERTY(bool populated READ populated NOTIFY populatedChanged)
 diff --git a/src/lib/filtermodel.cpp b/src/lib/filtermodel.cpp
 index ef1d226..e2e0cae 100644
 --- a/src/lib/filtermodel.cpp
@@ -37,8 +61,27 @@ index ef1d226..e2e0cae 100644
              const QStringList elements(value.value<QStringList>());
              auto it = elements.cbegin(), end = elements.cend();
              for ( ; it != end; ++it) {
+diff --git a/src/lib/filtermodel.h b/src/lib/filtermodel.h
+index 6b524d8..1fe70f1 100644
+--- a/src/lib/filtermodel.h
++++ b/src/lib/filtermodel.h
+@@ -33,12 +33,13 @@
+ #ifndef FILTERMODEL_H
+ #define FILTERMODEL_H
+ 
++#include "nemomodels.h"
+ #include "basefiltermodel.h"
+ 
+ #include <QList>
+ #include <QMetaMethod>
+ 
+-class Q_DECL_EXPORT FilterModel : public BaseFilterModel
++class NEMO_QML_PLUGIN_MODELS_EXPORT FilterModel : public BaseFilterModel
+ {
+     Q_OBJECT
+     Q_PROPERTY(QVariantList filters READ filters WRITE setFilters NOTIFY filtersChanged)
 diff --git a/src/lib/lib.pro b/src/lib/lib.pro
-index 2282c72..28644af 100644
+index 2282c72..717d5e7 100644
 --- a/src/lib/lib.pro
 +++ b/src/lib/lib.pro
 @@ -1,5 +1,5 @@
@@ -57,6 +100,59 @@ index 2282c72..28644af 100644
  
  INCLUDEPATH *= ../3rdparty
  
+@@ -27,6 +27,8 @@ HEADERS += \
+     searchmodel.h \
+     sortfiltermodel.h
+ 
++DEFINES += BUILD_NEMO_QML_PLUGIN_MODELS_LIB
++
+ target.path = $$[QT_INSTALL_LIBS]
+ pkgconfig.files = $$TARGET.pc
+ pkgconfig.path = $$target.path/pkgconfig
+@@ -36,7 +38,8 @@ headers.files =\
+     compositemodel.h \
+     filtermodel.h \
+     objectlistmodel.h \
+-    searchmodel.h
++    searchmodel.h \
++    nemomodels.h
+ 
+ QMAKE_PKGCONFIG_NAME = lib$$TARGET
+ QMAKE_PKGCONFIG_DESCRIPTION = Library containing utility models for exposing data to QML
+diff --git a/src/lib/nemomodels.h b/src/lib/nemomodels.h
+new file mode 100644
+index 0000000..9d72b59
+--- /dev/null
++++ b/src/lib/nemomodels.h
+@@ -0,0 +1,10 @@
++#ifndef NEMOMODELS_H
++#define NEMOMODELS_H
++
++#if defined(BUILD_NEMO_QML_PLUGIN_MODELS_LIB)
++    #define NEMO_QML_PLUGIN_MODELS_EXPORT Q_DECL_EXPORT
++#else
++    #define NEMO_QML_PLUGIN_MODELS_EXPORT Q_DECL_IMPORT
++#endif
++
++#endif // NEMOMODELS_H
+\ No newline at end of file
+diff --git a/src/lib/objectlistmodel.h b/src/lib/objectlistmodel.h
+index ddd1724..3f47f4b 100644
+--- a/src/lib/objectlistmodel.h
++++ b/src/lib/objectlistmodel.h
+@@ -33,10 +33,11 @@
+ #ifndef OBJECTLISTMODEL_H
+ #define OBJECTLISTMODEL_H
+ 
++#include "nemomodels.h"
+ #include <QAbstractListModel>
+ #include <QVariantMap>
+ 
+-class Q_DECL_EXPORT ObjectListModel : public QAbstractListModel
++class NEMO_QML_PLUGIN_MODELS_EXPORT ObjectListModel : public QAbstractListModel
+ {
+     Q_OBJECT
+     Q_PROPERTY(bool automaticRoles READ automaticRoles WRITE setAutomaticRoles NOTIFY automaticRolesChanged)
 diff --git a/src/lib/searchmodel.cpp b/src/lib/searchmodel.cpp
 index c2d2e93..f80bf1e 100644
 --- a/src/lib/searchmodel.cpp
@@ -90,6 +186,48 @@ index c2d2e93..f80bf1e 100644
                      if (partialMatch(key, vbegin, vend))
                          return true;
  
+diff --git a/src/lib/searchmodel.h b/src/lib/searchmodel.h
+index b1cde2f..fc93c68 100644
+--- a/src/lib/searchmodel.h
++++ b/src/lib/searchmodel.h
+@@ -33,6 +33,7 @@
+ #ifndef SEARCHMODEL_H
+ #define SEARCHMODEL_H
+ 
++#include "nemomodels.h"
+ #include "basefiltermodel.h"
+ 
+ #include <QList>
+@@ -41,7 +42,7 @@
+ #include <memory>
+ #include <vector>
+ 
+-class Q_DECL_EXPORT SearchModel : public BaseFilterModel
++class NEMO_QML_PLUGIN_MODELS_EXPORT SearchModel : public BaseFilterModel
+ {
+     Q_OBJECT
+     Q_PROPERTY(QStringList searchRoles READ searchRoles WRITE setSearchRoles NOTIFY searchRolesChanged)
+diff --git a/src/lib/sortfiltermodel.h b/src/lib/sortfiltermodel.h
+index 93162a1..2d6c82a 100644
+--- a/src/lib/sortfiltermodel.h
++++ b/src/lib/sortfiltermodel.h
+@@ -9,6 +9,7 @@
+ #ifndef SORTFILTERMODEL_H
+ #define SORTFILTERMODEL_H
+ 
++#include "nemomodels.h"
+ #include <QAbstractItemModel>
+ #include <QJSValue>
+ #include <QSortFilterProxyModel>
+@@ -18,7 +19,7 @@
+  * @class SortFilterModel
+  * @short Filter and sort an existing QAbstractItemModel
+  */
+-class Q_DECL_EXPORT SortFilterModel : public QSortFilterProxyModel
++class NEMO_QML_PLUGIN_MODELS_EXPORT SortFilterModel : public QSortFilterProxyModel
+ {
+     Q_OBJECT
+     /**
 diff --git a/src/plugin/plugin.pro b/src/plugin/plugin.pro
 index 35a6455..39f13d7 100644
 --- a/src/plugin/plugin.pro
@@ -116,6 +254,3 @@ index 4e22a78..d274f23 100644
  
  target.path = /opt/tests/nemo-qml-plugins/models
  INSTALLS += target
--- 
-2.41.0
-
