@@ -17,7 +17,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-Fix-build-with-Qt6.patch'
 )
 sha256sums=('17f9e949b13d3bbc54f9038ee16a41711b3ef11e7377609bde08f90004d66a57'
-    'ec289ce1497346833527cc7148c25ff46670022c27c9ab39afa5d157b2311d1f'
+    '7bb32638c58700f51975f5ec9b08137b3d7d164ba12f76bb20caa83264b774e1'
 )
 
 prepare() {

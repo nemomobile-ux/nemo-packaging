@@ -1,23 +1,23 @@
-From dd90692fe48f82ce3245a652818715fabcb5b7c0 Mon Sep 17 00:00:00 2001
+From 5776e9af55ffd87f0b053fb292a9b6ae2d187e9b Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 25 Aug 2023 09:29:46 +0000
 Subject: [PATCH] Fix build with Qt6
 
 ---
- src/lib/lib.pro                | 17 ++++++++++-------
+ src/lib/lib.pro                | 20 ++++++++++++--------
  src/lib/nemoimagemetadata.h    |  4 +++-
  src/lib/nemothumbnailcache.cpp |  3 ++-
  src/lib/nemothumbnailcache.h   |  4 +++-
  src/lib/nemothumbnailexports.h | 10 ++++++++++
  src/plugin/plugin.pro          |  4 ++--
- 6 files changed, 30 insertions(+), 12 deletions(-)
+ 6 files changed, 32 insertions(+), 13 deletions(-)
  create mode 100644 src/lib/nemothumbnailexports.h
 
 diff --git a/src/lib/lib.pro b/src/lib/lib.pro
-index 71ec1a8..bc35e93 100644
+index 71ec1a8..8533720 100644
 --- a/src/lib/lib.pro
 +++ b/src/lib/lib.pro
-@@ -1,19 +1,22 @@
+@@ -1,31 +1,35 @@
  TEMPLATE = lib
 -TARGET = nemothumbnailer-qt5
 +TARGET = nemothumbnailer-qt$${QT_MAJOR_VERSION}
@@ -46,7 +46,13 @@ index 71ec1a8..bc35e93 100644
  SOURCES += \
      nemoimagemetadata.cpp \
      nemothumbnailcache.cpp
-@@ -25,7 +28,7 @@ PLUGIN_IMPORT_PATH = $$[QT_INSTALL_QML]/Nemo/Thumbnailer
+ HEADERS += \
+     nemoimagemetadata.h \
+-    nemothumbnailcache.h
++    nemothumbnailcache.h \
++    nemothumbnailexports.h
+ 
+ PLUGIN_IMPORT_PATH = $$[QT_INSTALL_QML]/Nemo/Thumbnailer
  DEFINES += NEMO_THUMBNAILER_DIR=\\\"$$PLUGIN_IMPORT_PATH/thumbnailers\\\"
  
  target.path = $$[QT_INSTALL_LIBS]
