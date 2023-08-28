@@ -1,0 +1,17 @@
+diff --git a/src/contacts/qcontactmanager_p.cpp b/src/contacts/qcontactmanager_p.cpp
+index d1e06cfd..0675b5b6 100644
+--- a/src/contacts/qcontactmanager_p.cpp
++++ b/src/contacts/qcontactmanager_p.cpp
+@@ -240,7 +240,11 @@ void QContactManagerData::loadFactoriesMetadata()
+     loadStaticFactories();
+ 
+     QFactoryLoader *l = loader();
+-    QList<QJsonObject> metaData = l->metaData();
++    QList<QJsonObject> metaData;
++    qsizetype size = l->metaData().size();
++    for(int i = 0; i < size; i++) {
++        metaData.push_back(l->metaData().at(i).toCbor().toJsonObject());
++    }
+     m_metaData = metaData;
+     if (m_metaData != m_pluginPaths) {
+         m_pluginPaths = m_metaData;

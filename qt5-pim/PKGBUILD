@@ -6,26 +6,38 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt6-pim
-pkgver=5.6.0+git15
+pkgver=6.0.0
 pkgrel=1
 pkgdesc='Qt Personal Information Management'
-url='https://github.com/sailfishos/qtpim'
+url='https://github.com/qt/qtpim'
+_pkgfqn=${pkgname/6-/}
+_commit=713bb697fa24f6d6d4e2521ee3db2de237ea6f05
 arch=(x86_64 aarch64)
 license=(LGPL-2.1-only LGPL-3.0-only GPL-3.0-only Qt-GPL-exception-1.0)
 depends=('qt6-declarative')
 makedepends=('qt6-old-features')
-source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz")
-sha256sums=('88e7b47dadb9aae0d729c4b5167c3cde79f429e51b25f642d76215ed97fadbb1')
+source=(https://github.com/qt/$_pkgfqn/archive/$_commit.zip
+    0001-fix_build_on_qt6.patch
+    0002-remove_qtextcodec.patch)
+sha256sums=('ef01c3260198722790e502c6b0161e2ac7ee18e3116fe2ee9fb210db9d078e62'
+    'abc425584889dd3362b024f74bd1a9e48e99081743fa2e979efd9bb5d166a9eb'
+    '902e1039912f1dd0a3f134016bd46277ab39ee0d9023ac35fb62e787b8c5faf5')
+
+prepare() {
+    cd $_pkgfqn-$_commit
+    patch -p1 --input="${srcdir}/0001-fix_build_on_qt6.patch"
+    patch -p1 --input="${srcdir}/0002-remove_qtextcodec.patch"
+}
 
 build() {
-    cd qtpim-mer-5.6.0-git15
+    cd $_pkgfqn-$_commit
     touch .git
     qmake6
     make -j1
 }
 
 package() {
-    cd qtpim-mer-5.6.0-git15
+    cd $_pkgfqn-$_commit
     make -j 1 INSTALL_ROOT="$pkgdir/" install
 # Remove tests
     rm -rf $pkgdir/usr/tests
