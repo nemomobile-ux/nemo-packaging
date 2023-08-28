@@ -14,6 +14,7 @@ license=('GPL')
 depends=('qt6-base'
     'qt6-feedback'
     'libprofile-qt')
+makedepends=('qt6-old-features')
 
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('c5bf3eb0c195b37fc6dbc83bed20f5f608dd96b3e0d9fa9fd2a2863153bdfc06')

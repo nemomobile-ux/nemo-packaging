@@ -17,7 +17,7 @@ url="https://$_host/$_project/$_gitname"
 license=('LGPLv2')
 optdepends=()
 depends=('qt6-declarative' 'tracker3' 'tracker3-miners')
-makedepends=('qt6-tools')
+makedepends=('qt6-tools' 'qt6-old-features')
 source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
     '0001-workaround-missing-G_BEGIN-END_DECLS-in-tracker.patch')
 sha256sums=('3f18a69f62d3d60a566519784834af885419a4bbbdaa7f47392deb9e1e247b41'

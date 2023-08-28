@@ -10,6 +10,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/qt/qtsystems"
 license=('GPL3' 'LGPL' 'FDL')
 depends=('bluez-libs' 'qt6-declarative')
+makedepends=('qt6-old-features')
 source=("$pkgname-$_commit.tar.gz::https://github.com/qtproject/qtsystems/archive/$_commit.tar.gz")
 sha256sums=('5259cf350e5e1f755c53bcba066dd40fea7b20f4e661b0973b24ae46454a9e75')
 

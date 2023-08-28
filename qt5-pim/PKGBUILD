@@ -13,6 +13,7 @@ url='https://github.com/sailfishos/qtpim'
 arch=(x86_64 aarch64)
 license=(LGPL-2.1-only LGPL-3.0-only GPL-3.0-only Qt-GPL-exception-1.0)
 depends=('qt6-declarative')
+makedepends=('qt6-old-features')
 source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz")
 sha256sums=('88e7b47dadb9aae0d729c4b5167c3cde79f429e51b25f642d76215ed97fadbb1')
 
