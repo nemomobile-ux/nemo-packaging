@@ -1,23 +1,23 @@
-From 5776e9af55ffd87f0b053fb292a9b6ae2d187e9b Mon Sep 17 00:00:00 2001
+From 12352cd4b621d251d114620da36575118c457695 Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 25 Aug 2023 09:29:46 +0000
 Subject: [PATCH] Fix build with Qt6
 
 ---
- src/lib/lib.pro                | 20 ++++++++++++--------
+ src/lib/lib.pro                | 23 ++++++++++++++---------
  src/lib/nemoimagemetadata.h    |  4 +++-
  src/lib/nemothumbnailcache.cpp |  3 ++-
  src/lib/nemothumbnailcache.h   |  4 +++-
  src/lib/nemothumbnailexports.h | 10 ++++++++++
  src/plugin/plugin.pro          |  4 ++--
- 6 files changed, 32 insertions(+), 13 deletions(-)
+ 6 files changed, 34 insertions(+), 14 deletions(-)
  create mode 100644 src/lib/nemothumbnailexports.h
 
 diff --git a/src/lib/lib.pro b/src/lib/lib.pro
-index 71ec1a8..8533720 100644
+index 71ec1a8..0172f04 100644
 --- a/src/lib/lib.pro
 +++ b/src/lib/lib.pro
-@@ -1,31 +1,35 @@
+@@ -1,34 +1,39 @@
  TEMPLATE = lib
 -TARGET = nemothumbnailer-qt5
 +TARGET = nemothumbnailer-qt$${QT_MAJOR_VERSION}
@@ -60,16 +60,21 @@ index 71ec1a8..8533720 100644
 +headers.path = /usr/include/nemothumbnailer-qt$${QT_MAJOR_VERSION}
  headers.files =\
      nemothumbnailcache.h \
-     nemoimagemetadata.h
+-    nemoimagemetadata.h
++    nemoimagemetadata.h \
++    nemothumbnailexports.h
+ 
+ QMAKE_PKGCONFIG_NAME = lib$$TARGET
+ QMAKE_PKGCONFIG_DESCRIPTION = Library for generating and accessing thumbnail images
 diff --git a/src/lib/nemoimagemetadata.h b/src/lib/nemoimagemetadata.h
-index ab07a3e..8172723 100644
+index ab07a3e..8e96d48 100644
 --- a/src/lib/nemoimagemetadata.h
 +++ b/src/lib/nemoimagemetadata.h
 @@ -35,9 +35,11 @@
  class QString;
  class QByteArray;
  
-+#include "nemothumbnailexports.h"
++#include <nemothumbnailexports.h>
 +
  #include <QMetaType>
  
@@ -100,14 +105,14 @@ index 3346c51..429c181 100644
  
  namespace {
 diff --git a/src/lib/nemothumbnailcache.h b/src/lib/nemothumbnailcache.h
-index 65b7b5c..4a84cb3 100644
+index 65b7b5c..9997045 100644
 --- a/src/lib/nemothumbnailcache.h
 +++ b/src/lib/nemothumbnailcache.h
 @@ -32,6 +32,8 @@
  #ifndef NEMOTHUMBNAILCACHE_H
  #define NEMOTHUMBNAILCACHE_H
  
-+#include "nemothumbnailexports.h"
++#include <nemothumbnailexports.h>
 +
  #include <QImage>
  #include <QSize>
