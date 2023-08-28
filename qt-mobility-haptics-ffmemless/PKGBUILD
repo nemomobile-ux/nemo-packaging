@@ -14,10 +14,18 @@ license=('GPL')
 depends=('qt6-base'
     'qt6-feedback'
     'libprofile-qt')
-makedepends=('qt6-old-features')
 
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('c5bf3eb0c195b37fc6dbc83bed20f5f608dd96b3e0d9fa9fd2a2863153bdfc06')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-Fix-build-with-Qt6.patch'
+)
+sha256sums=('c5bf3eb0c195b37fc6dbc83bed20f5f608dd96b3e0d9fa9fd2a2863153bdfc06'
+    '101081cfda2f5fd303e3e6207b501a3b678c76f08913a75c1a705a5b7ea54627'
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-Fix-build-with-Qt6.patch"
+}
 
 build() {
     cd $pkgname-$pkgver
