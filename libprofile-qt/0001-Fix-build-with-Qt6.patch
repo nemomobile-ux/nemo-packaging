@@ -1,0 +1,67 @@
+From 0145b6559e2ea68375031c9cb90b0d0648719184 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Mon, 28 Aug 2023 16:41:39 +0000
+Subject: [PATCH] Fix build with Qt6
+
+---
+ .gitignore    | 2 ++
+ doc/doc.pro   | 2 +-
+ src/profile.h | 8 ++------
+ src/src.pro   | 2 +-
+ 4 files changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 545e501..9b6b13e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -6,3 +6,5 @@ tests/tests.xml
+ tests/ut_profile
+ doc/html
+ src/lib
++src/libprofile-qt*.so*
++.qmake.stash
+diff --git a/doc/doc.pro b/doc/doc.pro
+index db78478..9c0f87b 100644
+--- a/doc/doc.pro
++++ b/doc/doc.pro
+@@ -4,5 +4,5 @@ TEMPLATE = subdirs
+ QT -= gui
+ 
+ htmldocs.files = html/*
+-htmldocs.path = /usr/share/doc/libprofile-qt5
++htmldocs.path = /usr/share/doc/libprofile-qt$${QT_MAJOR_VERSION}
+ INSTALLS += htmldocs
+diff --git a/src/profile.h b/src/profile.h
+index e67df9e..408b47b 100644
+--- a/src/profile.h
++++ b/src/profile.h
+@@ -45,13 +45,9 @@
+ 
+ 
+ #if defined(PROFILE_QT)
+-#    define P_EXPORT Q_DECL_EXPORT
++    #define P_EXPORT Q_DECL_EXPORT
+ #else
+-#    if defined (Q_OS_WIN)
+-#        define P_EXPORT Q_DECL_IMPORT
+-#    else
+-#        define P_EXPORT Q_DECL_EXPORT
+-#    endif
++    #define P_EXPORT Q_DECL_IMPORT
+ #endif
+ 
+ struct MyStructure {
+diff --git a/src/src.pro b/src/src.pro
+index d589234..a772626 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -1,5 +1,5 @@
+ TEMPLATE = lib
+-TARGET = profile-qt5
++TARGET = profile-qt$${QT_MAJOR_VERSION}
+ QT += dbus
+ QT -= gui
+ contains(cov, true) { 
+-- 
+2.41.0
+

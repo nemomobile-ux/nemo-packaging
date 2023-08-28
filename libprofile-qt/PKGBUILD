@@ -12,13 +12,22 @@ url="https://github.com/sailfishos/libprofile-qt"
 license=('BSD')
 depends=('qt6-base')
 makedepends=('sailfish-access-control')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('e47cbed6a67337de959b73fdd567edc435699da0075383d1bac37acb83a8155a')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-Fix-build-with-Qt6.patch'
+)
+sha256sums=('e47cbed6a67337de959b73fdd567edc435699da0075383d1bac37acb83a8155a'
+    '76afe90fd21767b3c03552392c4c0367a81e868e7ffef4141088881318badcaf'
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-Fix-build-with-Qt6.patch"
+}
+
 
 build() {
-  cd $pkgname-$pkgver
-  mkdir -p build
-  cd build
+  mkdir -p $pkgname-$pkgver/build
+  cd $pkgname-$pkgver/build
   qmake6 ..
   make
 }
