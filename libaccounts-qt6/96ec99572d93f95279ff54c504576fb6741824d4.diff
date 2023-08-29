@@ -1,0 +1,137 @@
+diff --git a/Accounts/provider.cpp b/Accounts/provider.cpp
+index fb4e960427d32498a6fdad33efb5336e32528532..6d1c97c48b9fad8886328faf689850f367e60412 100644
+--- a/Accounts/provider.cpp
++++ b/Accounts/provider.cpp
+@@ -44,7 +44,8 @@ namespace Accounts {
+ }; // namespace
+ 
+ Provider::Provider(AgProvider *provider, ReferenceMode mode):
+-    m_provider(provider)
++    m_provider(provider),
++    m_tags(nullptr)
+ {
+     if (m_provider != nullptr && mode == AddReference)
+         ag_provider_ref(m_provider);
+@@ -54,7 +55,8 @@ Provider::Provider(AgProvider *provider, ReferenceMode mode):
+  * Construct an invalid provider.
+  */
+ Provider::Provider():
+-    m_provider(nullptr)
++    m_provider(nullptr),
++    m_tags(nullptr)
+ {
+ }
+ 
+@@ -63,7 +65,8 @@ Provider::Provider():
+  * data is shared among copies.
+  */
+ Provider::Provider(const Provider &other):
+-    m_provider(other.m_provider)
++    m_provider(other.m_provider),
++    m_tags(nullptr)
+ {
+     if (m_provider != nullptr)
+         ag_provider_ref(m_provider);
+@@ -86,6 +89,10 @@ Provider::~Provider()
+         ag_provider_unref(m_provider);
+         m_provider = nullptr;
+     }
++    if (m_tags != nullptr) {
++        delete m_tags;
++        m_tags = nullptr;
++    }
+ }
+ 
+ /*!
+@@ -171,6 +178,44 @@ bool Provider::isSingleAccount() const
+     return ag_provider_get_single_account(m_provider);
+ }
+ 
++/*!
++ * Check if this provider has a tag.
++ *
++ * @param tag Tag to look for
++ *
++ * @return Provider has the tag?
++ */
++bool Provider::hasTag(const QString &tag) const
++{
++    if (!m_tags) {
++        // Retrieve the tags
++        tags();
++    }
++
++    return m_tags->contains(tag);
++}
++
++/*!
++ * Return all tags of the provider as a set.
++ *
++ * @return Set of tags
++ */
++QSet<QString> Provider::tags() const
++{
++    if (m_tags)
++        return *m_tags;
++
++    m_tags = new QSet<QString>;
++    GList *list = ag_provider_get_tags(m_provider);
++    GList *iter = list;
++    while (iter != NULL) {
++        m_tags->insert(UTF8(reinterpret_cast<const gchar *> (iter->data)));
++        iter = g_list_next(iter);
++    }
++    g_list_free(list);
++    return *m_tags;
++}
++
+ /*!
+  * @return The DOM of the whole XML provider file.
+  */
+diff --git a/Accounts/provider.h b/Accounts/provider.h
+index 2ae9eb5a625dbd1a1c6d46952165a8fd195e1af2..8eef9151af513d5e98de2aaa4cd03b65c48135eb 100644
+--- a/Accounts/provider.h
++++ b/Accounts/provider.h
+@@ -63,6 +63,8 @@ public:
+     QString iconName() const;
+     QString domainsRegExp() const;
+     bool isSingleAccount() const;
++    bool hasTag(const QString &tag) const;
++    QSet<QString> tags() const;
+     const QDomDocument domDocument() const;
+ 
+     friend inline bool operator==(const Accounts::Provider &p1,
+@@ -76,6 +78,7 @@ private:
+     Provider(AgProvider *provider, ReferenceMode mode = AddReference);
+     AgProvider *provider() const;
+     AgProvider *m_provider;
++    mutable QSet<QString> *m_tags;
+     // \endcond
+ };
+ 
+diff --git a/tests/MyProvider.provider b/tests/MyProvider.provider
+index 3ffbbb54be9e0d4b992c468d18a8caedbb71fce6..f3f25639358f27bf3cfa17a3a74d371b523bafa7 100644
+--- a/tests/MyProvider.provider
++++ b/tests/MyProvider.provider
+@@ -7,6 +7,9 @@
+   <plugin>generic-oauth</plugin>
+   <domains>.*example.net</domains>
+   <single-account>true</single-account>
++  <tags>
++    <tag>user-group:mygroup</tag>
++  </tags>
+ 
+   <template>
+     <group name="auth">
+diff --git a/tests/tst_libaccounts.cpp b/tests/tst_libaccounts.cpp
+index 49189152045fb067ecd90721ab120bbf66ae2727..471e3d58d3ca8bff5e85ecd796b111222ed5ade4 100644
+--- a/tests/tst_libaccounts.cpp
++++ b/tests/tst_libaccounts.cpp
+@@ -289,6 +289,7 @@ void AccountsTest::testProvider()
+     QCOMPARE(provider.pluginName(), QString("generic-oauth"));
+     QCOMPARE(provider.domainsRegExp(), QString(".*example.net"));
+     QCOMPARE(provider.isSingleAccount(), true);
++    QCOMPARE(provider.tags().contains("user-group:mygroup"), true);
+ 
+     QDomDocument dom = provider.domDocument();
+     QDomElement root = dom.documentElement();

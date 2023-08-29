@@ -1,0 +1,139 @@
+diff --git a/Accounts/Accounts.pro b/Accounts/Accounts.pro
+index 13804ee..da62da7 100644
+--- a/Accounts/Accounts.pro
++++ b/Accounts/Accounts.pro
+@@ -3,7 +3,7 @@ include( ../common-project-config.pri )
+ include( ../common-vars.pri )
+ 
+ TEMPLATE = lib
+-TARGET = accounts-qt5
++TARGET = accounts-qt$${QT_MAJOR_VERSION}
+ 
+ # Input
+ public_headers = \
+@@ -45,7 +45,7 @@ QT -= gui
+ 
+ INCLUDEPATH += $${TOP_SRC_DIR}
+ 
+-CMAKE_BASENAME = AccountsQt5
++CMAKE_BASENAME = AccountsQt$${QT_MAJOR_VERSION}
+ 
+ PKGCONFIG += \
+    glib-2.0 \
+diff --git a/Accounts/AccountsQt6Config.cmake.in b/Accounts/AccountsQt6Config.cmake.in
+new file mode 100644
+index 0000000..55a8964
+--- /dev/null
++++ b/Accounts/AccountsQt6Config.cmake.in
+@@ -0,0 +1,5 @@
++#  ACCOUNTSQT_INCLUDE_DIRS - The libaccounts-qt include directories
++#  ACCOUNTSQT_LIBRARIES - The libraries needed to use libaccounts-qt
++
++set(ACCOUNTSQT_LIBRARIES $${INSTALL_LIBDIR}/lib$${TARGET}.so)
++set(ACCOUNTSQT_INCLUDE_DIRS $${INSTALL_PREFIX}/include/$${TARGET}/)
+\ No newline at end of file
+diff --git a/Accounts/AccountsQt6ConfigVersion.cmake.in b/Accounts/AccountsQt6ConfigVersion.cmake.in
+new file mode 100644
+index 0000000..616cd60
+--- /dev/null
++++ b/Accounts/AccountsQt6ConfigVersion.cmake.in
+@@ -0,0 +1,10 @@
++set(PACKAGE_VERSION $${PROJECT_VERSION})
++
++if(\"${PACKAGE_VERSION}\" VERSION_LESS \"${PACKAGE_FIND_VERSION}\" )
++   set(PACKAGE_VERSION_COMPATIBLE FALSE)
++else(\"${PACKAGE_VERSION}\" VERSION_LESS \"${PACKAGE_FIND_VERSION}\" )
++   set(PACKAGE_VERSION_COMPATIBLE TRUE)
++   if( \"${PACKAGE_FIND_VERSION}\" STREQUAL \"${PACKAGE_VERSION}\")
++      set(PACKAGE_VERSION_EXACT TRUE)
++   endif( \"${PACKAGE_FIND_VERSION}\" STREQUAL \"${PACKAGE_VERSION}\")
++endif(\"${PACKAGE_VERSION}\" VERSION_LESS \"${PACKAGE_FIND_VERSION}\" )
+diff --git a/Accounts/accounts-qt6.pc.in b/Accounts/accounts-qt6.pc.in
+new file mode 100644
+index 0000000..c625b2e
+--- /dev/null
++++ b/Accounts/accounts-qt6.pc.in
+@@ -0,0 +1,15 @@
++prefix=$$INSTALL_PREFIX
++exec_prefix=${prefix}
++libdir=$$INSTALL_LIBDIR
++includedir=${prefix}/include/accounts-qt6
++servicefilesdir=${prefix}/share/accounts/services
++servicetypefilesdir=${prefix}/share/accounts/service-types
++providerfilesdir=${prefix}/share/accounts/providers
++
++Name: libaccounts-qt6
++Description: Accounts Library
++Version: $$PROJECT_VERSION
++Libs: -L${libdir} -laccounts-qt6
++Requires: Qt6Core Qt6Xml
++Cflags:  -I${includedir}
++
+diff --git a/tests/tst_libaccounts.cpp b/tests/tst_libaccounts.cpp
+index 471e3d5..0ec60cc 100644
+--- a/tests/tst_libaccounts.cpp
++++ b/tests/tst_libaccounts.cpp
+@@ -289,8 +289,9 @@ void AccountsTest::testProvider()
+     QCOMPARE(provider.pluginName(), QString("generic-oauth"));
+     QCOMPARE(provider.domainsRegExp(), QString(".*example.net"));
+     QCOMPARE(provider.isSingleAccount(), true);
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     QCOMPARE(provider.tags().contains("user-group:mygroup"), true);
+-
++#endif
+     QDomDocument dom = provider.domDocument();
+     QDomElement root = dom.documentElement();
+     QCOMPARE(root.tagName(), QString("provider"));
+@@ -328,9 +329,15 @@ void AccountsTest::testService()
+     QCOMPARE(service.trCatalog(), QString("accounts"));
+     QStringList tags;
+     tags << "email" << "e-mail";
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QCOMPARE(service.tags(), QSet<QString>(tags.begin(), tags.end()));
++    // Called twice, because the second time it returns a cached result
++    QCOMPARE(service.tags(), QSet<QString>(tags.begin(), tags.end()));
++#else
+     QCOMPARE(service.tags(), tags.toSet());
+     // Called twice, because the second time it returns a cached result
+     QCOMPARE(service.tags(), tags.toSet());
++#endif
+     QVERIFY(service.hasTag("email"));
+     QVERIFY(!service.hasTag("chat"));
+ 
+@@ -690,8 +697,11 @@ void AccountsTest::testAccountService()
+     QStringList expectedChanges;
+     expectedChanges << "parameters/server";
+     expectedChanges << "enabled";
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QCOMPARE(m_accountServiceChangedFields, expectedChanges);
++#else
+     QCOMPARE(m_accountServiceChangedFields.toSet(), expectedChanges.toSet());
+-
++#endif
+     QCOMPARE(accountService->value("server").toString(),
+              UTF8("www.example.com"));
+     QCOMPARE(accountService->enabled(), true);
+@@ -730,14 +740,23 @@ void AccountsTest::testAccountService()
+     QStringList expectedList;
+     expectedList << "server" << "fallback-conference-server" <<
+         "port" << "old-ssl";
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QCOMPARE(accountService->childKeys(), expectedList);
++    QCOMPARE(QSet<QString>(accountService->childGroups().begin(), accountService->childGroups().end()), QSet<QString>());
++#else
+     QCOMPARE(accountService->childKeys().toSet(), expectedList.toSet());
+     QCOMPARE(accountService->childGroups().toSet(), QSet<QString>());
++#endif
+     QCOMPARE(accountService->contains("port"), true);
+     accountService->endGroup();
+ 
+     expectedList.clear();
+     expectedList << "parameters";
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QCOMPARE(accountService->childGroups(), expectedList);
++#else
+     QCOMPARE(accountService->childGroups().toSet(), expectedList.toSet());
++#endif
+ 
+     /* Remove one key */
+     accountService->remove("parameters/port");
