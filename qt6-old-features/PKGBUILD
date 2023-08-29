@@ -3,48 +3,21 @@
 pkgbase=qt6-old-features
 pkgdesc="Old qt features"
 pkgname=('qt6-old-features')
-pkgver=0.1
-pkgrel=7
+pkgver=0.2
+pkgrel=0
 url="https://github.com/nemomobile-ux"
 arch=('any')
 license=('GPL')
 depends=('perl')
-source=(
-    qt_build_config.prf
-    qt_build_paths.prf
-    qt_common.prf
-    qt_configure.prf
-    qt_installs.prf
-    qt_module_headers.prf
-    qt_module.prf
-    qt_module_pris.prf
-    qt_parts.prf
-    qt_prefix_build_check.prf
-    qt_targets.prf
-    qt_plugin.prf
-    syncqt.pl
-    findclasslist.pl
-)
-sha256sums=(SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    SKIP
-    )
+source=("https://github.com/nemomobile-ux/qt6-old-features/archive/refs/heads/master.zip")
+sha256sums=(SKIP)
 package() {
+    cd $pkgname-master
     mkdir -p $pkgdir/usr/lib/qt6/mkspecs/features/
     mkdir -p $pkgdir/usr/lib/qt6/libexec
     mkdir -p $pkgdir/usr/lib/qt6/mkspecs/features/data/unix/
-    cp $srcdir/*.prf $pkgdir/usr/lib/qt6/mkspecs/features/
-    cp $srcdir/syncqt.pl $pkgdir/usr/lib/qt6/libexec
-    cp findclasslist.pl $pkgdir/usr/lib/qt6/mkspecs/features/data/unix/
+
+    cp features/*.prf $pkgdir/usr/lib/qt6/mkspecs/features/
+    cp scripts/syncqt.pl $pkgdir/usr/lib/qt6/libexec
+    cp scripts/findclasslist.pl $pkgdir/usr/lib/qt6/mkspecs/features/data/unix/
 }
