@@ -1,7 +1,13 @@
-From 030d78e00bfb37901bfd7b2c859b4f6b9f70e0c9 Mon Sep 17 00:00:00 2001
+From 93cdd0428114ced78cc50c809e1d5b99d4cb7e57 Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Mon, 28 Aug 2023 15:16:19 +0000
-Subject: [PATCH] Fix build with Qt6
+Subject: [PATCH] [mlocale] Fix build with Qt6 JB#52793
+
+qt5 in .pro replaced by qt$${QT_MAJOR_VERSION}
+QTextCodec is deprecated in Qt6
+QIODevice::WriteOnly was moved to QIODeviceBase::WriteOnly
+QRegExp was replaced by QRegularExpression
+QString::SkipEmptyParts was moved to Qt::SkipEmptyParts
 
 Co-authored-by: Chupligin Sergey <neochapay@gmail.com>
 ---
@@ -12,7 +18,7 @@ Co-authored-by: Chupligin Sergey <neochapay@gmail.com>
  .../pt_mcharsetdetector/pt_mcharsetdetector.h |   2 +
  benchmarks/pt_mlocale/pt_mlocale.cpp          |   5 +
  benchmarks/pt_mlocale/pt_mlocale.h            |   2 +
- configure                                     |   9 +-
+ configure                                     |  35 +++---
  mkspecs/features/mlocale_common.prf           |   2 +-
  mkspecs/features/mlocale_defines.prf.in       |   6 +-
  src/data/mlocale6.pc.in                       |  11 ++
@@ -39,7 +45,7 @@ Co-authored-by: Chupligin Sergey <neochapay@gmail.com>
  tests/ut_mcalendar/ut_mcalendar.cpp           |  54 +++++++++
  .../ut_mlocationdatabase.cpp                  |  12 ++
  tests/ut_translations/ut_translations.cpp     |   5 +-
- 34 files changed, 321 insertions(+), 68 deletions(-)
+ 34 files changed, 335 insertions(+), 80 deletions(-)
  create mode 100644 src/data/mlocale6.pc.in
 
 diff --git a/.gitignore b/.gitignore
@@ -160,7 +166,7 @@ index 7da413af..aac6d6cf 100644
  #include <QObject>
  #include <MLocale>
 diff --git a/configure b/configure
-index 4ebf56c6..7d5d7ad3 100755
+index 4ebf56c6..4a2a1b30 100755
 --- a/configure
 +++ b/configure
 @@ -501,7 +501,7 @@ fi
@@ -172,20 +178,57 @@ index 4ebf56c6..7d5d7ad3 100755
  
  # make sure the directory exists
  if [ ! -d $MEEGOTOUCH_PC_DIR ]; then
-@@ -540,7 +540,12 @@ if [ -z "$QTDIR" ]; then
+@@ -530,23 +530,29 @@ done
+ #-------------------------------------------------------------------------------
+ # build makefiles based on the configuration
+ #-------------------------------------------------------------------------------
+-
+-if [ -z "$QTDIR" ]; then
+-    which qmake > /dev/null
+-    if [ $? -eq 0 ]; then
+-        QMAKE_BIN=`which qmake`
+-    else
+-        which qmake-qt5 > /dev/null
++if [ -z "$QMAKE_BIN" ]; then
++    if [ -z "$QTDIR" ]; then
++        which qmake > /dev/null
          if [ $? -eq 0 ]; then
-             QMAKE_BIN=`which qmake-qt5`
+-            QMAKE_BIN=`which qmake-qt5`
++            QMAKE_BIN=`which qmake`
          else
 -            echo "qmake was not found in your path\n"
-+            which qmake6 > /dev/null
++            which qmake-qt5 > /dev/null
 +            if [ $? -eq 0 ]; then
-+                QMAKE_BIN=`which qmake6`
++                QMAKE_BIN=`which qmake-qt5`
 +            else
-+                echo "qmake was not found in your path\n"
++                which qmake6 > /dev/null
++                if [ $? -eq 0 ]; then
++                    QMAKE_BIN=`which qmake6`
++                else
++                    echo "qmake was not found in your path\n"
++                fi
 +            fi
          fi
++    elif [ -f "$QTDIR/bin/qmake" ]; then
++        QMAKE_BIN="$QTDIR/bin/qmake"
++    else
++        echo "QTDIR variable was set but could not find $QTDIR/bin/qmake\n"
      fi
- elif [ -f "$QTDIR/bin/qmake" ]; then
+-elif [ -f "$QTDIR/bin/qmake" ]; then
+-    QMAKE_BIN="$QTDIR/bin/qmake"
+-else
+-    echo "QTDIR variable was set but could not find $QTDIR/bin/qmake\n"
+ fi
+ 
+ if [ -z "$QMAKE_BIN" ]; then
+@@ -605,6 +611,7 @@ $QMAKE_BIN "$relpath/projects.pro" $QMAKE_CONFIG $QMAKE_SWITCHES
+ 
+ echo ""
+ echo ""
++echo "Qt version .......... $QT_VERSION"
+ echo "Optional build dependencies found:"
+ 
+ echo "ICU ............................. $HAVE_ICU"
 diff --git a/mkspecs/features/mlocale_common.prf b/mkspecs/features/mlocale_common.prf
 index 93c5ae34..a793cb14 100644
 --- a/mkspecs/features/mlocale_common.prf

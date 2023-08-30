@@ -16,21 +16,21 @@ makedepends=('qt6-tools' 'clang')
 source=(
   "${url}/archive/refs/tags/$pkgver.tar.gz"
   "disable-werror.patch"
-  '0002-Fix-build-with-Qt6.patch'
-  )
+  '0002-mlocale-Fix-build-with-Qt6-JB-52793.patch'
+)
 sha256sums=('1b0db667a124be67251af0c5a3d920798a77b83ff11b404852f7fcb12d0f17af'
     '74a0ea1a421144c1fe9d5c3624d8e4eb4977a6286137b724a0b24999b1b0643b'
-    '810e17db44f5cc5dc5f140ede307b0439987bbb7e2e3affc37e1256c261d4a47'
-    )
+    'a3b0494ff99a424ba583bfa660470c06437d472a2cba27ea0cb25f705f081f91'
+)
 
 build() {
   mkdir -p $pkgname-$pkgver/build
   cd $pkgname-$pkgver
   patch -p1 --input="${srcdir}/disable-werror.patch"
-  patch -p1 --input="${srcdir}/0002-Fix-build-with-Qt6.patch"
+  patch -p1 --input="${srcdir}/0002-mlocale-Fix-build-with-Qt6-JB-52793.patch"
 
   cd build
-  ../configure --prefix=/usr \
+  QMAKE_BIN=qmake6 ../configure --prefix=/usr \
     --disable-static \
     -icu
   make
