@@ -9,7 +9,7 @@ url="https://github.com/sailfishos/messagingframework"
 license=('BSD-3-Clause')
 depends=('nemo-keepalive'
     'buteo-syncfw'
-    'libaccounts-qt'
+    'libaccounts-qt6'
     'signond')
 makedepends=('git')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"

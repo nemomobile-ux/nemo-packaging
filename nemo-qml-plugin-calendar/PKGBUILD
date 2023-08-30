@@ -9,7 +9,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/$pkgname"
 license=('BSD')
 depends=('qt6-base'
-    'libaccounts-qt'
+    'libaccounts-qt6'
     'mkcal'
     'kcalendarcore')
 

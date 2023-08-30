@@ -15,7 +15,7 @@ depends=('libsocialcache'
 	'qt5-pim'
 	'mkcal'
 	'kcalendarcore'
-	'libaccounts-qt'
+	'libaccounts-qt6'
 	'nemo-qml-plugin-notifications')
 
 makedepends=('qt6-tools')

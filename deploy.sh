@@ -77,6 +77,7 @@ eval "$BUILD usb-moded"
 eval "$BUILD mce"
 eval "$BUILD dsme"
 eval "$BUILD libmce-qt"
+eval "$BUILD libaccounts-qt6"
 eval "$BUILD buteo-syncfw"
 eval "$BUILD sensorfw"
 if [ "$BUILDARCH" != "aarch64" ]; then
