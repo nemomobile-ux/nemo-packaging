@@ -16,12 +16,20 @@ depends=('libphonenumber-nemo'
 	'mce-headers'
 	'qtcontacts-sqlite'
 	'qt6-tools'
+	'libaccounts-qt6'
 	'buteo-sync-plugin-carddav'
 	'icu')
 
 makedepends=('qt6-tools')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('b9f1d35f834e4860ee7eeae9b70a5d5fae78f21c5eb58b686972913f7836aedc')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    "0001-fix_build_on_qt6.patch")
+sha256sums=('b9f1d35f834e4860ee7eeae9b70a5d5fae78f21c5eb58b686972913f7836aedc'
+    '230b4e3a3fc293e98fb207c6871560bd9fec424c93eb450d24c8b6bfbf88f500')
+
+prepare() {
+    cd "$srcdir/${pkgname}-${pkgver}"
+    patch -p1 --input="${srcdir}/0001-fix_build_on_qt6.patch"
+}
 
 build() {
   cd $pkgname-$pkgver
