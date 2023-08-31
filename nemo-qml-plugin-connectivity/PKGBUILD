@@ -2,22 +2,15 @@
 # Maintainer: Chupligin Sergey (neochapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-connectivity
-pkgver=0.2.12
-pkgrel=2
+pkgver=0.2.13
+pkgrel=1
 pkgdesc="Connectivity plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-connectivity"
 license=('BSD')
 depends=('libconnman-qt' 'libqofonoext')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-allow_build_with_qt6.patch")
-sha256sums=('b77e03c3ed437e141c121f7d16cd440a4e3d1f58d72918dc0999136c5a9eeb4f'
-    'dfbbb76476d4c027e0a00254ad55610792d4f1528551444f52c6c4106ba60f13')
-
-prepare() {
-    cd $pkgname-$pkgver
-    patch -p1 --input="${srcdir}/0001-allow_build_with_qt6.patch"
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('836af189ee840e6caf08296887be66fe77a4ccc041a0636c7d5a5c59bff5fe84')
 
 build() {
     cd $pkgname-$pkgver
