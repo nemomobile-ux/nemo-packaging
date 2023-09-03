@@ -10,7 +10,7 @@ license=('BSD-3-Clause')
 depends=('nemo-keepalive'
     'buteo-syncfw'
     'libaccounts-qt6'
-    'signond')
+    'signond6')
 makedepends=('git')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0090-fix_missing_librares.patch"

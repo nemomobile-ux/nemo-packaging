@@ -11,7 +11,7 @@ pkgdesc="Synchronization backend"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/buteo-syncfw"
 license=('LGPLv2')
-depends=('libiphb' 'nemo-keepalive' 'libmce-qt' 'signond' 'libaccounts-qt6')
+depends=('libiphb' 'nemo-keepalive' 'libmce-qt' 'signond6' 'libaccounts-qt6')
 makedepends=('qt6-tools' 'doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	"msyncd.service")
