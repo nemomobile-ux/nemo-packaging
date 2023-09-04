@@ -14,13 +14,17 @@ license=('BSD-3-Clause')
 depends=('libphonenumber-nemo' 'libmlocale' 'buteo-syncfw' 'qtcontacts-sqlite')
 makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-remove-obsolete-QContact-IgnoreAccessConstraints.patch")
+    "0001-remove-obsolete-QContact-IgnoreAccessConstraints.patch"
+    '0002-Allow-build-with-Qt6.patch')
 sha256sums=('6107f5e22114a6e26be76a70be87e412b91c99b93603ad58b129a3ddbf51a969'
-    '6db95ee545de7413aba5532bea875922a5f0d439ce24d55d46518101139def67')
+    '6db95ee545de7413aba5532bea875922a5f0d439ce24d55d46518101139def67'
+    '7914498f4ef5cd732148f04f30ed8e4a6187f56c8b7c51ee0ab08a36bc46a8ca'
+)
 
 prepare() {
     cd $pkgname-$pkgver
     patch -p1 --input="${srcdir}/0001-remove-obsolete-QContact-IgnoreAccessConstraints.patch"
+    patch -p1 --input="${srcdir}/0002-Allow-build-with-Qt6.patch"
 }
 
 build() {
