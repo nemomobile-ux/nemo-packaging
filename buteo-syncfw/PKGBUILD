@@ -24,7 +24,7 @@ sha256sums=('bf3ecad907d58f672b709fd9e75ddaf9f430bd8853aab9647685d1a7085a48bf'
 
 prepare() {
   cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-Allow-build-with-Qt6.patch"
+  patch -p1 --input="${srcdir}/0001-Allow-build-with-qt6.patch"
 }
 
 build() {
