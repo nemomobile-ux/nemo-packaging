@@ -1,0 +1,48 @@
+From 4281b60c81dd01bfecf24f8d7ef61e17e5e248ba Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 8 Sep 2023 11:32:51 +0000
+Subject: [PATCH] Allow build with qt6
+
+---
+ droid-vibrator.pro | 6 +++---
+ qfeedback.h        | 4 ----
+ 2 files changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/droid-vibrator.pro b/droid-vibrator.pro
+index c7764ed..c48d8e9 100644
+--- a/droid-vibrator.pro
++++ b/droid-vibrator.pro
+@@ -27,7 +27,7 @@ plugindescription.files = droid-vibrator.json
+ plugindescription.path = $$[QT_INSTALL_PLUGINS]/feedback/
+ INSTALLS += plugindescription
+ 
+-# also enable profile detection. libprofile-qt5 is a bit broken, work around it here.
++# also enable profile detection. libprofile-qt$${QT_MAJOR_VERSION} is a bit broken, work around it here.
+ QT += dbus
+-QMAKE_CXXFLAGS += -I/usr/include/profile-qt5
+-LIBS += -lprofile-qt5
++QMAKE_CXXFLAGS += -I/usr/include/profile-qt$${QT_MAJOR_VERSION}
++LIBS += -lprofile-qt$${QT_MAJOR_VERSION}
+diff --git a/qfeedback.h b/qfeedback.h
+index 81c0609..122655f 100644
+--- a/qfeedback.h
++++ b/qfeedback.h
+@@ -53,8 +53,6 @@
+ 
+ Q_DECLARE_LOGGING_CATEGORY(qtFeedbackDroidVibrator)
+ 
+-QT_BEGIN_HEADER
+-
+ class QFeedbackDroidVibrator : public QObject, public QFeedbackHapticsInterface, public QFeedbackThemeInterface {
+     Q_OBJECT
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtFeedbackPlugin" FILE "droid-vibrator.json")
+@@ -100,6 +98,4 @@ private:
+     VibratorImplementation m_vibrator;
+ };
+ 
+-QT_END_HEADER
+-
+ #endif // QFEEDBACK_DROID_VIBRATOR_H
+-- 
+2.42.0
+

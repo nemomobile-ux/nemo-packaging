@@ -14,8 +14,18 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/mer-hybris/qt5-feedback-haptics-droid-vibrator"
 license=('GPL')
 depends=('qt6-base' 'qt6-feedback' 'libprofile-qt')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('4b83fd2cd3125d83ad7fa3826360ecf2bd51d69c762ec6486726572da4c07c97')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-Allow-build-with-qt6.patch'
+)
+sha256sums=('4b83fd2cd3125d83ad7fa3826360ecf2bd51d69c762ec6486726572da4c07c97'
+    'd2e911556d2df26a78c36ba4b4b1152d8543cd2b7c4cc10ca65e783bbf4a6b5e'
+)
+
+
+prepare() {
+    cd qt5-feedback-haptics-droid-vibrator-$pkgver
+    patch -p1 --input="${srcdir}/0001-Allow-build-with-qt6.patch"
+}
 
 
 build() {
