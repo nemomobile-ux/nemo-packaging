@@ -1,0 +1,895 @@
+From cdc5e916ffb473c7fdc8f1c04013d3a90add63f4 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sat, 9 Sep 2023 09:32:28 +0000
+Subject: [PATCH 2/2] Allow build with Qt6
+
+---
+ .gitignore                                    | 24 +++++++++++
+ src/lib/abstractsocialpostcachedatabase.cpp   |  4 +-
+ src/lib/dropboximagesdatabase.cpp             | 30 ++++++-------
+ src/lib/facebookimagesdatabase.cpp            | 30 ++++++-------
+ src/lib/facebooknotificationsdatabase.cpp     | 10 ++---
+ src/lib/onedriveimagesdatabase.cpp            | 30 ++++++-------
+ src/lib/socialimagesdatabase.cpp              | 24 +++++------
+ src/lib/socialnetworksyncdatabase.cpp         |  4 +-
+ src/lib/twitternotificationsdatabase.cpp      |  3 +-
+ src/lib/vknotificationsdatabase.cpp           |  4 +-
+ src/lib/vkpostsdatabase.cpp                   | 42 +++++++++----------
+ src/qml/qml.pro                               | 10 +++--
+ src/qml/synchelper.cpp                        |  9 +++-
+ src/qml/synchelper.h                          |  5 +++
+ .../tst_abstractsocialcachedatabase/main.cpp  |  2 +-
+ tests/tst_dropboximage/main.cpp               |  4 +-
+ tests/tst_facebookcontact/main.cpp            |  2 +-
+ tests/tst_facebookimage/main.cpp              |  4 +-
+ tests/tst_facebooknotification/main.cpp       |  4 +-
+ tests/tst_facebookpost/main.cpp               |  2 +-
+ tests/tst_onedriveimage/main.cpp              |  4 +-
+ tests/tst_socialimage/main.cpp                | 16 +++----
+ tests/tst_socialnetworksync/main.cpp          |  2 +-
+ tests/tst_twitterpost/main.cpp                |  2 +-
+ 24 files changed, 155 insertions(+), 116 deletions(-)
+ create mode 100644 .gitignore
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..d55d3b3
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,24 @@
++.qmake.stash
++*.o
++moc_*
++*.moc
++Makefile
++*.prl
++*.so
++*.so.*
++*.qm
++
++
++# project specific
++src/qml/socialcache.ts
++src/lib/pkgconfig/
++tests/tst_abstractsocialcachedatabase/tst_abstractsocialcachedatabase
++tests/tst_dropboximage/tst_dropboximage
++tests/tst_facebookcontact/tst_facebookcontact
++tests/tst_facebookimage/tst_facebookimage
++tests/tst_facebooknotification/tst_facebooknotification
++tests/tst_facebookpost/tst_facebookpost
++tests/tst_onedriveimage/tst_onedriveimage
++tests/tst_socialimage/tst_socialimage
++tests/tst_socialnetworksync/tst_socialnetworksync
++tests/tst_twitterpost/tst_twitterpost
+diff --git a/src/lib/abstractsocialpostcachedatabase.cpp b/src/lib/abstractsocialpostcachedatabase.cpp
+index 338b91a..4ac9508 100644
+--- a/src/lib/abstractsocialpostcachedatabase.cpp
++++ b/src/lib/abstractsocialpostcachedatabase.cpp
+@@ -405,7 +405,7 @@ bool AbstractSocialPostCacheDatabase::read()
+         QString body = postQuery.value(2).toString();
+         int timestamp = postQuery.value(3).toInt();
+         SocialPost::Ptr post = SocialPost::create(identifier, name, body,
+-                                                  QDateTime::fromTime_t(timestamp));
++                                                  QDateTime::fromSecsSinceEpoch(timestamp));
+ 
+         imageQuery.bindValue(":postId", identifier);
+ 
+@@ -579,7 +579,7 @@ bool AbstractSocialPostCacheDatabase::write()
+         posts.postIds.append(postId);
+         posts.names.append(post->name());
+         posts.bodies.append(post->body());
+-        posts.timestamps.append(post->timestamp().toTime_t());
++        posts.timestamps.append(post->timestamp().toSecsSinceEpoch());
+ 
+         const QMap<int, SocialPostImage::ConstPtr> postImages = post->allImages();
+         typedef QMap<int, SocialPostImage::ConstPtr>::const_iterator iterator;
+diff --git a/src/lib/dropboximagesdatabase.cpp b/src/lib/dropboximagesdatabase.cpp
+index 73a3fe7..2d0d5e6 100644
+--- a/src/lib/dropboximagesdatabase.cpp
++++ b/src/lib/dropboximagesdatabase.cpp
+@@ -468,8 +468,8 @@ QList<DropboxImage::ConstPtr> DropboxImagesDatabasePrivate::queryImages(const QS
+     while (query.next()) {
+         data.append(DropboxImage::create(query.value(0).toString(), query.value(1).toString(),
+                                           query.value(2).toString(),
+-                                          QDateTime::fromTime_t(query.value(3).toUInt()),
+-                                          QDateTime::fromTime_t(query.value(4).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),
+                                           query.value(5).toString(),
+                                           query.value(6).toInt(), query.value(7).toInt(),
+                                           query.value(8).toString(), query.value(9).toString(),
+@@ -551,7 +551,7 @@ DropboxUser::ConstPtr DropboxImagesDatabase::user(const QString &userId) const
+ 
+     DropboxUser::ConstPtr user = DropboxUser::create(
+                                 query.value(0).toString(),
+-                                QDateTime::fromTime_t(query.value(1).toUInt()),
++                                QDateTime::fromSecsSinceEpoch(query.value(1).toUInt()),
+                                 query.value(2).toString());
+ 
+     query.finish();
+@@ -597,7 +597,7 @@ QList<DropboxUser::ConstPtr> DropboxImagesDatabasePrivate::queryUsers() const
+ 
+     while (query.next()) {
+         data.append(DropboxUser::create(query.value(0).toString(),
+-                                         QDateTime::fromTime_t(query.value(1).toUInt()),
++                                         QDateTime::fromSecsSinceEpoch(query.value(1).toUInt()),
+                                          query.value(2).toString(), query.value(3).toInt()));
+     }
+     return data;
+@@ -674,8 +674,8 @@ DropboxAlbum::ConstPtr DropboxImagesDatabase::album(const QString &albumId) cons
+     }
+ 
+     DropboxAlbum::ConstPtr album = DropboxAlbum::create(query.value(0).toString(),  query.value(1).toString(),
+-                                 QDateTime::fromTime_t(query.value(2).toUInt()),
+-                                 QDateTime::fromTime_t(query.value(3).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(2).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
+                                  query.value(4).toString(), query.value(5).toInt(),
+                                  query.value(6).toString());
+ 
+@@ -738,8 +738,8 @@ QList<DropboxAlbum::ConstPtr> DropboxImagesDatabasePrivate::queryAlbums(const QS
+ 
+     while (query.next()) {
+         data.append(DropboxAlbum::create(query.value(0).toString(), query.value(1).toString(),
+-                                          QDateTime::fromTime_t(query.value(2).toUInt()),
+-                                          QDateTime::fromTime_t(query.value(3).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(2).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
+                                           query.value(4).toString(), query.value(5).toInt(),
+                                           query.value(6).toString()));
+     }
+@@ -817,8 +817,8 @@ DropboxImage::ConstPtr DropboxImagesDatabase::image(const QString &imageId) cons
+ 
+     return DropboxImage::create(query.value(0).toString(),  query.value(1).toString(),
+                                  query.value(2).toString(),
+-                                 QDateTime::fromTime_t(query.value(3).toUInt()),
+-                                 QDateTime::fromTime_t(query.value(4).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),
+                                  query.value(5).toString(),
+                                  query.value(6).toInt(), query.value(7).toInt(),
+                                  query.value(8).toString(), query.value(9).toString(),
+@@ -1169,7 +1169,7 @@ bool DropboxImagesDatabase::write()
+ 
+         Q_FOREACH (const DropboxUser::ConstPtr &user, insertUsers) {
+             userIds.append(user->userId());
+-            updatedTimes.append(user->updatedTime().toTime_t());
++            updatedTimes.append(user->updatedTime().toSecsSinceEpoch());
+             usernames.append(user->userName());
+         }
+ 
+@@ -1194,8 +1194,8 @@ bool DropboxImagesDatabase::write()
+         Q_FOREACH (const DropboxAlbum::ConstPtr &album, insertAlbums) {
+             albumIds.append(album->albumId());
+             userIds.append(album->userId());
+-            createdTimes.append(album->createdTime().toTime_t());
+-            updatedTimes.append(album->updatedTime().toTime_t());
++            createdTimes.append(album->createdTime().toSecsSinceEpoch());
++            updatedTimes.append(album->updatedTime().toSecsSinceEpoch());
+             albumNames.append(album->albumName());
+             imageCounts.append(album->imageCount());
+             hashes.append(album->hash());
+@@ -1229,8 +1229,8 @@ bool DropboxImagesDatabase::write()
+             imageIds.append(image->imageId());
+             albumIds.append(image->albumId());
+             userIds.append(image->userId());
+-            createdTimes.append(image->createdTime().toTime_t());
+-            updatedTimes.append(image->updatedTime().toTime_t());
++            createdTimes.append(image->createdTime().toSecsSinceEpoch());
++            updatedTimes.append(image->updatedTime().toSecsSinceEpoch());
+             imageNames.append(image->imageName());
+             widths.append(image->width());
+             heights.append(image->height());
+diff --git a/src/lib/facebookimagesdatabase.cpp b/src/lib/facebookimagesdatabase.cpp
+index 4bce1b8..196a591 100644
+--- a/src/lib/facebookimagesdatabase.cpp
++++ b/src/lib/facebookimagesdatabase.cpp
+@@ -450,8 +450,8 @@ QList<FacebookImage::ConstPtr> FacebookImagesDatabasePrivate::queryImages(const
+     while (query.next()) {
+         data.append(FacebookImage::create(query.value(0).toString(), query.value(1).toString(),
+                                           query.value(2).toString(),
+-                                          QDateTime::fromTime_t(query.value(3).toUInt()),
+-                                          QDateTime::fromTime_t(query.value(4).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),
+                                           query.value(5).toString(),
+                                           query.value(6).toInt(), query.value(7).toInt(),
+                                           query.value(8).toString(), query.value(9).toString(),
+@@ -533,7 +533,7 @@ FacebookUser::ConstPtr FacebookImagesDatabase::user(const QString &fbUserId) con
+ 
+     FacebookUser::ConstPtr user = FacebookUser::create(
+                                 query.value(0).toString(),
+-                                QDateTime::fromTime_t(query.value(1).toUInt()),
++                                QDateTime::fromSecsSinceEpoch(query.value(1).toUInt()),
+                                 query.value(2).toString());
+ 
+     query.finish();
+@@ -579,7 +579,7 @@ QList<FacebookUser::ConstPtr> FacebookImagesDatabasePrivate::queryUsers() const
+ 
+     while (query.next()) {
+         data.append(FacebookUser::create(query.value(0).toString(),
+-                                         QDateTime::fromTime_t(query.value(1).toUInt()),
++                                         QDateTime::fromSecsSinceEpoch(query.value(1).toUInt()),
+                                          query.value(2).toString(), query.value(3).toInt()));
+     }
+ 
+@@ -659,8 +659,8 @@ FacebookAlbum::ConstPtr FacebookImagesDatabase::album(const QString &fbAlbumId)
+     }
+ 
+     FacebookAlbum::ConstPtr album = FacebookAlbum::create(query.value(0).toString(),  query.value(1).toString(),
+-                                 QDateTime::fromTime_t(query.value(2).toUInt()),
+-                                 QDateTime::fromTime_t(query.value(3).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(2).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
+                                  query.value(4).toString(), query.value(5).toInt());
+ 
+     query.finish();
+@@ -723,8 +723,8 @@ QList<FacebookAlbum::ConstPtr> FacebookImagesDatabasePrivate::queryAlbums(const
+ 
+     while (query.next()) {
+         data.append(FacebookAlbum::create(query.value(0).toString(), query.value(1).toString(),
+-                                          QDateTime::fromTime_t(query.value(2).toUInt()),
+-                                          QDateTime::fromTime_t(query.value(3).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(2).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
+                                           query.value(4).toString(), query.value(5).toInt()));
+     }
+ 
+@@ -805,8 +805,8 @@ FacebookImage::ConstPtr FacebookImagesDatabase::image(const QString &fbImageId)
+ 
+     return FacebookImage::create(query.value(0).toString(),  query.value(1).toString(),
+                                  query.value(2).toString(),
+-                                 QDateTime::fromTime_t(query.value(3).toUInt()),
+-                                 QDateTime::fromTime_t(query.value(4).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),
+                                  query.value(5).toString(),
+                                  query.value(6).toInt(), query.value(7).toInt(),
+                                  query.value(8).toString(), query.value(9).toString(),
+@@ -1156,7 +1156,7 @@ bool FacebookImagesDatabase::write()
+ 
+         Q_FOREACH (const FacebookUser::ConstPtr &user, insertUsers) {
+             userIds.append(user->fbUserId());
+-            updatedTimes.append(user->updatedTime().toTime_t());
++            updatedTimes.append(user->updatedTime().toSecsSinceEpoch());
+             usernames.append(user->userName());
+         }
+ 
+@@ -1180,8 +1180,8 @@ bool FacebookImagesDatabase::write()
+         Q_FOREACH (const FacebookAlbum::ConstPtr &album, insertAlbums) {
+             albumIds.append(album->fbAlbumId());
+             userIds.append(album->fbUserId());
+-            createdTimes.append(album->createdTime().toTime_t());
+-            updatedTimes.append(album->updatedTime().toTime_t());
++            createdTimes.append(album->createdTime().toSecsSinceEpoch());
++            updatedTimes.append(album->updatedTime().toSecsSinceEpoch());
+             albumNames.append(album->albumName());
+             imageCounts.append(album->imageCount());
+         }
+@@ -1212,8 +1212,8 @@ bool FacebookImagesDatabase::write()
+             imageIds.append(image->fbImageId());
+             albumIds.append(image->fbAlbumId());
+             userIds.append(image->fbUserId());
+-            createdTimes.append(image->createdTime().toTime_t());
+-            updatedTimes.append(image->updatedTime().toTime_t());
++            createdTimes.append(image->createdTime().toSecsSinceEpoch());
++            updatedTimes.append(image->updatedTime().toSecsSinceEpoch());
+             imageNames.append(image->imageName());
+             widths.append(image->width());
+             heights.append(image->height());
+diff --git a/src/lib/facebooknotificationsdatabase.cpp b/src/lib/facebooknotificationsdatabase.cpp
+index 943b392..7e5fa8b 100644
+--- a/src/lib/facebooknotificationsdatabase.cpp
++++ b/src/lib/facebooknotificationsdatabase.cpp
+@@ -353,8 +353,8 @@ QList<FacebookNotification::ConstPtr> FacebookNotificationsDatabase::notificatio
+         data.append(FacebookNotification::create(query.value(0).toString(),                      // facebookId
+                                                  query.value(2).toString(),                      // from
+                                                  query.value(3).toString(),                      // to
+-                                                 QDateTime::fromTime_t(query.value(4).toInt()),  // createdTime
+-                                                 QDateTime::fromTime_t(query.value(5).toInt()),  // updatedTime
++                                                 QDateTime::fromSecsSinceEpoch(query.value(4).toInt()),  // createdTime
++                                                 QDateTime::fromSecsSinceEpoch(query.value(5).toInt()),  // updatedTime
+                                                  query.value(6).toString(),                      // title
+                                                  query.value(7).toString(),                      // link
+                                                  query.value(8).toString(),                      // application
+@@ -446,8 +446,8 @@ bool FacebookNotificationsDatabase::write()
+                 accountIds.append(notification->accountId());
+                 fromStrings.append(notification->from());
+                 toStrings.append(notification->to());
+-                createdTimes.append(notification->createdTime().toTime_t());
+-                updatedTimes.append(notification->updatedTime().toTime_t());
++                createdTimes.append(notification->createdTime().toSecsSinceEpoch());
++                updatedTimes.append(notification->updatedTime().toSecsSinceEpoch());
+                 titles.append(notification->title());
+                 links.append(notification->link());
+                 applications.append(notification->application());
+@@ -481,7 +481,7 @@ bool FacebookNotificationsDatabase::write()
+     if (d->purgeTimeLimit > 0) {
+         QVariantList limits;
+         // purge notifications older than expirationTime in days
+-        const quint32 limit = QDateTime::currentDateTime().toTime_t() - d->purgeTimeLimit * 24 * 60 * 60;
++        const quint32 limit = QDateTime::currentDateTime().toSecsSinceEpoch() - d->purgeTimeLimit * 24 * 60 * 60;
+         limits.append(limit);
+         query = prepare(QStringLiteral("DELETE FROM notifications WHERE updatedTime < :timeLimit"));
+         query.bindValue(QStringLiteral(":timeLimit"), limits);
+diff --git a/src/lib/onedriveimagesdatabase.cpp b/src/lib/onedriveimagesdatabase.cpp
+index 4077b2b..42fe2fa 100644
+--- a/src/lib/onedriveimagesdatabase.cpp
++++ b/src/lib/onedriveimagesdatabase.cpp
+@@ -467,8 +467,8 @@ QList<OneDriveImage::ConstPtr> OneDriveImagesDatabasePrivate::queryImages(const
+     while (query.next()) {
+         data.append(OneDriveImage::create(query.value(0).toString(), query.value(1).toString(),
+                                           query.value(2).toString(),
+-                                          QDateTime::fromTime_t(query.value(3).toUInt()),
+-                                          QDateTime::fromTime_t(query.value(4).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),
+                                           query.value(5).toString(),
+                                           query.value(6).toInt(), query.value(7).toInt(),
+                                           query.value(8).toString(), query.value(9).toString(),
+@@ -550,7 +550,7 @@ OneDriveUser::ConstPtr OneDriveImagesDatabase::user(const QString &userId) const
+ 
+     OneDriveUser::ConstPtr user = OneDriveUser::create(
+                                 query.value(0).toString(),
+-                                QDateTime::fromTime_t(query.value(1).toUInt()),
++                                QDateTime::fromSecsSinceEpoch(query.value(1).toUInt()),
+                                 query.value(2).toString(),
+                                 query.value(3).toInt());
+ 
+@@ -597,7 +597,7 @@ QList<OneDriveUser::ConstPtr> OneDriveImagesDatabasePrivate::queryUsers() const
+ 
+     while (query.next()) {
+         data.append(OneDriveUser::create(query.value(0).toString(),
+-                                         QDateTime::fromTime_t(query.value(1).toUInt()),
++                                         QDateTime::fromSecsSinceEpoch(query.value(1).toUInt()),
+                                          query.value(2).toString(), query.value(3).toInt(),
+                                          query.value(4).toInt()));
+     }
+@@ -678,8 +678,8 @@ OneDriveAlbum::ConstPtr OneDriveImagesDatabase::album(const QString &albumId) co
+     }
+ 
+     OneDriveAlbum::ConstPtr album = OneDriveAlbum::create(query.value(0).toString(),  query.value(1).toString(),
+-                                 QDateTime::fromTime_t(query.value(2).toUInt()),
+-                                 QDateTime::fromTime_t(query.value(3).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(2).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
+                                  query.value(4).toString(), query.value(5).toInt());
+ 
+     query.finish();
+@@ -742,8 +742,8 @@ QList<OneDriveAlbum::ConstPtr> OneDriveImagesDatabasePrivate::queryAlbums(const
+ 
+     while (query.next()) {
+         data.append(OneDriveAlbum::create(query.value(0).toString(), query.value(1).toString(),
+-                                          QDateTime::fromTime_t(query.value(2).toUInt()),
+-                                          QDateTime::fromTime_t(query.value(3).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(2).toUInt()),
++                                          QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
+                                           query.value(4).toString(), query.value(5).toInt()));
+     }
+ 
+@@ -824,8 +824,8 @@ OneDriveImage::ConstPtr OneDriveImagesDatabase::image(const QString &imageId) co
+ 
+     return OneDriveImage::create(query.value(0).toString(),  query.value(1).toString(),
+                                  query.value(2).toString(),
+-                                 QDateTime::fromTime_t(query.value(3).toUInt()),
+-                                 QDateTime::fromTime_t(query.value(4).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),
++                                 QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),
+                                  query.value(5).toString(),
+                                  query.value(6).toInt(), query.value(7).toInt(),
+                                  query.value(8).toString(), query.value(9).toString(),
+@@ -1179,7 +1179,7 @@ bool OneDriveImagesDatabase::write()
+ 
+         Q_FOREACH (const OneDriveUser::ConstPtr &user, insertUsers) {
+             userIds.append(user->userId());
+-            updatedTimes.append(user->updatedTime().toTime_t());
++            updatedTimes.append(user->updatedTime().toSecsSinceEpoch());
+             usernames.append(user->userName());
+             accountIds.append(user->accountId());
+         }
+@@ -1205,8 +1205,8 @@ bool OneDriveImagesDatabase::write()
+         Q_FOREACH (const OneDriveAlbum::ConstPtr &album, insertAlbums) {
+             albumIds.append(album->albumId());
+             userIds.append(album->userId());
+-            createdTimes.append(album->createdTime().toTime_t());
+-            updatedTimes.append(album->updatedTime().toTime_t());
++            createdTimes.append(album->createdTime().toSecsSinceEpoch());
++            updatedTimes.append(album->updatedTime().toSecsSinceEpoch());
+             albumNames.append(album->albumName());
+             imageCounts.append(album->imageCount());
+         }
+@@ -1238,8 +1238,8 @@ bool OneDriveImagesDatabase::write()
+             imageIds.append(image->imageId());
+             albumIds.append(image->albumId());
+             userIds.append(image->userId());
+-            createdTimes.append(image->createdTime().toTime_t());
+-            updatedTimes.append(image->updatedTime().toTime_t());
++            createdTimes.append(image->createdTime().toSecsSinceEpoch());
++            updatedTimes.append(image->updatedTime().toSecsSinceEpoch());
+             imageNames.append(image->imageName());
+             widths.append(image->width());
+             heights.append(image->height());
+diff --git a/src/lib/socialimagesdatabase.cpp b/src/lib/socialimagesdatabase.cpp
+index 06883d8..d3df253 100644
+--- a/src/lib/socialimagesdatabase.cpp
++++ b/src/lib/socialimagesdatabase.cpp
+@@ -207,7 +207,7 @@ QList<SocialImage::ConstPtr> SocialImagesDatabasePrivate::queryImages(int accoun
+     query.bindValue(":accountId", accountId);
+ 
+     if (olderThan.isValid()) {
+-        query.bindValue(":createdTime", olderThan.toTime_t());
++        query.bindValue(":createdTime", olderThan.toSecsSinceEpoch());
+     }
+ 
+     if (!query.exec()) {
+@@ -219,8 +219,8 @@ QList<SocialImage::ConstPtr> SocialImagesDatabasePrivate::queryImages(int accoun
+         data.append(SocialImage::create(query.value(0).toInt(),                             // accountId
+                                         query.value(1).toString(),                          // imageUrl
+                                         query.value(2).toString(),                          // imageFile
+-                                        QDateTime::fromTime_t(query.value(3).toUInt()),     // createdTime
+-                                        QDateTime::fromTime_t(query.value(4).toUInt()),     // expires
++                                        QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),     // createdTime
++                                        QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),     // expires
+                                         query.value(5).toString()));                        // imageId
+     }
+ 
+@@ -233,7 +233,7 @@ QList<SocialImage::ConstPtr> SocialImagesDatabasePrivate::queryExpired(int accou
+ 
+     QList<SocialImage::ConstPtr> data;
+ 
+-    int currentTime = QDateTime::currentDateTime().toTime_t();
++    int currentTime = QDateTime::currentDateTime().toSecsSinceEpoch();
+ 
+     QString queryString = QLatin1String("SELECT accountId, "
+                                         "imageUrl, imageFile, createdTime, expires, imageId "
+@@ -253,8 +253,8 @@ QList<SocialImage::ConstPtr> SocialImagesDatabasePrivate::queryExpired(int accou
+         data.append(SocialImage::create(query.value(0).toInt(),                             // accountId
+                                         query.value(1).toString(),                          // imageUrl
+                                         query.value(2).toString(),                          // imageFile
+-                                        QDateTime::fromTime_t(query.value(3).toUInt()),     // createdTime
+-                                        QDateTime::fromTime_t(query.value(4).toUInt()),     // expires
++                                        QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),     // createdTime
++                                        QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),     // expires
+                                         query.value(5).toString()));                        // imageId
+     }
+ 
+@@ -312,8 +312,8 @@ SocialImage::ConstPtr SocialImagesDatabase::image(const QString &imageUrl) const
+     return SocialImage::create(query.value(0).toInt(),                           // accountId
+                                query.value(1).toString(),                        // imageUrl
+                                query.value(2).toString(),                        // imageFile
+-                               QDateTime::fromTime_t(query.value(3).toUInt()),   // createdTime
+-                               QDateTime::fromTime_t(query.value(4).toUInt()),   // expires
++                               QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),   // createdTime
++                               QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),   // expires
+                                query.value(5).toString());                       // imageId
+ }
+ 
+@@ -347,8 +347,8 @@ SocialImage::ConstPtr SocialImagesDatabase::imageById(const QString &imageId) co
+     return SocialImage::create(query.value(0).toInt(),                           // accountId
+                                query.value(1).toString(),                        // imageUrl
+                                query.value(2).toString(),                        // imageFile
+-                               QDateTime::fromTime_t(query.value(3).toUInt()),   // createdTime
+-                               QDateTime::fromTime_t(query.value(4).toUInt()),   // expires
++                               QDateTime::fromSecsSinceEpoch(query.value(3).toUInt()),   // createdTime
++                               QDateTime::fromSecsSinceEpoch(query.value(4).toUInt()),   // expires
+                                query.value(5).toString());                       // imageId
+ }
+ 
+@@ -521,8 +521,8 @@ bool SocialImagesDatabase::write()
+             accountIds.append(image->accountId());
+             imageUrls.append(image->imageUrl());
+             imageFiles.append(image->imageFile());
+-            createdTimes.append(image->createdTime().toTime_t());
+-            expireTimes.append(image->expires().toTime_t());
++            createdTimes.append(image->createdTime().toSecsSinceEpoch());
++            expireTimes.append(image->expires().toSecsSinceEpoch());
+             imageIds.append(image->imageId());
+         }
+ 
+diff --git a/src/lib/socialnetworksyncdatabase.cpp b/src/lib/socialnetworksyncdatabase.cpp
+index 9e23c47..5d95dcc 100644
+--- a/src/lib/socialnetworksyncdatabase.cpp
++++ b/src/lib/socialnetworksyncdatabase.cpp
+@@ -119,7 +119,7 @@ QDateTime SocialNetworkSyncDatabase::lastSyncTimestamp(const QString &serviceNam
+         return QDateTime();
+     }
+ 
+-    QDateTime dateTime = QDateTime::fromTime_t(query.value(0).toUInt());
++    QDateTime dateTime = QDateTime::fromSecsSinceEpoch(query.value(0).toUInt());
+     return dateTime;
+ }
+ 
+@@ -169,7 +169,7 @@ bool SocialNetworkSyncDatabase::write()
+             serviceNames.append(data->serviceName);
+             dataTypes.append(data->dataType);
+             accountIds.append(data->accountId);
+-            timestamps.append(data->timestamp.toTime_t());
++            timestamps.append(data->timestamp.toSecsSinceEpoch());
+ 
+             delete data;
+         }
+diff --git a/src/lib/twitternotificationsdatabase.cpp b/src/lib/twitternotificationsdatabase.cpp
+index de70173..dc5bb5b 100644
+--- a/src/lib/twitternotificationsdatabase.cpp
++++ b/src/lib/twitternotificationsdatabase.cpp
+@@ -166,7 +166,8 @@ bool TwitterNotificationsDatabase::write()
+             QVariantList followerIdsForQuery;
+             QVariantList accountIdsForQuery;
+             QSet<QString> followerIdsSet = setFollowerIds[accountId];
+-            Q_FOREACH (const QString &fid, followerIdsSet.toList()) {
++            QList<QString> followerIdsList(followerIdsSet.begin(), followerIdsSet.end());
++            Q_FOREACH (const QString &fid, followerIdsList) {
+                 followerIdsForQuery.append(fid);
+                 accountIdsForQuery.append(accountId);
+             }
+diff --git a/src/lib/vknotificationsdatabase.cpp b/src/lib/vknotificationsdatabase.cpp
+index 01bbd34..aed12bf 100644
+--- a/src/lib/vknotificationsdatabase.cpp
++++ b/src/lib/vknotificationsdatabase.cpp
+@@ -265,7 +265,7 @@ QList<VKNotification::ConstPtr> VKNotificationsDatabase::notifications()
+                                            query.value(4).toString(),                       // fromName
+                                            query.value(5).toString(),                       // fromIcon
+                                            query.value(6).toString(),                       // toId
+-                                           QDateTime::fromTime_t(query.value(7).toInt()))); // createdTime
++                                           QDateTime::fromSecsSinceEpoch(query.value(7).toInt()))); // createdTime
+     }
+ 
+     return data;
+@@ -335,7 +335,7 @@ bool VKNotificationsDatabase::write()
+                 fromNames.append(notification->fromName());
+                 fromIcons.append(notification->fromIcon());
+                 toIds.append(notification->toId());
+-                createdTimes.append(notification->createdTime().toTime_t());
++                createdTimes.append(notification->createdTime().toSecsSinceEpoch());
+                 types.append(notification->type());
+             }
+         }
+diff --git a/src/lib/vkpostsdatabase.cpp b/src/lib/vkpostsdatabase.cpp
+index 81ce570..d1ac108 100644
+--- a/src/lib/vkpostsdatabase.cpp
++++ b/src/lib/vkpostsdatabase.cpp
+@@ -297,43 +297,43 @@ VKPostsDatabase::Post::Ptr VKPostsDatabase::Post::create(const SocialPost::Const
+ 
+     const QVariantMap &extra = socialPost->extra();
+ 
+-    vkPost->fromId = extra.value(POST_FROM_ID_KEY).toInt();
+-    vkPost->toId = extra.value(POST_TO_ID_KEY).toInt();
+-    vkPost->replyOwnerId = extra.value(POST_REPLY_OWNER_ID_KEY).toInt();
+-    vkPost->replyPostId = extra.value(POST_REPLY_POST_ID_KEY).toInt();
+-    vkPost->friendsOnly = extra.value(POST_FRIENDS_ONLY_KEY).toBool();
+-    vkPost->signerId = extra.value(POST_SIGNER_ID_KEY).toInt();
++    vkPost->fromId = QVariant(extra.value(POST_FROM_ID_KEY)).toInt();
++    vkPost->toId = QVariant(extra.value(POST_TO_ID_KEY)).toInt();
++    vkPost->replyOwnerId = QVariant(extra.value(POST_REPLY_OWNER_ID_KEY)).toInt();
++    vkPost->replyPostId = QVariant(extra.value(POST_REPLY_POST_ID_KEY)).toInt();
++    vkPost->friendsOnly = QVariant(extra.value(POST_FRIENDS_ONLY_KEY)).toBool();
++    vkPost->signerId = QVariant(extra.value(POST_SIGNER_ID_KEY)).toInt();
+     vkPost->link = extra.value(POST_LINK_KEY).toString();
+ 
+-    vkPost->comments.count = extra.value(COMMENT_COUNT_KEY).toInt();
+-    vkPost->comments.userCanComment = extra.value(COMMENT_ALLOW_KEY).toBool();
++    vkPost->comments.count = QVariant(extra.value(COMMENT_COUNT_KEY)).toInt();
++    vkPost->comments.userCanComment = QVariant(extra.value(COMMENT_ALLOW_KEY)).toBool();
+ 
+-    vkPost->likes.count = extra.value(LIKE_COUNT_KEY).toInt();
+-    vkPost->likes.userLikes = extra.value(LIKE_BY_USER).toBool();
+-    vkPost->likes.userCanLike = extra.value(LIKE_ALLOW_KEY).toBool();
+-    vkPost->likes.userCanPublish = extra.value(LIKE_ALLOW_PUBLISH_KEY).toBool();
++    vkPost->likes.count = QVariant(extra.value(LIKE_COUNT_KEY)).toInt();
++    vkPost->likes.userLikes = QVariant(extra.value(LIKE_BY_USER)).toBool();
++    vkPost->likes.userCanLike = QVariant(extra.value(LIKE_ALLOW_KEY)).toBool();
++    vkPost->likes.userCanPublish = QVariant(extra.value(LIKE_ALLOW_PUBLISH_KEY)).toBool();
+ 
+-    vkPost->reposts.count = extra.value(REPOST_COUNT_KEY).toInt();
+-    vkPost->reposts.userReposted = extra.value(REPOST_BY_USER_KEY).toBool();
++    vkPost->reposts.count = QVariant(extra.value(REPOST_COUNT_KEY)).toInt();
++    vkPost->reposts.userReposted = QVariant(extra.value(REPOST_BY_USER_KEY)).toBool();
+ 
+     vkPost->postSource.type = extra.value(POST_SOURCE_TYPE_KEY).toString();
+     vkPost->postSource.data = extra.value(POST_SOURCE_DATA_KEY).toString();
+ 
+-    vkPost->geo.placeId = extra.value(GEO_PLACE_ID_KEY).toInt();
++    vkPost->geo.placeId = QVariant(extra.value(GEO_PLACE_ID_KEY)).toInt();
+     vkPost->geo.title = extra.value(GEO_TITLE_KEY).toString();
+     vkPost->geo.type = extra.value(GEO_TYPE_KEY).toString();
+-    vkPost->geo.countryId = extra.value(GEO_COUNTRY_ID_KEY).toInt();
+-    vkPost->geo.cityId = extra.value(GEO_CITY_ID_KEY).toInt();
++    vkPost->geo.countryId = QVariant(extra.value(GEO_COUNTRY_ID_KEY)).toInt();
++    vkPost->geo.cityId = QVariant(extra.value(GEO_CITY_ID_KEY)).toInt();
+     vkPost->geo.address = extra.value(GEO_ADDRESS_KEY).toString();
+-    vkPost->geo.showMap = extra.value(GEO_SHOWMAP_KEY).toBool();
++    vkPost->geo.showMap = QVariant(extra.value(GEO_SHOWMAP_KEY)).toBool();
+ 
+     vkPost->copyPost.createdTime = extra.value(COPIED_POST_CREATED_TIME_KEY).toDateTime();
+     vkPost->copyPost.type = extra.value(COPIED_POST_TYPE_KEY).toString();
+-    vkPost->copyPost.ownerId = extra.value(COPIED_POST_OWNER_ID_KEY).toInt();
++    vkPost->copyPost.ownerId = QVariant(extra.value(COPIED_POST_OWNER_ID_KEY)).toInt();
+     vkPost->copyPost.ownerName = extra.value(COPIED_POST_OWNER_NAME_KEY).toString();
+     vkPost->copyPost.ownerAvatar = extra.value(COPIED_POST_OWNER_AVATAR_KEY).toString();
+-    vkPost->copyPost.postId = extra.value(COPIED_POST_POST_ID_KEY).toInt();
+-    vkPost->copyPost.text = extra.value(COPIED_POST_TEXT_KEY).toInt();
++    vkPost->copyPost.postId = QVariant(extra.value(COPIED_POST_POST_ID_KEY)).toInt();
++    vkPost->copyPost.text = extra.value(COPIED_POST_TEXT_KEY).toString();
+     vkPost->copyPost.photo = extra.value(COPIED_POST_PHOTO_KEY).toString();
+     vkPost->copyPost.video = extra.value(COPIED_POST_VIDEO_KEY).toString();
+     vkPost->copyPost.link = extra.value(COPIED_POST_LINK_KEY).toString();
+diff --git a/src/qml/qml.pro b/src/qml/qml.pro
+index b034b12..e3493d1 100644
+--- a/src/qml/qml.pro
++++ b/src/qml/qml.pro
+@@ -18,7 +18,7 @@ CONFIG(nodeps):{
+ DEFINES += NO_DEPS
+ } else {
+ CONFIG += link_pkgconfig
+-PKGCONFIG += buteosyncfw5 mlite5
++PKGCONFIG += buteosyncfw$${QT_MAJOR_VERSION} mlite$${QT_MAJOR_VERSION}
+ HEADERS += synchelper.h \
+     keyproviderhelper.h
+ SOURCES += synchelper.cpp \
+@@ -84,7 +84,9 @@ QMAKE_EXTRA_TARGETS += qmltypes
+ TS_FILE = $$OUT_PWD/socialcache.ts
+ EE_QM = $$OUT_PWD/socialcache_eng_en.qm
+ 
+-ts.commands += lupdate $$PWD/.. -ts $$TS_FILE
++qtPrepareTool(LUPDATE, lupdate)
++
++ts.commands += $$LUPDATE $$PWD/.. -ts $$TS_FILE
+ ts.CONFIG += no_check_exist no_link
+ ts.output = $$TS_FILE
+ ts.input = ..
+@@ -93,8 +95,10 @@ ts_install.files = $$TS_FILE
+ ts_install.path = /usr/share/translations/source
+ ts_install.CONFIG += no_check_exist
+ 
++qtPrepareTool(LRELEASE, lrelease)
++
+ # should add -markuntranslated "-" when proper translations are in place (or for testing)
+-engineering_english.commands += lrelease -idbased $$TS_FILE -qm $$EE_QM
++engineering_english.commands += $${LRELEASE} -idbased $$TS_FILE -qm $$EE_QM
+ engineering_english.CONFIG += no_check_exist no_link
+ engineering_english.depends = ts
+ engineering_english.input = $$TS_FILE
+diff --git a/src/qml/synchelper.cpp b/src/qml/synchelper.cpp
+index 7917cec..834a91c 100644
+--- a/src/qml/synchelper.cpp
++++ b/src/qml/synchelper.cpp
+@@ -18,8 +18,13 @@
+  */
+ 
+ #include "synchelper.h"
+-#include <buteosyncfw5/SyncCommonDefs.h>
+-#include <buteosyncfw5/ProfileManager.h>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    #include <buteosyncfw6/SyncCommonDefs.h>
++    #include <buteosyncfw6/ProfileManager.h>
++#else
++    #include <buteosyncfw5/SyncCommonDefs.h>
++    #include <buteosyncfw5/ProfileManager.h>
++#endif
+ 
+ SyncHelper::SyncHelper(QObject *parent) :
+     QObject(parent), QQmlParserStatus(), m_socialNetwork(SocialSyncInterface::InvalidSocialNetwork)
+diff --git a/src/qml/synchelper.h b/src/qml/synchelper.h
+index 2721439..dc0b798 100644
+--- a/src/qml/synchelper.h
++++ b/src/qml/synchelper.h
+@@ -22,7 +22,12 @@
+ #include <QtCore/QObject>
+ #include <QtQml/QQmlParserStatus>
+ #include "socialsyncinterface.h"
++
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <buteosyncfw6/SyncClientInterface.h>
++#else
+ #include <buteosyncfw5/SyncClientInterface.h>
++#endif
+ 
+ class SyncHelper : public QObject, public QQmlParserStatus
+ {
+diff --git a/tests/tst_abstractsocialcachedatabase/main.cpp b/tests/tst_abstractsocialcachedatabase/main.cpp
+index 9d4ee08..d758dfb 100644
+--- a/tests/tst_abstractsocialcachedatabase/main.cpp
++++ b/tests/tst_abstractsocialcachedatabase/main.cpp
+@@ -400,7 +400,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+ 
+diff --git a/tests/tst_dropboximage/main.cpp b/tests/tst_dropboximage/main.cpp
+index bc72659..196eba6 100644
+--- a/tests/tst_dropboximage/main.cpp
++++ b/tests/tst_dropboximage/main.cpp
+@@ -50,7 +50,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+ 
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+@@ -82,7 +82,7 @@ private slots:
+         QVERIFY(query.exec());
+         QVERIFY(query.next());
+         QCOMPARE(query.value(0).toString(), QLatin1String("a"));
+-        QCOMPARE(query.value(1).toUInt(), time1.toTime_t());
++        QCOMPARE(query.value(1).toUInt(), time1.toSecsSinceEpoch());
+         QCOMPARE(query.value(2).toString(), QLatin1String("c"));
+         QVERIFY(!query.next());
+ 
+diff --git a/tests/tst_facebookcontact/main.cpp b/tests/tst_facebookcontact/main.cpp
+index 56059ba..bf9af1e 100644
+--- a/tests/tst_facebookcontact/main.cpp
++++ b/tests/tst_facebookcontact/main.cpp
+@@ -50,7 +50,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+ 
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+diff --git a/tests/tst_facebookimage/main.cpp b/tests/tst_facebookimage/main.cpp
+index 6565aff..baa3e7a 100644
+--- a/tests/tst_facebookimage/main.cpp
++++ b/tests/tst_facebookimage/main.cpp
+@@ -51,7 +51,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+ 
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+@@ -83,7 +83,7 @@ private slots:
+         QVERIFY(query.exec());
+         QVERIFY(query.next());
+         QCOMPARE(query.value(0).toString(), QLatin1String("a"));
+-        QCOMPARE(query.value(1).toUInt(), time1.toTime_t());
++        QCOMPARE(query.value(1).toUInt(), time1.toSecsSinceEpoch());
+         QCOMPARE(query.value(2).toString(), QLatin1String("c"));
+         QVERIFY(!query.next());
+ 
+diff --git a/tests/tst_facebooknotification/main.cpp b/tests/tst_facebooknotification/main.cpp
+index d968713..62168b1 100644
+--- a/tests/tst_facebooknotification/main.cpp
++++ b/tests/tst_facebooknotification/main.cpp
+@@ -50,7 +50,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+ 
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+@@ -236,7 +236,7 @@ private slots:
+     {
+         QDateTime time1 = QDateTime::currentDateTime();
+         QDateTime time2;
+-        time2.setTime_t(time1.toTime_t() - 10 * 24 * 60 * 60);
++        time2.setSecsSinceEpoch(time1.toSecsSinceEpoch() - 10 * 24 * 60 * 60);
+ 
+         const QString id1 = QLatin1String("id1");
+         const QString id2 = QLatin1String("id2");
+diff --git a/tests/tst_facebookpost/main.cpp b/tests/tst_facebookpost/main.cpp
+index 8f06c5c..90a4dde 100644
+--- a/tests/tst_facebookpost/main.cpp
++++ b/tests/tst_facebookpost/main.cpp
+@@ -50,7 +50,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+ 
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+diff --git a/tests/tst_onedriveimage/main.cpp b/tests/tst_onedriveimage/main.cpp
+index b73d7ed..ea8b3c3 100644
+--- a/tests/tst_onedriveimage/main.cpp
++++ b/tests/tst_onedriveimage/main.cpp
+@@ -51,7 +51,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+ 
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+@@ -82,7 +82,7 @@ private slots:
+         QVERIFY(query.exec());
+         QVERIFY(query.next());
+         QCOMPARE(query.value(0).toString(), QLatin1String("a"));
+-        QCOMPARE(query.value(1).toUInt(), time1.toTime_t());
++        QCOMPARE(query.value(1).toUInt(), time1.toSecsSinceEpoch());
+         QCOMPARE(query.value(2).toString(), QLatin1String("c"));
+         QCOMPARE(query.value(3).toInt(), 1);
+         QVERIFY(!query.next());
+diff --git a/tests/tst_socialimage/main.cpp b/tests/tst_socialimage/main.cpp
+index 6a689b1..e3b7861 100644
+--- a/tests/tst_socialimage/main.cpp
++++ b/tests/tst_socialimage/main.cpp
+@@ -62,7 +62,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+ 
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+@@ -78,10 +78,10 @@ private slots:
+ 
+         // Database stores time_t values so convert to time_t first to get even seconds,
+         // otherwise the tests below will fail to mismatching milliseconds.
+-        int exp1 = QDateTime::currentDateTime().addDays(5).toTime_t();
+-        int exp2 = QDateTime::currentDateTime().addDays(10).toTime_t();
+-        QDateTime expires1 (QDateTime::fromTime_t(exp1));
+-        QDateTime expires2 (QDateTime::fromTime_t(exp2));
++        int exp1 = QDateTime::currentDateTime().addDays(5).toSecsSinceEpoch();
++        int exp2 = QDateTime::currentDateTime().addDays(10).toSecsSinceEpoch();
++        QDateTime expires1 (QDateTime::fromSecsSinceEpoch(exp1));
++        QDateTime expires2 (QDateTime::fromSecsSinceEpoch(exp2));
+ 
+         QString id1("id1");
+         QString id2("id2");
+@@ -248,11 +248,11 @@ private slots:
+         QCOMPARE(image->imageId(), id2);
+ 
+         // test expires
+-        int currentExp = QDateTime::currentDateTime().addSecs(-1).toTime_t();
++        int currentExp = QDateTime::currentDateTime().addSecs(-1).toSecsSinceEpoch();
+         database.addImage(
+                     account2,
+                     QLatin1String("file:///t5.jpg"), QLatin1String("file:///5.jpg"),
+-                    time2, QDateTime::fromTime_t(currentExp));
++                    time2, QDateTime::fromSecsSinceEpoch(currentExp));
+         database.commit();
+         database.wait();
+         QCOMPARE(database.writeStatus(), AbstractSocialCacheDatabase::Finished);
+@@ -268,7 +268,7 @@ private slots:
+         QCOMPARE(image->imageUrl(), QString("file:///t5.jpg"));
+         QCOMPARE(image->imageFile(), QString("file:///5.jpg"));
+         QCOMPARE(image->createdTime(), time2);
+-        QCOMPARE(image->expires(), QDateTime::fromTime_t(currentExp));
++        QCOMPARE(image->expires(), QDateTime::fromSecsSinceEpoch(currentExp));
+     }
+ 
+     void cleanupTestCase()
+diff --git a/tests/tst_socialnetworksync/main.cpp b/tests/tst_socialnetworksync/main.cpp
+index 8a801e4..ccc353b 100644
+--- a/tests/tst_socialnetworksync/main.cpp
++++ b/tests/tst_socialnetworksync/main.cpp
+@@ -50,7 +50,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+ 
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+diff --git a/tests/tst_twitterpost/main.cpp b/tests/tst_twitterpost/main.cpp
+index d68952d..1f8325b 100644
+--- a/tests/tst_twitterpost/main.cpp
++++ b/tests/tst_twitterpost/main.cpp
+@@ -50,7 +50,7 @@ private slots:
+     // damaging.
+     void initTestCase()
+     {
+-        QStandardPaths::enableTestMode(true);
++        QStandardPaths::setTestModeEnabled(true);
+ 
+         QDir dir (PRIVILEGED_DATA_DIR);
+         dir.removeRecursively();
+-- 
+2.42.0
+

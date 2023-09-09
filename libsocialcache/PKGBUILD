@@ -11,13 +11,18 @@ license=('BSD-3-Clause')
 depends=('buteo-syncfw')
 makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-use_mlite_for_keys.patch")
+    "0001-use_mlite_for_keys.patch"
+    '0002-Allow-build-with-Qt6.patch'
+)
 sha256sums=('ff1110e9ccca5a1e8c6d5a70448bc061e5ba4b83a5dbae974d55241e8156573b'
-    '7358f59bd2d6db7a1d91d6faedf9d33adade0e804035edbf9f0f213e0bbe352d')
+    '7358f59bd2d6db7a1d91d6faedf9d33adade0e804035edbf9f0f213e0bbe352d'
+    'f869ba1b7bb4299932824c4d17605b8aeb7ac1ee8c0a0a07443b7ca7d1f9c150'
+)
 
 prepare() {
     cd $pkgname-$pkgver
     patch -p1 --input="${srcdir}/0001-use_mlite_for_keys.patch"
+    patch -p1 --input="${srcdir}/0002-Allow-build-with-Qt6.patch"
 }
 
 build() {
