@@ -1,3 +1,13 @@
+From 8f957648043630cb0c5dd7afe38a2f0735d38ad6 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Thu, 14 Sep 2023 17:34:08 +0000
+Subject: [PATCH 2/2] use mlite for keys
+
+---
+ src/qml/keyproviderhelper.cpp | 54 +++++++++++++----------------------
+ src/qml/qml.pro               |  2 +-
+ 2 files changed, 21 insertions(+), 35 deletions(-)
+
 diff --git a/src/qml/keyproviderhelper.cpp b/src/qml/keyproviderhelper.cpp
 index 9be7201..a02b82d 100644
 --- a/src/qml/keyproviderhelper.cpp
@@ -107,15 +117,18 @@ index 9be7201..a02b82d 100644
 +    m_vkClientId = cClientId;
  }
 diff --git a/src/qml/qml.pro b/src/qml/qml.pro
-index dbc01f3..b034b12 100644
+index 1609326..e3493d1 100644
 --- a/src/qml/qml.pro
 +++ b/src/qml/qml.pro
 @@ -18,7 +18,7 @@ CONFIG(nodeps):{
  DEFINES += NO_DEPS
  } else {
  CONFIG += link_pkgconfig
--PKGCONFIG += buteosyncfw5 libsailfishkeyprovider
-+PKGCONFIG += buteosyncfw5 mlite5
+-PKGCONFIG += buteosyncfw$${QT_MAJOR_VERSION} libsailfishkeyprovider
++PKGCONFIG += buteosyncfw$${QT_MAJOR_VERSION} mlite$${QT_MAJOR_VERSION}
  HEADERS += synchelper.h \
      keyproviderhelper.h
  SOURCES += synchelper.cpp \
+-- 
+2.42.0
+
