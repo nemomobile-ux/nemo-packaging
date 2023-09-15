@@ -1,9 +1,4 @@
-_host="github.com"
-_project=sailfishos
-_basename=qtdocgallery
-
-_gitname=$_basename
-pkgname=$_basename
+pkgname=qtdocgallery
 
 _basever=5.3.0
 _gitver=5
@@ -13,7 +8,7 @@ pkgver=$_basever+git$_gitver
 pkgrel=1
 pkgdesc="The Glacier image gallery"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://github.com/sailfishos/qtdocgallery"
 license=('LGPLv2')
 optdepends=()
 depends=('qt6-declarative' 'tracker3' 'tracker3-miners')
