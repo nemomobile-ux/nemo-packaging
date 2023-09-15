@@ -1,38 +1,22 @@
-From 9c16e5d914de215cd5e99e207cebcdee04652699 Mon Sep 17 00:00:00 2001
+From 3f3d6b4487e435797fa73594c4f2d203ae1f717a Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Fri, 15 Sep 2023 15:03:04 +0000
 Subject: [PATCH] Fix build with qt6
 
 ---
- libmeegomtp.pro                                          | 2 +-
- mts/common.pri                                           | 2 +-
- mts/mts.pro                                              | 4 ++--
- mts/platform/deviceinfo/deviceinfoprovider.cpp           | 9 ++++++++-
- .../deviceinfo/unittests/deviceinfoprovider_test.cpp     | 2 +-
- mts/platform/deviceinfo/unittests/unittests.pro          | 4 +---
- mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp | 6 ++++--
- mts/platform/storage/fsstorageplugin/fsstorageplugin.pro | 4 ++--
- .../storage/fsstorageplugin/unittests/unittests.pro      | 4 ++--
- mts/platform/storage/unittests/unittests.pro             | 4 ++--
- mts/protocol/unittests/unittests.pro                     | 4 ++--
- mts/transport/usb/threadio.cpp                           | 4 ++--
- service/service.pro                                      | 2 +-
- test/test.pro                                            | 2 +-
- 14 files changed, 30 insertions(+), 23 deletions(-)
+ mts/common.pri                                              | 2 +-
+ mts/mts.pro                                                 | 2 +-
+ .../deviceinfo/unittests/deviceinfoprovider_test.cpp        | 2 +-
+ mts/platform/deviceinfo/unittests/unittests.pro             | 2 +-
+ mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp    | 6 ++++--
+ mts/platform/storage/fsstorageplugin/fsstorageplugin.pro    | 2 +-
+ .../storage/fsstorageplugin/unittests/unittests.pro         | 2 +-
+ mts/platform/storage/unittests/unittests.pro                | 2 +-
+ mts/protocol/unittests/unittests.pro                        | 2 +-
+ mts/transport/usb/threadio.cpp                              | 4 ++--
+ service/service.pro                                         | 2 +-
+ 11 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/libmeegomtp.pro b/libmeegomtp.pro
-index 252b24b..f27eb4d 100644
---- a/libmeegomtp.pro
-+++ b/libmeegomtp.pro
-@@ -46,7 +46,7 @@ mts_protocol_tests.depends = sub-mts
- SUBDIRS += \
-     mts \
-     test \
--    mts_storage_tests \
-+#    mts_storage_tests \
-     mts_fsstorage_plugin \
-     mts_fsstorage_tests \
-     mts_deviceinfo_tests \
 diff --git a/mts/common.pri b/mts/common.pri
 index d67e44b..61bd044 100644
 --- a/mts/common.pri
@@ -45,55 +29,17 @@ index d67e44b..61bd044 100644
  
  SOURCES += $$PWD/common/trace.cpp
 diff --git a/mts/mts.pro b/mts/mts.pro
-index 3e6d4a5..2687552 100644
+index 3e6d4a5..aa56181 100644
 --- a/mts/mts.pro
 +++ b/mts/mts.pro
-@@ -1,9 +1,9 @@
+@@ -1,6 +1,6 @@
  include(common.pri)
  
 -QT += xml dbus
 +QT += xml dbus core5compat
  QT -= gui
  
--LIBS += -lssu
-+#LIBS += -lssu
- 
- CONFIG += link_pkgconfig debug
- 
-diff --git a/mts/platform/deviceinfo/deviceinfoprovider.cpp b/mts/platform/deviceinfo/deviceinfoprovider.cpp
-index aa0429b..8f8cb0e 100644
---- a/mts/platform/deviceinfo/deviceinfoprovider.cpp
-+++ b/mts/platform/deviceinfo/deviceinfoprovider.cpp
-@@ -32,7 +32,9 @@
- 
- #include "deviceinfoprovider.h"
- #include <QTimer>
-+#ifdef USE_SSU
- #include <ssudeviceinfo.h>
-+#endif
- #include <batterystatus.h>
- #include <deviceinfo.h>
- #include "trace.h"
-@@ -45,13 +47,18 @@ using namespace meegomtp1dot0;
- DeviceInfoProvider::DeviceInfoProvider()
-     : m_batteryStatus(new BatteryStatus(this))
- {
-+#ifdef USE_SSU
-     DeviceInfo deviceInfo;
-     SsuDeviceInfo ssuDeviceInfo;
--
-     m_serialNo = ssuDeviceInfo.deviceUid();
-     m_deviceVersion = deviceInfo.osVersion();
-     m_manufacturer = deviceInfo.manufacturer();
-     m_model = deviceInfo.prettyName();
-+#else
-+    m_serialNo = "1234567890ABCDEF";
-+    m_manufacturer = "NemoMobile";
-+    m_model = "GlacierUX";
-+#endif
- 
-     connect(m_batteryStatus, &BatteryStatus::chargePercentageChanged,
-             this, &DeviceInfoProvider::onBatteryPercentageChanged);
+ LIBS += -lssu
 diff --git a/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp b/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp
 index c444293..fd30866 100644
 --- a/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp
@@ -108,10 +54,10 @@ index c444293..fd30866 100644
      // Original deviceinfo.xml may be changed during the test execution, so
      // backup its current state.
 diff --git a/mts/platform/deviceinfo/unittests/unittests.pro b/mts/platform/deviceinfo/unittests/unittests.pro
-index e58a88e..c8d13e6 100644
+index e58a88e..f181fe3 100644
 --- a/mts/platform/deviceinfo/unittests/unittests.pro
 +++ b/mts/platform/deviceinfo/unittests/unittests.pro
-@@ -1,11 +1,9 @@
+@@ -1,6 +1,6 @@
  include(../../../common.pri)
  
 -QT += dbus xml testlib
@@ -119,11 +65,6 @@ index e58a88e..c8d13e6 100644
  QT -= gui
  CONFIG += debug_and_release
  
--LIBS += -lssu
--
- TEMPLATE = app
- TARGET = deviceinfo-test
- DEFINES += UT_ON
 diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp b/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
 index 9556575..11aa015 100644
 --- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
@@ -149,7 +90,7 @@ index 9556575..11aa015 100644
          return false;
      }
 diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-index eac97a9..5287dab 100644
+index eac97a9..6acff6b 100644
 --- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 +++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 @@ -5,7 +5,7 @@ TARGET = fsstorage
@@ -161,25 +102,12 @@ index eac97a9..5287dab 100644
  QT -= gui
  
  PKGCONFIG += blkid mount
-@@ -39,7 +39,7 @@ SOURCES += fsstorageplugin.cpp \
-            storageitem.cpp
- 
- LIBPATH += ../../..
--LIBS    += -lmeegomtp -lssu
-+LIBS    += -lmeegomtp
- 
- #install
- target.path = $$[QT_INSTALL_LIBS]/mtp
 diff --git a/mts/platform/storage/fsstorageplugin/unittests/unittests.pro b/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
-index 1c37b45..fbf6acc 100644
+index 1c37b45..60e5a53 100644
 --- a/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
 +++ b/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
-@@ -2,10 +2,10 @@ include(../../../../common.pri)
- 
- CONFIG += debug_and_release
- 
--LIBS += -ldl -lssu
-+LIBS += -ldl
+@@ -5,7 +5,7 @@ CONFIG += debug_and_release
+ LIBS += -ldl -lssu
  TEMPLATE = app
  TARGET = storage-test
 -QT += dbus xml testlib
@@ -188,7 +116,7 @@ index 1c37b45..fbf6acc 100644
  #QMAKE_CXXFLAGS += -ftest-coverage -fprofile-arcs
  #QMAKE_LFLAGS += -fprofile-arcs -ftest-coverage
 diff --git a/mts/platform/storage/unittests/unittests.pro b/mts/platform/storage/unittests/unittests.pro
-index e712b55..d716182 100644
+index e712b55..506c3f0 100644
 --- a/mts/platform/storage/unittests/unittests.pro
 +++ b/mts/platform/storage/unittests/unittests.pro
 @@ -2,7 +2,7 @@ include(../../../common.pri)
@@ -200,25 +128,12 @@ index e712b55..d716182 100644
  QT -= gui
  
  DEFINES += UT_ON
-@@ -19,7 +19,7 @@ INCLUDEPATH += \
- 	../../../transport/dummy \
- 	../../../transport/usb \
- 
--LIBS += -ldl -lssu
-+LIBS += -ldl
- 
- HEADERS += \
- 	storagefactory_test.h \
 diff --git a/mts/protocol/unittests/unittests.pro b/mts/protocol/unittests/unittests.pro
-index 8158bc0..2c1d1cb 100644
+index 8158bc0..8be8456 100644
 --- a/mts/protocol/unittests/unittests.pro
 +++ b/mts/protocol/unittests/unittests.pro
-@@ -2,10 +2,10 @@ include(../../common.pri)
- 
- CONFIG += debug_and_release
- 
--LIBS += -ldl -lssu
-+LIBS += -ldl
+@@ -5,7 +5,7 @@ CONFIG += debug_and_release
+ LIBS += -ldl -lssu
  TEMPLATE = app
  TARGET = protocol-test
 -QT += dbus xml testlib
@@ -261,19 +176,6 @@ index cf1b61a..7513501 100644
  
  SOURCES += service.cpp
  
-diff --git a/test/test.pro b/test/test.pro
-index ff5b2a0..164b1df 100644
---- a/test/test.pro
-+++ b/test/test.pro
-@@ -2,7 +2,7 @@ TEMPLATE = app
- TARGET = mtp_test
- DEPENDPATH += .
- INCLUDEPATH += . ../mts
--LIBS += -L../mts -lmeegomtp -lssu
-+LIBS += -L../mts -lmeegomtp
- DRIVER = nogadgetfs
- CONFIG += debug_and_release
- QT -= gui
 -- 
 2.42.0
 
