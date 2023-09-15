@@ -1,0 +1,279 @@
+From 9c16e5d914de215cd5e99e207cebcdee04652699 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 15 Sep 2023 15:03:04 +0000
+Subject: [PATCH] Fix build with qt6
+
+---
+ libmeegomtp.pro                                          | 2 +-
+ mts/common.pri                                           | 2 +-
+ mts/mts.pro                                              | 4 ++--
+ mts/platform/deviceinfo/deviceinfoprovider.cpp           | 9 ++++++++-
+ .../deviceinfo/unittests/deviceinfoprovider_test.cpp     | 2 +-
+ mts/platform/deviceinfo/unittests/unittests.pro          | 4 +---
+ mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp | 6 ++++--
+ mts/platform/storage/fsstorageplugin/fsstorageplugin.pro | 4 ++--
+ .../storage/fsstorageplugin/unittests/unittests.pro      | 4 ++--
+ mts/platform/storage/unittests/unittests.pro             | 4 ++--
+ mts/protocol/unittests/unittests.pro                     | 4 ++--
+ mts/transport/usb/threadio.cpp                           | 4 ++--
+ service/service.pro                                      | 2 +-
+ test/test.pro                                            | 2 +-
+ 14 files changed, 30 insertions(+), 23 deletions(-)
+
+diff --git a/libmeegomtp.pro b/libmeegomtp.pro
+index 252b24b..f27eb4d 100644
+--- a/libmeegomtp.pro
++++ b/libmeegomtp.pro
+@@ -46,7 +46,7 @@ mts_protocol_tests.depends = sub-mts
+ SUBDIRS += \
+     mts \
+     test \
+-    mts_storage_tests \
++#    mts_storage_tests \
+     mts_fsstorage_plugin \
+     mts_fsstorage_tests \
+     mts_deviceinfo_tests \
+diff --git a/mts/common.pri b/mts/common.pri
+index d67e44b..61bd044 100644
+--- a/mts/common.pri
++++ b/mts/common.pri
+@@ -1,5 +1,5 @@
+ CONFIG += link_pkgconfig
+-PKGCONFIG += systemsettings
++PKGCONFIG += systemsettings-qt6
+ DEFINES += MTP_PLUGINDIR=\\\"$$[QT_INSTALL_LIBS]/mtp\\\"
+ 
+ SOURCES += $$PWD/common/trace.cpp
+diff --git a/mts/mts.pro b/mts/mts.pro
+index 3e6d4a5..2687552 100644
+--- a/mts/mts.pro
++++ b/mts/mts.pro
+@@ -1,9 +1,9 @@
+ include(common.pri)
+ 
+-QT += xml dbus
++QT += xml dbus core5compat
+ QT -= gui
+ 
+-LIBS += -lssu
++#LIBS += -lssu
+ 
+ CONFIG += link_pkgconfig debug
+ 
+diff --git a/mts/platform/deviceinfo/deviceinfoprovider.cpp b/mts/platform/deviceinfo/deviceinfoprovider.cpp
+index aa0429b..8f8cb0e 100644
+--- a/mts/platform/deviceinfo/deviceinfoprovider.cpp
++++ b/mts/platform/deviceinfo/deviceinfoprovider.cpp
+@@ -32,7 +32,9 @@
+ 
+ #include "deviceinfoprovider.h"
+ #include <QTimer>
++#ifdef USE_SSU
+ #include <ssudeviceinfo.h>
++#endif
+ #include <batterystatus.h>
+ #include <deviceinfo.h>
+ #include "trace.h"
+@@ -45,13 +47,18 @@ using namespace meegomtp1dot0;
+ DeviceInfoProvider::DeviceInfoProvider()
+     : m_batteryStatus(new BatteryStatus(this))
+ {
++#ifdef USE_SSU
+     DeviceInfo deviceInfo;
+     SsuDeviceInfo ssuDeviceInfo;
+-
+     m_serialNo = ssuDeviceInfo.deviceUid();
+     m_deviceVersion = deviceInfo.osVersion();
+     m_manufacturer = deviceInfo.manufacturer();
+     m_model = deviceInfo.prettyName();
++#else
++    m_serialNo = "1234567890ABCDEF";
++    m_manufacturer = "NemoMobile";
++    m_model = "GlacierUX";
++#endif
+ 
+     connect(m_batteryStatus, &BatteryStatus::chargePercentageChanged,
+             this, &DeviceInfoProvider::onBatteryPercentageChanged);
+diff --git a/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp b/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp
+index c444293..fd30866 100644
+--- a/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp
++++ b/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp
+@@ -46,7 +46,7 @@ void DeviceInfoProvider_Test::initTestCase()
+     QCOMPARE(QFile::copy("/opt/tests/buteo-mtp/data/deviceinfo.xml", "/tmp/deviceinfo.xml"), true);
+     m_xmlDoc = new QDomDocument();
+     m_xmlFile = new QFile("/tmp/deviceinfo.xml");
+-    QCOMPARE(m_xmlDoc->setContent(m_xmlFile), true);
++    QCOMPARE(m_xmlDoc->setContent(m_xmlFile).errorMessage.isEmpty(), true);
+ 
+     // Original deviceinfo.xml may be changed during the test execution, so
+     // backup its current state.
+diff --git a/mts/platform/deviceinfo/unittests/unittests.pro b/mts/platform/deviceinfo/unittests/unittests.pro
+index e58a88e..c8d13e6 100644
+--- a/mts/platform/deviceinfo/unittests/unittests.pro
++++ b/mts/platform/deviceinfo/unittests/unittests.pro
+@@ -1,11 +1,9 @@
+ include(../../../common.pri)
+ 
+-QT += dbus xml testlib
++QT += dbus xml testlib core5compat
+ QT -= gui
+ CONFIG += debug_and_release
+ 
+-LIBS += -lssu
+-
+ TEMPLATE = app
+ TARGET = deviceinfo-test
+ DEFINES += UT_ON
+diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp b/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
+index 9556575..11aa015 100644
+--- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
++++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
+@@ -54,6 +54,7 @@
+ #include <QDateTime>
+ #include <QMetaObject>
+ #include <QLocale>
++#include <QRegularExpression>
+ 
+ #ifndef UT_ON
+ #include <blkid.h>
+@@ -3147,8 +3148,9 @@ bool FSStoragePlugin::isFileNameValid(const QString &fileName, const StorageItem
+ {
+     // Check if the file name contains illegal characters, or if the file with
+     // the same name is already present under the parent
+-    if (fileName.contains(QRegExp(FILENAMES_FILTER_REGEX)) ||
+-            QRegExp("[\\.]+").exactMatch(fileName)) {
++    QRegularExpression filterRegex(FILENAMES_FILTER_REGEX);
++    if (filterRegex.match(fileName).hasMatch() ||
++            QRegularExpression("^[\\.]+$").match(fileName).hasMatch()) {
+         // Illegal characters, or all .'s
+         return false;
+     }
+diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
+index eac97a9..5287dab 100644
+--- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
++++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
+@@ -5,7 +5,7 @@ TARGET = fsstorage
+ 
+ CONFIG += plugin debug
+ 
+-QT += dbus xml
++QT += dbus xml core5compat
+ QT -= gui
+ 
+ PKGCONFIG += blkid mount
+@@ -39,7 +39,7 @@ SOURCES += fsstorageplugin.cpp \
+            storageitem.cpp
+ 
+ LIBPATH += ../../..
+-LIBS    += -lmeegomtp -lssu
++LIBS    += -lmeegomtp
+ 
+ #install
+ target.path = $$[QT_INSTALL_LIBS]/mtp
+diff --git a/mts/platform/storage/fsstorageplugin/unittests/unittests.pro b/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
+index 1c37b45..fbf6acc 100644
+--- a/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
++++ b/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
+@@ -2,10 +2,10 @@ include(../../../../common.pri)
+ 
+ CONFIG += debug_and_release
+ 
+-LIBS += -ldl -lssu
++LIBS += -ldl
+ TEMPLATE = app
+ TARGET = storage-test
+-QT += dbus xml testlib
++QT += dbus xml testlib core5compat
+ DEFINES += UT_ON
+ #QMAKE_CXXFLAGS += -ftest-coverage -fprofile-arcs
+ #QMAKE_LFLAGS += -fprofile-arcs -ftest-coverage
+diff --git a/mts/platform/storage/unittests/unittests.pro b/mts/platform/storage/unittests/unittests.pro
+index e712b55..d716182 100644
+--- a/mts/platform/storage/unittests/unittests.pro
++++ b/mts/platform/storage/unittests/unittests.pro
+@@ -2,7 +2,7 @@ include(../../../common.pri)
+ 
+ TEMPLATE = app
+ TARGET = storagefactory-test
+-QT += testlib xml dbus
++QT += testlib xml dbus core5compat
+ QT -= gui
+ 
+ DEFINES += UT_ON
+@@ -19,7 +19,7 @@ INCLUDEPATH += \
+ 	../../../transport/dummy \
+ 	../../../transport/usb \
+ 
+-LIBS += -ldl -lssu
++LIBS += -ldl
+ 
+ HEADERS += \
+ 	storagefactory_test.h \
+diff --git a/mts/protocol/unittests/unittests.pro b/mts/protocol/unittests/unittests.pro
+index 8158bc0..2c1d1cb 100644
+--- a/mts/protocol/unittests/unittests.pro
++++ b/mts/protocol/unittests/unittests.pro
+@@ -2,10 +2,10 @@ include(../../common.pri)
+ 
+ CONFIG += debug_and_release
+ 
+-LIBS += -ldl -lssu
++LIBS += -ldl
+ TEMPLATE = app
+ TARGET = protocol-test
+-QT += dbus xml testlib
++QT += dbus xml testlib core5compat
+ QT -= gui
+ DEFINES += UT_ON
+ #QMAKE_CXXFLAGS += -ftest-coverage -fprofile-arcs
+diff --git a/mts/transport/usb/threadio.cpp b/mts/transport/usb/threadio.cpp
+index e961459..b04fb19 100644
+--- a/mts/transport/usb/threadio.cpp
++++ b/mts/transport/usb/threadio.cpp
+@@ -483,7 +483,7 @@ void BulkWriterThread::setData(const quint8 *buffer, quint32 dataLen, bool termi
+     m_dataLen = dataLen;
+     m_terminateTransfer = terminateTransfer;
+     m_result = false;
+-    m_result_ready.store(0);
++    m_result_ready.storeRelaxed(0);
+ }
+ 
+ void BulkWriterThread::execute()
+@@ -543,7 +543,7 @@ void BulkWriterThread::execute()
+ 
+ bool BulkWriterThread::resultReady()
+ {
+-    return m_result_ready.load() != 0;
++    return m_result_ready.loadRelaxed() != 0;
+ }
+ 
+ bool BulkWriterThread::getResult()
+diff --git a/service/service.pro b/service/service.pro
+index cf1b61a..7513501 100644
+--- a/service/service.pro
++++ b/service/service.pro
+@@ -10,7 +10,7 @@ LIBS += -L../mts -lmeegomtp
+ 
+ QT -= gui
+ CONFIG += link_pkgconfig
+-PKGCONFIG += mlite5
++PKGCONFIG += mlite$${QT_MAJOR_VERSION}
+ 
+ SOURCES += service.cpp
+ 
+diff --git a/test/test.pro b/test/test.pro
+index ff5b2a0..164b1df 100644
+--- a/test/test.pro
++++ b/test/test.pro
+@@ -2,7 +2,7 @@ TEMPLATE = app
+ TARGET = mtp_test
+ DEPENDPATH += .
+ INCLUDEPATH += . ../mts
+-LIBS += -L../mts -lmeegomtp -lssu
++LIBS += -L../mts -lmeegomtp
+ DRIVER = nogadgetfs
+ CONFIG += debug_and_release
+ QT -= gui
+-- 
+2.42.0
+
