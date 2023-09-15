@@ -1,0 +1,194 @@
+From 06a10f6bd3776ea7af3c1e5a838e2d2ebd829c20 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 15 Sep 2023 13:13:17 +0000
+Subject: [PATCH 2/2] Q_DISABLE_COPY is inherited from QObject
+
+---
+ .gitignore                          | 26 ++++++++++++
+ lib/ofononetworkoperator.cpp        |  8 ----
+ lib/ofononetworkoperator.h          |  5 +--
+ tests/test_ofononetworkoperator.cpp | 64 ++++++++++++++++-------------
+ 4 files changed, 63 insertions(+), 40 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index bdebf01..17d9d67 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -8,3 +8,29 @@ Makefile*
+ *.prl
+ doxygen.cfg
+ doc/
++.qmake.stash
++
++tests/target_wrapper.sh
++tests/test_ofonocallbarring
++tests/test_ofonocallforwarding
++tests/test_ofonocallmeter
++tests/test_ofonocallsettings
++tests/test_ofonocallvolume
++tests/test_ofonocellbroadcast
++tests/test_ofonoconnman
++tests/test_ofonoconnmancontext
++tests/test_ofonointerface
++tests/test_ofonomessagemanager
++tests/test_ofonomessagewaiting
++tests/test_ofonomodem
++tests/test_ofonomodeminterface
++tests/test_ofonomodemmanager
++tests/test_ofonomultipartycall
++tests/test_ofononetworkoperator
++tests/test_ofononetworkregistration
++tests/test_ofonophonebook
++tests/test_ofonoradiosettings
++tests/test_ofonosimmanager
++tests/test_ofonosupplementaryservices
++tests/test_ofonovoicecall
++tests/test_ofonovoicecallmanager
+diff --git a/lib/ofononetworkoperator.cpp b/lib/ofononetworkoperator.cpp
+index 5132b9e..e682122 100644
+--- a/lib/ofononetworkoperator.cpp
++++ b/lib/ofononetworkoperator.cpp
+@@ -37,14 +37,6 @@ OfonoNetworkOperator::OfonoNetworkOperator(const QString& operatorId, QObject *p
+             this, SLOT(propertyChanged(const QString&, const QVariant&)));
+ }
+ 
+-OfonoNetworkOperator::OfonoNetworkOperator(const OfonoNetworkOperator& op)
+-    : QObject(op.parent())
+-{
+-    m_if = new OfonoInterface(op.path(), "org.ofono.NetworkOperator", OfonoGetAllOnStartup, this);
+-    connect(m_if, SIGNAL(propertyChanged(const QString&, const QVariant&)), 
+-            this, SLOT(propertyChanged(const QString&, const QVariant&)));
+-}    
+-    
+ bool OfonoNetworkOperator::operator==(const OfonoNetworkOperator &op) const
+ {
+     return path() == op.path();
+diff --git a/lib/ofononetworkoperator.h b/lib/ofononetworkoperator.h
+index 7740559..ac4c8f6 100644
+--- a/lib/ofononetworkoperator.h
++++ b/lib/ofononetworkoperator.h
+@@ -42,6 +42,7 @@ class OfonoInterface;
+ class OFONO_QT_EXPORT OfonoNetworkOperator : public QObject
+ {
+     Q_OBJECT
++    Q_DISABLE_COPY(OfonoNetworkOperator)
+ 
+     Q_PROPERTY(QString path READ path)
+     Q_PROPERTY(QString errorName READ errorName)
+@@ -56,15 +57,13 @@ class OFONO_QT_EXPORT OfonoNetworkOperator : public QObject
+     
+ public:
+     OfonoNetworkOperator(const QString& operatorId, QObject *parent=0);
+-    OfonoNetworkOperator(const OfonoNetworkOperator& op);
+     ~OfonoNetworkOperator();
+ 
+-    OfonoNetworkOperator operator=(const OfonoNetworkOperator &op);
+     bool operator==(const OfonoNetworkOperator &op) const;
+ 
+     //! Returns the D-Bus object path of the network operator object
+     QString path() const;
+-    
++
+     //! Get the D-Bus error name of the last operation.
+     /*!
+      * Returns the D-Bus error name of the last operation (setting a property
+diff --git a/tests/test_ofononetworkoperator.cpp b/tests/test_ofononetworkoperator.cpp
+index 8643ca2..669d105 100644
+--- a/tests/test_ofononetworkoperator.cpp
++++ b/tests/test_ofononetworkoperator.cpp
+@@ -62,50 +62,51 @@ private slots:
+     	QStringList opIdList = scanList.at(1).toStringList();
+     	QVERIFY(opIdList.count() > 0);
+ 
+-	QList<OfonoNetworkOperator> opList;
++	QList<OfonoNetworkOperator*> opList;
+ 	foreach(QString opId, opIdList)
+ 	{
+-	    opList << OfonoNetworkOperator(opId);
++	    opList << new OfonoNetworkOperator(opId);
+ 	}
+ 
+ 	int op1 = -1;
+ 	int op2 = -1;
+-	foreach(OfonoNetworkOperator op, opList) {
+-	    if (op1 == -1 && op.status() == "current")
++	foreach(OfonoNetworkOperator* op, opList) {
++	    if (op1 == -1 && op->status() == "current")
+ 	        op1 = opList.indexOf(op);
+-	    if (op2 == -1 && op.status() == "available")
++	    if (op2 == -1 && op->status() == "available")
+ 	        op2 = opList.indexOf(op);
+ 	}
++
+ 	QVERIFY(op1 != -1);
+ 	QVERIFY(op2 != -1);
+-	QVERIFY(opList[op1].name().length() > 0);
+-	QVERIFY(opList[op2].name().length() > 0);		
+-	QVERIFY(opList[op1].mcc().length() > 0);
+-	QVERIFY(opList[op2].mcc().length() > 0);		
+-	QVERIFY(opList[op1].mnc().length() > 0);
+-	QVERIFY(opList[op2].mnc().length() > 0);		
+-	QVERIFY(opList[op1].technologies().count() > 0);
+-	QVERIFY(opList[op2].technologies().count() > 0);		
+-
+-	QSignalSpy op1Register(&opList[op1], SIGNAL(registerComplete(bool)));
+-	QSignalSpy op2Register(&opList[op2], SIGNAL(registerComplete(bool)));
+-	QSignalSpy op1Status(&opList[op1], SIGNAL(statusChanged(QString)));
+-	QSignalSpy op2Status(&opList[op2], SIGNAL(statusChanged(QString)));
++	QVERIFY(opList[op1]->name().length() > 0);
++	QVERIFY(opList[op2]->name().length() > 0);
++	QVERIFY(opList[op1]->mcc().length() > 0);
++	QVERIFY(opList[op2]->mcc().length() > 0);
++	QVERIFY(opList[op1]->mnc().length() > 0);
++	QVERIFY(opList[op2]->mnc().length() > 0);
++	QVERIFY(opList[op1]->technologies().count() > 0);
++	QVERIFY(opList[op2]->technologies().count() > 0);
++
++	QSignalSpy op1Register(opList[op1], SIGNAL(registerComplete(bool)));
++	QSignalSpy op2Register(opList[op2], SIGNAL(registerComplete(bool)));
++	QSignalSpy op1Status(opList[op1], SIGNAL(statusChanged(QString)));
++	QSignalSpy op2Status(opList[op2], SIGNAL(statusChanged(QString)));
+ 
+ 	QSignalSpy mode(m, SIGNAL(modeChanged(QString)));
+-	QSignalSpy status(m, SIGNAL(statusChanged(QString)));	
+-	QSignalSpy lac(m, SIGNAL(locationAreaCodeChanged(uint)));	
+-	QSignalSpy cellId(m, SIGNAL(cellIdChanged(uint)));	
+-	QSignalSpy mcc(m, SIGNAL(mccChanged(QString)));	
+-	QSignalSpy mnc(m, SIGNAL(mncChanged(QString)));	
+-	QSignalSpy tech(m, SIGNAL(technologyChanged(QString)));	
+-	QSignalSpy name(m, SIGNAL(nameChanged(QString)));	
+-	QSignalSpy strength(m, SIGNAL(strengthChanged(uint)));	
+-	QSignalSpy base(m, SIGNAL(baseStationChanged(QString)));	
++	QSignalSpy status(m, SIGNAL(statusChanged(QString)));
++	QSignalSpy lac(m, SIGNAL(locationAreaCodeChanged(uint)));
++	QSignalSpy cellId(m, SIGNAL(cellIdChanged(uint)));
++	QSignalSpy mcc(m, SIGNAL(mccChanged(QString)));
++	QSignalSpy mnc(m, SIGNAL(mncChanged(QString)));
++	QSignalSpy tech(m, SIGNAL(technologyChanged(QString)));
++	QSignalSpy name(m, SIGNAL(nameChanged(QString)));
++	QSignalSpy strength(m, SIGNAL(strengthChanged(uint)));
++	QSignalSpy base(m, SIGNAL(baseStationChanged(QString)));
+ 	
+-	opList[op2].registerOp();
++	opList[op2]->registerOp();
+ 	QTest::qWait(5000);
+-	opList[op1].registerOp();
++	opList[op1]->registerOp();
+ 	QTest::qWait(5000);
+ 	
+ 	QCOMPARE(op1Register.count(), 1);
+@@ -122,6 +123,11 @@ private slots:
+ 	QCOMPARE(mcc.count(), 2);
+ 	QCOMPARE(mnc.count(), 2);
+ 	QCOMPARE(name.count(), 2);
++
++	foreach (OfonoNetworkOperator* op, opList) {
++	    delete op;
++	}
++	opList.clear();
+     }
+ 
+ 
+-- 
+2.42.0
+
