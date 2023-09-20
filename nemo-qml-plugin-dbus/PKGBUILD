@@ -1,7 +1,7 @@
 # Maintainer: Bernhard Landauer <bernhard@manjaro.org>
 
 pkgname=nemo-qml-plugin-dbus
-pkgver=2.1.32
+pkgver=2.1.33
 pkgrel=1
 pkgdesc="Nemo Mobile D-Bus QML Plugin."
 arch=('x86_64' 'aarch64')
@@ -9,18 +9,8 @@ url="https://github.com/sailfishos/nemo-qml-plugin-dbus"
 license=('BSD' 'LGPL2.1')
 depends=('qt6-base' 'qt6-declarative')
 provides=('libnemodbus.so=2')
-source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz"
-    '0001-Fix-build-with-Qt6.patch'
-)
-sha256sums=('5edf496ffad68ba2c6c0e9c430aa7010353916a58c1a02b046e1640206d98a0f'
-    '1b5259033823a4d84768e1a3d9f6afad940b4e6742b5f8ce9a2e31df5a8a1167'
-)
-
-prepare() {
-  cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-Fix-build-with-Qt6.patch"
-}
-
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('08d1bdc5eac5eba2197f2c1e04a7e851437724331215059db1d68828dbf3b0a8')
 
 build() {
   cd "$pkgname-$pkgver"
