@@ -11,7 +11,9 @@ license=('BSD')
 depends=('mlite'
     'nemo-qml-plugin-systemsettings'
     'nemo-qml-plugin-dbus'
-    'nemo-qml-plugin-thumbnailer')
+    'nemo-qml-plugin-thumbnailer'
+    'qt6-5compat'
+)
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-Fix-build-with-qt6.patch'
     '0002-disable_ssu.patch'
