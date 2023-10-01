@@ -4,15 +4,15 @@ cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" #"
 
 export results_dir="/var/www/html/build-results"
 export log_dir="$results_dir/../logs" #"
-export build_id=$(test -f "$log_dir/last_id" && <"$log_dir/last_id")
+test -f "$log_dir/last_id" && export build_id=$(<"$log_dir/last_id")
 export BUILD_CHROOT=/mnt/data/chrootbuild
 #export BUILD_CHROOT=/var/lib/manjaro-arm-tools/pkg/aarch64
 export CUSTOM_REPO_NAME=nemomobile
+export CUSTOM_REPO_URL="http://localhost/build-results/nemomobile.db"
 export BRANCH="${BRANCH-arm-stable}"
 
 export USE_GIT_PACKAGES="${USE_GIT_PACKAGES-1}"
 
-FIRST_RUN=true
 
 SED_EXPR=""
 if [ "$USE_GIT_PACKAGES" = 1 ]; then
@@ -52,9 +52,20 @@ function build_directory() {
 
         cd "$pkg_dir"
 
-        chrootbuild ${FIRST_RUN:+-c} ${BUILD_CHROOT:+-r "$BUILD_CHROOT"} -D -f -n ${BRANCH:+-b "${BRANCH}"} -p $pkg_name #"
+        unset ADD_REPO
+        if [ -n "$(find "$results_dir" -mindepth 1 -maxdepth 1)" ]; then
+            ADD_REPO="$CUSTOM_REPO_URL"
+        fi
+
+        chrootbuild -c -D -f ${ADD_REPO:+-k "$ADD_REPO"} ${BUILD_CHROOT:+-r "$BUILD_CHROOT"} -n ${BRANCH:+-b "${BRANCH}"} -p $pkg_name #"
         ret=$?
         cd $WORKDIR
+
+        find . -mindepth 1 -type f  -name '*.pkg.tar.zst' -exec rsync -avz --remove-source-files {} "$results_dir" \;
+        rm -rvf "${results_dir?invalid dir}/${CUSTOM_REPO_NAME}".db*
+        rm -rvf "${results_dir?invalid dir}/${CUSTOM_REPO_NAME}".files*
+        repo-add -q "$results_dir/$CUSTOM_REPO_NAME.db.tar.xz" "$results_dir"/*.pkg.tar.*
+
         return $ret
     ) 2>&1 | tee "$log_name"
     ret="${PIPESTATUS[0]}"
@@ -64,7 +75,6 @@ function build_directory() {
     else
         status="FAIL"
     fi
-    unset FIRST_RUN
 
     echo $status
     mv "$log_name" "${log_name%.log}.${status}.log"
@@ -78,18 +88,10 @@ export BUILDARCH="aarch64"
 export BUILD="build_directory"
 export -f build_directory
 
-if [ ${#PACKAGES_BUILD[@]} -gt 150 ]; then # don't remove when rebuilding few packages (most of packages are counted twice x86+aarch)
-    rm -rf "${BUILD_CHROOT?invalid dir}"
-    rm -rf "${log_dir?invalid dir}" # remove logs first because its relative to results
-    rm -rf "${results_dir?invalid dir}"
-fi
-
 mkdir -p "$results_dir"
 mkdir -p "$log_dir"
 
 ./deploy.sh
 
-rsync -r -v -z --remove-source-files --files-from=<(find . -mindepth 1 -name '*.pkg.tar.zst') ./ "$results_dir"
-rm -rvf "${results_dir?invalid dir}/${CUSTOM_REPO_NAME}".db*
-rm -rvf "${results_dir?invalid dir}/${CUSTOM_REPO_NAME}".files*
-repo-add -q "$results_dir/$CUSTOM_REPO_NAME.db.tar.xz" "$results_dir"/*.pkg.tar.*
+chmod uga+rwX "$results_dir" -R
+chmod uga+rwX "$log_dir" -R
