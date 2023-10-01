@@ -6,7 +6,7 @@ arch=('x86_64' 'aarch64')
 url='https://github.com/KDE/extra-cmake-modules#branch=master'
 license=(GPL2)
 depends=(cmake)
-makedepends=(python-requests qt6-tools)
+makedepends=(python-requests qt6-tools git)
 optdepends=('python-pyxdg: to generate fastlane metadata for Android apps'
             'python-requests: to generate fastlane metadata for Android apps'
             'python-yaml: to generate fastlane metadata for Android apps')
