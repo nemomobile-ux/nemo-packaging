@@ -10,7 +10,7 @@ pkgdesc="Sailfish Profile daemon, manages user settings"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/profiled"
 license=('BSD')
-depends=('profiled-settings-nemo')
+depends=('profiled-settings-nemo' 'dbus')
 makedepends=('doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	"https://github.com/sailfishos-mirror/dbus-glib/archive/d42176ae4763e5288ef37ea314fe58387faf2005.tar.gz")
