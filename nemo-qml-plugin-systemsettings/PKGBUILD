@@ -23,7 +23,7 @@ depends=('openssl'
 	'libqofono-qt6>=0.105'
 	'openssl>=3.0')
 
-makedepends=('qt6-tools' 'mce-headers>=1.32.0' 'pkgconf')
+makedepends=('qt6-tools' 'mce-headers>=1.32.0' 'pkgconf' 'clang')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 
 sha256sums=('9162b1aa48847e8d638a9ea9d9227b1a525cf647ecf8ba7755a860cd42ba79be')
