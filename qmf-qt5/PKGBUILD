@@ -11,7 +11,7 @@ depends=('nemo-keepalive'
     'buteo-syncfw'
     'libaccounts-qt6'
     'signond6')
-makedepends=('git')
+makedepends=('git' 'qt6-old-features')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0090-fix_missing_librares.patch"
     "0091-use_std_list.patch"
