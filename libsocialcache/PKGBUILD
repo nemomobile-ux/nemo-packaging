@@ -9,7 +9,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libsocialcache"
 license=('BSD-3-Clause')
 depends=('buteo-syncfw' 'mlite')
-makedepends=('qt6-tools')
+makedepends=('qt6-tools' 'clang')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-Allow-build-with-Qt6.patch'
     '0002-use-mlite-for-keys.patch'
