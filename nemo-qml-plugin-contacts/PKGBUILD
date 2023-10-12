@@ -19,7 +19,10 @@ depends=('libphonenumber-nemo'
 	'buteo-sync-plugin-carddav'
 	'icu')
 
-makedepends=('qt6-tools')
+makedepends=(
+    'qt6-tools'
+    'clang'
+)
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-fix_build_on_qt6.patch")
 sha256sums=('b9f1d35f834e4860ee7eeae9b70a5d5fae78f21c5eb58b686972913f7836aedc'
