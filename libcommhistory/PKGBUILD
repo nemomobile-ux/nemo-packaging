@@ -3,7 +3,7 @@
 
 pkgname=libcommhistory
 pkgver=1.12.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Communications event history database API"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libcommhistory"
@@ -13,13 +13,13 @@ depends=('libphonenumber-nemo'
     'qtcontacts-sqlite'
     'nemo-qml-plugin-contacts')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-fix-warnings-and-api.patch")
+    "0001-allow_build_with_qt6.patch")
 sha256sums=('c0b9f25bcc2dc6656e8fa4be10339db2db5f5ab1e417792a629b3593028b3a7f'
-    '1bf3fe3d5b2ecaeb15155c9b2f4df1b0a12c6ea611e416c60ee7ab19cc7038a0')
+    '18e2bbd1901e54ef1c92c2afe62163497c023fac2b87ee3d18ccb7f44767cd67')
 
 prepare() {
   cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-fix-warnings-and-api.patch"
+  patch -p1 --input="${srcdir}/0001-allow_build_with_qt6.patch"
 }
 
 build() {
@@ -33,5 +33,8 @@ build() {
 package() {
   cd $pkgname-$pkgver
   cd build
+  touch ../tests/tests.xml
+  touch ../tests/performance_tests.xml
   make -j 1 INSTALL_ROOT="${pkgdir}" install
+  rm -rf ${pkgdir}/opt
 }
