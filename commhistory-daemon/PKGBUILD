@@ -20,7 +20,7 @@ depends=('qt6-base'
     'nemo-qml-plugin-contacts'
     'nemo-qml-plugin-notifications>=1.0.12'
     'libqofonoext')
-makedepends=('qt6-tools' 'python')
+makedepends=('qt6-tools' 'clang' 'python')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "commhistoryd.service"
     "0001-revert_adjust_to_new_messages_bus_names.patch")
