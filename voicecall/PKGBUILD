@@ -13,15 +13,26 @@ depends=('libpulse'
 	 'libresourceqt'
 	 'libqofono-qt6'
 	 'qt6-multimedia'
-	 'libngf-qt'
+	 'libngf-qt6'
 	 'telepathy-ring'
 	 'telepathy-farstream'
 	 'telepathy-qt')
 makedepends=('cmake')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-	'voicecall-manager.service')
+	'voicecall-manager.service'
+	'0001-Allow-build-with-qt6.patch'
+)
 sha256sums=('10b31a14bc93df68d8d16373adffffe5ae3d7b9dcdcacf3f65822d44a1e28a3e'
-    '61c9da6be16743334d608f19a7a7cd3d104264e3409f212078b6a60c1d628dce')
+    '61c9da6be16743334d608f19a7a7cd3d104264e3409f212078b6a60c1d628dce'
+    '177b951d715110e0d769301cbcbc6aa695d113fe81421ccf3a4a65e246802815'
+
+)
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-Allow-build-with-qt6.patch"
+}
+
 
 build() {
     cd $pkgname-$pkgver

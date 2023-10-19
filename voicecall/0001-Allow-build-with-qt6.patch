@@ -1,0 +1,235 @@
+From e204ceca61064c5c97961a70f6d7c06571294253 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Thu, 19 Oct 2023 09:53:45 +0000
+Subject: [PATCH] Allow build with qt6
+
+---
+ lib/src/abstractvoicecallhandler.h            |  4 ++-
+ plugins/declarative/src/src.pro               |  2 +-
+ .../src/voicecallaudiorecorder.cpp            | 27 +++++++++++++++----
+ .../declarative/src/voicecallaudiorecorder.h  | 11 ++++++--
+ plugins/declarative/src/voicecallhandler.h    |  4 ++-
+ plugins/ngf/src/src.pro                       |  2 +-
+ plugins/plugin.pri                            |  6 +----
+ plugins/providers/ofono/src/src.pro           |  2 +-
+ src/src.pro                                   |  2 +-
+ 9 files changed, 42 insertions(+), 18 deletions(-)
+
+diff --git a/lib/src/abstractvoicecallhandler.h b/lib/src/abstractvoicecallhandler.h
+index d2e646d..c233241 100644
+--- a/lib/src/abstractvoicecallhandler.h
++++ b/lib/src/abstractvoicecallhandler.h
+@@ -46,7 +46,9 @@ class AbstractVoiceCallHandler : public QObject
+     Q_PROPERTY(bool isRemoteHeld READ isRemoteHeld NOTIFY remoteHeldChanged)
+     Q_PROPERTY(QString parentHandlerId READ parentHandlerId NOTIFY parentHandlerIdChanged)
+     Q_PROPERTY(QList<AbstractVoiceCallHandler*> childCalls READ childCalls NOTIFY childCallsChanged)
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    Q_MOC_INCLUDE("abstractvoicecallprovider.h");
++#endif
+ public:
+     enum VoiceCallStatus {
+         STATUS_NULL,
+diff --git a/plugins/declarative/src/src.pro b/plugins/declarative/src/src.pro
+index 69b2dc1..73c4929 100644
+--- a/plugins/declarative/src/src.pro
++++ b/plugins/declarative/src/src.pro
+@@ -9,7 +9,7 @@ TARGET = voicecall
+ uri = org.nemomobile.voicecall
+ 
+ enable-ngf {
+-    PKGCONFIG += ngf-qt5
++    PKGCONFIG += ngf-qt$${QT_MAJOR_VERSION}
+     DEFINES += WITH_NGF
+ }
+ 
+diff --git a/plugins/declarative/src/voicecallaudiorecorder.cpp b/plugins/declarative/src/voicecallaudiorecorder.cpp
+index 060a9f9..b4cf6b3 100644
+--- a/plugins/declarative/src/voicecallaudiorecorder.cpp
++++ b/plugins/declarative/src/voicecallaudiorecorder.cpp
+@@ -34,6 +34,7 @@
+ 
+ #include "voicecallaudiorecorder.h"
+ 
++#include <QAudioFormat>
+ #include <QDateTime>
+ #include <QDBusConnection>
+ #include <QDBusMessage>
+@@ -44,7 +45,10 @@
+ #include <QDataStream>
+ #include <QStandardPaths>
+ #include <QtDebug>
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <QAudioDevice>
++#include <QMediaDevices>
++#endif
+ #include <unistd.h>
+ 
+ namespace {
+@@ -69,17 +73,25 @@ QAudioFormat getRecordingFormat()
+     QAudioFormat format;
+ 
+     format.setChannelCount(ChannelCount);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    format.setSampleFormat(QAudioFormat::Int16);
+     format.setSampleRate(SampleRate);
++
++    QAudioDevice device(QMediaDevices::defaultAudioInput());
++    if(!device.isFormatSupported(format)) {
++        format = device.preferredFormat();
++    }
++#else
+     format.setSampleSize(SampleBits);
+     format.setCodec(QStringLiteral("audio/pcm"));
+     format.setByteOrder(QAudioFormat::LittleEndian);
+     format.setSampleType(QAudioFormat::UnSignedInt);
+-
+     QAudioDeviceInfo info(QAudioDeviceInfo::defaultInputDevice());
++
+     if (!info.isFormatSupported(format)) {
+         format = info.nearestFormat(format);
+     }
+-
++#endif
+     return format;
+ }
+ 
+@@ -241,11 +253,13 @@ void VoiceCallAudioRecorder::featuresCallFinished(QDBusPendingCallWatcher *watch
+ void VoiceCallAudioRecorder::inputStateChanged(QAudio::State state)
+ {
+     if (state == QAudio::StoppedState) {
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+         if (input) {
+             if (input->error() != QAudio::NoError) {
+                 qWarning() << "Recording stopped due to error:" << input->error();
+             }
+         }
++#endif
+         terminateRecording();
+     }
+ }
+@@ -295,10 +309,13 @@ bool VoiceCallAudioRecorder::initiateRecording(const QString &fileName)
+     }
+ 
+     output.swap(file);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    input.reset(new QAudioSource(recordingFormat));
++    connect(input.data(), &QAudioSource::stateChanged, this, &VoiceCallAudioRecorder::inputStateChanged);
++#else
+     input.reset(new QAudioInput(recordingFormat));
+     connect(input.data(), &QAudioInput::stateChanged, this, &VoiceCallAudioRecorder::inputStateChanged);
+-
++#endif
+     input->start(output.data());
+     active = true;
+     emit recordingChanged();
+diff --git a/plugins/declarative/src/voicecallaudiorecorder.h b/plugins/declarative/src/voicecallaudiorecorder.h
+index 44d2666..6ab00cf 100644
+--- a/plugins/declarative/src/voicecallaudiorecorder.h
++++ b/plugins/declarative/src/voicecallaudiorecorder.h
+@@ -34,8 +34,12 @@
+ 
+ #ifndef VOICECALLAUDIORECORDER_H
+ #define VOICECALLAUDIORECORDER_H
+-
++#include <QtCore>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <QAudioSource>
++#else
+ #include <QAudioInput>
++#endif
+ #include <QFile>
+ #include <QScopedPointer>
+ #include <QDBusPendingCallWatcher>
+@@ -85,8 +89,11 @@ private slots:
+ private:
+     bool initiateRecording(const QString &fileName);
+     void terminateRecording();
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QScopedPointer<QAudioSource> input;
++#else
+     QScopedPointer<QAudioInput> input;
++#endif
+     QScopedPointer<QFile> output;
+     QString label;
+     bool featureAvailable;
+diff --git a/plugins/declarative/src/voicecallhandler.h b/plugins/declarative/src/voicecallhandler.h
+index 9e11afb..a05f736 100644
+--- a/plugins/declarative/src/voicecallhandler.h
++++ b/plugins/declarative/src/voicecallhandler.h
+@@ -29,7 +29,9 @@ class VoiceCallHandler : public QObject
+     Q_PROPERTY(bool isRemoteHeld READ isRemoteHeld NOTIFY remoteHeldChanged)
+     Q_PROPERTY(VoiceCallModel* childCalls READ childCalls NOTIFY childCallsChanged)
+     Q_PROPERTY(VoiceCallHandler* parentCall READ parentCall NOTIFY parentCallChanged)
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    Q_MOC_INCLUDE("voicecallmodel.h");
++#endif
+ public:
+     enum VoiceCallStatus {
+         STATUS_NULL,
+diff --git a/plugins/ngf/src/src.pro b/plugins/ngf/src/src.pro
+index 05a25e8..a72fffd 100644
+--- a/plugins/ngf/src/src.pro
++++ b/plugins/ngf/src/src.pro
+@@ -1,7 +1,7 @@
+ include(../../plugin.pri)
+ TARGET = voicecall-ngf-plugin
+ 
+-PKGCONFIG += ngf-qt5
++PKGCONFIG += ngf-qt$${QT_MAJOR_VERSION}
+ 
+ DEFINES += PLUGIN_NAME=\\\"ngf-plugin\\\"
+ 
+diff --git a/plugins/plugin.pri b/plugins/plugin.pri
+index 64abee0..bba9380 100644
+--- a/plugins/plugin.pri
++++ b/plugins/plugin.pri
+@@ -1,14 +1,10 @@
+ TEMPLATE = lib
+ QT = core
+-CONFIG += plugin link_pkgconfig c++11
+-
+-QMAKE_CXXFLAGS += -std=c++0x
++CONFIG += plugin link_pkgconfig
+ 
+ # includes are ok all the time, yes, really.
+ # it's only used for some macros.
+ INCLUDEPATH += $$PWD/../lib/src
+ 
+-LIBS += -L$$PWD/../lib/src -lvoicecall
+-
+ target.path = $$[QT_INSTALL_LIBS]/voicecall/plugins
+ INSTALLS += target
+diff --git a/plugins/providers/ofono/src/src.pro b/plugins/providers/ofono/src/src.pro
+index a38a209..6f20ee5 100644
+--- a/plugins/providers/ofono/src/src.pro
++++ b/plugins/providers/ofono/src/src.pro
+@@ -2,7 +2,7 @@ include(../../../plugin.pri)
+ TARGET = voicecall-ofono-plugin
+ QT += dbus
+ 
+-PKGCONFIG += qofono-qt5
++PKGCONFIG += qofono-qt$${QT_MAJOR_VERSION}
+ 
+ HEADERS += \
+     ofonovoicecallhandler.h  \
+diff --git a/src/src.pro b/src/src.pro
+index bcc9160..96ba0e3 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -8,7 +8,7 @@ INCLUDEPATH += ../lib/src
+ DEFINES += VOICECALL_PLUGIN_DIRECTORY=\"\\\"$$[QT_INSTALL_LIBS]/voicecall/plugins\\\"\"
+ 
+ enable-nemo-devicelock {
+-    PKGCONFIG += libresourceqt5 nemodevicelock
++    PKGCONFIG += libresourceqt$${QT_MAJOR_VERSION} nemodevicelock
+     DEFINES += WITH_NEMO_DEVICELOCK
+ }
+ 
+-- 
+2.42.0
+
