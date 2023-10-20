@@ -1,0 +1,241 @@
+From 0568ec588041c22fc1440c6f67bb1b344b4d8c32 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Thu, 19 Oct 2023 13:56:17 +0000
+Subject: [PATCH] Allow build on Qt6
+
+---
+ src/gallery/gallery.pro                            |  1 -
+ src/gallery/qgalleryabstractrequest.h              |  6 ++++--
+ src/gallery/qgalleryproperty.h                     |  4 ++++
+ src/gallery/qgalleryqueryrequest.h                 |  2 +-
+ src/gallery/tracker/qgallerytrackerlistcolumn.cpp  |  4 ++++
+ src/imports/gallery/qdeclarativegallery.cpp        |  4 ++++
+ src/imports/gallery/qdeclarativegalleryfilter.cpp  | 11 +++++++++--
+ src/imports/gallery/qdeclarativegalleryfilter.h    |  8 ++++++++
+ .../gallery/qdeclarativegalleryquerymodel.cpp      | 14 ++++++++------
+ .../gallery/qdeclarativegalleryquerymodel.h        |  4 ++++
+ 10 files changed, 46 insertions(+), 12 deletions(-)
+
+diff --git a/src/gallery/gallery.pro b/src/gallery/gallery.pro
+index c68bdb8..b2f5419 100644
+--- a/src/gallery/gallery.pro
++++ b/src/gallery/gallery.pro
+@@ -1,7 +1,6 @@
+ TARGET = QtDocGallery
+ MODULE = docgallery
+ QT = core
+-
+ load(qt_module)
+ 
+ CONFIG += no_keywords
+diff --git a/src/gallery/qgalleryabstractrequest.h b/src/gallery/qgalleryabstractrequest.h
+index 6c1c589..220fb98 100644
+--- a/src/gallery/qgalleryabstractrequest.h
++++ b/src/gallery/qgalleryabstractrequest.h
+@@ -47,7 +47,10 @@
+ #include <QtCore/qobject.h>
+ #include <QtCore/qstringlist.h>
+ 
+-QT_BEGIN_HEADER
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++Q_MOC_INCLUDE("qabstractgallery.h");
++#endif
++
+ QT_BEGIN_NAMESPACE_DOCGALLERY
+ 
+ class QAbstractGallery;
+@@ -144,6 +147,5 @@ private:
+ };
+ 
+ QT_END_NAMESPACE_DOCGALLERY
+-QT_END_HEADER
+ 
+ #endif
+diff --git a/src/gallery/qgalleryproperty.h b/src/gallery/qgalleryproperty.h
+index a4fbbad..4633645 100644
+--- a/src/gallery/qgalleryproperty.h
++++ b/src/gallery/qgalleryproperty.h
+@@ -87,7 +87,11 @@ struct Q_GALLERY_EXPORT QGalleryProperty
+         return QGalleryMetaDataFilter(QLatin1String(m_name), string, QGalleryFilter::Wildcard); }
+     QGalleryMetaDataFilter regExp(const QString &rx) const {
+         return QGalleryMetaDataFilter(QLatin1String(m_name), rx, QGalleryFilter::RegExp); }
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QGalleryMetaDataFilter regExp(const QRegularExpression &rx) const {
++#else
+     QGalleryMetaDataFilter regExp(const QRegExp &rx) const {
++#endif
+         return QGalleryMetaDataFilter(QLatin1String(m_name), rx, QGalleryFilter::RegExp); }
+ 
+     QString ascending() const { return QLatin1Char('+') + QLatin1String(m_name); }
+diff --git a/src/gallery/qgalleryqueryrequest.h b/src/gallery/qgalleryqueryrequest.h
+index e16232e..f0cb2b5 100644
+--- a/src/gallery/qgalleryqueryrequest.h
++++ b/src/gallery/qgalleryqueryrequest.h
+@@ -155,7 +155,7 @@ Q_SIGNALS:
+     void currentItemChanged();
+ 
+ protected:
+-    void setResponse(QGalleryAbstractResponse *response);
++    void setResponse(QGalleryAbstractResponse *response) override;
+ 
+ private:
+     Q_DECLARE_PRIVATE(QGalleryQueryRequest)
+diff --git a/src/gallery/tracker/qgallerytrackerlistcolumn.cpp b/src/gallery/tracker/qgallerytrackerlistcolumn.cpp
+index 73f619d..0bf771a 100644
+--- a/src/gallery/tracker/qgallerytrackerlistcolumn.cpp
++++ b/src/gallery/tracker/qgallerytrackerlistcolumn.cpp
+@@ -102,7 +102,11 @@ QVariant QGalleryTrackerStringListColumn::toVariant(TrackerSparqlCursor *cursor,
+ {
+     switch (TrackerSparqlValueType type = tracker_sparql_cursor_get_value_type(cursor, index)) {
+     case TRACKER_SPARQL_VALUE_TYPE_STRING:
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        return QString::fromUtf8(tracker_sparql_cursor_get_string(cursor, index, 0)).split(m_separatorChar, Qt::SkipEmptyParts);
++#else
+         return QString::fromUtf8(tracker_sparql_cursor_get_string(cursor, index, 0)).split(m_separatorChar, QString::SkipEmptyParts);
++#endif
+     case TRACKER_SPARQL_VALUE_TYPE_UNBOUND:
+     case TRACKER_SPARQL_VALUE_TYPE_BLANK_NODE:
+         break;
+diff --git a/src/imports/gallery/qdeclarativegallery.cpp b/src/imports/gallery/qdeclarativegallery.cpp
+index 8b7a0b8..9936aec 100644
+--- a/src/imports/gallery/qdeclarativegallery.cpp
++++ b/src/imports/gallery/qdeclarativegallery.cpp
+@@ -67,7 +67,11 @@ public:
+         int major = 5;
+         int minor = 0;
+         qmlRegisterUncreatableType<QDeclarativeDocumentGallery>(uri, major, minor, "DocumentGallery", QDeclarativeDocumentGallery::tr("DocumentGallery is a namespace class"));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        qmlRegisterAnonymousType<QDeclarativeGalleryFilterBase>(uri, 0);
++#else
+         qmlRegisterType<QDeclarativeGalleryFilterBase>();
++#endif
+         qmlRegisterType<QDeclarativeGalleryEqualsFilter>(uri, major, minor, "GalleryEqualsFilter");
+         qmlRegisterType<QDeclarativeGalleryLessThanFilter>(uri, major, minor, "GalleryLessThanFilter");
+         qmlRegisterType<QDeclarativeGalleryLessThanEqualsFilter>(uri, major, minor, "GalleryLessThanEqualsFilter");
+diff --git a/src/imports/gallery/qdeclarativegalleryfilter.cpp b/src/imports/gallery/qdeclarativegalleryfilter.cpp
+index 48fb13b..5132dad 100644
+--- a/src/imports/gallery/qdeclarativegalleryfilter.cpp
++++ b/src/imports/gallery/qdeclarativegalleryfilter.cpp
+@@ -154,7 +154,7 @@ QGalleryFilter QDeclarativeGalleryStringFilter::filter() const
+ 
+ QGalleryFilter QDeclarativeGalleryEqualsFilter::filter() const
+ {
+-    if (m_filter.value().type() == QVariant::RegExp) {
++    if (m_filter.value().type() == QVariant::RegularExpression) {
+         QGalleryMetaDataFilter filter(m_filter);
+ 
+         filter.setComparator(QGalleryFilter::RegExp);
+@@ -506,15 +506,22 @@ void QDeclarativeGalleryFilterGroup::append(
+         Q_EMIT filterGroup->filterChanged();
+     }
+ }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++qsizetype QDeclarativeGalleryFilterGroup::count(
++#else
+ int QDeclarativeGalleryFilterGroup::count(
++#endif
+         QQmlListProperty<QDeclarativeGalleryFilterBase> *filters)
+ {
+     return static_cast<QList<QDeclarativeGalleryFilterBase *>*>(filters->data)->count();
+ }
+ 
+ QDeclarativeGalleryFilterBase *QDeclarativeGalleryFilterGroup::at(
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        QQmlListProperty<QDeclarativeGalleryFilterBase> *filters, qsizetype index)
++#else
+         QQmlListProperty<QDeclarativeGalleryFilterBase> *filters, int index)
++#endif
+ {
+     return static_cast<QList<QDeclarativeGalleryFilterBase *>*>(filters->data)->at(index);
+ }
+diff --git a/src/imports/gallery/qdeclarativegalleryfilter.h b/src/imports/gallery/qdeclarativegalleryfilter.h
+index 2c5c13c..9c31ab6 100644
+--- a/src/imports/gallery/qdeclarativegalleryfilter.h
++++ b/src/imports/gallery/qdeclarativegalleryfilter.h
+@@ -279,9 +279,17 @@ private:
+     static void append(
+             QQmlListProperty<QDeclarativeGalleryFilterBase> *filters,
+             QDeclarativeGalleryFilterBase *filter);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    static qsizetype count(QQmlListProperty<QDeclarativeGalleryFilterBase> *filters);
++#else
+     static int count(QQmlListProperty<QDeclarativeGalleryFilterBase> *filters);
++#endif
+     static QDeclarativeGalleryFilterBase *at(
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            QQmlListProperty<QDeclarativeGalleryFilterBase> *filters, qsizetype index);
++#else
+             QQmlListProperty<QDeclarativeGalleryFilterBase> *filters, int index);
++#endif
+     static void clear(QQmlListProperty<QDeclarativeGalleryFilterBase> *filters);
+ };
+ 
+diff --git a/src/imports/gallery/qdeclarativegalleryquerymodel.cpp b/src/imports/gallery/qdeclarativegalleryquerymodel.cpp
+index 56d8e97..fb2ce0a 100644
+--- a/src/imports/gallery/qdeclarativegalleryquerymodel.cpp
++++ b/src/imports/gallery/qdeclarativegalleryquerymodel.cpp
+@@ -262,7 +262,11 @@ QModelIndex QDeclarativeGalleryQueryModel::index(int row, int column, const QMod
+ 
+ QJSValue QDeclarativeGalleryQueryModel::get(const QJSValue &index) const
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QJSEngine *scriptEngine = qjsEngine(this);
++#else
+     QJSEngine *scriptEngine = index.engine();
++#endif
+ 
+     if (!scriptEngine)
+        return QJSValue();
+@@ -430,7 +434,7 @@ void QDeclarativeGalleryQueryModel::_q_setResultSet(QGalleryResultSet *resultSet
+     }
+ 
+     if (m_resultSet) {
+-        QHash<int, QByteArray> roleNames;
++        m_roleNames.clear();
+         m_propertyNames.clear();
+ 
+         QStringList propertyNames = m_request.propertyNames();
+@@ -442,14 +446,12 @@ void QDeclarativeGalleryQueryModel::_q_setResultSet(QGalleryResultSet *resultSet
+             const int key = m_resultSet->propertyKey(*it);
+ 
+             if (key >= 0) {
+-                roleNames.insert(key + MetaDataOffset, it->toLatin1());
++                m_roleNames.insert(key + MetaDataOffset, it->toLatin1());
+                 m_propertyNames.append(qMakePair(key, *it));
+             }
+         }
+-        roleNames.insert(ItemId, QByteArray("itemId"));
+-        roleNames.insert(ItemType, QByteArray("itemType"));
+-
+-        setRoleNames(roleNames);
++        m_roleNames.insert(ItemId, QByteArray("itemId"));
++        m_roleNames.insert(ItemType, QByteArray("itemType"));
+ 
+         connect(m_resultSet, SIGNAL(itemsInserted(int,int)),
+                 this, SLOT(_q_itemsInserted(int,int)));
+diff --git a/src/imports/gallery/qdeclarativegalleryquerymodel.h b/src/imports/gallery/qdeclarativegalleryquerymodel.h
+index b954103..9b19b23 100644
+--- a/src/imports/gallery/qdeclarativegalleryquerymodel.h
++++ b/src/imports/gallery/qdeclarativegalleryquerymodel.h
+@@ -145,6 +145,7 @@ public:
+     bool setData(const QModelIndex &index, const QVariant &value, int role);
+ 
+     QModelIndex index(int row, int column, const QModelIndex &parent) const;
++    QHash<int, QByteArray> roleNames() const {return m_roleNames;}
+ 
+     int count() const { return m_rowCount; }
+ 
+@@ -207,6 +208,9 @@ private Q_SLOTS:
+     void _q_itemsRemoved(int index, int count);
+     void _q_itemsMoved(int from, int to, int count);
+     void _q_itemsChanged(int index, int count);
++
++private:
++    QHash<int,QByteArray> m_roleNames;
+ };
+ 
+ class QDeclarativeDocumentGalleryModel : public QDeclarativeGalleryQueryModel
+-- 
+2.42.0
+
