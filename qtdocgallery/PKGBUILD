@@ -18,7 +18,7 @@ source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
     '0002-Allow-build-on-Qt6.patch')
 sha256sums=('3f18a69f62d3d60a566519784834af885419a4bbbdaa7f47392deb9e1e247b41'
     '43e1184286366eb01c66e5d7ec4bfa01b37ca7c56d37054888a2396adb056ff3'
-    '6da15d11b988e6f4ec7ec058874cbfb20f8b3e04d7b03c8665704cba78959d2b')
+    '75b9abbf7cb14ff68a0c2739e69970addc4986c3933f5a6694244164c47f7cc0')
 
 prepare() {
     cd ${pkgname}-mer-$_basever-git$_gitver
