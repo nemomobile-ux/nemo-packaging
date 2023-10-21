@@ -14,7 +14,7 @@ license=('BSD-3-Clause')
 depends=('qt6-glacier-app'
 	'nemo-qml-plugin-contacts'
 	'nemo-qml-plugin-dbus'
-	'commhistory-daemon'
+#	'commhistory-daemon'
 	'libcommhistory'
 	'nemo-qml-plugin-messages'
 	'telepathy-mission-control'
