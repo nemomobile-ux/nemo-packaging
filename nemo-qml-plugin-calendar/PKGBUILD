@@ -11,7 +11,7 @@ license=('BSD')
 depends=('qt6-base'
     'libaccounts-qt6'
     'mkcal'
-    'kcalendarcore')
+    'kcalendarcore6')
 
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-disable_werror.patch"

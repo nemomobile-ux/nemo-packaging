@@ -13,7 +13,7 @@ depends=('telepathy-qt'
     'libqofono-qt6'
     'qtcontacts-sqlite'
     'buteo-syncfw'
-    'kcalendarcore'
+    'kcalendarcore6'
     'mkcal'
     'nemo-qml-plugin-contacts'
     'libqofonoext')

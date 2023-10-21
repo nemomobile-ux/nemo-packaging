@@ -14,7 +14,7 @@ depends=('libsocialcache'
 	'mlite'
 	'qt6-pim'
 	'mkcal'
-	'kcalendarcore'
+	'kcalendarcore6'
 	'libaccounts-qt6'
 	'nemo-qml-plugin-notifications')
 
