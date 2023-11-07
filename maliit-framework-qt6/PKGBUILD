@@ -26,8 +26,7 @@ build() {
     -DCMAKE_INSTALL_LIBEXECDIR=lib \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DLIB_INSTALL_DIR=lib \
-    -DQT6_PLUGINS_INSTALL_DIR=lib/qt/plugins \
-    -DQT6_MKSPECS_INSTALL_DIR=lib/qt/mkspecs \
+    -Denable-dbus-activation=ON \
     -Denable-docs=OFF \
     -Denable-tests=OFF \
     -DCMAKE_BUILD_TYPE=Release
