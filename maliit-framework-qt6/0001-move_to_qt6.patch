@@ -1,0 +1,436 @@
+From 7cfa8cef888eaed3e2e957746bcdf41271b55209 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Tue, 7 Nov 2023 12:19:07 +0000
+Subject: [PATCH] Move to qt6
+
+---
+ .gitignore                                  |  3 +-
+ CMakeLists.txt                              | 75 +++++++++++----------
+ cmake/FindQtWaylandScanner.cmake            |  2 +-
+ common/maliit/namespace.h                   |  1 +
+ common/maliit/settingdata.h                 |  1 -
+ connection/dbusserverconnection.h           |  1 +
+ connection/minputcontextconnection.h        |  3 +
+ connection/waylandinputmethodconnection.cpp | 22 +++---
+ input-context/minputcontext.cpp             |  3 +-
+ src/MaliitPluginsConfig.cmake.in            |  8 +--
+ src/maliit/plugins/abstractinputmethod.h    |  2 +
+ src/msharedattributeextensionmanager.cpp    |  2 +-
+ 12 files changed, 66 insertions(+), 57 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index c0175e14..996bcde6 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -19,4 +19,5 @@ gen_*
+ *.tar.*
+ *.md5
+ .idea
+-build
+\ No newline at end of file
++build
++CMakeLists.txt.user
+\ No newline at end of file
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7d4d1f26..26a6a52b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -13,7 +13,7 @@ option(enable-glib "Build GLib support" ON)
+ 
+ option(enable-xcb "Compile with xcb support" ON)
+ option(enable-wayland "Compile with support for wayland" ON)
+-option(enable-qt5-inputcontext "Compile with Qt 5 input context" ON)
++option(enable-qt6-inputcontext "Compile with Qt 6 input context" ON)
+ 
+ option(enable-hwkeyboard "Enable support for the hardware keyboard" ON)
+ option(enable-dbus-activation "Enable dbus activation support for maliit-server" OFF)
+@@ -21,34 +21,35 @@ option(enable-dbus-activation "Enable dbus activation support for maliit-server"
+ # Install paths
+ include(GNUInstallDirs)
+ 
+-if(NOT DEFINED QT5_PLUGINS_INSTALL_DIR)
+-    set(QT5_PLUGINS_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/qt5/plugins" CACHE PATH
+-            "Installation directory for Qt 5 plugins [LIB_INSTALL_DIR/qt5/plugins]")
++if(NOT DEFINED QT6_PLUGINS_INSTALL_DIR)
++    set(QT6_PLUGINS_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/qt6/plugins" CACHE PATH
++            "Installation directory for Qt 6 plugins [LIB_INSTALL_DIR/qt6/plugins]")
+ endif()
+ 
+-if(NOT DEFINED QT5_MKSPECS_INSTALL_DIR)
+-    set(QT5_MKSPECS_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/qt5/mkspecs" CACHE PATH
+-            "Installation directory for Qt 5 mkspecs files [LIB_INSTALL_DIR/qt5/mkspecs]")
++if(NOT DEFINED QT6_MKSPECS_INSTALL_DIR)
++    set(QT6_MKSPECS_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/qt6/mkspecs" CACHE PATH
++            "Installation directory for Qt 6 mkspecs files [LIB_INSTALL_DIR/qt6/mkspecs]")
+ endif()
+ 
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+ 
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ set(CMAKE_INCLUDE_CURRENT_DIR ON)
+ set(CMAKE_AUTOMOC ON)
+ 
+ find_package(PkgConfig REQUIRED)
+ 
+-find_package(Qt5Core)
+-find_package(Qt5DBus)
+-find_package(Qt5Gui REQUIRED PRIVATE)
+-find_package(Qt5Quick)
++find_package(Qt6Core)
++find_package(Qt6DBus)
++find_package(Qt6Gui REQUIRED PRIVATE)
++find_package(Qt6Quick)
+ 
+ if(enable-wayland)
+     find_package(WaylandProtocols REQUIRED PRIVATE)
+     find_package(QtWaylandScanner REQUIRED)
+     find_package(Wayland REQUIRED)
+-    find_package(Qt5WaylandClient 5.14 REQUIRED PRIVATE)
+-    find_package(Qt5XkbCommonSupport REQUIRED PRIVATE)
++    find_package(Qt6WaylandClient 6.0 REQUIRED PRIVATE)
++    find_package(Qt6WaylandGlobalPrivate)
+     pkg_check_modules(XKBCOMMON REQUIRED IMPORTED_TARGET xkbcommon)
+ endif()
+ 
+@@ -59,7 +60,7 @@ add_library(maliit-common STATIC
+             common/maliit/namespaceinternal.h
+             common/maliit/settingdata.cpp
+             common/maliit/settingdata.h)
+-target_link_libraries(maliit-common Qt5::Core)
++target_link_libraries(maliit-common Qt6::Core)
+ target_include_directories(maliit-common PUBLIC common)
+ 
+ set(CONNECTION_SOURCES
+@@ -93,21 +94,21 @@ endif()
+ set_source_files_properties(dbus_interfaces/minputmethodcontext1interface.xml dbus_interfaces/minputmethodserver1interface.xml
+                             PROPERTIES INCLUDE maliit/settingdata.h)
+ 
+-qt5_add_dbus_adaptor(CONNECTION_SOURCES dbus_interfaces/minputmethodcontext1interface.xml dbusserverconnection.h DBusServerConnection)
+-qt5_add_dbus_adaptor(CONNECTION_SOURCES dbus_interfaces/minputmethodserver1interface.xml dbusinputcontextconnection.h DBusInputContextConnection)
++qt6_add_dbus_adaptor(CONNECTION_SOURCES dbus_interfaces/minputmethodcontext1interface.xml dbusserverconnection.h DBusServerConnection)
++qt6_add_dbus_adaptor(CONNECTION_SOURCES dbus_interfaces/minputmethodserver1interface.xml dbusinputcontextconnection.h DBusInputContextConnection)
+ 
+-qt5_add_dbus_interface(CONNECTION_SOURCES dbus_interfaces/minputmethodcontext1interface.xml minputmethodcontext1interface_interface)
+-qt5_add_dbus_interface(CONNECTION_SOURCES dbus_interfaces/minputmethodserver1interface.xml minputmethodserver1interface_interface)
++qt6_add_dbus_interface(CONNECTION_SOURCES dbus_interfaces/minputmethodcontext1interface.xml minputmethodcontext1interface_interface)
++qt6_add_dbus_interface(CONNECTION_SOURCES dbus_interfaces/minputmethodserver1interface.xml minputmethodserver1interface_interface)
+ 
+ add_library(maliit-connection STATIC ${CONNECTION_SOURCES})
+-target_link_libraries(maliit-connection Qt5::Core Qt5::DBus Qt5::Gui maliit-common)
++target_link_libraries(maliit-connection Qt6::Core Qt6::DBus Qt6::Gui maliit-common)
+ if(enable-wayland)
+     target_link_libraries(maliit-connection Wayland::Client PkgConfig::XKBCOMMON)
+-    target_include_directories(maliit-connection PRIVATE ${Qt5WaylandClient_PRIVATE_INCLUDE_DIRS})
++    target_include_directories(maliit-connection PRIVATE ${Qt6WaylandClient_PRIVATE_INCLUDE_DIRS})
+ endif()
+ target_include_directories(maliit-connection PUBLIC connection)
+ 
+-include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
++include_directories(${Qt6Gui_PRIVATE_INCLUDE_DIRS})
+ 
+ set(PLUGINS_SOURCES
+     src/maliit/plugins/abstractinputmethod.cpp
+@@ -212,7 +213,7 @@ endif()
+ 
+ add_library(maliit-plugins SHARED ${PLUGINS_SOURCES} ${PLUGINS_HEADER})
+ target_link_libraries(maliit-plugins PRIVATE maliit-common maliit-connection ${PLUGINS_LIBRARIES})
+-target_link_libraries(maliit-plugins PUBLIC Qt5::Core Qt5::Gui Qt5::Quick)
++target_link_libraries(maliit-plugins PUBLIC Qt6::Core Qt6::Gui Qt6::Quick)
+ target_include_directories(maliit-plugins PRIVATE ${PLUGINS_INCLUDE_DIRS})
+ 
+ set_target_properties(maliit-plugins PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR}
+@@ -287,14 +288,14 @@ add_definitions(-DMALIIT_FRAMEWORK_USE_INTERNAL_API
+ add_executable(maliit-server passthroughserver/main.cpp)
+ target_link_libraries(maliit-server maliit-plugins maliit-connection)
+ 
+-if(enable-qt5-inputcontext)
++if(enable-qt6-inputcontext)
+     set(INPUT_CONTEXT_SOURCES
+             input-context/main.cpp
+             input-context/minputcontext.cpp
+             input-context/minputcontext.h)
+ 
+     add_library(maliitplatforminputcontextplugin MODULE ${INPUT_CONTEXT_SOURCES})
+-    target_link_libraries(maliitplatforminputcontextplugin maliit-connection Qt5::Quick)
++    target_link_libraries(maliitplatforminputcontextplugin maliit-connection Qt6::Quick)
+ endif()
+ 
+ if(enable-wayland)
+@@ -306,31 +307,31 @@ if(enable-wayland)
+     ecm_add_qtwayland_client_protocol(INPUT_PANEL_SHELL_SOURCES PROTOCOL ${WAYLANDPROTOCOLS_PATH}/unstable/input-method/input-method-unstable-v1.xml BASENAME input-method-unstable-v1)
+ 
+     add_library(inputpanel-shell MODULE ${INPUT_PANEL_SHELL_SOURCES})
+-    target_link_libraries(inputpanel-shell Qt5::WaylandClient PkgConfig::XKBCOMMON Wayland::Client)
+-    target_include_directories(inputpanel-shell PRIVATE ${Qt5WaylandClient_PRIVATE_INCLUDE_DIRS} ${Qt5XkbCommonSupport_PRIVATE_INCLUDE_DIRS})
++    target_link_libraries(inputpanel-shell Qt6::WaylandClient Qt6::WaylandGlobalPrivate PkgConfig::XKBCOMMON Wayland::Client)
++    target_include_directories(inputpanel-shell PRIVATE ${Qt6WaylandClient_PRIVATE_INCLUDE_DIRS} ${Qt6XkbCommonSupport_PRIVATE_INCLUDE_DIRS})
+ endif()
+ 
+ if(enable-examples)
+-    find_package(Qt5Widgets)
++    find_package(Qt6Widgets)
+     add_executable(maliit-exampleapp-plainqt
+             examples/apps/plainqt/mainwindow.cpp
+             examples/apps/plainqt/mainwindow.h
+             examples/apps/plainqt/plainqt.cpp)
+-    target_link_libraries(maliit-exampleapp-plainqt Qt5::Gui Qt5::Widgets)
++    target_link_libraries(maliit-exampleapp-plainqt Qt6::Gui Qt6::Widgets)
+ 
+     add_library(cxxhelloworldplugin MODULE
+             examples/plugins/cxx/helloworld/helloworldinputmethod.cpp
+             examples/plugins/cxx/helloworld/helloworldinputmethod.h
+             examples/plugins/cxx/helloworld/helloworldplugin.cpp
+             examples/plugins/cxx/helloworld/helloworldplugin.h)
+-    target_link_libraries(cxxhelloworldplugin maliit-plugins Qt5::Widgets)
++    target_link_libraries(cxxhelloworldplugin maliit-plugins Qt6::Widgets)
+ 
+     add_library(cxxoverrideplugin MODULE
+                 examples/plugins/cxx/override/overrideinputmethod.cpp
+                 examples/plugins/cxx/override/overrideinputmethod.h
+                 examples/plugins/cxx/override/overrideplugin.cpp
+                 examples/plugins/cxx/override/overrideplugin.h)
+-    target_link_libraries(cxxoverrideplugin maliit-plugins Qt5::Widgets)
++    target_link_libraries(cxxoverrideplugin maliit-plugins Qt6::Widgets)
+ endif()
+ 
+ # Documentation
+@@ -394,7 +395,7 @@ install(FILES src/mimserver.h
+ install(FILES ${CMAKE_BINARY_DIR}/maliit-framework.pc ${CMAKE_BINARY_DIR}/maliit-plugins.pc ${CMAKE_BINARY_DIR}/maliit-server.pc
+         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ install(FILES ${CMAKE_BINARY_DIR}/maliit-framework.prf ${CMAKE_BINARY_DIR}/maliit-plugins.prf ${CMAKE_BINARY_DIR}/maliit-defines.prf
+-        DESTINATION ${QT5_MKSPECS_INSTALL_DIR}/features)
++        DESTINATION ${QT6_MKSPECS_INSTALL_DIR}/features)
+ 
+ install(EXPORT MaliitPluginsTargets FILE MaliitPluginsTargets.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/MaliitPlugins)
+ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/MaliitPluginsConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/MaliitPluginsConfigVersion.cmake
+@@ -430,13 +431,13 @@ if(enable-glib)
+     install(FILES ${CMAKE_BINARY_DIR}/maliit-glib.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ endif()
+ 
+-if(enable-qt5-inputcontext)
+-    install(TARGETS maliitplatforminputcontextplugin LIBRARY DESTINATION ${QT5_PLUGINS_INSTALL_DIR}/platforminputcontexts)
++if(enable-qt6-inputcontext)
++    install(TARGETS maliitplatforminputcontextplugin LIBRARY DESTINATION ${QT6_PLUGINS_INSTALL_DIR}/platforminputcontexts)
+ endif()
+ 
+ if(enable-wayland)
+     install(TARGETS inputpanel-shell
+-            LIBRARY DESTINATION ${QT5_PLUGINS_INSTALL_DIR}/wayland-shell-integration)
++            LIBRARY DESTINATION ${QT6_PLUGINS_INSTALL_DIR}/wayland-shell-integration)
+ endif()
+ 
+ if(enable-dbus-activation)
+@@ -455,7 +456,7 @@ endif()
+ if(enable-tests)
+     enable_testing()
+ 
+-    find_package(Qt5Test)
++    find_package(Qt6Test)
+ 
+     set(TEST_PLUGINS_DIR ${CMAKE_BINARY_DIR}/tests/plugins)
+ 
+@@ -496,7 +497,7 @@ if(enable-tests)
+             tests/utils/core-utils.h
+             tests/utils/gui-utils.cpp
+             tests/utils/gui-utils.h)
+-    target_link_libraries(test-utils PUBLIC Qt5::Core Qt5::Gui Qt5::Test maliit-connection)
++    target_link_libraries(test-utils PUBLIC Qt6::Core Qt6::Gui Qt6::Test maliit-connection)
+     target_include_directories(test-utils INTERFACE tests/utils)
+     target_compile_definitions(test-utils PUBLIC
+             -DMALIIT_TEST_PLUGINS_DIR="${CMAKE_INSTALL_FULL_LIBDIR}/maliit-framework-tests/plugins"
+@@ -507,7 +508,7 @@ if(enable-tests)
+             tests/stubs/mkeyboardstatetracker_stub.h
+             tests/stubs/fakeproperty.cpp
+             tests/stubs/fakeproperty.h)
+-    target_link_libraries(test-stubs PUBLIC Qt5::Core)
++    target_link_libraries(test-stubs PUBLIC Qt6::Core)
+     target_include_directories(test-stubs INTERFACE tests/stubs)
+ 
+     function(create_test name)
+diff --git a/cmake/FindQtWaylandScanner.cmake b/cmake/FindQtWaylandScanner.cmake
+index f38ee7f9..19786351 100644
+--- a/cmake/FindQtWaylandScanner.cmake
++++ b/cmake/FindQtWaylandScanner.cmake
+@@ -70,7 +70,7 @@ ecm_find_package_version_check(QtWaylandScanner)
+ 
+ # Find qtwaylandscanner
+ find_program(QtWaylandScanner_EXECUTABLE NAMES qtwaylandscanner
+-             HINTS /usr/lib64/qt5/bin/ /usr/lib/qt5/bin/)
++             HINTS /usr/lib64/qt6/bin/ /usr/lib/qt6/bin/)
+ 
+ include(FindPackageHandleStandardArgs)
+ find_package_handle_standard_args(QtWaylandScanner
+diff --git a/common/maliit/namespace.h b/common/maliit/namespace.h
+index 2e47b176..5f96372e 100644
+--- a/common/maliit/namespace.h
++++ b/common/maliit/namespace.h
+@@ -14,6 +14,7 @@
+ #ifndef MALIIT_NAMESPACE_H
+ #define MALIIT_NAMESPACE_H
+ 
++#include <QList>
+ #include <QMetaType>
+ #include <QSharedPointer>
+ 
+diff --git a/common/maliit/settingdata.h b/common/maliit/settingdata.h
+index 343f9705..818e3371 100644
+--- a/common/maliit/settingdata.h
++++ b/common/maliit/settingdata.h
+@@ -13,7 +13,6 @@
+ #define MALIIT_SETTINGDATA_H
+ 
+ #include <maliit/namespace.h>
+-
+ #include <QString>
+ #include <QVariant>
+ #include <QList>
+diff --git a/connection/dbusserverconnection.h b/connection/dbusserverconnection.h
+index 3d252978..2553177f 100644
+--- a/connection/dbusserverconnection.h
++++ b/connection/dbusserverconnection.h
+@@ -14,6 +14,7 @@
+ #ifndef DBUSSERVERCONNECTION_H
+ #define DBUSSERVERCONNECTION_H
+ 
++#include <maliit/settingdata.h>
+ #include "mimserverconnection.h"
+ 
+ #include "inputcontextdbusaddress.h"
+diff --git a/connection/minputcontextconnection.h b/connection/minputcontextconnection.h
+index c9d223fb..91d03a80 100644
+--- a/connection/minputcontextconnection.h
++++ b/connection/minputcontextconnection.h
+@@ -23,11 +23,14 @@ QT_BEGIN_NAMESPACE
+ class QKeyEvent;
+ QT_END_NAMESPACE
+ 
++Q_MOC_INCLUDE(<maliit/settingdata.h>)
++
+ class MInputContextConnectionPrivate;
+ class MAbstractInputMethod;
+ class MAttributeExtensionId;
+ class MImPluginSettingsInfo;
+ 
++
+ /*! \internal
+  * \ingroup maliitserver
+  * \brief Base class of the input method communication implementation between
+diff --git a/connection/waylandinputmethodconnection.cpp b/connection/waylandinputmethodconnection.cpp
+index 25e6fbfa..0fb40178 100644
+--- a/connection/waylandinputmethodconnection.cpp
++++ b/connection/waylandinputmethodconnection.cpp
+@@ -338,15 +338,15 @@ void WaylandInputMethodConnection::sendPreeditString(const QString &string,
+ 
+     if (replace_length > 0) {
+         int cursor = widgetState().value(CursorPositionAttribute).toInt();
+-        uint32_t index = string.midRef(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
+-        uint32_t length = string.midRef(cursor + replace_start, replace_length).toUtf8().size();
++        uint32_t index = QStringView(string).mid(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
++        uint32_t length = QStringView(string).mid(cursor + replace_start, replace_length).toUtf8().size();
+         d->context()->delete_surrounding_text(index, length);
+     }
+ 
+     Q_FOREACH (const Maliit::PreeditTextFormat& format, preedit_formats) {
+         QtWayland::zwp_text_input_v2::preedit_style style = preeditStyleFromMaliit(format.preeditFace);
+-        uint32_t index = string.leftRef(format.start).toUtf8().size();
+-        uint32_t length = string.leftRef(format.start + format.length).toUtf8().size() - index;
++        uint32_t index = QStringView(string).left(format.start).toUtf8().size();
++        uint32_t length = QStringView(string).left(format.start + format.length).toUtf8().size() - index;
+         qCDebug(lcWaylandConnection) << Q_FUNC_INFO << "preedit_styling" << index << length;
+         d->context()->preedit_styling(index, length, style);
+     }
+@@ -356,8 +356,8 @@ void WaylandInputMethodConnection::sendPreeditString(const QString &string,
+         cursor_pos = string.size() + 1 - cursor_pos;
+     }
+ 
+-    qCDebug(lcWaylandConnection) << Q_FUNC_INFO << "preedit_cursor" << string.leftRef(cursor_pos).toUtf8().size();
+-    d->context()->preedit_cursor(string.leftRef(cursor_pos).toUtf8().size());
++    qCDebug(lcWaylandConnection) << Q_FUNC_INFO << "preedit_cursor" << QStringView(string).left(cursor_pos).toUtf8().size();
++    d->context()->preedit_cursor(QStringView(string).left(cursor_pos).toUtf8().size());
+     qCDebug(lcWaylandConnection) << Q_FUNC_INFO << "preedit_string" << string;
+     d->context()->preedit_string(d->context()->serial(), string, string);
+ }
+@@ -384,12 +384,12 @@ void WaylandInputMethodConnection::sendCommitString(const QString &string,
+ 
+     if (replace_length > 0) {
+         int cursor = widgetState().value(CursorPositionAttribute).toInt();
+-        uint32_t index = string.midRef(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
+-        uint32_t length = string.midRef(cursor + replace_start, replace_length).toUtf8().size();
++        uint32_t index = QStringView(string).mid(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
++        uint32_t length = QStringView(string).mid(cursor + replace_start, replace_length).toUtf8().size();
+         d->context()->delete_surrounding_text(index, length);
+     }
+ 
+-    cursor_pos = string.leftRef(cursor_pos).toUtf8().size();
++    cursor_pos = QStringView(string).left(cursor_pos).toUtf8().size();
+     d->context()->cursor_position(cursor_pos, cursor_pos);
+     d->context()->commit_string(d->context()->serial(), string);
+ }
+@@ -470,8 +470,8 @@ void WaylandInputMethodConnection::setSelection(int start, int length)
+         return;
+ 
+     QString surrounding = widgetState().value(SurroundingTextAttribute).toString();
+-    uint32_t index(surrounding.leftRef(start + length).toUtf8().size());
+-    uint32_t anchor(surrounding.leftRef(start).toUtf8().size());
++    uint32_t index(QStringView(surrounding).left(start + length).toUtf8().size());
++    uint32_t anchor(QStringView(surrounding).left(start).toUtf8().size());
+ 
+     d->context()->cursor_position(index, anchor);
+     d->context()->commit_string(d->context()->serial(), QString());
+diff --git a/input-context/minputcontext.cpp b/input-context/minputcontext.cpp
+index c300753f..c0d56891 100644
+--- a/input-context/minputcontext.cpp
++++ b/input-context/minputcontext.cpp
+@@ -624,7 +624,8 @@ void MInputContext::onInvokeAction(const QString &action, const QKeySequence &se
+         const int modifiers = sequence[i] & AllModifiers;
+         QString text("");
+         if (modifiers == Qt::NoModifier || modifiers == Qt::ShiftModifier) {
+-            text = QString(key);
++            qWarning() << "Need to check" << Q_FUNC_INFO;
++            text = QString::number(key);
+         }
+         keyEvent(QEvent::KeyPress, key, modifiers, text, false, 1);
+         keyEvent(QEvent::KeyRelease, key, modifiers, text, false, 1);
+diff --git a/src/MaliitPluginsConfig.cmake.in b/src/MaliitPluginsConfig.cmake.in
+index e9178da4..85f99a4e 100644
+--- a/src/MaliitPluginsConfig.cmake.in
++++ b/src/MaliitPluginsConfig.cmake.in
+@@ -1,7 +1,7 @@
+ include(CMakeFindDependencyMacro)
+ 
+-find_dependency(Qt5Core @Qt5Core_VERSION@)
+-find_dependency(Qt5Gui @Qt5Gui_VERSION@)
+-find_dependency(Qt5Quick @Qt5Quick_VERSION@)
++find_dependency(Qt6Core @Qt6Core_VERSION@)
++find_dependency(Qt6Gui @Qt6Gui_VERSION@)
++find_dependency(Qt6Quick @Qt6Quick_VERSION@)
+ 
+-include("${CMAKE_CURRENT_LIST_DIR}/MaliitPluginsTargets.cmake")
+\ No newline at end of file
++include("${CMAKE_CURRENT_LIST_DIR}/MaliitPluginsTargets.cmake")
+diff --git a/src/maliit/plugins/abstractinputmethod.h b/src/maliit/plugins/abstractinputmethod.h
+index 1a93207f..07295068 100644
+--- a/src/maliit/plugins/abstractinputmethod.h
++++ b/src/maliit/plugins/abstractinputmethod.h
+@@ -21,6 +21,8 @@
+ 
+ #include <maliit/namespace.h>
+ 
++Q_MOC_INCLUDE(<quick/keyoverridequick.h>)
++
+ QT_BEGIN_NAMESPACE
+ class QRegion;
+ class QPoint;
+diff --git a/src/msharedattributeextensionmanager.cpp b/src/msharedattributeextensionmanager.cpp
+index e8bf50b5..56379190 100644
+--- a/src/msharedattributeextensionmanager.cpp
++++ b/src/msharedattributeextensionmanager.cpp
+@@ -39,7 +39,7 @@ MSharedAttributeExtensionManager::~MSharedAttributeExtensionManager()
+ void MSharedAttributeExtensionManager::registerPluginSetting(const QString &fullName, Maliit::SettingEntryType type,
+                                                              QVariantMap attributes)
+ {
+-    QString key = fullName.section(1, -1);
++    QString key = fullName.section(QLatin1Char('\\'), 1, -1);
+     QSharedPointer<MSharedAttributeExtensionManagerPluginSetting> value(new MSharedAttributeExtensionManagerPluginSetting(key, type, attributes));
+ 
+     sharedAttributeExtensions[key] = value;
