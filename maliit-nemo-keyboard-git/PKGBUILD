@@ -1,17 +1,17 @@
 # $Id$
 pkgname=maliit-nemo-keyboard-git
-pkgver=0.105.r0.gaff46418
+pkgver=0.105.r2.g649035d5
 pkgrel=1
 pkgdesc="Contains nemoobile mallit keyboard"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/maliit-nemo-keyboard"
 license=('BSD')
 depends=(
-    'maliit-framework'
+    'maliit-framework-qt6'
     'glacier-settings'
     'hunspell'
     'hunspell-en_us'
-    'presage2'
+    'presage2>=2.0.1'
     'presage2-lang-en_US'
     'marisa'
 )
