@@ -25,7 +25,6 @@ fi
 # NemoMobile packages
 eval "$BUILD nemo-theme-glacier"
 eval "$BUILD qt6-old-features"
-eval "$BUILD forks/maliit-framework"
 
 eval "$BUILD extra-cmake-modules-git"
 eval "$BUILD bluez-qt6-git"
