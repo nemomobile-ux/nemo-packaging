@@ -3,7 +3,7 @@ pkgname=${_name}6
 pkgver=5.240.0
 pkgrel=1
 pkgdesc='The KDE calendar access library'
-arch=(x86_64)
+arch=('x86_64' 'aarch64')
 url='https://github.com/KDE/kcalendarcore#branch=master'
 license=(LGPL)
 depends=(libical qt6-base)
