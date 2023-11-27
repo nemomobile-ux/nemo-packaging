@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt-mobility-haptics-ffmemless
-pkgver=0.2.8
+pkgver=0.2.9
 pkgrel=1
 pkgdesc='qt-mobility-haptics-ffmemless'
 arch=('x86_64' 'aarch64')
@@ -15,17 +15,8 @@ depends=('qt6-base'
     'qt6-feedback'
     'libprofile-qt')
 
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    '0001-Fix-build-with-Qt6.patch'
-)
-sha256sums=('c5bf3eb0c195b37fc6dbc83bed20f5f608dd96b3e0d9fa9fd2a2863153bdfc06'
-    '101081cfda2f5fd303e3e6207b501a3b678c76f08913a75c1a705a5b7ea54627'
-)
-
-prepare() {
-  cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-Fix-build-with-Qt6.patch"
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('a1e18651b0cde2357ad90514821e3a613d06997dd242c9b76478bd5306c534f7')
 
 build() {
     cd $pkgname-$pkgver
