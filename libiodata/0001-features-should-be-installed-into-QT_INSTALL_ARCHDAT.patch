@@ -1,0 +1,25 @@
+From 23de16d063e1a925b2eb35dc3880cbdaf27563de Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Mon, 27 Nov 2023 15:55:09 +0000
+Subject: [PATCH] features should be installed into QT_INSTALL_ARCHDATA
+
+---
+ root.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/root.pro b/root.pro
+index b02e0e8..a7ee908 100644
+--- a/root.pro
++++ b/root.pro
+@@ -2,7 +2,7 @@ TEMPLATE = subdirs
+ 
+ SUBDIRS = src tests type-to-cxx
+ 
+-prf.path =  $$[QT_HOST_DATA]/mkspecs/features
++prf.path = $$[QT_INSTALL_ARCHDATA]/mkspecs/features
+ 
+ equals(QT_MAJOR_VERSION, 5): prf.files = iodata-qt5.prf
+ equals(QT_MAJOR_VERSION, 6): prf.files = iodata-qt6.prf
+-- 
+2.42.0
+
