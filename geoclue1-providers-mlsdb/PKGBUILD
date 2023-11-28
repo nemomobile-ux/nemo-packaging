@@ -9,7 +9,7 @@ url="https://github.com/mer-hybris/geoclue-providers-mlsdb";
 license=(LGPL)
 depends=('geoclue1'
     'libconnman-qt'
-    'libqofono-qt5'
+    'libqofono-qt6'
     'libqofonoext'
     'mlite')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
@@ -27,7 +27,7 @@ prepare() {
 
 build() {
     cd $srcdir/geoclue-providers-mlsdb-${pkgver}
-    qmake geoclue-providers-mlsdb.pro
+    qmake6 geoclue-providers-mlsdb.pro
     make
 }
 

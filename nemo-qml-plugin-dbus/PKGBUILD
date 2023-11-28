@@ -1,34 +1,25 @@
 # Maintainer: Bernhard Landauer <bernhard@manjaro.org>
 
 pkgname=nemo-qml-plugin-dbus
-pkgver=2.1.32
+pkgver=2.1.33
 pkgrel=1
 pkgdesc="Nemo Mobile D-Bus QML Plugin."
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-dbus"
 license=('BSD' 'LGPL2.1')
-depends=('qt5-base' 'qt5-declarative')
+depends=('qt6-base' 'qt6-declarative')
 provides=('libnemodbus.so=2')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('5edf496ffad68ba2c6c0e9c430aa7010353916a58c1a02b046e1640206d98a0f')
+sha256sums=('08d1bdc5eac5eba2197f2c1e04a7e851437724331215059db1d68828dbf3b0a8')
 
 build() {
   cd "$pkgname-$pkgver"
-  qmake "VERSION=$pkgver" src
+  qmake6 "VERSION=$pkgver" src
   make
 }
 
 package() {
   cd "$pkgname-$pkgver"
   make INSTALL_ROOT="${pkgdir}" install
-
-  # org.nemomobile.dbus legacy import
-  install -d "${pkgdir}"/usr/lib/qt/qml/org/nemomobile/dbus/
-  ln -sf /usr/lib/qt/qml/Nemo/DBus/libnemodbus.so \
-    "${pkgdir}"/usr/lib/qt/qml/org/nemomobile/dbus/
-  sed 's/Nemo.DBus/org.nemomobile.dbus/' \
-    < "${pkgdir}"/usr/lib/qt/qml/Nemo/DBus/qmldir \
-      > "${pkgdir}"/usr/lib/qt/qml/org/nemomobile/dbus/qmldir
-
   install -Dm644 license.bsd -t "${pkgdir}/usr/share/licenses/$pkgname/"
 }

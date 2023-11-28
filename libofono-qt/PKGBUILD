@@ -2,16 +2,22 @@
 
 
 pkgname=libofono-qt
-pkgver=0.54_git20190116
+pkgver=0.54_git20230526
 pkgrel=1
 pkgdesc='This package contains ofono-qt, a Qt-based library that providesbindings to oFono'
 arch=('aarch64' 'x86_64')
 url="https://github.com/Kaffeine/libofono-qt"
 license=('LGPL')
-makedepends=('qt5-base' 'doxygen')
-_commit="8132b5ff5035c468807c291b4fa30d7e0a54cba4"
-source=("$pkgname-$_commit.tar.gz::https://github.com/Kaffeine/$pkgname/archive/$_commit.tar.gz")
-md5sums=('445bd89a988abb6698321ab95e3197da')
+makedepends=('qt6-base' 'doxygen')
+_commit="1d3fa9d7523a07fc117f96c89b5f66bb03e0acd4"
+source=("$pkgname-$_commit.tar.gz::https://github.com/Kaffeine/$pkgname/archive/$_commit.tar.gz"
+    '0001-operator-const.patch'
+    '0002-Q_DISABLE_COPY-is-inherited-from-QObject.patch'
+)
+sha256sums=('90e62e4056e6b5f5992623ff3d34a21f03e7a65d637ebf9b419f9e7c16e47ccb'
+    'ed96838cc747bb3449563f479bb1ed61d3254a6aa90289809df8effd7e66b0e8'
+    '45e659ebeee364494e9db5509f60ca94d3f00567427e34755c94b19f40bce69d'
+)
 
 #pkgver() {
 #  cd $pkgname-$_commit
@@ -19,16 +25,20 @@ md5sums=('445bd89a988abb6698321ab95e3197da')
 #}
 
 
-build() {
+prepare() {
   cd $pkgname-$_commit
-    qmake-qt5
-	make
+  patch -p1 --input="${srcdir}/0001-operator-const.patch"
+  patch -p1 --input="${srcdir}/0002-Q_DISABLE_COPY-is-inherited-from-QObject.patch"
+}
 
+build() {
+    cd $pkgname-$_commit
+    qmake6
+    make
 }
 
 package() {
-  cd $pkgname-$_commit
+    cd $pkgname-$_commit
     INSTALL_ROOT="$pkgdir" make install
-
 }
 

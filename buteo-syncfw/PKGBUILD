@@ -11,16 +11,25 @@ pkgdesc="Synchronization backend"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/buteo-syncfw"
 license=('LGPLv2')
-depends=('libiphb' 'nemo-keepalive' 'libmce-qt' 'signond' 'libaccounts-qt')
-makedepends=('qt5-tools' 'doxygen')
+depends=('libiphb' 'nemo-keepalive' 'libmce-qt' 'signond6' 'libaccounts-qt6')
+makedepends=('qt6-tools' 'doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-	"msyncd.service")
+	"msyncd.service"
+	'0001-Allow-build-with-qt6.patch'
+	)
 sha256sums=('bf3ecad907d58f672b709fd9e75ddaf9f430bd8853aab9647685d1a7085a48bf'
-	'3781f5d9c22f1f8a3c32e30bb6ef7f07371e4b7a9d2c7d20720df338d3cd002e')
+	'3781f5d9c22f1f8a3c32e30bb6ef7f07371e4b7a9d2c7d20720df338d3cd002e'
+	'eb20eb51d10af8b94d686cf9fc86096fca74c75b0d0abb4f3f4fac5110abe07e'
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-Allow-build-with-qt6.patch"
+}
 
 build() {
   cd $pkgname-$pkgver
-  qmake-qt5 CONFIG+=usb-moded DEFINES+=USE_KEEPALIVE
+  qmake6 CONFIG+=usb-moded DEFINES+=USE_KEEPALIVE
   make
 }
 

@@ -8,9 +8,9 @@ pkgdesc='GSM connection manager for the Telepathy framework'
 arch=('aarch64' 'x86_64')
 url="https://github.com/sailfishos/$pkgname"
 license=('LGPL')
-depends=('ofono' 'libofono-qt' 'qt5-feedback')
+depends=('ofono' 'libofono-qt' 'qt6-feedback' 'python')
 makedepends=('autoconf' 'automake'  'libxslt'
-		'qt5-base'
+		'qt6-base'
 		'libphonenumber-nemo'
 		'telepathy-qt'
 		'sqlite'

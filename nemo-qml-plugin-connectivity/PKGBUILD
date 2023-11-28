@@ -2,19 +2,19 @@
 # Maintainer: Chupligin Sergey (neochapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-connectivity
-pkgver=0.2.12
+pkgver=0.2.13
 pkgrel=1
 pkgdesc="Connectivity plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-connectivity"
 license=('BSD')
-depends=('qt5-systems' 'libconnman-qt' 'libqofonoext' )
+depends=('libconnman-qt' 'libqofonoext')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('b77e03c3ed437e141c121f7d16cd440a4e3d1f58d72918dc0999136c5a9eeb4f')
+sha256sums=('836af189ee840e6caf08296887be66fe77a4ccc041a0636c7d5a5c59bff5fe84')
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

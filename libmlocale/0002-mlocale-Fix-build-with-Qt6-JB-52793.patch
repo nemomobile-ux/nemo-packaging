@@ -1,0 +1,1341 @@
+From 93cdd0428114ced78cc50c809e1d5b99d4cb7e57 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Mon, 28 Aug 2023 15:16:19 +0000
+Subject: [PATCH] [mlocale] Fix build with Qt6 JB#52793
+
+qt5 in .pro replaced by qt$${QT_MAJOR_VERSION}
+QTextCodec is deprecated in Qt6
+QIODevice::WriteOnly was moved to QIODeviceBase::WriteOnly
+QRegExp was replaced by QRegularExpression
+QString::SkipEmptyParts was moved to Qt::SkipEmptyParts
+
+Co-authored-by: Chupligin Sergey <neochapay@gmail.com>
+---
+ .gitignore                                    |   2 +-
+ benchmarks/common_top.pri                     |   7 +-
+ benchmarks/pt_mcalendar/pt_mcalendar.cpp      |   2 +
+ .../pt_mcharsetdetector.cpp                   |   5 +-
+ .../pt_mcharsetdetector/pt_mcharsetdetector.h |   2 +
+ benchmarks/pt_mlocale/pt_mlocale.cpp          |   5 +
+ benchmarks/pt_mlocale/pt_mlocale.h            |   2 +
+ configure                                     |  35 +++---
+ mkspecs/features/mlocale_common.prf           |   2 +-
+ mkspecs/features/mlocale_defines.prf.in       |   6 +-
+ src/data/mlocale6.pc.in                       |  11 ++
+ src/mcalendar.cpp                             |   4 +
+ src/mcharsetdetector.cpp                      |  17 ++-
+ src/mdebug.h                                  |   4 +
+ src/micuconversions.cpp                       |  13 ++-
+ src/mlocale.cpp                               | 106 ++++++++++++------
+ src/mlocale.h                                 |   4 +-
+ src/mlocationdatabase.cpp                     |   5 +
+ src/mstringsearch.cpp                         |   1 -
+ src/src.pro                                   |   6 +-
+ tests/common_bot.pri                          |   2 +-
+ tests/common_top.pri                          |   3 +-
+ tests/ft_breakiterator/ft_breakiterator.cpp   |   4 +-
+ tests/ft_locales/ft_locales.cpp               |  37 +++++-
+ .../ft_mcharsetdetector.cpp                   |  13 ++-
+ .../ft_mcharsetdetector/ft_mcharsetdetector.h |   2 +
+ tests/ft_mlocalebuckets/ft_mlocalebuckets.cpp |   4 +
+ tests/ft_mstringsearch/ft_mstringsearch.cpp   |   8 ++
+ tests/ft_mstringsearch/ft_mstringsearch.h     |   2 +
+ tests/ft_numbers/ft_numbers.cpp               |  28 +++++
+ tests/ft_sorting/ft_sorting.cpp               |   2 +
+ tests/ut_mcalendar/ut_mcalendar.cpp           |  54 +++++++++
+ .../ut_mlocationdatabase.cpp                  |  12 ++
+ tests/ut_translations/ut_translations.cpp     |   5 +-
+ 34 files changed, 335 insertions(+), 80 deletions(-)
+ create mode 100644 src/data/mlocale6.pc.in
+
+diff --git a/.gitignore b/.gitignore
+index 2e0d0b25..a81436a3 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -2,4 +2,4 @@ build-armel/*
+ build-i386/*
+ configure-stamp
+ build-stamp
+-
++.qmake.stash
+\ No newline at end of file
+diff --git a/benchmarks/common_top.pri b/benchmarks/common_top.pri
+index 0521a635..fe5f2480 100644
+--- a/benchmarks/common_top.pri
++++ b/benchmarks/common_top.pri
+@@ -13,16 +13,17 @@ DEPENDPATH = $$INCLUDEPATH
+ QMAKE_LIBDIR += ../../lib
+ CONFIG += debug
+ QT += testlib
++
+ TEMPLATE = app
+ # DEFINES += QT_NO_DEBUG_OUTPUT
+ DEFINES += UNIT_TEST
+-target.path = $$[QT_INSTALL_LIBS]/libmlocale-benchmarks5
++target.path = $$[QT_INSTALL_LIBS]/libmlocale-benchmarks$${QT_MAJOR_VERSION}
+ INSTALLS += target
+ 
+-LIBS += $$mAddLibrary(mlocale5)
++LIBS += $$mAddLibrary(mlocale$${QT_MAJOR_VERSION})
+ 
+ support_files.files =
+-support_files.path = $$[QT_INSTALL_LIBS]/libmlocale-benchmarks5
++support_files.path = $$[QT_INSTALL_LIBS]/libmlocale-benchmarks$${QT_MAJOR_VERSION}
+ INSTALLS += support_files
+ 
+ CONFIG-=app_bundle
+diff --git a/benchmarks/pt_mcalendar/pt_mcalendar.cpp b/benchmarks/pt_mcalendar/pt_mcalendar.cpp
+index 81cd890e..0ced7690 100644
+--- a/benchmarks/pt_mcalendar/pt_mcalendar.cpp
++++ b/benchmarks/pt_mcalendar/pt_mcalendar.cpp
+@@ -18,7 +18,9 @@
+ ****************************************************************************/
+ 
+ #include <QCoreApplication>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ #include <MLocale>
+ #include <unicode/uversion.h>
+ 
+diff --git a/benchmarks/pt_mcharsetdetector/pt_mcharsetdetector.cpp b/benchmarks/pt_mcharsetdetector/pt_mcharsetdetector.cpp
+index f02ff4a4..362eda58 100644
+--- a/benchmarks/pt_mcharsetdetector/pt_mcharsetdetector.cpp
++++ b/benchmarks/pt_mcharsetdetector/pt_mcharsetdetector.cpp
+@@ -117,13 +117,16 @@ void Pt_MCharsetDetector::benchmarkDetection()
+     QFETCH(QString, inputEncoding);
+     QFETCH(QString, bestMatchName);
+     QFETCH(QString, bestMatchLanguage);
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     QTextCodec *codec = QTextCodec::codecForName(inputEncoding.toLatin1());
+     if (codec == NULL) // there is no codec matching the name
+         QFAIL(QString("no such codec: " + inputEncoding).toLatin1().constData());
+ 
+     QByteArray encodedString = codec->fromUnicode(text);
+     MCharsetDetector charsetDetector(encodedString);
++#else
++    MCharsetDetector charsetDetector("UTF-8");
++#endif
+     charsetDetector.setDeclaredLocale(declaredLocale);
+     charsetDetector.setDeclaredEncoding(declaredEncoding);
+     charsetDetector.enableInputFilter(enableInputFilter);
+diff --git a/benchmarks/pt_mcharsetdetector/pt_mcharsetdetector.h b/benchmarks/pt_mcharsetdetector/pt_mcharsetdetector.h
+index cbb55f9a..7444bc7d 100644
+--- a/benchmarks/pt_mcharsetdetector/pt_mcharsetdetector.h
++++ b/benchmarks/pt_mcharsetdetector/pt_mcharsetdetector.h
+@@ -22,7 +22,9 @@
+ 
+ #include <QtTest/QtTest>
+ #include <QCoreApplication>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ #include <QTextStream>
+ #include <QObject>
+ #include <MCharsetDetector>
+diff --git a/benchmarks/pt_mlocale/pt_mlocale.cpp b/benchmarks/pt_mlocale/pt_mlocale.cpp
+index 709d5859..b9fe1893 100644
+--- a/benchmarks/pt_mlocale/pt_mlocale.cpp
++++ b/benchmarks/pt_mlocale/pt_mlocale.cpp
+@@ -247,7 +247,12 @@ void Pt_MLocale::benchmarkChineseSorting()
+     MLocale localeZh("zh_CN@collation=pinyin");
+     MLocale localeEn("en_US");
+     QString str("居 于 中 国 疆 域 内 的 各 个 民 族 统 称 为 中 华 民 族 亦 称 中 国 人 或 华 人 华 族 移 居 境 外 的 华 人 多 被 称 为 海 外 华 人 汉 族 是 中 国 人 口 最 多 地 域 分 布 最 广 的 民 族 在 少 数 民 族 当 中 人 过 年 口 查 有 满 苗 吾 彝 家 古 藏 9 民 通 汉 少 民 地 往 使 各 族 己 语 中 的 统 术 式 国 戏 书 和 画 传 娱 活 有 棋 棋 麻 等 国 格 术 术 世 名 酒 和 子 为 国 特 饮 文 春 中 新 元 清 端 七 中 重 冬 等 传 节 中 传 上 一 儒 思 国 中 人 强 的 庭 念 此 代 家 的 氏 于 名 前 国 还 视 育 对 才 选 春 时 孔 有 无 因 施 开 办 塾 养 才 朝 采 察 推 政 官 隋 起 行 举 平 中 拔 才 古 来 文 科 技 等 面 成 浩 烟 明 以 西 的 代 技 民 政 思 传 中 中 歷 重 編 历 历 历 都 有 官 此 存 十 详 的 史 料 二 四 资 通 等 今 4 0 多 前 中 地 为 心 始 现 落 织 而 国 和 代 历 多 演 和 代 迭 续 间 长 朝 有 商 汉 宋 和 等 朝 代 出 过 平 世 汉 文 之 和 武 兴 朝 观 治 开 盛 明 万 中 清 康 盛 等 學 究 示 國 代 更 常 氣 與 食 產 影 会 致 在 乱 分 时 中 王 历 上 断 北 游 民 交 征 如 奴 厥 卑 古 女 满 等 中 晋 代 经 五 乱 而 古 女 甚 入 中 改 了 国 世 的 史 展 程 多 族 入 华 族 大 庭 亥 命 中 的 王 体 1 1 年 出 史 台 而 之 是 和 体 中 民 後 国 内 時 民 府 臺 形 中 民 實 統 台 地 與 生 權 华 民 和 實 統 大 地 分 的 面 居 于 中 国 疆 域 内 的 各 个 民 族 统 称 为 中 华 民 族 亦 称 中 国 人 或 华 人 华 族 移 居 境 外 的 华 人 多 被 称 为 海 外 华 人 汉 族 是 中 国 人 口 最 多 地 域 分 布 最 广 的 民 族 在 少 数 民 族 当 中 人 过 年 口 查 有 满 苗 吾 彝 家 古 藏 9 民 通 汉 少 民 地 往 使 各 族 己 语 中 的 统 术 式 国 戏 书 和 画 传 娱 活 有 棋 棋 麻 等 国 格 术 术 世 名 酒 和 子 为 国 特 饮 文 春 中 新 元 清 端 七 中 重 冬 等 传 节 中 传 上 一 儒 思 国 中 人 强 的 庭 念 此 代 家 的 氏 于 名 前 国 还 视 育 对 才 选 春 时 孔 有 无 因 施 开 办 塾 养 才 朝 采 察 推 政 官 隋 起 行 举 平 中 拔 才 古 来 文 科 技 等 面 成 浩 烟 明 以 西 的 代 技 民 政 思 传 中 中 歷 重 編 历 历 历 都 有 官 此 存 十 详 的 史 料 二 四 资 通 等 今 4 0 多 前 中 地 为 心 始 现 落 织 而 国 和 代 历 多 演 和 代 迭 续 间 长 朝 有 商 汉 宋 和 等 朝 代 出 过 平 世 汉 文 之 和 武 兴 朝 观 治 开 盛 明 万 中 清 康 盛 等 學 究 示 國 代 更 常 氣 與 食 產 影 会 致 在 乱 分 时 中 王 历 上 断 北 游 民 交 征 如 奴 厥 卑 古 女 满 等 中 晋 代 经 五 乱 而 古 女 甚 入 中 改 了 国 世 的 史 展 程 多 族 入 华 族 大 庭 亥 命 中 的 王 体 1 1 年 出 史 台 而 之 是 和 体 中 民 後 国 内 時 民 府 臺 形 中 民 實 統 台 地 與 生 權 华 民 和 實 統 大 地 分 的 面");
++#if QT_VERSION < 0x051500
+     QStringList list = str.split(QLatin1String(" "),QString::SkipEmptyParts);
++#else
++    QStringList list = str.split(QLatin1String(" "),Qt::SkipEmptyParts);
++#endif
++
+     QBENCHMARK {
+         std::sort (list.begin(), list.end(), localeEn.collator());
+         std::sort (list.begin(), list.end(), localeZh.collator());
+diff --git a/benchmarks/pt_mlocale/pt_mlocale.h b/benchmarks/pt_mlocale/pt_mlocale.h
+index 7da413af..aac6d6cf 100644
+--- a/benchmarks/pt_mlocale/pt_mlocale.h
++++ b/benchmarks/pt_mlocale/pt_mlocale.h
+@@ -22,7 +22,9 @@
+ 
+ #include <QtTest/QtTest>
+ #include <QCoreApplication>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ #include <QTextStream>
+ #include <QObject>
+ #include <MLocale>
+diff --git a/configure b/configure
+index 4ebf56c6..4a2a1b30 100755
+--- a/configure
++++ b/configure
+@@ -501,7 +501,7 @@ fi
+ 
+ # substitute prefix in .pc files
+ MEEGOTOUCH_PC_DIR="$outpath/src/data"
+-MEEGOTOUCH_PC_FILES="mlocale5"
++MEEGOTOUCH_PC_FILES="mlocale5 mlocale6"
+ 
+ # make sure the directory exists
+ if [ ! -d $MEEGOTOUCH_PC_DIR ]; then
+@@ -530,23 +530,29 @@ done
+ #-------------------------------------------------------------------------------
+ # build makefiles based on the configuration
+ #-------------------------------------------------------------------------------
+-
+-if [ -z "$QTDIR" ]; then
+-    which qmake > /dev/null
+-    if [ $? -eq 0 ]; then
+-        QMAKE_BIN=`which qmake`
+-    else
+-        which qmake-qt5 > /dev/null
++if [ -z "$QMAKE_BIN" ]; then
++    if [ -z "$QTDIR" ]; then
++        which qmake > /dev/null
+         if [ $? -eq 0 ]; then
+-            QMAKE_BIN=`which qmake-qt5`
++            QMAKE_BIN=`which qmake`
+         else
+-            echo "qmake was not found in your path\n"
++            which qmake-qt5 > /dev/null
++            if [ $? -eq 0 ]; then
++                QMAKE_BIN=`which qmake-qt5`
++            else
++                which qmake6 > /dev/null
++                if [ $? -eq 0 ]; then
++                    QMAKE_BIN=`which qmake6`
++                else
++                    echo "qmake was not found in your path\n"
++                fi
++            fi
+         fi
++    elif [ -f "$QTDIR/bin/qmake" ]; then
++        QMAKE_BIN="$QTDIR/bin/qmake"
++    else
++        echo "QTDIR variable was set but could not find $QTDIR/bin/qmake\n"
+     fi
+-elif [ -f "$QTDIR/bin/qmake" ]; then
+-    QMAKE_BIN="$QTDIR/bin/qmake"
+-else
+-    echo "QTDIR variable was set but could not find $QTDIR/bin/qmake\n"
+ fi
+ 
+ if [ -z "$QMAKE_BIN" ]; then
+@@ -605,6 +611,7 @@ $QMAKE_BIN "$relpath/projects.pro" $QMAKE_CONFIG $QMAKE_SWITCHES
+ 
+ echo ""
+ echo ""
++echo "Qt version .......... $QT_VERSION"
+ echo "Optional build dependencies found:"
+ 
+ echo "ICU ............................. $HAVE_ICU"
+diff --git a/mkspecs/features/mlocale_common.prf b/mkspecs/features/mlocale_common.prf
+index 93c5ae34..a793cb14 100644
+--- a/mkspecs/features/mlocale_common.prf
++++ b/mkspecs/features/mlocale_common.prf
+@@ -4,7 +4,7 @@ macx {
+     INCLUDEPATH += /Library/Frameworks/mlocale.framework/Headers
+ }
+ 
+-ML_INC_DIR = $$ML_PREFIX/include/mlocale
++ML_INC_DIR = $$ML_PREFIX/include/mlocale$${QT_MAJOR_VERSION}
+ ML_LIB_DIR = $$ML_LIBDIR
+ 
+ INCLUDEPATH += $${ML_INC_DIR}
+diff --git a/mkspecs/features/mlocale_defines.prf.in b/mkspecs/features/mlocale_defines.prf.in
+index d5f409bb..97c57bf6 100644
+--- a/mkspecs/features/mlocale_defines.prf.in
++++ b/mkspecs/features/mlocale_defines.prf.in
+@@ -28,10 +28,10 @@ win32 {
+ ML_INSTALL_BIN = $$ML_PREFIX/bin
+ ML_INSTALL_LIBS = $$ML_LIBDIR
+ ML_INSTALL_DATA = $$ML_PREFIX/share
+-ML_INSTALL_HEADERS = $$ML_PREFIX/include/mlocale5
+-ML_TRANSLATION_DIR = $$ML_INSTALL_DATA/l10n/mlocale5
++ML_INSTALL_HEADERS = $$ML_PREFIX/include/mlocale$${QT_MAJOR_VERSION}
++ML_TRANSLATION_DIR = $$ML_INSTALL_DATA/l10n/mlocale$${QT_MAJOR_VERSION}
+ 
+-ML_ICUEXTRADATA_DIR = $$ML_INSTALL_DATA/mlocale5/icu
++ML_ICUEXTRADATA_DIR = $$ML_INSTALL_DATA/mlocale$${QT_MAJOR_VERSION}/icu
+ win32: ML_INSTALL_LIBS = $$ML_PREFIX/bin
+ 
+ defineReplace(mAddLibrary) {
+diff --git a/src/data/mlocale6.pc.in b/src/data/mlocale6.pc.in
+new file mode 100644
+index 00000000..983a139f
+--- /dev/null
++++ b/src/data/mlocale6.pc.in
+@@ -0,0 +1,11 @@
++prefix=@@M_UNIX_INSTALL_PREFIX@@
++exec_prefix=${prefix}
++libdir=${exec_prefix}/lib
++includedir=${prefix}/include/mlocale6
++
++Name: mlocale6
++Description: MeeGo Locale Library
++Version: @@M_VERSION@@
++Requires: Qt6Gui
++Cflags: -I${includedir}
++Libs: -L${libdir} -lmlocale6
+diff --git a/src/mcalendar.cpp b/src/mcalendar.cpp
+index 17104958..c21badb8 100644
+--- a/src/mcalendar.cpp
++++ b/src/mcalendar.cpp
+@@ -269,7 +269,11 @@ void MCalendar::setDate(int year, int month, int day)
+ //! Sets the calendar date from QDate
+ void MCalendar::setDate(const QDate &date)
+ {
++#if QT_VERSION < 0x051500
+     QDateTime datetime(date);
++#else
++    QDateTime datetime(date.startOfDay());
++#endif
+     setDateTime(datetime);
+ }
+ 
+diff --git a/src/mcharsetdetector.cpp b/src/mcharsetdetector.cpp
+index 9d21d341..9561fd56 100644
+--- a/src/mcharsetdetector.cpp
++++ b/src/mcharsetdetector.cpp
+@@ -30,7 +30,9 @@
+ 
+ #include <QString>
+ #include <QStringList>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ #include <QDebug>
+ 
+ namespace ML10N {
+@@ -500,6 +502,12 @@ QList<MCharsetMatch> MCharsetDetector::detectAll()
+ QString MCharsetDetector::text(const MCharsetMatch &charsetMatch)
+ {
+     Q_D(MCharsetDetector);
++    #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    if(charsetMatch.name().toLatin1().isEmpty() || charsetMatch.name().toLatin1() != "UTF-8") {
++        qWarning() << "Don`t use non utf8 charset";
++    }
++    return QString(d->_ba.constData());
++    #else
+     clearError();
+     QTextCodec *codec
+         = QTextCodec::codecForName(charsetMatch.name().toLatin1());
+@@ -519,6 +527,7 @@ QString MCharsetDetector::text(const MCharsetMatch &charsetMatch)
+             d->_status = U_INVALID_CHAR_FOUND;
+         return text;
+     }
++    #endif
+ }
+ 
+ void MCharsetDetector::setDeclaredLocale(const QString &locale)
+@@ -575,11 +584,11 @@ QStringList MCharsetDetector::getAllDetectableCharsets()
+     // Iscii-Gjr Iscii-Pnj Iscii-Bng Iscii-Dev TSCII GBK gb2312.1980-0
+     // gbk-0 CP936 MS936 windows-936 jisx0201*-0 jisx0208*-0
+     // ksc5601.1987-0 cp949 Big5-HKSCS big5-0 big5hkscs-0
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     QStringList availableCodecsQt;
+     foreach(const QByteArray &ba, QTextCodec::availableCodecs())
+         availableCodecsQt << QString(ba);
+-
++#endif
+     // Charsets detectable by libicu 4.4.2:
+     QStringList allDetectableCharsetsICU;
+     allDetectableCharsetsICU
+@@ -673,7 +682,11 @@ QStringList MCharsetDetector::getAllDetectableCharsets()
+ 
+     // remove all charsets not supported by QTextCodec and all duplicates:
+     foreach(const QString &cs, allDetectableCharsetsICU) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        if(!d->_allDetectableCharsets.contains(cs))
++#else
+         if(availableCodecsQt.contains(cs) && !d->_allDetectableCharsets.contains(cs))
++#endif
+             d->_allDetectableCharsets << cs;
+     }
+ 
+diff --git a/src/mdebug.h b/src/mdebug.h
+index 6a715acb..3d60f870 100644
+--- a/src/mdebug.h
++++ b/src/mdebug.h
+@@ -65,7 +65,11 @@ private:
+     QtMsgType convertMsgType(int type);
+ 
+     struct Stream {
++#if QT_VERSION < 0x051500
+         Stream(int type) : ts(&buffer, QIODevice::WriteOnly), ref(1), type(type), output(true) {}
++#else
++        Stream(int type) : ts(&buffer, QIODeviceBase::WriteOnly), ref(1), type(type), output(true) {}
++#endif
+ 
+         QTextStream ts;
+         QString buffer;
+diff --git a/src/micuconversions.cpp b/src/micuconversions.cpp
+index 8bb09601..b733a63a 100644
+--- a/src/micuconversions.cpp
++++ b/src/micuconversions.cpp
+@@ -21,6 +21,7 @@
+ 
+ #include <QDebug>
+ #include <QString>
++#include <QRegularExpression>
+ 
+ #include <unicode/unistr.h>
+ #include <unicode/datefmt.h>
+@@ -326,9 +327,11 @@ QString MIcuConversions::icuDatePatternEscaped(const QString &str)
+ QString MIcuConversions::parseOption(const QString &localeName, const QString &option)
+ {
+     QString value;
+-    QRegExp regexp("^[^@]+@.*"+QRegExp::escape(option)+"=([^@=;]+)($|;.*$)");
+-    if(regexp.indexIn(localeName) >= 0 && regexp.capturedTexts().size() == 3) {
+-        value = regexp.capturedTexts().at(1);
++    QRegularExpression regexp("^[^@]+@.*"+QRegularExpression::escape(option)+"=([^@=;]+)($|;.*$)");
++    QRegularExpressionMatch match = regexp.match(localeName);
++
++    if (match.hasMatch() && match.capturedTexts().size() == 3) {
++        value = match.captured(1);
+     }
+     return value;
+ }
+@@ -339,7 +342,7 @@ QString MIcuConversions::setOption(const QString &localeName, const QString &opt
+     if(!newLocaleName.isEmpty() && !option.isEmpty()) {
+         if(value.isEmpty()) { // remove option completely
+             if(newLocaleName.contains('@') && newLocaleName.contains(option)) {
+-                QRegExp regexp("^([^@]+@.*)"+QRegExp::escape(option)+"=[^@=;]+($|;.*$)");
++                QRegularExpression regexp("^([^@]+@.*)"+QRegularExpression::escape(option)+"=[^@=;]+($|;.*$)");
+                 newLocaleName.replace(regexp, "\\1\\2");
+                 newLocaleName.replace(QLatin1String(";;"), QLatin1String(";"));
+                 newLocaleName.replace(QLatin1String("@;"), QLatin1String("@"));
+@@ -360,7 +363,7 @@ QString MIcuConversions::setOption(const QString &localeName, const QString &opt
+                     newLocaleName += ';' + option + '=' + value;
+             }
+             else {
+-                QRegExp regexp("^([^@]+@.*"+QRegExp::escape(option)+"=)[^@=;]+($|;.*$)");
++                QRegularExpression regexp("^([^@]+@.*"+QRegularExpression::escape(option)+"=)[^@=;]+($|;.*$)");
+                 newLocaleName.replace(regexp, "\\1"+value+"\\2");
+             }
+         }
+diff --git a/src/mlocale.cpp b/src/mlocale.cpp
+index 8cbb0165..3d2e3880 100644
+--- a/src/mlocale.cpp
++++ b/src/mlocale.cpp
+@@ -47,6 +47,7 @@ using namespace icu;
+ #include <QMutex>
+ #include <QDateTime>
+ #include <QPointer>
++#include <QRegularExpression>
+ 
+ #ifdef HAVE_ICU
+ #include "mcollator.h"
+@@ -286,7 +287,8 @@ bool MTranslationCatalog::loadWith(MLocale *mlocale, MLocale::Category category)
+     // load "foo_de.qm" because the language has been switched to German
+     // but "foo_de.qm" does not exist. We do *not* want to keep the previous
+     // "foo_ar.qm" contents in that case.
+-    _translator.load("", 0);
++    bool _ = _translator.load("", 0);
++    Q_UNUSED(_)
+     return false;
+ }
+ 
+@@ -698,7 +700,9 @@ void MLocalePrivate::simplifyDateFormatForMixing(icu::DateFormat *df) const
+         // hardcoded text in the language of the the time category and
+         // most likely not understandable in the language of the
+         // message locale:
+-        icuFormatQString.replace(QRegExp("'[^']*'"), QLatin1String(""));
++        icuFormatQString.replace(
++            QRegularExpression("'[^']*'"),
++            QLatin1String(""));
+         // use stand-alone versions of month names and weekday names only
+         // inflected versions will make no sense in the context of a different
+         // language:
+@@ -875,10 +879,9 @@ bool MLocalePrivate::mixingSymbolsWanted(const QString &categoryNameMessages, co
+                       || categoryScriptTime == QLatin1String("Hebr"));
+     bool messagesIsRtl = (categoryScriptMessages == QLatin1String("Arab")
+                           || categoryScriptMessages == QLatin1String("Hebr"));
+-    if (categoryNameTime.contains(QRegExp("@.*mix-time-and-language=yes"))) {
++    if (categoryNameTime.contains(QRegularExpression("@.*mix-time-and-language=yes"))) {
+         return true;
+-    }
+-    else if(!categoryNameTime.contains(QRegExp("@.*mix-time-and-language=no"))
++    } else if(!categoryNameTime.contains(QRegularExpression("@.*mix-time-and-language=no"))
+        && languageMessages != languageTime
+        && languageMessages != "zh"
+        && languageMessages != "ja"
+@@ -908,8 +911,7 @@ bool MLocalePrivate::mixingSymbolsWanted(const QString &categoryNameMessages, co
+         // hopeless.  (See also
+         // https://projects.maemo.org/bugzilla/show_bug.cgi?id=270020)
+         return true;
+-    }
+-    else {
++    } else {
+         return false;
+     }
+ }
+@@ -1651,16 +1653,16 @@ bool MLocalePrivate::parseIcuLocaleString(const QString &localeString, QString *
+     // as in the above example, but there is the exception
+     // es_419, i.e. Spanish in Latin America where the “country code”
+     // is “419”.
+-    QRegExp regexp("^([a-z]{2,3})(?:_([A-Z][a-z]{3,3}))?(?:_([A-Z]{2,2}|419))?(?:_{1,2}([A-Z][A-Z_]*))?(?:@.*)?$");
+-    if (regexp.indexIn(localeString) == 0
+-        && regexp.capturedTexts().size() == 5) {
+-        *language = regexp.capturedTexts().at(1);
+-        *script   = regexp.capturedTexts().at(2); // "" if no match
+-        *country  = regexp.capturedTexts().at(3); // "" if no match
+-        *variant  = regexp.capturedTexts().at(4); // "" if no match
++    QRegularExpression regexp("^([a-z]{2,3})(?:_([A-Z][a-z]{3,3}))?(?:_([A-Z]{2,2}|419))?(?:_{1,2}([A-Z][A-Z_]*))?(?:@.*)?$");
++    QRegularExpressionMatch match = regexp.match(localeString);
++
++    if (match.hasMatch() && match.capturedTexts().size() == 5) {
++        *language = match.captured(1);
++        *script = match.captured(2);
++        *country = match.captured(3);
++        *variant = match.captured(4);
+         return true;
+-    }
+-    else {
++    } else {
+         *language = "";
+         *script = "";
+         *country = "";
+@@ -1747,20 +1749,22 @@ cleanLanguageCountryPosix(QString &localeString)
+     // let’s make this behave the same way as the icu locale names work for es_419,
+     // we only use LANG as a fallback to specify a locale when gconf isn’t available
+     // or doesn’t work.
+-    QRegExp regexp("([a-z]{2,3})(_([A-Z]{2,2}|419))?(?:.(?:[a-zA-Z0-9-]+))?(@([A-Z][a-z]+))?");
++    QRegularExpression regexp("([a-z]{2,3})(_([A-Z]{2,2}|419))?(?:.(?:[a-zA-Z0-9-]+))?(@([A-Z][a-z]+))?");
++    QRegularExpressionMatch match = regexp.match(localeString);
+ 
+-    if (regexp.indexIn(localeString) == 0 &&
+-            regexp.capturedTexts().size() == 6) { // size of regexp pattern above
++    if (match.hasMatch()
++            && match.capturedTexts().size() == 6) { // size of regexp pattern above
+         QStringList strings;
+-
+-        strings << regexp.capturedTexts().at(1); // language
++        strings << match.captured(1); // language
+ 
+         // POSIX locale modifier, interpreted as script
+-        if (!regexp.capturedTexts().at(5).isEmpty())
+-            strings << regexp.capturedTexts().at(5);
++        if (!match.captured(5).isEmpty()) {
++            strings << match.captured(5);
++        }
+ 
+-        if (!regexp.capturedTexts().at(3).isEmpty())
+-            strings << regexp.capturedTexts().at(3); // country
++        if (!match.captured(3).isEmpty()) {
++            strings << match.captured(3); // country
++        }
+ 
+         // we don't need variant
+         return strings.join("_");
+@@ -2817,7 +2821,7 @@ void MLocalePrivate::fixFormattedNumberForRTL(QString *formattedNumber) const
+         // (actually some of the Arabic currency symbols have RLM markers in the icu
+         // data ...).
+         removeDirectionalFormattingCodes(formattedNumber);
+-        if(formattedNumber->contains(QRegExp(QString::fromUtf8("[٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹]")))) {
++        if (formattedNumber->contains(QRegularExpression(QString::fromUtf8("[٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹]")))) {
+             swapPostAndPrefixOfFormattedNumber(formattedNumber);
+         }
+     }
+@@ -2864,6 +2868,7 @@ void MLocalePrivate::fixFormattedNumberForRTL(QString *formattedNumber) const
+     formattedNumber->prepend(QChar(0x202A)); // LEFT-TO-RIGHT EMBEDDING
+     formattedNumber->append(QChar(0x202C)); // POP DIRECTIONAL FORMATTING
+ #endif
++    Q_UNUSED(q)
+     return;
+ }
+ #endif
+@@ -2872,7 +2877,7 @@ void MLocalePrivate::fixFormattedNumberForRTL(QString *formattedNumber) const
+ void MLocalePrivate::fixParseInputForRTL(QString *formattedNumber) const
+ {
+     removeDirectionalFormattingCodes(formattedNumber);
+-    if(formattedNumber->contains(QRegExp(QString::fromUtf8("[٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹]")))) {
++    if(formattedNumber->contains(QRegularExpression(QString::fromUtf8("[٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹]")))) {
+         swapPostAndPrefixOfFormattedNumber(formattedNumber);
+     }
+ }
+@@ -3846,13 +3851,22 @@ QStringList MLocale::exemplarCharactersIndex() const
+     // the current locale:
+     QStringList exemplarCharactersIndex
+         = QString::fromUtf8("A B C D E F G H I J K L M N O P Q R S T U V W X Y Z")
+-        .split(QLatin1String(" "),QString::SkipEmptyParts);
++#if QT_VERSION < 0x051500
++            .split(QLatin1String(" "),QString::SkipEmptyParts);
++#else
++            .split(QLatin1String(" "),Qt::SkipEmptyParts);
++#endif
+     QString charStr;
+     if (collationLocaleName.contains(QLatin1String("collation=unihan"))) {
+         charStr = QString::fromUtf8("⼀ ⼁ ⼂ ⼃ ⼄ ⼅ ⼆ ⼇ ⼈ ⼉ ⼊ ⼋ ⼌ ⼍ ⼎ ⼏ ⼐ ⼑ ⼒ ⼓ ⼔ ⼕ ⼖ ⼗ ⼘ ⼙ ⼚ ⼛ ⼜ ⼝ ⼞ ⼟ ⼠ ⼡ ⼢ ⼣ ⼤ ⼥ ⼦ ⼧ ⼨ ⼩ ⼪ ⼫ ⼬ ⼭ ⼮ ⼯ ⼰ ⼱ ⼲ ⼳ ⼴ ⼵ ⼶ ⼷ ⼸ ⼹ ⼺ ⼻ ⼼ ⼽ ⼾ ⼿ ⽀ ⽁ ⽂ ⽃ ⽄ ⽅ ⽆ ⽇ ⽈ ⽉ ⽊ ⽋ ⽌ ⽍ ⽎ ⽏ ⽐ ⽑ ⽒ ⽓ ⽔ ⽕ ⽖ ⽗ ⽘ ⽙ ⽚ ⽛ ⽜ ⽝ ⽞ ⽟ ⽠ ⽡ ⽢ ⽣ ⽤ ⽥ ⽦ ⽧ ⽨ ⽩ ⽪ ⽫ ⽬ ⽭ ⽮ ⽯ ⽰ ⽱ ⽲ ⽳ ⽴ ⽵ ⽶ ⽷ ⽸ ⽹ ⽺ ⽻ ⽼ ⽽ ⽾ ⽿ ⾀ ⾁ ⾂ ⾃ ⾄ ⾅ ⾆ ⾇ ⾈ ⾉ ⾊ ⾋ ⾌ ⾍ ⾎ ⾏ ⾐ ⾑ ⾒ ⾓ ⾔ ⾕ ⾖ ⾗ ⾘ ⾙ ⾚ ⾛ ⾜ ⾝ ⾞ ⾟ ⾠ ⾡ ⾢ ⾣ ⾤ ⾥ ⾦ ⾧ ⾨ ⾩ ⾪ ⾫ ⾬ ⾭ ⾮ ⾯ ⾰ ⾱ ⾲ ⾳ ⾴ ⾵ ⾶ ⾷ ⾸ ⾹ ⾺ ⾻ ⾼ ⾽ ⾾ ⾿ ⿀ ⿁ ⿂ ⿃ ⿄ ⿅ ⿆ ⿇ ⿈ ⿉ ⿊ ⿋ ⿌ ⿍ ⿎ ⿏ ⿐ ⿑ ⿒ ⿓ ⿔ ⿕");
+         // add a dummy bucket at the end 𪛖 is the last character in unihan order:
+         charStr += QString::fromUtf8(" 𪛖");
+-        return charStr.split(QLatin1String(" "),QString::SkipEmptyParts);
++        return charStr
++#if QT_VERSION < 0x051500
++            .split(QLatin1String(" "),QString::SkipEmptyParts);
++#else
++            .split(QLatin1String(" "),Qt::SkipEmptyParts);
++#endif
+     }
+     // special treatment for Chinese locales because these have the
+     // collation options "stroke" and "pinyin" which require different
+@@ -3864,13 +3878,23 @@ QStringList MLocale::exemplarCharactersIndex() const
+     if(collationLocaleName.startsWith(QLatin1String("zh"))) {
+         if(collationLocaleName.contains(QLatin1String("collation=zhuyin"))) {
+             charStr = QString::fromUtf8("ㄅ ㄆ ㄇ ㄈ ㄉ ㄊ ㄋ ㄌ ㄍ ㄎ ㄏ ㄐ ㄑ ㄒ ㄓ ㄔ ㄕ ㄖ ㄗ ㄘ ㄙ ㄧ ㄨ ㄩ ㄚ ㄛ ㄜ ㄝ ㄞ ㄟ ㄠ ㄡ ㄢ ㄣ ㄤ ㄥ ㄦ ㄪ ㄫ ㄬ ㄭ");
+-            return charStr.split(QLatin1String(" "),QString::SkipEmptyParts);
++            return charStr
++#if QT_VERSION < 0x051500
++                .split(QLatin1String(" "),QString::SkipEmptyParts);
++#else
++                .split(QLatin1String(" "),Qt::SkipEmptyParts);
++#endif
+         }
+         if(collationLocaleName.contains(QLatin1String("collation=pinyinsearch"))) {
+             collationLocaleName = QLatin1String("zh_CN@collation=pinyinsearch");
+             charStr = QString::fromUtf8("A B C D E F G H I J K L M N O P Q R S T U V W X Y Z");
+             exemplarCharactersIndex =
+-                charStr.split(QLatin1String(" "),QString::SkipEmptyParts);
++                charStr
++#if QT_VERSION < 0x051500
++                    .split(QLatin1String(" "),QString::SkipEmptyParts);
++#else
++                    .split(QLatin1String(" "),Qt::SkipEmptyParts);
++#endif
+             // to get all characters with pinyin starting with z
+             // (last one is 蓙) into the Z bucket
+             exemplarCharactersIndex << QString::fromUtf8("Α"); // GREEK CAPITAL LETTER ALPHA
+@@ -3912,8 +3936,12 @@ QStringList MLocale::exemplarCharactersIndex() const
+     charStr.remove(']');
+     charStr.remove('{');
+     charStr.remove('}');
+-    exemplarCharactersIndex = charStr.split(QLatin1String(" "),
+-                                            QString::SkipEmptyParts);
++    exemplarCharactersIndex = charStr
++#if QT_VERSION < 0x051500
++        .split(QLatin1String(" "),QString::SkipEmptyParts);
++#else
++        .split(QLatin1String(" "),Qt::SkipEmptyParts);
++#endif
+ 
+     // Special hack for the last Japanese bucket:
+     if (exemplarCharactersIndex.last() == QString::fromUtf8("わ")) {
+@@ -3930,7 +3958,12 @@ QStringList MLocale::exemplarCharactersIndex() const
+          || collationLocaleName.startsWith(QLatin1String("zh_SG")))
+         ) {
+         charStr = QString::fromUtf8("ａ ｂ ｃ ｄ ｅ ｆ ｇ ｈ ｉ ｊ ｋ ｌ ｍ ｎ ｏ ｐ ｑ ｒ ｓ ｔ ｕ ｖ ｗ ｘ ｙ ｚ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z");
+-        return charStr.split(QLatin1String(" "),QString::SkipEmptyParts);
++        return charStr
++#if QT_VERSION < 0x051500
++                .split(QLatin1String(" "),QString::SkipEmptyParts);
++#else
++                .split(QLatin1String(" "),Qt::SkipEmptyParts);
++#endif
+     }
+     return exemplarCharactersIndex;
+ }
+@@ -4770,8 +4803,9 @@ QString MLocalePrivate::formatPhoneNumber( const QString& phoneNumber,
+     MLocale::PhoneNumberGrouping grouping ) const
+ {
+   // first do sanity check of the input string
+-  QRegExp rx( "\\+?\\d*" );
+-  if ( ! rx.exactMatch( phoneNumber ) )
++  QRegularExpression rx( QRegularExpression::anchoredPattern("\\+?\\d*") );
++  QRegularExpressionMatch match = rx.match(phoneNumber);
++  if (!match.hasMatch())
+   {
+     qWarning( "MLocale::formatPhoneNumber: cannot understand number: %s",
+ 	      qPrintable( phoneNumber ) );
+diff --git a/src/mlocale.h b/src/mlocale.h
+index ca6344de..68e322e8 100644
+--- a/src/mlocale.h
++++ b/src/mlocale.h
+@@ -28,7 +28,9 @@
+ #include <QMap>
+ 
+ class QString;
+-class QStringList;
++#if QT_VERSION < 0x051500
++    class QStringList;
++#endif
+ class QDateTime;
+ class QTranslator;
+ 
+diff --git a/src/mlocationdatabase.cpp b/src/mlocationdatabase.cpp
+index 4b21c14b..774e86ba 100644
+--- a/src/mlocationdatabase.cpp
++++ b/src/mlocationdatabase.cpp
+@@ -229,8 +229,13 @@ bool MLocationDatabasePrivate::loadTimeZoneData()
+     QString line;
+     do {
+         line = stream.readLine();
++#if QT_VERSION < 0x051500
+         QStringList timeZoneIds(line.split(QLatin1Char(' '),
+                                            QString::SkipEmptyParts));
++#else
++        QStringList timeZoneIds(line.split(QLatin1Char(' '),
++                                           Qt::SkipEmptyParts));
++#endif
+         if(!timeZoneIds.isEmpty()) {
+             QString canonicalTimeZoneId = timeZoneIds.first();
+             foreach(const QString &alias, timeZoneIds) {
+diff --git a/src/mstringsearch.cpp b/src/mstringsearch.cpp
+index 420c2458..277e9b0c 100644
+--- a/src/mstringsearch.cpp
++++ b/src/mstringsearch.cpp
+@@ -28,7 +28,6 @@
+ 
+ #include <QString>
+ #include <QStringList>
+-#include <QTextCodec>
+ #include <QDebug>
+ 
+ #include "micuconversions.h"
+diff --git a/src/src.pro b/src/src.pro
+index be536149..eec1b595 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -6,7 +6,7 @@ include(common_top.pri)
+ QT += xml
+ QT -= gui
+ 
+-TARGET = mlocale5
++TARGET = mlocale$${QT_MAJOR_VERSION}
+ 
+ INCLUDEPATH += .
+ 
+@@ -87,7 +87,7 @@ INSTALLS += target \
+ ###
+ 
+ # install MeeGo Touch feature files
+-install_prf.path = $$[QT_INSTALL_DATA]/mkspecs/features
++install_prf.path = $$[QT_INSTALL_ARCHDATA]/mkspecs/features
+ install_prf.files = \
+     $${M_SOURCE_TREE}/mkspecs/features/mlocale.prf \
+     $${M_SOURCE_TREE}/mkspecs/features/mlocale_common.prf \
+@@ -99,7 +99,7 @@ INSTALLS += install_prf
+ 
+ # install pkgconfig file
+ install_pkgconfig.path = $$ML_INSTALL_LIBS/pkgconfig
+-install_pkgconfig.files = data/mlocale5.pc
++install_pkgconfig.files = data/mlocale$${QT_MAJOR_VERSION}.pc
+ 
+ INSTALLS += install_pkgconfig
+ 
+diff --git a/tests/common_bot.pri b/tests/common_bot.pri
+index 8a415f9e..35293513 100644
+--- a/tests/common_bot.pri
++++ b/tests/common_bot.pri
+@@ -1,4 +1,4 @@
+ DEPENDS=
+ contains( CONFIG, coverage ) {
+     include(coverage.pri)
+-}
++}
+\ No newline at end of file
+diff --git a/tests/common_top.pri b/tests/common_top.pri
+index 92d35e64..d4674c98 100644
+--- a/tests/common_top.pri
++++ b/tests/common_top.pri
+@@ -16,13 +16,14 @@ QMAKE_LIBDIR += ../../lib /usr/local/lib
+ CONFIG += debug
+ CONFIG -= app_bundle
+ QT += testlib
++
+ TEMPLATE = app
+ # DEFINES += QT_NO_DEBUG_OUTPUT
+ DEFINES += UNIT_TEST
+ target.path = $$[QT_INSTALL_LIBS]/libmlocale-tests5
+ INSTALLS += target
+ 
+-LIBS += $$mAddLibrary(mlocale5)
++LIBS += $$mAddLibrary(mlocale$${QT_MAJOR_VERSION})
+ 
+ support_files.files =
+ support_files.path = $$[QT_INSTALL_LIBS]/libmlocale-tests5
+diff --git a/tests/ft_breakiterator/ft_breakiterator.cpp b/tests/ft_breakiterator/ft_breakiterator.cpp
+index 8181bfa6..e768d6f8 100644
+--- a/tests/ft_breakiterator/ft_breakiterator.cpp
++++ b/tests/ft_breakiterator/ft_breakiterator.cpp
+@@ -16,8 +16,10 @@
+ ** of this file.
+ **
+ ****************************************************************************/
+-
++#include <QtCore>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ #include <QDebug>
+ 
+ #include <MLocale>
+diff --git a/tests/ft_locales/ft_locales.cpp b/tests/ft_locales/ft_locales.cpp
+index c9937625..d824cd61 100644
+--- a/tests/ft_locales/ft_locales.cpp
++++ b/tests/ft_locales/ft_locales.cpp
+@@ -476,14 +476,19 @@ void Ft_Locales::testMLocaleTextDirection()
+     MLocale locale(localeName);
+     QCOMPARE((int)locale.textDirection(), direction);
+     MLocale::setDefault(locale);
+-    if(localeName.contains(QRegExp("@.*layout-direction=auto")))
++    QRegularExpression autoLayoutRegex("@.*layout-direction=auto");
++    QRegularExpression ltrLayoutRegex("@.*layout-direction=ltr");
++    QRegularExpression rtlLayoutRegex("@.*layout-direction=rtl");
++
++    if (localeName.contains(autoLayoutRegex)) {
+         QCOMPARE(MLocale::defaultLayoutDirection(), Qt::LayoutDirectionAuto);
+-    else if(localeName.contains(QRegExp("@.*layout-direction=ltr")))
++    } else if (localeName.contains(ltrLayoutRegex)) {
+         QCOMPARE(MLocale::defaultLayoutDirection(), Qt::LeftToRight);
+-    else if(localeName.contains(QRegExp("@.*layout-direction=rtl")))
++    } else if (localeName.contains(rtlLayoutRegex)) {
+         QCOMPARE(MLocale::defaultLayoutDirection(), Qt::RightToLeft);
+-    else
++    } else {
+         QCOMPARE(MLocale::defaultLayoutDirection(), Qt::LeftToRight);
++    }
+ }
+ 
+ void Ft_Locales::testMLocaleConstructorWithParams_data()
+@@ -772,7 +777,11 @@ void Ft_Locales::testMLocaleLanguageEndonym()
+     MLocale locale(locale_name);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "locale name: " << locale_name
+         << " result: " << locale.languageEndonym()
+@@ -1084,7 +1093,11 @@ void Ft_Locales::testMLocaleToLower()
+     }
+ #if 1
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "localeName      [" << localeName      << "]\n"
+         << "testString      [" << testString      << "]" << testStringCodePoints << "\n"
+@@ -1234,7 +1247,11 @@ void Ft_Locales::testMLocaleToUpper()
+     }
+ #if 1
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "localeName      [" << localeName      << "]\n"
+         << "testString      [" << testString      << "]" << testStringCodePoints << "\n"
+@@ -1299,7 +1316,11 @@ void Ft_Locales::testMLocaleJoinStringList()
+     QString result = locale.joinStringList(texts);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "localeName= " << localeName << "\n"
+         << " expectedResult= [" << expectedResult << "]\n"
+@@ -3915,7 +3936,11 @@ void Ft_Locales::testMLocaleIndexBucket()
+            locale.collator());
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream << " stringsSorted.size():" << stringsSorted.size()
+                 << " expectedBuckets.size():" << expectedBuckets.size()
+                 << "\n";
+@@ -4079,7 +4104,11 @@ void Ft_Locales::testDifferentStrengthComparison()
+     QList<MLocale::Comparison> comparisonResults;
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << " lc_collate=" << lcCollate
+         << " " << string1 << " " << string2
+diff --git a/tests/ft_mcharsetdetector/ft_mcharsetdetector.cpp b/tests/ft_mcharsetdetector/ft_mcharsetdetector.cpp
+index 0d9c5592..1a895fb1 100644
+--- a/tests/ft_mcharsetdetector/ft_mcharsetdetector.cpp
++++ b/tests/ft_mcharsetdetector/ft_mcharsetdetector.cpp
+@@ -171,7 +171,9 @@ void Ft_MCharsetDetector::testConstructors()
+ 
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     debugStream.setCodec("UTF-8");
++#endif
+     debugStream << "result1:    " << result1
+                 << " size: " << result1.size() << "\n"
+                 << "textResult: " << textResult
+@@ -1965,7 +1967,7 @@ void Ft_MCharsetDetector::testDetection()
+     QFETCH(QString, inputEncoding);
+     QFETCH(QString, bestMatchName);
+     QFETCH(QString, bestMatchLanguage);
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     QTextCodec *codec = QTextCodec::codecForName(inputEncoding.toLatin1());
+     if (codec == NULL) // there is no codec matching the name
+         QFAIL(QString("no such codec: " + inputEncoding).toLatin1().constData());
+@@ -1974,6 +1976,9 @@ void Ft_MCharsetDetector::testDetection()
+     // add Latin1 junk:
+     // encodedString = QByteArray(QString("ï").toLatin1()) + encodedString;
+     MCharsetDetector charsetDetector(encodedString);
++#else
++    MCharsetDetector charsetDetector(text.toUtf8());
++#endif
+     charsetDetector.setDeclaredLocale(declaredLocale);
+     charsetDetector.setDeclaredEncoding(declaredEncoding);
+     charsetDetector.enableInputFilter(enableInputFilter);
+@@ -1984,13 +1989,19 @@ void Ft_MCharsetDetector::testDetection()
+     int numberOfMatches = mCharsetMatchList.size();
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream << "======================================================================\n";
+     debugStream << QTest::currentDataTag() << "\n";
+     debugStream << "-------input text in UTF-8:\n";
+     debugStream << text << "\n";
+     debugStream << "-------input text converted to " << inputEncoding << ":\n";
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream << encodedString << "\n";
++#endif
+     debugStream << "------ converted back to UTF-8 using the best detected encoding:\n";
+     debugStream << charsetDetector.text(bestMatch) << "\n";
+     debugStream << "----------------------------------------------------------------------\n";
+diff --git a/tests/ft_mcharsetdetector/ft_mcharsetdetector.h b/tests/ft_mcharsetdetector/ft_mcharsetdetector.h
+index 08e61d03..16c35159 100644
+--- a/tests/ft_mcharsetdetector/ft_mcharsetdetector.h
++++ b/tests/ft_mcharsetdetector/ft_mcharsetdetector.h
+@@ -23,7 +23,9 @@
+ #include <QtTest/QtTest>
+ #include <QObject>
+ #include <Qt>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ 
+ #include <QCoreApplication>
+ 
+diff --git a/tests/ft_mlocalebuckets/ft_mlocalebuckets.cpp b/tests/ft_mlocalebuckets/ft_mlocalebuckets.cpp
+index 2e6da97b..31857732 100644
+--- a/tests/ft_mlocalebuckets/ft_mlocalebuckets.cpp
++++ b/tests/ft_mlocalebuckets/ft_mlocalebuckets.cpp
+@@ -837,7 +837,11 @@ void Ft_MLocaleBuckets::sortTestFiles()
+     QVERIFY(buckets.isEmpty());
+     QVERIFY(buckets.bucketCount() == 0);
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream << "**********************************************\n";
+     debugStream << prettyResult;
+     debugStream.flush();
+diff --git a/tests/ft_mstringsearch/ft_mstringsearch.cpp b/tests/ft_mstringsearch/ft_mstringsearch.cpp
+index 56c9a3c4..2ec47296 100644
+--- a/tests/ft_mstringsearch/ft_mstringsearch.cpp
++++ b/tests/ft_mstringsearch/ft_mstringsearch.cpp
+@@ -72,7 +72,11 @@ void Ft_MStringSearch::testConstructors()
+ 
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream << "language: " << language
+                 << " lcCollate: " << lcCollate << "\n"
+                 << " pattern               : " << pattern << "\n"
+@@ -401,7 +405,11 @@ void Ft_MStringSearch::testSearch()
+ 
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "****************************************************\n"
+         << QTest::currentDataTag()
+diff --git a/tests/ft_mstringsearch/ft_mstringsearch.h b/tests/ft_mstringsearch/ft_mstringsearch.h
+index b8595c66..3d11007d 100644
+--- a/tests/ft_mstringsearch/ft_mstringsearch.h
++++ b/tests/ft_mstringsearch/ft_mstringsearch.h
+@@ -23,7 +23,9 @@
+ #include <QtTest/QtTest>
+ #include <QObject>
+ #include <Qt>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ 
+ #include <QCoreApplication>
+ 
+diff --git a/tests/ft_numbers/ft_numbers.cpp b/tests/ft_numbers/ft_numbers.cpp
+index d95e6d19..c4cfda8b 100644
+--- a/tests/ft_numbers/ft_numbers.cpp
++++ b/tests/ft_numbers/ft_numbers.cpp
+@@ -211,7 +211,11 @@ void Ft_Numbers::testQLongLongs()
+     loc.setCategoryLocale(MLocale::MLcNumeric, localeNameLcNumeric);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "localeName: " << localeName
+         << " localeNameLcNumeric: " << localeNameLcNumeric
+@@ -1203,7 +1207,9 @@ void Ft_Numbers::testDoubles()
+     MLocale loc(localeName);
+     QString result = loc.formatNumber(val);
+     QTextStream stream(stdout);
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     stream.setCodec("UTF-8");
++#endif
+     stream << "result: " << result << " expected: " << formatted << "\n";
+     QCOMPARE(result, formatted);
+ }
+@@ -2432,7 +2438,9 @@ void Ft_Numbers::testToFloat()
+     float result = locale.toFloat(formattedFloat);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream stream(stdout);
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     stream.setCodec("UTF-8");
++#endif
+     stream << localeName
+            << " formattedFloat: " << formattedFloat
+            << " parsable: " << parsable
+@@ -2609,7 +2617,11 @@ void Ft_Numbers::testDoublesWithFormatting()
+     MLocale loc(localeName);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "localeName: " << localeName
+         << " number: " << val
+@@ -2888,7 +2900,11 @@ void Ft_Numbers::testCurrencies()
+     locale.setCategoryLocale(MLocale::MLcNumeric, lcNumeric);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << " language: " << language
+         << " lcMonetary: " << lcMonetary
+@@ -3042,7 +3058,11 @@ void Ft_Numbers::testPercentPlaceholdersInQt()
+     MLocale::setDefault(locale);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << " localeName: " << localeName
+         << " localeNameLcNumeric: " << localeNameLcNumeric
+@@ -3139,7 +3159,11 @@ void Ft_Numbers::testToLatinNumbers()
+     QString result = MLocale::toLatinNumbers(input);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << QTest::currentTestFunction() << " "
+         << QTest::currentDataTag() << "\n"
+@@ -3444,7 +3468,11 @@ void Ft_Numbers::testToLocalizedNumbers()
+     QString result = locale.toLocalizedNumbers(input);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << QTest::currentTestFunction() << " "
+         << QTest::currentDataTag() << "\n"
+diff --git a/tests/ft_sorting/ft_sorting.cpp b/tests/ft_sorting/ft_sorting.cpp
+index 4190aa6a..98c2a239 100644
+--- a/tests/ft_sorting/ft_sorting.cpp
++++ b/tests/ft_sorting/ft_sorting.cpp
+@@ -20,7 +20,9 @@
+ #include "ft_sorting.h"
+ #include <MLocale>
+ #include <MCollator>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ #include <QDebug>
+ #include <QProcess>
+ 
+diff --git a/tests/ut_mcalendar/ut_mcalendar.cpp b/tests/ut_mcalendar/ut_mcalendar.cpp
+index f4936dc0..461d9d68 100644
+--- a/tests/ut_mcalendar/ut_mcalendar.cpp
++++ b/tests/ut_mcalendar/ut_mcalendar.cpp
+@@ -18,7 +18,9 @@
+ ****************************************************************************/
+ 
+ #include <QCoreApplication>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ #include <QTextStream>
+ #include <MLocale>
+ #include <unicode/uversion.h>
+@@ -900,7 +902,11 @@ void Ut_MCalendar::testIcuFormatString()
+                 static_cast<MLocale::TimeType>(timeType),
+                 calendarType);
+             QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+             debugStream.setCodec("UTF-8");
++#else
++            debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+             debugStream << lcTime
+                         << " timeFormat24h: " << timeFormat24h
+                         << " dateType: " << dateType << " timeType: " << timeType
+@@ -1551,7 +1557,11 @@ void Ut_MCalendar::testMLocaleCalendarConversionsFromLocaltimeQDateTime()
+             expectedResult = maybeEmbedDateTimeString(expectedResult, locale);
+ #if defined(VERBOSE_OUTPUT)
+             QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+             debugStream.setCodec("UTF-8");
++#else
++            debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+             debugStream
+                 << "language " << localeName
+                 << " lc_time " << lcTime
+@@ -2671,7 +2681,11 @@ void Ut_MCalendar::testMLocaleCalendarConversionsFromMCalendar()
+             expectedResult = maybeEmbedDateTimeString(expectedResult, locale);
+ #if defined(VERBOSE_OUTPUT)
+             QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+             debugStream.setCodec("UTF-8");
++#else
++            debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+             debugStream
+                 << "language " << localeName
+                 << " lc_time " << lcTime
+@@ -2936,7 +2950,11 @@ void Ut_MCalendar::testIslamicCalendar()
+ 
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "result format: " << format
+         << "\n";
+@@ -4233,7 +4251,11 @@ void Ut_MCalendar::testPosixFormatPattern()
+ 
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "language " << localeName
+         << " lc_messages " << lcMessages
+@@ -4671,7 +4693,11 @@ void Ut_MCalendar::testFormatDateTimeICU()
+     mcal.setDateTime(datetime);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "--------------------\n"
+         << " localeName: " << localeName
+@@ -4775,7 +4801,11 @@ void Ut_MCalendar::testTimeZoneDisplayNames()
+     MCalendar mcal(locale,timeZone);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "--------------------\n"
+         << " localeName: " << localeName
+@@ -4914,7 +4944,11 @@ void Ut_MCalendar::testWeekdaySymbols()
+     MCalendar mcal(calendarType);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "language " << language
+         << " lc_messages " << lcMessages
+@@ -5113,7 +5147,11 @@ void Ut_MCalendar::testMonthSymbols()
+     MCalendar mcal(calendarType);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "language " << language
+         << " lc_messages " << lcMessages
+@@ -5306,7 +5344,11 @@ void Ut_MCalendar::testDateYearAndMonth()
+     QString result = locale.formatDateTime(mcal, MLocale::DateYearAndMonth, MLocale::TimeNone);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "language " << localeName
+         << " lc_messages " << lcMessages
+@@ -5461,7 +5503,11 @@ void Ut_MCalendar::testDateWeekdayAbbreviatedAndDayOfMonth()
+     QString result = locale.formatDateTime(mcal, MLocale::DateWeekdayAbbreviatedAndDayOfMonth, MLocale::TimeNone);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "language " << localeName
+         << " lc_messages " << lcMessages
+@@ -5616,7 +5662,11 @@ void Ut_MCalendar::testDateWeekdayWideAndDayOfMonth()
+     QString result = locale.formatDateTime(mcal, MLocale::DateWeekdayWideAndDayOfMonth, MLocale::TimeNone);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "language " << localeName
+         << " lc_messages " << lcMessages
+@@ -6054,7 +6104,11 @@ void Ut_MCalendar::testWeekdayType()
+     calendar.setTime(19, 23, 0);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream
+         << "language " << language << " lc_time " << lcTime
+         << " calendar type " << calendar.type()
+diff --git a/tests/ut_mlocationdatabase/ut_mlocationdatabase.cpp b/tests/ut_mlocationdatabase/ut_mlocationdatabase.cpp
+index 5a3131f5..442cedee 100644
+--- a/tests/ut_mlocationdatabase/ut_mlocationdatabase.cpp
++++ b/tests/ut_mlocationdatabase/ut_mlocationdatabase.cpp
+@@ -294,7 +294,11 @@ void Ut_MLocationDatabase::testCitiesInTimeZone()
+     QList<MCity> citiesInTimeZone = db.citiesInTimeZone(timeZoneId);
+ #if defined(VERBOSE_OUTPUT)
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+     debugStream << "number of cities in time zone "
+                 << timeZoneId << ' '
+                 << citiesInTimeZone.size() << '\n';
+@@ -656,7 +660,11 @@ void Ut_MLocationDatabase::testCitiesDumpInfo()
+     }
+ 
+     QTextStream debugStream(stderr);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+ 
+     QDateTime summerDateTime(QDate(2010, 6, 21), QTime(0, 0, 0, 0), Qt::LocalTime);
+     QDateTime winterDateTime(QDate(2009, 12, 24), QTime(0, 0, 0, 0), Qt::LocalTime);
+@@ -800,7 +808,11 @@ void Ut_MLocationDatabase::testTimeZoneOffsets()
+ 
+     MLocale locale("en_US");
+     QTextStream debugStream(stdout);
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+     debugStream.setCodec("UTF-8");
++#else
++    debugStream.setEncoding(QStringConverter::Utf8);
++#endif
+ 
+     QStringList olsonIds;
+ #if 0
+diff --git a/tests/ut_translations/ut_translations.cpp b/tests/ut_translations/ut_translations.cpp
+index 044706bc..b8454249 100644
+--- a/tests/ut_translations/ut_translations.cpp
++++ b/tests/ut_translations/ut_translations.cpp
+@@ -155,12 +155,15 @@ void Ut_Translations::testOriginalQtTr()
+     // Everything should be untranslated now:
+     QCOMPARE(tr(qPrintable(string_id)), string_id);
+ 
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     QTranslator translator;
+     translator.load(catalog);
+     qap->installTranslator(&translator);
++#endif
+     QCOMPARE(tr(qPrintable(string_id)), translation);
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     qap->removeTranslator(&translator);
++#endif
+     // Everything should be untranslated again now:
+     QCOMPARE(tr(qPrintable(string_id)), string_id);
+ }
+-- 
+2.41.0
+

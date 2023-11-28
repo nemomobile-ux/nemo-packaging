@@ -5,22 +5,22 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt-mobility-haptics-ffmemless
-pkgver=0.2.8
+pkgver=0.2.9
 pkgrel=1
 pkgdesc='qt-mobility-haptics-ffmemless'
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/qt-mobility-haptics-ffmemless"
 license=('GPL')
-depends=('qt5-base'
-    'qt5-feedback'
+depends=('qt6-base'
+    'qt6-feedback'
     'libprofile-qt')
 
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('c5bf3eb0c195b37fc6dbc83bed20f5f608dd96b3e0d9fa9fd2a2863153bdfc06')
+sha256sums=('a1e18651b0cde2357ad90514821e3a613d06997dd242c9b76478bd5306c534f7')
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

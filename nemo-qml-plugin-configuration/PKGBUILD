@@ -12,22 +12,27 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-configuration"
 license=('BSD')
 depends=('mlite' 'nemo-qml-plugin-dbus')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('23b26e861f62f37709802ebc96049f30cfbef71d0c9b16433ef828fb7bea7e6b')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-fixup-qt6.patch'
+)
+sha256sums=('23b26e861f62f37709802ebc96049f30cfbef71d0c9b16433ef828fb7bea7e6b'
+    '82fcf69fc1577c1f2d0749fee1e6086881533367de1ccec51fb1d8a4524dd183'
+)
+
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-fixup-qt6.patch"
+}
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 
 package() {
     cd $pkgname-$pkgver
     make -j 1 INSTALL_ROOT="$pkgdir/" install
-    cd "$pkgdir"
-    mkdir -p ${pkgdir}/usr/lib/qt/qml/org/nemomobile/configuration/
-    ln -sf /usr/lib/qt/qml/Nemo/Configuration/libnemoconfiguration.so ${pkgdir}/usr/lib/qt/qml/org/nemomobile/configuration/
-    sed 's/Nemo.Configuration/org.nemomobile.configuration/' < ${pkgdir}/usr/lib/qt/qml/Nemo/Configuration/qmldir > ${pkgdir}/usr/lib/qt/qml/org/nemomobile/configuration/qmldir
-
     rm -rf $pkgdir/opt
 }

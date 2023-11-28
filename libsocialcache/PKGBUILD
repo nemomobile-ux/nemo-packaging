@@ -8,21 +8,26 @@ pkgdesc="A library that manages data from social networks"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libsocialcache"
 license=('BSD-3-Clause')
-depends=('buteo-syncfw')
-makedepends=('qt5-tools')
+depends=('buteo-syncfw' 'mlite')
+makedepends=('qt6-tools' 'clang')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-use_mlite_for_keys.patch")
+    '0001-Allow-build-with-Qt6.patch'
+    '0002-use-mlite-for-keys.patch'
+)
 sha256sums=('ff1110e9ccca5a1e8c6d5a70448bc061e5ba4b83a5dbae974d55241e8156573b'
-    '7358f59bd2d6db7a1d91d6faedf9d33adade0e804035edbf9f0f213e0bbe352d')
+    'fa9c564278bb54a00426cecfd40035b6cc8ea633c5add3705b9ec7895342d9bf'  
+    '05fdd8531db607003d46c74525371cc9045e9e0066341d5fe81404897fb974b5'  
+)
 
 prepare() {
     cd $pkgname-$pkgver
-    patch -p1 --input="${srcdir}/0001-use_mlite_for_keys.patch"
+    patch -p1 --input="${srcdir}/0001-Allow-build-with-Qt6.patch"
+    patch -p1 --input="${srcdir}/0002-use-mlite-for-keys.patch"
 }
 
 build() {
   cd $pkgname-$pkgver
-  qmake-qt5
+  qmake6
   make
 }
 

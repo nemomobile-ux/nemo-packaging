@@ -1,0 +1,607 @@
+diff --git a/src/gallery/gallery.pro b/src/gallery/gallery.pro
+index c68bdb8..b2f5419 100644
+--- a/src/gallery/gallery.pro
++++ b/src/gallery/gallery.pro
+@@ -1,7 +1,6 @@
+ TARGET = QtDocGallery
+ MODULE = docgallery
+ QT = core
+-
+ load(qt_module)
+ 
+ CONFIG += no_keywords
+diff --git a/src/gallery/qgalleryabstractrequest.h b/src/gallery/qgalleryabstractrequest.h
+index 6c1c589..220fb98 100644
+--- a/src/gallery/qgalleryabstractrequest.h
++++ b/src/gallery/qgalleryabstractrequest.h
+@@ -47,7 +47,10 @@
+ #include <QtCore/qobject.h>
+ #include <QtCore/qstringlist.h>
+ 
+-QT_BEGIN_HEADER
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++Q_MOC_INCLUDE("qabstractgallery.h");
++#endif
++
+ QT_BEGIN_NAMESPACE_DOCGALLERY
+ 
+ class QAbstractGallery;
+@@ -144,6 +147,5 @@ public Q_SLOTS:
+ };
+ 
+ QT_END_NAMESPACE_DOCGALLERY
+-QT_END_HEADER
+ 
+ #endif
+diff --git a/src/gallery/qgalleryproperty.h b/src/gallery/qgalleryproperty.h
+index a4fbbad..4633645 100644
+--- a/src/gallery/qgalleryproperty.h
++++ b/src/gallery/qgalleryproperty.h
+@@ -87,7 +87,11 @@ struct Q_GALLERY_EXPORT QGalleryProperty
+         return QGalleryMetaDataFilter(QLatin1String(m_name), string, QGalleryFilter::Wildcard); }
+     QGalleryMetaDataFilter regExp(const QString &rx) const {
+         return QGalleryMetaDataFilter(QLatin1String(m_name), rx, QGalleryFilter::RegExp); }
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QGalleryMetaDataFilter regExp(const QRegularExpression &rx) const {
++#else
+     QGalleryMetaDataFilter regExp(const QRegExp &rx) const {
++#endif
+         return QGalleryMetaDataFilter(QLatin1String(m_name), rx, QGalleryFilter::RegExp); }
+ 
+     QString ascending() const { return QLatin1Char('+') + QLatin1String(m_name); }
+diff --git a/src/gallery/qgalleryqueryrequest.h b/src/gallery/qgalleryqueryrequest.h
+index e16232e..f0cb2b5 100644
+--- a/src/gallery/qgalleryqueryrequest.h
++++ b/src/gallery/qgalleryqueryrequest.h
+@@ -155,7 +155,7 @@ class Q_GALLERY_EXPORT QGalleryQueryRequest : public QGalleryAbstractRequest
+     void currentItemChanged();
+ 
+ protected:
+-    void setResponse(QGalleryAbstractResponse *response);
++    void setResponse(QGalleryAbstractResponse *response) override;
+ 
+ private:
+     Q_DECLARE_PRIVATE(QGalleryQueryRequest)
+diff --git a/src/gallery/tracker/qgallerytrackereditableresultset.cpp b/src/gallery/tracker/qgallerytrackereditableresultset.cpp
+index 39c4106..63a17d6 100644
+--- a/src/gallery/tracker/qgallerytrackereditableresultset.cpp
++++ b/src/gallery/tracker/qgallerytrackereditableresultset.cpp
+@@ -86,8 +86,11 @@ QGalleryTrackerEditableResultSet::~QGalleryTrackerEditableResultSet()
+ bool QGalleryTrackerEditableResultSet::setMetaData(int key, const QVariant &value)
+ {
+     Q_D(QGalleryTrackerEditableResultSet);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    if (d->currentRow->isNull() || key < d->valueOffset || key >= d->columnCount)
++#else
+     if (!d->currentRow || key < d->valueOffset || key >= d->columnCount)
++#endif
+         return false;
+     else if (key >= d->aliasOffset)
+         key = d->aliasColumns.at(key - d->aliasOffset) + d->valueOffset;
+diff --git a/src/gallery/tracker/qgallerytrackerlistcolumn.cpp b/src/gallery/tracker/qgallerytrackerlistcolumn.cpp
+index 73f619d..0bf771a 100644
+--- a/src/gallery/tracker/qgallerytrackerlistcolumn.cpp
++++ b/src/gallery/tracker/qgallerytrackerlistcolumn.cpp
+@@ -102,7 +102,11 @@ QVariant QGalleryTrackerStringListColumn::toVariant(TrackerSparqlCursor *cursor,
+ {
+     switch (TrackerSparqlValueType type = tracker_sparql_cursor_get_value_type(cursor, index)) {
+     case TRACKER_SPARQL_VALUE_TYPE_STRING:
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        return QString::fromUtf8(tracker_sparql_cursor_get_string(cursor, index, 0)).split(m_separatorChar, Qt::SkipEmptyParts);
++#else
+         return QString::fromUtf8(tracker_sparql_cursor_get_string(cursor, index, 0)).split(m_separatorChar, QString::SkipEmptyParts);
++#endif
+     case TRACKER_SPARQL_VALUE_TYPE_UNBOUND:
+     case TRACKER_SPARQL_VALUE_TYPE_BLANK_NODE:
+         break;
+diff --git a/src/gallery/tracker/qgallerytrackerresultset.cpp b/src/gallery/tracker/qgallerytrackerresultset.cpp
+index 4b35818..d18a5a5 100644
+--- a/src/gallery/tracker/qgallerytrackerresultset.cpp
++++ b/src/gallery/tracker/qgallerytrackerresultset.cpp
+@@ -44,8 +44,11 @@
+ #include "qgallerytrackerresultset_p_p.h"
+ 
+ #include "qgallerytrackermetadataedit_p.h"
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <QTimer>
++#else
+ #include <QtCore/qdatetime.h>
++#endif
+ #include <QtDBus/qdbusreply.h>
+ 
+ #include <qdocumentgallery.h>
+@@ -275,7 +278,11 @@ void QGalleryTrackerResultSetPrivate::removeItems(
+             currentRow = rCache.values.constBegin()
+                     + ((currentIndex + rCache.offset - iCache.cutoff) * tableWidth);
+         } else {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            currentRow = rCache.values.begin();
++#else
+             currentRow = 0;
++#endif
+         }
+     }
+ 
+@@ -371,7 +378,11 @@ void QGalleryTrackerResultSetPrivate::syncFinish(const int rIndex, const int iIn
+ 
+ bool QGalleryTrackerResultSetPrivate::waitForSyncFinish(int msecs)
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QTimer timer;
++#else
+     QTime timer;
++#endif
+     timer.start();
+ 
+     do {
+@@ -383,8 +394,11 @@ bool QGalleryTrackerResultSetPrivate::waitForSyncFinish(int msecs)
+ 
+         if (!syncEvents.waitForEvent(msecs))
+             return false;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    } while ((msecs -= timer.remainingTime()) > 0);
++#else
+     } while ((msecs -= timer.restart()) > 0);
+-
++#endif
+     return false;
+ }
+ 
+@@ -506,7 +520,11 @@ bool QGalleryTrackerResultSet::fetch(int index)
+     d->currentIndex = index;
+ 
+     if (d->currentIndex < 0 || d->currentIndex >= d->rowCount) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        d->currentRow = d->rCache.values.begin();
++#else
+         d->currentRow = 0;
++#endif
+     } else if (d->currentIndex < d->iCache.cutoff) {
+         d->currentRow = d->iCache.values.constBegin() + (d->currentIndex * d->tableWidth);
+     } else {
+@@ -524,28 +542,43 @@ bool QGalleryTrackerResultSet::fetch(int index)
+ QVariant QGalleryTrackerResultSet::itemId() const
+ {
+     Q_D(const QGalleryTrackerResultSet);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    return d->currentRow->isNull()
++               ? QVariant()
++               : d->idColumn->value(d->currentRow);
++#else
+     return d->currentRow
+             ? d->idColumn->value(d->currentRow)
+             : QVariant();
++#endif
+ }
+ 
+ QUrl QGalleryTrackerResultSet::itemUrl() const
+ {
+     Q_D(const QGalleryTrackerResultSet);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    return d->currentRow->isNull()
++               ? QUrl()
++               : d->urlColumn->value(d->currentRow).toUrl();
++#else
+     return d->currentRow
+             ? d->urlColumn->value(d->currentRow).toUrl()
+             : QUrl();
++#endif
+ }
+ 
+ QString QGalleryTrackerResultSet::itemType() const
+ {
+     Q_D(const QGalleryTrackerResultSet);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    return d->currentRow->isNull()
++               ? QString()
++               : d->typeColumn->value(d->currentRow).toString();
++#else
+     return d->currentRow
+             ? d->typeColumn->value(d->currentRow).toString()
+             : QString();
++#endif
+ }
+ 
+ QList<QGalleryResource> QGalleryTrackerResultSet::resources() const
+@@ -553,8 +586,11 @@ QList<QGalleryResource> QGalleryTrackerResultSet::resources() const
+     Q_D(const QGalleryTrackerResultSet);
+ 
+     QList<QGalleryResource> resources;
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    if (!d->currentRow->isNull()) {
++#else
+     if (d->currentRow) {
++#endif
+         const QUrl url = d->urlColumn->value(d->currentRow).toUrl();
+ 
+         if (!url.isEmpty()) {
+@@ -579,8 +615,11 @@ QList<QGalleryResource> QGalleryTrackerResultSet::resources() const
+ QVariant QGalleryTrackerResultSet::metaData(int key) const
+ {
+     Q_D(const QGalleryTrackerResultSet);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    if (d->currentRow->isNull() || key < d->valueOffset) {
++#else
+     if (!d->currentRow || key < d->valueOffset) {
++#endif
+         return QVariant();
+     } else if (key < d->compositeOffset) {  // Value column.
+         return *(d->currentRow + key);
+@@ -610,8 +649,11 @@ void QGalleryTrackerResultSet::cancel()
+ bool QGalleryTrackerResultSet::waitForFinished(int msecs)
+ {
+     Q_D(QGalleryTrackerResultSet);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QTimer timer;
++#else
+     QTime timer;
++#endif
+     timer.start();
+ 
+     do {
+@@ -631,8 +673,11 @@ bool QGalleryTrackerResultSet::waitForFinished(int msecs)
+         } else {
+             return true;
+         }
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    } while ((msecs -= timer.remainingTime()) > 0);
++#else
+     } while ((msecs -= timer.restart()) > 0);
+-
++#endif
+     return false;
+ }
+ 
+diff --git a/src/gallery/tracker/qgallerytrackerresultset_p_p.h b/src/gallery/tracker/qgallerytrackerresultset_p_p.h
+index 10ba19f..964755e 100644
+--- a/src/gallery/tracker/qgallerytrackerresultset_p_p.h
++++ b/src/gallery/tracker/qgallerytrackerresultset_p_p.h
+@@ -181,7 +181,7 @@ class QGalleryTrackerResultSetPrivate : public QGalleryResultSetPrivate, public
+ 
+         int operator -(const row_iterator &other) const { return (begin - other.begin) / width; }
+         int operator -(const QVector<QVariant>::const_iterator &iterator) const {
+-            return (begin - iterator) / width; }
++            return (begin->toInt() - iterator->toInt()) / width; }
+ 
+         row_iterator operator +(int span) const {
+             return row_iterator(begin + (span * width), width); }
+@@ -276,7 +276,7 @@ class QGalleryTrackerResultSetPrivate : public QGalleryResultSetPrivate, public
+         , compositeOffset(arguments->compositeOffset)
+         , aliasOffset(compositeOffset + arguments->compositeColumns.count())
+         , columnCount(aliasOffset + arguments->aliasColumns.count())
+-        , currentRow(0)
++        , currentRow()
+         , currentIndex(-1)
+         , rowCount(0)
+         , progressMaximum(0)
+diff --git a/src/gallery/tracker/qgallerytrackerschema.cpp b/src/gallery/tracker/qgallerytrackerschema.cpp
+index ff3a041..626c79d 100644
+--- a/src/gallery/tracker/qgallerytrackerschema.cpp
++++ b/src/gallery/tracker/qgallerytrackerschema.cpp
+@@ -46,6 +46,7 @@
+ #include "qgalleryabstractrequest.h"
+ #include "qgallerytrackerresultset_p.h"
+ #include "qgallerytrackerlistcolumn_p.h"
++#include "qregularexpression.h"
+ 
+ #include <QtCore/qdatetime.h>
+ #include <QtCore/qdir.h>
+@@ -153,9 +154,14 @@ namespace
+             : QLatin1String(prefix), length(N - 1){}
+ 
+         const int length;
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        QStringView strip(const QString &id) const {
++            return QStringView(id).first(length);
++        }
++#else
+         QStringRef strip(const QString &id) const {
+             return QStringRef(&id, length, id.length() - length); }
++#endif
+     };
+ 
+     struct QGalleryItemType
+@@ -363,8 +369,11 @@ static void qt_appendJoin(QString *currentJoin, const QString &typeJoin, const Q
+     do {
+         begin = end + 3;
+         end = join.indexOf(QLatin1String(" ."), begin + 2);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        const QStringView substring = QStringView(join).mid(begin, end != -1 ? end - begin : -1);
++#else
+         const QStringRef substring = join.midRef(begin, end != -1 ? end - begin : -1);
++#endif
+         if (!typeJoin.contains(substring) && !currentJoin->contains(substring))
+             *currentJoin += QLatin1String(" OPTIONAL {") + substring + QLatin1Char('}');
+     } while (end != -1);
+@@ -464,7 +473,11 @@ static bool qt_write_function(
+         QDocumentGallery::Error *,
+         const char *function,
+         const QString &field,
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        const QRegularExpression &regExp,
++#else
+         const QRegExp &regExp,
++#endif
+         QString *query)
+ {
+     *query += QLatin1String(function)
+@@ -530,9 +543,17 @@ static bool qt_writeCondition(
+ 
+         switch (filter.comparator()) {
+         case QGalleryFilter::Equals:
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            return value.type() != QVariant::RegularExpression
++#else
+             return value.type() != QVariant::RegExp
++#endif
+                     ? qt_write_comparison(error, property.field, value, "=", query, property.type)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++                    : qt_write_function(error, "REGEX", properties[index].field, value.toRegularExpression(), query);
++#else
+                     : qt_write_function(error, "REGEX", properties[index].field, value.toRegExp(), query);
++#endif
+         case QGalleryFilter::LessThan:
+             return qt_write_comparison(error, property.field, value, "<", query, property.type);
+         case QGalleryFilter::GreaterThan:
+@@ -550,9 +571,17 @@ static bool qt_writeCondition(
+         case QGalleryFilter::Wildcard:
+             return qt_write_function(error, "fn:contains", property.field, value, query, property.type);
+         case QGalleryFilter::RegExp:
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            return value.type() != QVariant::RegularExpression
++#else
+             return value.type() != QVariant::RegExp
++#endif
+                     ? qt_write_function(error, "REGEX", property.field, value, query, property.type)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++                    : qt_write_function(error, "REGEX", property.field, value.toRegularExpression() , query);
++#else
+                     : qt_write_function(error, "REGEX", property.field, value.toRegExp(), query);
++#endif
+         default:
+             *error = QDocumentGallery::FilterError;
+ 
+@@ -1340,31 +1369,31 @@ QDocumentGallery::Error QGalleryTrackerSchema::buildFilterQuery(
+     if (!rootItemId.isEmpty()) {
+         const int index = itemTypes.indexOfItemId(rootItemId);
+         if (index != -1) {
+-            if (itemTypes[index].itemType == QDocumentGallery::Artist) {
+-                if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Album) {
++            if (itemTypes[index].itemType == QDocumentGallery::Artist.name()) {
++                if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Album.name()) {
+                     *join   = QLatin1String(" . ?track nmm:artist <")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String(">");
+-                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio) {
++                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio.name()) {
+                     *join   = QLatin1String(" . ?x nmm:artist <")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String(">");
+                 } else {
+                     result = QDocumentGallery::ItemIdError;
+                 }
+-            } else if (itemTypes[index].itemType == QDocumentGallery::AlbumArtist) {
+-                if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio) {
++            } else if (itemTypes[index].itemType == QDocumentGallery::AlbumArtist.name()) {
++                if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio.name()) {
+                     *join   = QLatin1String(" . ?album a nmm:MusicAlbum . ?x nmm:musicAlbum ?album . ?album nmm:albumArtist <")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String(">");
+-                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Album) {
++                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Album.name()) {
+                     *join   = QLatin1String(" . ?x nmm:albumArtist <")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String(">");
+                 } else {
+                     result = QDocumentGallery::ItemIdError;
+                 }
+-            } else if (itemTypes[index].itemType == QDocumentGallery::Folder) {
++            } else if (itemTypes[index].itemType == QDocumentGallery::Folder.name()) {
+                 const QString rootUrn = itemTypes[index].prefix.strip(rootItemId).toString();
+                 if (qt_galleryItemTypeList[m_itemIndex].updateMask & FileMask) {
+                     if (scope == QGalleryQueryRequest::DirectDescendants) {
+@@ -1380,20 +1409,20 @@ QDocumentGallery::Error QGalleryTrackerSchema::buildFilterQuery(
+                 } else {
+                     result = QDocumentGallery::ItemIdError;
+                 }
+-            } else if (itemTypes[index].itemType == QDocumentGallery::Album) {
+-                if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio) {
++            } else if (itemTypes[index].itemType == QDocumentGallery::Album.name()) {
++                if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio.name()) {
+                     *join   = QLatin1String(" . ?x nmm:musicAlbum <")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String(">");
+                 } else {
+                     result = QDocumentGallery::ItemIdError;
+                 }
+-            } else if (itemTypes[index].itemType == QDocumentGallery::PhotoAlbum
+-                       || itemTypes[index].itemType == QDocumentGallery::Playlist) {
+-                if ((qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Image
+-                        && itemTypes[index].itemType == QDocumentGallery::PhotoAlbum)
+-                        || (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio
+-                        && itemTypes[index].itemType == QDocumentGallery::Playlist)) {
++            } else if (itemTypes[index].itemType == QDocumentGallery::PhotoAlbum.name()
++                       || itemTypes[index].itemType == QDocumentGallery::Playlist.name()) {
++                if ((qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Image.name()
++                        && itemTypes[index].itemType == QDocumentGallery::PhotoAlbum.name())
++                        || (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio.name()
++                        && itemTypes[index].itemType == QDocumentGallery::Playlist.name())) {
+                     *join   = QLatin1String(" . <")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String("> nfo:hasMediaFileListEntry ?entry"
+@@ -1402,20 +1431,20 @@ QDocumentGallery::Error QGalleryTrackerSchema::buildFilterQuery(
+                 } else {
+                     result = QDocumentGallery::ItemIdError;
+                 }
+-            } else if (itemTypes[index].itemType == QDocumentGallery::AudioGenre) {
+-                if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio) {
++            } else if (itemTypes[index].itemType == QDocumentGallery::AudioGenre.name()) {
++                if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Audio.name()) {
+                     *join   = QLatin1String(" . ?x nfo:genre '")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String("'");
+-                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Album) {
++                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Album.name()) {
+                     *join   = QLatin1String(" . ?track nfo:genre '")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String("'");
+-                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Artist) {
++                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::Artist.name()) {
+                     *join   = QLatin1String(" . ?track nfo:genre '")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String("'");
+-                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::AlbumArtist) {
++                } else if (qt_galleryItemTypeList[m_itemIndex].itemType == QDocumentGallery::AlbumArtist.name()) {
+                     *join   = QLatin1String(" . ?track nfo:genre '")
+                             + itemTypes[index].prefix.strip(rootItemId).toString()
+                             + QLatin1String("'");
+diff --git a/src/imports/gallery/qdeclarativegallery.cpp b/src/imports/gallery/qdeclarativegallery.cpp
+index 8b7a0b8..9936aec 100644
+--- a/src/imports/gallery/qdeclarativegallery.cpp
++++ b/src/imports/gallery/qdeclarativegallery.cpp
+@@ -67,7 +67,11 @@ class QGalleryDeclarativeModule : public QQmlExtensionPlugin
+         int major = 5;
+         int minor = 0;
+         qmlRegisterUncreatableType<QDeclarativeDocumentGallery>(uri, major, minor, "DocumentGallery", QDeclarativeDocumentGallery::tr("DocumentGallery is a namespace class"));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        qmlRegisterAnonymousType<QDeclarativeGalleryFilterBase>(uri, 0);
++#else
+         qmlRegisterType<QDeclarativeGalleryFilterBase>();
++#endif
+         qmlRegisterType<QDeclarativeGalleryEqualsFilter>(uri, major, minor, "GalleryEqualsFilter");
+         qmlRegisterType<QDeclarativeGalleryLessThanFilter>(uri, major, minor, "GalleryLessThanFilter");
+         qmlRegisterType<QDeclarativeGalleryLessThanEqualsFilter>(uri, major, minor, "GalleryLessThanEqualsFilter");
+diff --git a/src/imports/gallery/qdeclarativegalleryfilter.cpp b/src/imports/gallery/qdeclarativegalleryfilter.cpp
+index 48fb13b..5132dad 100644
+--- a/src/imports/gallery/qdeclarativegalleryfilter.cpp
++++ b/src/imports/gallery/qdeclarativegalleryfilter.cpp
+@@ -154,7 +154,7 @@ QGalleryFilter QDeclarativeGalleryStringFilter::filter() const
+ 
+ QGalleryFilter QDeclarativeGalleryEqualsFilter::filter() const
+ {
+-    if (m_filter.value().type() == QVariant::RegExp) {
++    if (m_filter.value().type() == QVariant::RegularExpression) {
+         QGalleryMetaDataFilter filter(m_filter);
+ 
+         filter.setComparator(QGalleryFilter::RegExp);
+@@ -506,15 +506,22 @@ void QDeclarativeGalleryFilterGroup::append(
+         Q_EMIT filterGroup->filterChanged();
+     }
+ }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++qsizetype QDeclarativeGalleryFilterGroup::count(
++#else
+ int QDeclarativeGalleryFilterGroup::count(
++#endif
+         QQmlListProperty<QDeclarativeGalleryFilterBase> *filters)
+ {
+     return static_cast<QList<QDeclarativeGalleryFilterBase *>*>(filters->data)->count();
+ }
+ 
+ QDeclarativeGalleryFilterBase *QDeclarativeGalleryFilterGroup::at(
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        QQmlListProperty<QDeclarativeGalleryFilterBase> *filters, qsizetype index)
++#else
+         QQmlListProperty<QDeclarativeGalleryFilterBase> *filters, int index)
++#endif
+ {
+     return static_cast<QList<QDeclarativeGalleryFilterBase *>*>(filters->data)->at(index);
+ }
+diff --git a/src/imports/gallery/qdeclarativegalleryfilter.h b/src/imports/gallery/qdeclarativegalleryfilter.h
+index 2c5c13c..9c31ab6 100644
+--- a/src/imports/gallery/qdeclarativegalleryfilter.h
++++ b/src/imports/gallery/qdeclarativegalleryfilter.h
+@@ -279,9 +279,17 @@ class QDeclarativeGalleryFilterGroup
+     static void append(
+             QQmlListProperty<QDeclarativeGalleryFilterBase> *filters,
+             QDeclarativeGalleryFilterBase *filter);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    static qsizetype count(QQmlListProperty<QDeclarativeGalleryFilterBase> *filters);
++#else
+     static int count(QQmlListProperty<QDeclarativeGalleryFilterBase> *filters);
++#endif
+     static QDeclarativeGalleryFilterBase *at(
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            QQmlListProperty<QDeclarativeGalleryFilterBase> *filters, qsizetype index);
++#else
+             QQmlListProperty<QDeclarativeGalleryFilterBase> *filters, int index);
++#endif
+     static void clear(QQmlListProperty<QDeclarativeGalleryFilterBase> *filters);
+ };
+ 
+diff --git a/src/imports/gallery/qdeclarativegalleryquerymodel.cpp b/src/imports/gallery/qdeclarativegalleryquerymodel.cpp
+index 56d8e97..fb2ce0a 100644
+--- a/src/imports/gallery/qdeclarativegalleryquerymodel.cpp
++++ b/src/imports/gallery/qdeclarativegalleryquerymodel.cpp
+@@ -262,7 +262,11 @@ QModelIndex QDeclarativeGalleryQueryModel::index(int row, int column, const QMod
+ 
+ QJSValue QDeclarativeGalleryQueryModel::get(const QJSValue &index) const
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QJSEngine *scriptEngine = qjsEngine(this);
++#else
+     QJSEngine *scriptEngine = index.engine();
++#endif
+ 
+     if (!scriptEngine)
+        return QJSValue();
+@@ -430,7 +434,7 @@ void QDeclarativeGalleryQueryModel::_q_setResultSet(QGalleryResultSet *resultSet
+     }
+ 
+     if (m_resultSet) {
+-        QHash<int, QByteArray> roleNames;
++        m_roleNames.clear();
+         m_propertyNames.clear();
+ 
+         QStringList propertyNames = m_request.propertyNames();
+@@ -442,14 +446,12 @@ void QDeclarativeGalleryQueryModel::_q_setResultSet(QGalleryResultSet *resultSet
+             const int key = m_resultSet->propertyKey(*it);
+ 
+             if (key >= 0) {
+-                roleNames.insert(key + MetaDataOffset, it->toLatin1());
++                m_roleNames.insert(key + MetaDataOffset, it->toLatin1());
+                 m_propertyNames.append(qMakePair(key, *it));
+             }
+         }
+-        roleNames.insert(ItemId, QByteArray("itemId"));
+-        roleNames.insert(ItemType, QByteArray("itemType"));
+-
+-        setRoleNames(roleNames);
++        m_roleNames.insert(ItemId, QByteArray("itemId"));
++        m_roleNames.insert(ItemType, QByteArray("itemType"));
+ 
+         connect(m_resultSet, SIGNAL(itemsInserted(int,int)),
+                 this, SLOT(_q_itemsInserted(int,int)));
+diff --git a/src/imports/gallery/qdeclarativegalleryquerymodel.h b/src/imports/gallery/qdeclarativegalleryquerymodel.h
+index b954103..9b19b23 100644
+--- a/src/imports/gallery/qdeclarativegalleryquerymodel.h
++++ b/src/imports/gallery/qdeclarativegalleryquerymodel.h
+@@ -145,6 +145,7 @@ class QDeclarativeGalleryQueryModel : public QAbstractListModel, public QQmlPars
+     bool setData(const QModelIndex &index, const QVariant &value, int role);
+ 
+     QModelIndex index(int row, int column, const QModelIndex &parent) const;
++    QHash<int, QByteArray> roleNames() const {return m_roleNames;}
+ 
+     int count() const { return m_rowCount; }
+ 
+@@ -207,6 +208,9 @@ private Q_SLOTS:
+     void _q_itemsRemoved(int index, int count);
+     void _q_itemsMoved(int from, int to, int count);
+     void _q_itemsChanged(int index, int count);
++
++private:
++    QHash<int,QByteArray> m_roleNames;
+ };
+ 
+ class QDeclarativeDocumentGalleryModel : public QDeclarativeGalleryQueryModel

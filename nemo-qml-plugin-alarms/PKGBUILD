@@ -1,27 +1,28 @@
 ## $Id$
 
 pkgname=nemo-qml-plugin-alarms
-pkgver=0.3.12
+pkgver=0.3.13
 pkgrel=1
 pkgdesc="alarms plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-alarms"
 license=('BSD')
-depends=('qt5-base' 'timed' 'qt5-declarative')
+depends=('qt6-base' 'timed' 'qt6-declarative')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    '0001-distinguish-wakeup-type-in-AlarmObject.patch')
-sha256sums=('8435d73b25e28f75e5bffc9aba6d7d0fab56253596a4f0340d26428fd45edd3b'
-    '4f943807ce77f347b1bf1ab322370023abfca243488a8ab3b55658eb895d64a2'
+    '0002-distinguish-wakeup-type-in-AlarmObject.patch'
+)
+sha256sums=('bc17e1f0efaadca6af6d1b46b0e45c09657d96a5d4f39d5b5152e7e17a1c70e4'
+    'b8e94c842fe3050ef742c69b5d1967d70e45fa4f308e3b9e185c5775a64a3e5d'
 )
 
 prepare() {
   cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-distinguish-wakeup-type-in-AlarmObject.patch"
+  patch -p1 --input="${srcdir}/0002-distinguish-wakeup-type-in-AlarmObject.patch"
 }
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

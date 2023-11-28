@@ -4,38 +4,43 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt5-lipstick-git
-pkgver=0.46.2.r0.g3ece3a88
+_branch=master
+pkgname=qt6-lipstick-git
+pkgver=1.1.r1.g1c580f30
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/lipstick.git"
 license=('LGPL-2.1-only')
-depends=('qt5-sensors-sensorfw'
-	    'qt5-wayland'
+depends=(
+	    'qt6-sensors-sensorfw'
+	    'qt6-wayland'
 	    'nemo-keepalive'
 	    'libresourceqt'
 	    'libsystemd'
 	    'mce-headers'
 	    'libmce-qt>=1.5.0'
-	    'libngf-qt'
+	    'libngf-qt6'
 	    'nemo-qml-plugin-devicelock'
 	    'nemo-qml-plugin-systemsettings'
 	    'pulseaudio'
 	    'pulseaudio-modules-nemo'
 	    'pulseaudio-policy-enforcement'
-	    'bluez-qt')
+	    'bluez-qt6')
 
 makedepends=('git'
-	'qt5-tools'
+	'qt6-tools'
 	'doxygen'
 	'graphviz'
 	'make'
-	'pkgconfig')
+	'pkgconfig'
+	'timed'
+	'cmake'
+)
 
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
+source=("${pkgname}::git+${url}#branch=${_branch}")
 sha256sums=('SKIP')
 
 
@@ -53,13 +58,11 @@ build() {
   git submodule update
   mkdir -p build
   cd build
-  qmake VERSION=${pkgver} ..
-  make
+  cmake ../  -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+  make  all
 }
 
 package() {
-  cd "${srcdir}/${pkgname}"
-  cd build
-  make -j 1 INSTALL_ROOT="${pkgdir}" install
+  cd "${srcdir}/${pkgname}/build"
+  make DESTDIR="$pkgdir" install
 }
- 

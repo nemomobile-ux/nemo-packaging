@@ -19,9 +19,9 @@ pkgdesc="The Glacier image gallery"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
-depends=('qt5-glacier-app' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-thumbnailer' 'libresourceqt' 'qtdocgallery')
+depends=('qt6-glacier-app' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-thumbnailer' 'libresourceqt' 'qtdocgallery')
 optdepends=()
-makedepends=('git' 'qt5-tools' 'cmake')
+makedepends=('git' 'qt6-tools' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

@@ -1,0 +1,958 @@
+diff --git a/config.pri b/config.pri
+index b1dd866..c17b6b4 100644
+--- a/config.pri
++++ b/config.pri
+@@ -4,11 +4,14 @@ QMAKE_CXXFLAGS += -ffunction-sections -fdata-sections -Wl,--gc-sections -flto
+ CONFIG += \
+     c++11 \
+     link_pkgconfig
+-PKGCONFIG += Qt5Contacts
++PKGCONFIG += Qt$${QT_MAJOR_VERSION}Contacts
+ 
+-packagesExist(mlite5) {
++packagesExist(mlite$${QT_MAJOR_VERSION}) {
+     DEFINES += HAS_MLITE
+-    PKGCONFIG += mlite5
++    PKGCONFIG += mlite$${QT_MAJOR_VERSION}
+ }
+ 
+-DEFINES += CONTACTS_DATABASE_PATH=\"\\\"$$[QT_INSTALL_LIBS]/qtcontacts-sqlite-qt5/\\\"\"
++DEFINES += CONTACTS_DATABASE_PATH=\"\\\"$$[QT_INSTALL_LIBS]/qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}/\\\"\"
++
++DISTFILES += \
++    $$PWD/src/qtcontacts-sqlite-qt6-extensions.pc
+diff --git a/src/engine/contactnotifier.cpp b/src/engine/contactnotifier.cpp
+index 0276b33..f7bf99d 100644
+--- a/src/engine/contactnotifier.cpp
++++ b/src/engine/contactnotifier.cpp
+@@ -195,7 +195,11 @@ void ContactNotifier::relationshipsAdded(const QSet<QContactId> &contactIds)
+ {
+     if (!contactIds.isEmpty()) {
+         QDBusMessage message = createSignal("relationshipsAdded", m_nonprivileged);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        message.setArguments(QVariantList() << QVariant::fromValue(idVector(contactIds.values())));
++#else
+         message.setArguments(QVariantList() << QVariant::fromValue(idVector(contactIds.toList())));
++#endif
+         sendMessage(message);
+     }
+ }
+@@ -204,7 +208,11 @@ void ContactNotifier::relationshipsRemoved(const QSet<QContactId> &contactIds)
+ {
+     if (!contactIds.isEmpty()) {
+         QDBusMessage message = createSignal("relationshipsRemoved", m_nonprivileged);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        message.setArguments(QVariantList() << QVariant::fromValue(idVector(contactIds.values())));
++#else
+         message.setArguments(QVariantList() << QVariant::fromValue(idVector(contactIds.toList())));
++#endif
+         sendMessage(message);
+     }
+ }
+diff --git a/src/engine/contactreader.cpp b/src/engine/contactreader.cpp
+index e6bcafe..4ffb978 100644
+--- a/src/engine/contactreader.cpp
++++ b/src/engine/contactreader.cpp
+@@ -135,7 +135,11 @@ static QVariant stringListValue(const QVariant &columnValue)
+         return columnValue;
+ 
+     QString listString(columnValue.toString());
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    return listString.split(QLatin1Char(';'), Qt::SkipEmptyParts);
++#else
+     return listString.split(QLatin1Char(';'), QString::SkipEmptyParts);
++#endif
+ }
+ 
+ static QVariant urlValue(const QVariant &columnValue)
+@@ -205,7 +209,11 @@ static void setValues(QContactAddress *detail, QSqlQuery *query, const int offse
+     setValue(detail, T::FieldLocality     , query->value(offset + 3));
+     setValue(detail, T::FieldPostcode     , query->value(offset + 4));
+     setValue(detail, T::FieldCountry      , query->value(offset + 5));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    const QStringList subTypeValues(query->value(offset + 6).toString().split(QLatin1Char(';'), Qt::SkipEmptyParts));
++#else
+     const QStringList subTypeValues(query->value(offset + 6).toString().split(QLatin1Char(';'), QString::SkipEmptyParts));
++#endif
+     setValue(detail, T::FieldSubTypes     , QVariant::fromValue<QList<int> >(subTypeList(subTypeValues)));
+ }
+ 
+@@ -306,7 +314,11 @@ static void setValues(QContactFamily *detail, QSqlQuery *query, const int offset
+     typedef QContactFamily T;
+ 
+     setValue(detail, T::FieldSpouse  , query->value(offset + 0));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    setValue(detail, T::FieldChildren, query->value(offset + 1).toString().split(QLatin1Char(';'), Qt::SkipEmptyParts));
++#else
+     setValue(detail, T::FieldChildren, query->value(offset + 1).toString().split(QLatin1Char(';'), QString::SkipEmptyParts));
++#endif
+ }
+ 
+ static const FieldInfo favoriteFields[] =
+@@ -462,7 +474,11 @@ static void setValues(QContactOnlineAccount *detail, QSqlQuery *query, const int
+     setValue(detail, T::FieldServiceProvider, query->value(offset + 3));
+     setValue(detail, T::FieldCapabilities   , stringListValue(query->value(offset + 4)));
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    const QStringList subTypeValues(query->value(offset + 5).toString().split(QLatin1Char(';'), Qt::SkipEmptyParts));
++#else
+     const QStringList subTypeValues(query->value(offset + 5).toString().split(QLatin1Char(';'), QString::SkipEmptyParts));
++#endif
+     setValue(detail, T::FieldSubTypes, QVariant::fromValue<QList<int> >(subTypeList(subTypeValues)));
+ 
+     setValue(detail, QContactOnlineAccount__FieldAccountPath,                query->value(offset + 6));
+@@ -508,8 +524,11 @@ static void setValues(QContactPhoneNumber *detail, QSqlQuery *query, const int o
+     typedef QContactPhoneNumber T;
+ 
+     setValue(detail, T::FieldNumber  , query->value(offset + 0));
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    const QStringList subTypeValues(query->value(offset + 1).toString().split(QLatin1Char(';'), Qt::SkipEmptyParts));
++#else
+     const QStringList subTypeValues(query->value(offset + 1).toString().split(QLatin1Char(';'), QString::SkipEmptyParts));
++#endif
+     setValue(detail, T::FieldSubTypes, QVariant::fromValue<QList<int> >(subTypeList(subTypeValues)));
+ 
+     setValue(detail, QContactPhoneNumber::FieldNormalizedNumber, query->value(offset + 2));
+@@ -708,11 +727,19 @@ static void readDetail(QContact *contact, QSqlQuery &query, quint32 contactId, q
+     if (!linkedDetailUrisValue.isEmpty()) {
+         setValue(&detail,
+                  QContactDetail::FieldLinkedDetailUris,
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++                 linkedDetailUrisValue.split(QLatin1Char(';'), Qt::SkipEmptyParts));
++#else
+                  linkedDetailUrisValue.split(QLatin1Char(';'), QString::SkipEmptyParts));
++#endif
+     }
+     if (!contextValue.isEmpty()) {
+         QList<int> contexts;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        foreach (const QString &context, contextValue.split(QLatin1Char(';'), Qt::SkipEmptyParts)) {
++#else
+         foreach (const QString &context, contextValue.split(QLatin1Char(';'), QString::SkipEmptyParts)) {
++#endif
+             const int type = contextType(context);
+             if (type != -1) {
+                 contexts.append(type);
+@@ -2840,7 +2867,11 @@ QContactManager::Error ContactReader::readDeletedContactIds(
+                 }
+             } else if (filterType == QContactFilter::CollectionFilter) {
+                 const QContactCollectionFilter &collectionFilter(static_cast<const QContactCollectionFilter &>(partialFilter));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++                collectionIds = collectionFilter.collectionIds().values();
++#else
+                 collectionIds = collectionFilter.collectionIds().toList();
++#endif
+                 if (collectionIds.size() > 1) {
+                     QTCONTACTS_SQLITE_WARNING(QString::fromLatin1("Cannot readDeletedContactIds with more than one collection specified: %1").arg(collectionIds.size()));
+                     return QContactManager::UnspecifiedError;
+diff --git a/src/engine/contactsdatabase.cpp b/src/engine/contactsdatabase.cpp
+index 1644e66..4380835 100644
+--- a/src/engine/contactsdatabase.cpp
++++ b/src/engine/contactsdatabase.cpp
+@@ -1800,8 +1800,11 @@ static bool updateStorageTypes(QSqlDatabase &database)
+         while (query.next()) {
+             const quint32 detailId(query.value(0).value<quint32>());
+             const QString originalSubTypes(query.value(1).value<QString>());
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), Qt::SkipEmptyParts));
++#else
+             QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), QString::SkipEmptyParts));
++#endif
+             QStringList subTypeValues;
+             foreach (int subTypeValue, Address::subTypeList(subTypeNames)) {
+                 subTypeValues.append(QString::number(subTypeValue));
+@@ -1948,8 +1951,11 @@ static bool updateStorageTypes(QSqlDatabase &database)
+             const quint32 detailId(query.value(0).value<quint32>());
+             const QString originalProtocol(query.value(1).value<QString>());
+             const QString originalSubTypes(query.value(2).value<QString>());
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), Qt::SkipEmptyParts));
++#else
+             QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), QString::SkipEmptyParts));
++#endif
+             QStringList subTypeValues;
+             foreach (int subTypeValue, OnlineAccount::subTypeList(subTypeNames)) {
+                 subTypeValues.append(QString::number(subTypeValue));
+@@ -1999,8 +2005,11 @@ static bool updateStorageTypes(QSqlDatabase &database)
+         while (query.next()) {
+             const quint32 detailId(query.value(0).value<quint32>());
+             const QString originalSubTypes(query.value(1).value<QString>());
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), Qt::SkipEmptyParts));
++#else
+             QStringList subTypeNames(originalSubTypes.split(QLatin1Char(';'), QString::SkipEmptyParts));
++#endif
+             QStringList subTypeValues;
+             foreach (int subTypeValue, PhoneNumber::subTypeList(subTypeNames)) {
+                 subTypeValues.append(QString::number(subTypeValue));
+@@ -3260,7 +3269,9 @@ void ContactsDatabase::Query::reportError(const char *text) const
+ 
+ ContactsDatabase::ContactsDatabase(ContactsEngine *engine)
+     : m_engine(engine)
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     , m_mutex(QMutex::Recursive)
++#endif
+     , m_nonprivileged(false)
+     , m_autoTest(false)
+     , m_localeName(QLocale().name())
+diff --git a/src/engine/contactsengine.cpp b/src/engine/contactsengine.cpp
+index 46cf287..8661ff8 100644
+--- a/src/engine/contactsengine.cpp
++++ b/src/engine/contactsengine.cpp
+@@ -49,6 +49,7 @@
+ 
+ #include <QCoreApplication>
+ #include <QMutex>
++#include <QMutexLocker>
+ #include <QThread>
+ #include <QWaitCondition>
+ #include <QElapsedTimer>
+@@ -960,9 +961,13 @@ class ClearChangeFlagsJob : public TemplateJob<QContactClearChangeFlagsRequest>
+ class JobThread : public QThread
+ {
+     struct MutexUnlocker {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        QMutexLocker<QMutex> &m_locker;
++        explicit MutexUnlocker(QMutexLocker<QMutex> &locker) : m_locker(locker)
++#else
+         QMutexLocker &m_locker;
+-
+         explicit MutexUnlocker(QMutexLocker &locker) : m_locker(locker)
++#endif
+         {
+             m_locker.unlock();
+         }
+@@ -1304,9 +1309,13 @@ ContactsEngine::ContactsEngine(const QString &name, const QMap<QString, QString>
+     , m_parameters(parameters)
+ {
+     static bool registered = qRegisterMetaType<QList<int> >("QList<int>") &&
+-                             qRegisterMetaType<QList<QContactDetail::DetailType> >("QList<QContactDetail::DetailType>") &&
+-                             qRegisterMetaTypeStreamOperators<QList<int> >();
++                             qRegisterMetaType<QList<QContactDetail::DetailType> >("QList<QContactDetail::DetailType>")
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++                             && qRegisterMetaTypeStreamOperators<QList<int> >();
+     Q_UNUSED(registered)
++#else
++        ;
++#endif
+ 
+     QString nonprivileged = m_parameters.value(QString::fromLatin1("nonprivileged"));
+     if (nonprivileged.toLower() == QLatin1String("true") ||
+diff --git a/src/engine/contactstransientstore.cpp b/src/engine/contactstransientstore.cpp
+index b7e338d..9b4b74a 100644
+--- a/src/engine/contactstransientstore.cpp
++++ b/src/engine/contactstransientstore.cpp
+@@ -76,7 +76,9 @@ class SharedMemoryManager
+     typedef std::tr1::function<void ()> Function;
+ 
+     SharedMemoryManager()
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+         : m_mutex(QMutex::Recursive)
++#endif
+     {
+     }
+ 
+diff --git a/src/engine/contactwriter.cpp b/src/engine/contactwriter.cpp
+index 15f5312..66f629e 100644
+--- a/src/engine/contactwriter.cpp
++++ b/src/engine/contactwriter.cpp
+@@ -147,23 +147,42 @@ bool ContactWriter::commitTransaction()
+         m_displayLabelGroupsChanged = false;
+     }
+     if (!m_addedCollectionIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_notifier->collectionsAdded(m_addedCollectionIds.values());
++#else
+         m_notifier->collectionsAdded(m_addedCollectionIds.toList());
++#endif
+         m_addedCollectionIds.clear();
+     }
+     if (!m_changedCollectionIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_notifier->collectionsChanged(m_changedCollectionIds.values());
++#else
+         m_notifier->collectionsChanged(m_changedCollectionIds.toList());
++#endif
+         m_changedCollectionIds.clear();
+     }
+     if (!m_addedIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#else
+         m_notifier->contactsAdded(m_addedIds.toList());
++#endif
+         m_addedIds.clear();
+     }
+     if (!m_changedIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_notifier->contactsChanged(m_changedIds.values());
++#else
+         m_notifier->contactsChanged(m_changedIds.toList());
++#endif
+         m_changedIds.clear();
+     }
+     if (!m_presenceChangedIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_notifier->contactsPresenceChanged(m_presenceChangedIds.values());
++#else
+         m_notifier->contactsPresenceChanged(m_presenceChangedIds.toList());
++#endif
+         m_presenceChangedIds.clear();
+     }
+     if (m_suppressedCollectionIds.size()) {
+@@ -175,7 +194,11 @@ bool ContactWriter::commitTransaction()
+     }
+     m_suppressedCollectionIds.clear();
+     if (!m_collectionContactsChanged.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_notifier->collectionContactsChanged(m_collectionContactsChanged.values());
++#else
+         m_notifier->collectionContactsChanged(m_collectionContactsChanged.toList());
++#endif
+         m_collectionContactsChanged.clear();
+     }
+     if (!m_removedIds.isEmpty()) {
+@@ -185,12 +208,19 @@ bool ContactWriter::commitTransaction()
+             removedDbIds.append(ContactId::databaseId(id));
+         }
+         m_database.removeTransientDetails(removedDbIds);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_notifier->contactsRemoved(m_removedIds.values());
++#else
+         m_notifier->contactsRemoved(m_removedIds.toList());
++#endif
+         m_removedIds.clear();
+     }
+     if (!m_removedCollectionIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_notifier->collectionsRemoved(m_removedCollectionIds.values());
++#else
+         m_notifier->collectionsRemoved(m_removedCollectionIds.toList());
++#endif
+         m_removedCollectionIds.clear();
+ 
+     }
+@@ -469,7 +499,11 @@ QContactManager::Error ContactWriter::saveRelationships(
+     }
+ 
+     if (m_database.aggregating() && !aggregatesAffected.isEmpty() && !withinAggregateUpdate) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        QContactManager::Error writeError = regenerateAggregates(aggregatesAffected.values(), DetailList(), true);
++#else
+         QContactManager::Error writeError = regenerateAggregates(aggregatesAffected.toList(), DetailList(), true);
++#endif
+         if (writeError != QContactManager::NoError) {
+             return writeError;
+         }
+@@ -599,7 +633,11 @@ QContactManager::Error ContactWriter::removeRelationships(
+         }
+ 
+         if (!aggregatesAffected.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            QContactManager::Error writeError = regenerateAggregates(aggregatesAffected.values(), DetailList(), true);
++#else
+             QContactManager::Error writeError = regenerateAggregates(aggregatesAffected.toList(), DetailList(), true);
++#endif
+             if (writeError != QContactManager::NoError)
+                 return writeError;
+         }
+diff --git a/src/engine/engine.pro b/src/engine/engine.pro
+index 3fe5053..111f2db 100644
+--- a/src/engine/engine.pro
++++ b/src/engine/engine.pro
+@@ -74,7 +74,7 @@ SOURCES += \
+ target.path = $$[QT_INSTALL_PLUGINS]/contacts
+ INSTALLS += target
+ 
+-PACKAGENAME=qtcontacts-sqlite-qt5-extensions
++PACKAGENAME=qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions
+ 
+ headers.path = $${PREFIX}/include/$${PACKAGENAME}
+ headers.files = ../extensions/*
+diff --git a/src/extensions/contactdelta_impl.h b/src/extensions/contactdelta_impl.h
+index e238820..d53df9a 100644
+--- a/src/extensions/contactdelta_impl.h
++++ b/src/extensions/contactdelta_impl.h
+@@ -483,9 +483,17 @@ QList<QContactDetail> improveDelta(
+     QMultiHash<int, QContactDetail> bucketedAdditions;
+ 
+     for (int i = 0; i < removals->size(); ++i)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        bucketedRemovals.insert(removals->at(i).type(), removals->at(i));
++#else
+         bucketedRemovals.insertMulti(removals->at(i).type(), removals->at(i));
++#endif
+     for (int i = 0; i < additions->size(); ++i)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        bucketedAdditions.insert(additions->at(i).type(), additions->at(i));
++#else
+         bucketedAdditions.insertMulti(additions->at(i).type(), additions->at(i));
++#endif
+ 
+     QSet<int> seenTypes;
+     foreach (int type, bucketedRemovals.uniqueKeys()) {
+diff --git a/src/extensions/twowaycontactsyncadaptor_impl.h b/src/extensions/twowaycontactsyncadaptor_impl.h
+index b483bac..75c1e88 100644
+--- a/src/extensions/twowaycontactsyncadaptor_impl.h
++++ b/src/extensions/twowaycontactsyncadaptor_impl.h
+@@ -192,7 +192,9 @@ void registerTypes()
+     if (!registered) {
+         registered = true;
+         qRegisterMetaType<QList<int> >();
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+         qRegisterMetaTypeStreamOperators<QList<int> >();
++#endif
+         qRegisterMetaType<QList<QContactCollection> >();
+         qRegisterMetaType<QList<QContactCollectionId> >();
+     }
+diff --git a/src/qtcontacts-sqlite-qt6-extensions.pc b/src/qtcontacts-sqlite-qt6-extensions.pc
+new file mode 100644
+index 0000000..c66f15a
+--- /dev/null
++++ b/src/qtcontacts-sqlite-qt6-extensions.pc
+@@ -0,0 +1,7 @@
++prefix=/usr
++includedir=${prefix}/include/qtcontacts-sqlite-qt6-extensions
++
++Name: qtcontacts-sqlite-qt6-extensions
++Description: QtContacts extensions implemented by qtcontacts-sqlite-qt6
++Version: 0.3.0
++Cflags:  -I${includedir}
+diff --git a/tests/auto/aggregation/tst_aggregation.cpp b/tests/auto/aggregation/tst_aggregation.cpp
+index fde095a..90829a1 100644
+--- a/tests/auto/aggregation/tst_aggregation.cpp
++++ b/tests/auto/aggregation/tst_aggregation.cpp
+@@ -218,7 +218,11 @@ void tst_Aggregation::cleanup()
+         m_createdIds.clear();
+     }
+     if (!m_createdColIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        for (const QContactCollectionId &colId : m_createdColIds.values()) {
++#else
+         for (const QContactCollectionId &colId : m_createdColIds.toList()) {
++#endif
+             m_cm->removeCollection(colId);
+             cme->clearChangeFlags(colId, &err);
+         }
+@@ -4590,13 +4594,20 @@ void tst_Aggregation::testOOB()
+     QList<int> uniqueSequence;
+     QList<int> repeatingSequence;
+     QList<int> randomSequence;
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand(0);
++#else
+     qsrand(0);
++#endif
+     for (int i = 0; i < 100; ++i) {
+         for (int j = 0; j < 10; ++j) {
+             uniqueSequence.append(i * 100 + j);
+             repeatingSequence.append(j);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            randomSequence.append(rand());
++#else
+             randomSequence.append(qrand());
++#endif
+         }
+     }
+ 
+diff --git a/tests/auto/detailfetchrequest/tst_detailfetchrequest.cpp b/tests/auto/detailfetchrequest/tst_detailfetchrequest.cpp
+index 4550e01..4cd11d6 100644
+--- a/tests/auto/detailfetchrequest/tst_detailfetchrequest.cpp
++++ b/tests/auto/detailfetchrequest/tst_detailfetchrequest.cpp
+@@ -93,7 +93,11 @@ tst_DetailFetchRequest::~tst_DetailFetchRequest()
+ {
+     QTest::qWait(250); // wait for signals.
+     if (!m_createdIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_cm->removeContacts(m_createdIds.values());
++#else
+         m_cm->removeContacts(m_createdIds.toList());
++#endif
+         m_createdIds.clear();
+     }
+     delete m_cm;
+@@ -111,7 +115,11 @@ void tst_DetailFetchRequest::cleanupTestCase()
+ {
+     QTest::qWait(250); // wait for signals.
+     if (!m_createdIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_cm->removeContacts(m_createdIds.values());
++#else
+         m_cm->removeContacts(m_createdIds.toList());
++#endif
+         m_createdIds.clear();
+     }
+ }
+@@ -120,7 +128,11 @@ void tst_DetailFetchRequest::cleanup()
+ {
+     QTest::qWait(250); // wait for signals.
+     if (!m_createdIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_cm->removeContacts(m_createdIds.values());
++#else
+         m_cm->removeContacts(m_createdIds.toList());
++#endif
+         m_createdIds.clear();
+     }
+ }
+diff --git a/tests/auto/displaylabelgroups/test/tst_displaylabelgroups.cpp b/tests/auto/displaylabelgroups/test/tst_displaylabelgroups.cpp
+index d8cb4bc..ce8eca3 100644
+--- a/tests/auto/displaylabelgroups/test/tst_displaylabelgroups.cpp
++++ b/tests/auto/displaylabelgroups/test/tst_displaylabelgroups.cpp
+@@ -93,7 +93,11 @@ tst_DisplayLabelGroups::~tst_DisplayLabelGroups()
+ {
+     QTest::qWait(250); // wait for signals.
+     if (!m_createdIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_cm->removeContacts(m_createdIds.values());
++#else
+         m_cm->removeContacts(m_createdIds.toList());
++#endif
+         m_createdIds.clear();
+     }
+     delete m_cm;
+@@ -111,7 +115,11 @@ void tst_DisplayLabelGroups::cleanupTestCase()
+ {
+     QTest::qWait(250); // wait for signals.
+     if (!m_createdIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_cm->removeContacts(m_createdIds.values());
++#else
+         m_cm->removeContacts(m_createdIds.toList());
++#endif
+         m_createdIds.clear();
+     }
+ }
+@@ -120,7 +128,11 @@ void tst_DisplayLabelGroups::cleanup()
+ {
+     QTest::qWait(250); // wait for signals.
+     if (!m_createdIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        m_cm->removeContacts(m_createdIds.values());
++#else
+         m_cm->removeContacts(m_createdIds.toList());
++#endif
+         m_createdIds.clear();
+     }
+ }
+diff --git a/tests/auto/displaylabelgroups/testplugin/testplugin.pro b/tests/auto/displaylabelgroups/testplugin/testplugin.pro
+index 54e60cc..78874f4 100644
+--- a/tests/auto/displaylabelgroups/testplugin/testplugin.pro
++++ b/tests/auto/displaylabelgroups/testplugin/testplugin.pro
+@@ -7,6 +7,6 @@ SOURCES         = testdlggplugin.cpp
+ TARGET          = $$qtLibraryTarget(testdlgg)
+ PLUGIN_TYPE     = contacts_dlgg
+ DESTDIR         = $${PLUGIN_TYPE}
+-PKGCONFIG      += Qt5Contacts
+-target.path     = $$[QT_INSTALL_LIBS]/qtcontacts-sqlite-qt5/
++PKGCONFIG      += Qt$${QT_MAJOR_VERSION}Contacts
++target.path     = $$[QT_INSTALL_LIBS]/qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}/
+ INSTALLS       += target
+diff --git a/tests/auto/memorytable/tst_memorytable.cpp b/tests/auto/memorytable/tst_memorytable.cpp
+index 2421032..c45645f 100644
+--- a/tests/auto/memorytable/tst_memorytable.cpp
++++ b/tests/auto/memorytable/tst_memorytable.cpp
+@@ -98,9 +98,17 @@ char *tst_MemoryTable::testBuffer(size_t length)
+     char* buf(new char[length]);
+ 
+     // Fill the buffer with garbage
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand(static_cast<quint32>(QDateTime::currentDateTime().toMSecsSinceEpoch()));
++#else
+     qsrand(static_cast<quint32>(QDateTime::currentDateTime().toMSecsSinceEpoch()));
++#endif
+     for (char *p = buf, *end = p + length; p != end; p += sizeof(uint)) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        *(reinterpret_cast<uint *>(p)) = rand();
++#else
+         *(reinterpret_cast<uint *>(p)) = qrand();
++#endif
+     }
+ 
+     return buf;
+@@ -566,7 +574,11 @@ void tst_MemoryTable::migration()
+ 
+     quint32 seed = static_cast<quint32>(QDateTime::currentDateTime().toMSecsSinceEpoch());
+     qDebug() << "Randomized test - seed:" << seed;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand(seed);
++#else
+     qsrand(seed);
++#endif
+ 
+     for (int i = 0; i < 10; ++i) {
+         MemoryTable mt(buf.data(), 1024, true);
+@@ -574,8 +586,13 @@ void tst_MemoryTable::migration()
+         // Populate the table
+         quint32 key = 0u;
+         MemoryTable::Error e;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        while ((e = mt.insert(key, QByteArray(rand() % 64, 'x'))) == MemoryTable::NoError) {
++            if ((rand() % 2) == 0) {
++#else
+         while ((e = mt.insert(key, QByteArray(qrand() % 64, 'x'))) == MemoryTable::NoError) {
+             if ((qrand() % 2) == 0) {
++#endif
+                 // Update this key, possibly causing re-allocation of the block
+                 ++key;
+             }
+diff --git a/tests/auto/qcontactmanager/tst_qcontactmanager.cpp b/tests/auto/qcontactmanager/tst_qcontactmanager.cpp
+index d723795..c114244 100644
+--- a/tests/auto/qcontactmanager/tst_qcontactmanager.cpp
++++ b/tests/auto/qcontactmanager/tst_qcontactmanager.cpp
+@@ -3183,25 +3183,51 @@ void tst_QContactManager::changeSet()
+     QSet<QContactId> changedIds;
+     QSet<QContactDetail::DetailType> changedTypes;
+     foreach (const QContactChangeSet::ContactChangeList &changes, changeSet.changedContacts()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        changedIds |= QSet<QContactId>(changes.second.begin(),  changes.second.end());
++#else
+         changedIds |= changes.second.toSet();
++#endif
+         if (changes.second.contains(id)) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            changedTypes |= QSet<QContactDetail::DetailType>(changes.first.begin(),  changes.first.end());
++#else
+             changedTypes |= changes.first.toSet();
++#endif
+         }
+     }
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QList<QContactId> cid = QList<QContactId>() << id;
++    QList<QContactDetail::DetailType> ctype = QList<QContactDetail::DetailType>() << QContactName::Type << QContactBirthday::Type;
++
++    QCOMPARE(changedIds, QSet<QContactId>(cid.begin(), cid.end()));
++    QCOMPARE(changedTypes, QSet<QContactDetail::DetailType>(ctype.begin(), ctype.end()));
++#else
+     QCOMPARE(changedIds, (QList<QContactId>() << id).toSet());
+     QCOMPARE(changedTypes, (QList<QContactDetail::DetailType>() << QContactName::Type << QContactBirthday::Type).toSet());
++#endif
+     changeSet.clearChangedContacts();
+     QVERIFY(changeSet.changedContacts().isEmpty());
+ 
+     QList<QContactId> l1, l2;
+     foreach (int n, QList<int>() << 1 << 1 << 1 << 2 << 2 << 3 << 3 << 4 << 4 << 4 << 5 << 10 << 9 << 8 << 8 << 8 << 7 << 7 << 6) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        ((rand() % 2) ? l1 : l2).append(ContactId::apiId(n, QStringLiteral("tst_QContactManager::changeSet")));
++#else
+         ((qrand() % 2) ? l1 : l2).append(ContactId::apiId(n, QStringLiteral("tst_QContactManager::changeSet")));
++#endif
+     }
+     changeSet.clearChangedContacts();
+     changeSet.insertChangedContacts(l1, QList<QContactDetail::DetailType>() << QContactName::Type << QContactBirthday::Type);
+     changeSet.insertChangedContacts(l2, QList<QContactDetail::DetailType>() << QContactBirthday::Type << QContactName::Type << QContactBirthday::Type);
+     QCOMPARE(changeSet.changedContacts().size(), 1);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QSet<QContactId> s1 = QSet<QContactId>(l1.begin(), l1.end());
++    QSet<QContactId> s2 = QSet<QContactId>(l2.begin(), l2.end());
++    QList<QContactId> expected((s1 | s2).values());
++#else
+     QList<QContactId> expected((l1.toSet() | l2.toSet()).toList());
++#endif
+     std::sort(expected.begin(), expected.end());
+     QCOMPARE(changeSet.changedContacts().first().second, expected);
+ 
+@@ -3218,7 +3244,11 @@ void tst_QContactManager::changeSet()
+ 
+     changeSet2.clearAddedContacts();
+     QVERIFY(changeSet2.addedContacts().isEmpty());
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    changeSet2.insertAddedContacts(changeSet.addedContacts().values());
++#else
+     changeSet2.insertAddedContacts(changeSet.addedContacts().toList());
++#endif
+     QVERIFY(changeSet.addedContacts() == changeSet2.addedContacts());
+ 
+     changeSet2.clearAll();
+@@ -3963,7 +3993,11 @@ void tst_QContactManager::familyDetail()
+     QCOMPARE(a.details<QContactFamily>().count(), 1);
+     f = a.details<QContactFamily>().at(0);
+     QCOMPARE(f.spouse(), QLatin1String("Eve"));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QCOMPARE(QSet<QString>(f.children().begin(), f.children().end()) , QSet<QString>() << "Cain" << "Abel");
++#else
+     QCOMPARE(f.children().toSet(), QSet<QString>() << "Cain" << "Abel");
++#endif
+ 
+     QCOMPARE(a.relatedContacts(QContactRelationship::Aggregates(), QContactRelationship::First).count(), 1);
+ 
+@@ -4263,8 +4297,13 @@ void tst_QContactManager::extendedDetail()
+     {
+         QDataStream ds(&d2, QIODevice::WriteOnly);
+         for (int i = 0; i < 10; ++i) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            int x = rand();
++            int y = rand();
++#else
+             int x = qrand();
+             int y = qrand();
++#endif
+             const double q = x / (y ? y : 1);
+             ds << q;
+         }
+diff --git a/tests/auto/qcontactmanagerfiltering/tst_qcontactmanagerfiltering.cpp b/tests/auto/qcontactmanagerfiltering/tst_qcontactmanagerfiltering.cpp
+index 6516e99..3cb8f13 100644
+--- a/tests/auto/qcontactmanagerfiltering/tst_qcontactmanagerfiltering.cpp
++++ b/tests/auto/qcontactmanagerfiltering/tst_qcontactmanagerfiltering.cpp
+@@ -305,7 +305,11 @@ QString tst_QContactManagerFiltering::convertIds(QList<QContactId> allIds, QList
+     /* Expected is of the form "abcd".. it's possible that there are some extra contacts */
+     for (int i = 0; i < ids.size(); i++) {
+         if (allIds.indexOf(ids.at(i)) >= 0) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            QChar curr = (char)('a' + allIds.indexOf(ids.at(i)));
++#else
+             QChar curr = ('a' + allIds.indexOf(ids.at(i)));
++#endif
+             if (curr >= minimumContact && curr <= maximumContact) {
+                 ret += curr;
+             }
+@@ -622,16 +626,31 @@ void tst_QContactManagerFiltering::statusFlagsFiltering()
+     QFETCH(QContactManager*, cm);
+ 
+     // Test for correct matching of all contact properties
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QSet<QContactId> phoneNumberIds = QSet<QContactId>(cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::HasPhoneNumber, QContactFilter::MatchContains)).begin()
++                                                       , cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::HasPhoneNumber, QContactFilter::MatchContains)).end());
++    QSet<QContactId> emailAddressIds = QSet<QContactId>(cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::HasEmailAddress, QContactFilter::MatchContains)).begin()
++                                                        , cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::HasEmailAddress, QContactFilter::MatchContains)).end());
++    QSet<QContactId> onlineAccountIds = QSet<QContactId>(cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::HasOnlineAccount, QContactFilter::MatchContains)).begin()
++                                                         , cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::HasOnlineAccount, QContactFilter::MatchContains)).end());
++    QSet<QContactId> onlineIds = QSet<QContactId>(cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::IsOnline, QContactFilter::MatchContains)).begin()
++                                                  , cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::IsOnline, QContactFilter::MatchContains)).end());
++    QSet<QContactId> deactivatedIds = QSet<QContactId>(cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::IsDeactivated, QContactFilter::MatchContains)).begin()
++                                                       , cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::IsDeactivated, QContactFilter::MatchContains)).end());
++#else
+     QSet<QContactId> phoneNumberIds = cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::HasPhoneNumber, QContactFilter::MatchContains)).toSet();
+     QSet<QContactId> emailAddressIds = cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::HasEmailAddress, QContactFilter::MatchContains)).toSet();
+     QSet<QContactId> onlineAccountIds = cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::HasOnlineAccount, QContactFilter::MatchContains)).toSet();
+     QSet<QContactId> onlineIds = cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::IsOnline, QContactFilter::MatchContains)).toSet();
+     QSet<QContactId> deactivatedIds = cm->contactIds(QContactStatusFlags::matchFlag(QContactStatusFlags::IsDeactivated, QContactFilter::MatchContains)).toSet();
+-
++#endif
+     // Also test for combination tests
+     QContactFilter filter(QContactStatusFlags::matchFlags(QContactStatusFlags::HasPhoneNumber | QContactStatusFlags::HasEmailAddress, QContactFilter::MatchContains));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QSet<QContactId> phoneAndEmailIds = QSet<QContactId>(cm->contactIds(filter).begin(), cm->contactIds(filter).end());
++#else
+     QSet<QContactId> phoneAndEmailIds = cm->contactIds(filter).toSet();
+-
++#endif
+     // Doing MatchExactly on any status flag is likely to return no results, as the IsAdded or IsModified flag will generally
+     // be set whenever the contact is saved, in addition to any HasPhoneNumber/HasEmailAddress etc flag.
+     //filter = QContactStatusFlags::matchFlags(QContactStatusFlags::HasPhoneNumber, QContactFilter::MatchExactly);
+@@ -1858,7 +1877,15 @@ void tst_QContactManagerFiltering::relationshipFiltering()
+         // check that the relationship type is supported for both contacts.
+         QCOMPARE_UNSORTED(output, expected);
+     } else {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        QString msg = "Manager does not support relationship type "
++                      + relationshipType + " between "
++                      + QVariant::fromValue(contactA.type()).toString()
++                      + " and "
++                      + QVariant::fromValue(contactB.type()).toString() + " type contacts.";
++#else
+         QString msg = "Manager does not support relationship type " + relationshipType + " between " + contactA.type() + " and " + contactB.type() + " type contacts.";
++#endif
+         QSKIP(msg.toLatin1());
+     }
+ }
+diff --git a/tests/auto/synctransactions/tst_synctransactions.cpp b/tests/auto/synctransactions/tst_synctransactions.cpp
+index db62f70..3665bef 100644
+--- a/tests/auto/synctransactions/tst_synctransactions.cpp
++++ b/tests/auto/synctransactions/tst_synctransactions.cpp
+@@ -152,7 +152,11 @@ void tst_synctransactions::cleanup()
+         m_createdIds.clear();
+     }
+     if (!m_createdColIds.isEmpty()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        for (const QContactCollectionId &colId : m_createdColIds.values()) {
++#else
+         for (const QContactCollectionId &colId : m_createdColIds.toList()) {
++#endif
+             m_cm->removeCollection(colId);
+             cme->clearChangeFlags(colId, &err);
+         }
+diff --git a/tests/benchmarks/fetchtimes/main.cpp b/tests/benchmarks/fetchtimes/main.cpp
+index 4dfae0e..cbd7ac4 100644
+--- a/tests/benchmarks/fetchtimes/main.cpp
++++ b/tests/benchmarks/fetchtimes/main.cpp
+@@ -208,7 +208,11 @@ QContact generateContact(const QContactCollectionId &collectionId = QContactColl
+     // to ensure that we have heterogeneous contacts in the db.
+     QContact retn;
+     retn.setCollectionId(collectionId);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    int random = rand();
++#else
+     int random = qrand();
++#endif
+     bool preventAggregate = (!collectionId.isNull() && !possiblyAggregate);
+ 
+     // We always have a name.  Select an overlapping name if the sync target
+@@ -263,8 +267,11 @@ QContact generateContact(const QContactCollectionId &collectionId = QContactColl
+         QContactHobby h1;
+         h1.setHobby(hobbies.at(random % hobbies.size()));
+         retn.saveDetail(&h1);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        int newRandom = rand();
++#else
+         int newRandom = qrand();
++#endif
+         if ((newRandom % 2) == 0) {
+             QContactHobby h2;
+             h2.setHobby(hobbies.at(newRandom % hobbies.size()));
+@@ -345,9 +352,17 @@ static qint64 aggregatedPresenceUpdate(QContactManager &manager, bool quickMode)
+         cp.setNickname(genstr);
+         cp.setCustomMessage(genstr);
+         cp.setTimestamp(timestamp);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
++#else
+         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
++#endif
+         nn.setNickname(nn.nickname() + genstr);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
++#else
+         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
++#endif
+         curr.saveDetail(&cp);
+         curr.saveDetail(&nn);
+         curr.saveDetail(&av);
+@@ -369,7 +384,11 @@ static qint64 aggregatedPresenceUpdate(QContactManager &manager, bool quickMode)
+     for (int j = 0; j < morePrefillData.size(); ++j) {
+         QContact curr = morePrefillData.at(j);
+         QContactPresence cp = curr.detail<QContactPresence>();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
++#else
+         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
++#endif
+         curr.saveDetail(&cp);
+         contactsToUpdate.append(curr);
+     }
+@@ -390,7 +409,11 @@ static qint64 aggregatedPresenceUpdate(QContactManager &manager, bool quickMode)
+     for (int j = 0; j < morePrefillData.size(); ++j) {
+         QContact curr = morePrefillData.at(j);
+         QContactPresence cp = curr.detail<QContactPresence>();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
++#else
+         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
++#endif
+         curr.saveDetail(&cp);
+         contactsToUpdate.append(curr);
+     }
+@@ -488,9 +511,17 @@ static qint64 nonAggregatedPresenceUpdate(QContactManager &manager, bool quickMo
+         cp.setNickname(genstr);
+         cp.setCustomMessage(genstr);
+         cp.setTimestamp(timestamp);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
++#else
+         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
++#endif
+         nn.setNickname(nn.nickname() + genstr);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
++#else
+         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
++#endif
+         curr.saveDetail(&cp);
+         curr.saveDetail(&nn);
+         curr.saveDetail(&av);
+@@ -572,9 +603,17 @@ static qint64 scalingPresenceUpdate(QContactManager &manager, bool quickMode)
+         cp.setNickname(genstr);
+         cp.setCustomMessage(genstr);
+         cp.setTimestamp(timestamp);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
++#else
+         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
++#endif
+         nn.setNickname(nn.nickname() + genstr);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
++#else
+         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
++#endif
+         curr.saveDetail(&cp);
+         curr.saveDetail(&nn);
+         curr.saveDetail(&av);
+@@ -653,9 +692,17 @@ static qint64 entireBatchPresenceUpdate(QContactManager &manager, bool quickMode
+         cp.setNickname(genstr);
+         cp.setCustomMessage(genstr);
+         cp.setTimestamp(timestamp);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        cp.setPresenceState(static_cast<QContactPresence::PresenceState>((rand() % 4) + 1));
++#else
+         cp.setPresenceState(static_cast<QContactPresence::PresenceState>((qrand() % 4) + 1));
++#endif
+         nn.setNickname(nn.nickname() + genstr);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
++#else
+         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
++#endif
+         curr.saveDetail(&cp);
+         curr.saveDetail(&nn);
+         curr.saveDetail(&av);
+@@ -739,9 +786,17 @@ static qint64 smallBatchPresenceUpdate(QContactManager &manager, bool quickMode)
+         cp.setNickname(genstr);
+         cp.setCustomMessage(genstr);
+         cp.setTimestamp(QDateTime::currentDateTime());
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        cp.setPresenceState(static_cast<QContactPresence::PresenceState>(rand() % 4));
++#else
+         cp.setPresenceState(static_cast<QContactPresence::PresenceState>(qrand() % 4));
++#endif
+         nn.setNickname(nn.nickname() + genstr);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        av.setImageUrl(genstr + presenceAvatars.at(rand() % presenceAvatars.size()));
++#else
+         av.setImageUrl(genstr + presenceAvatars.at(qrand() % presenceAvatars.size()));
++#endif
+         curr.saveDetail(&cp);
+         curr.saveDetail(&nn);
+         curr.saveDetail(&av);
+@@ -1838,19 +1893,35 @@ int main(int argc, char  *argv[])
+     if (queryPlan) {
+         // hidden/undocumented feature: perform two writes and one read
+         // which we will use to inspect the query plans.
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        srand(42);
++#else
+         qsrand(42);
++#endif
+         elapsedTimeTotal = performQueryPlanOperations(manager);
+     } else if (readTestData) {
+         // hidden/undocumented feature: time read all contacts from database.
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        srand(42);
++#else
+         qsrand(42);
++#endif
+         elapsedTimeTotal = performReadQueryPlanTestData(manager);
+     } else if (testData) {
+         // hidden/undocumented feature: fill database with random data
+         // which we then use to generate the query plan.
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        srand(42);
++#else
+         qsrand(42);
++#endif
+         elapsedTimeTotal = generateQueryPlanTestData(manager, args.last().toInt());
+     } else {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        srand(stable ? 42 : QDateTime::currentDateTime().time().second());
++#else
+         qsrand(stable ? 42 : QDateTime::currentDateTime().time().second());
++#endif
+         elapsedTimeTotal += (runAll || functionArgs.contains("simpleFilterAndSort")) ? simpleFilterAndSort(manager, quickMode) : 0;
+         elapsedTimeTotal += (runAll || functionArgs.contains("asynchronousOperations")) ? asynchronousOperations(manager, quickMode) : 0;
+         elapsedTimeTotal += (runAll || functionArgs.contains("synchronousOperations")) ? synchronousOperations(manager, quickMode) : 0;

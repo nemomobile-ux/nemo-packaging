@@ -21,14 +21,14 @@ url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.0-or-later')
 depends=(
     'taglib'
-    'qt5-glacier-app'
+    'qt6-glacier-app'
     'nemo-qml-plugin-settings'
     'nemo-qml-plugin-thumbnailer'
     'nemo-qml-plugin-notifications'
     'qtmpris'
 )
 optdepends=()
-makedepends=('git' 'qt5-multimedia' 'cmake' 'qt5-tools')
+makedepends=('git' 'qt6-multimedia' 'cmake' 'qt6-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

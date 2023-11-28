@@ -12,13 +12,13 @@ depends=('libsocialcache'
 	'buteo-syncfw'
 	'qtcontacts-sqlite'
 	'mlite'
-	'qt5-pim'
+	'qt6-pim'
 	'mkcal'
-	'kcalendarcore'
-	'libaccounts-qt'
+	'kcalendarcore6'
+	'libaccounts-qt6'
 	'nemo-qml-plugin-notifications')
 
-makedepends=('qt5-tools')
+makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-fix_build.patch")
 sha256sums=('7b7bebbe855a0347ef9b6fc3e794e8ced1ed37c203db4e107cc309dfc5f448a6'
@@ -31,7 +31,7 @@ prepare() {
 
 build() {
   cd $pkgname-$pkgver
-  qmake-qt5 \
+  qmake6 \
     "CONFIG+=dropbox" \
     "CONFIG+=facebook" \
     "CONFIG+=google" \

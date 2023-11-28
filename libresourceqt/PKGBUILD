@@ -7,18 +7,27 @@
 
 pkgname=libresourceqt
 pkgver=1.32.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Resource Policy Qt API"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libresourceqt"
 license=('LGPL-2.1-or-later')
-depends=('qt5-base' 'libresource')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('575ef3445b300730b0ccb81df9cce11f04655571d87d06f70521a20406f013c1')
+depends=('qt6-base' 'libresource')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-Fixup-build-with-qt-5.14.patch'
+)
+sha256sums=('575ef3445b300730b0ccb81df9cce11f04655571d87d06f70521a20406f013c1'
+    '134bf5bd34779292889879ebd48ca8ec3e1b79c170d464cae8c93961a1274018'
+)
+
+prepare() {
+    cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-Fixup-build-with-qt-5.14.patch"
+}
 
 build() {
     cd $pkgname-$pkgver
-    qmake "VERSION=$pkgver"
+    qmake6 "VERSION=$pkgver"
     make
 }
 

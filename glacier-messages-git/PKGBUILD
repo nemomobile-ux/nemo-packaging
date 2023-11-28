@@ -11,16 +11,16 @@ pkgdesc="QML based messages application for nemomobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/glacier-messages"
 license=('BSD-3-Clause')
-depends=('qt5-glacier-app'
+depends=('qt6-glacier-app'
 	'nemo-qml-plugin-contacts'
 	'nemo-qml-plugin-dbus'
-	'commhistory-daemon'
+#	'commhistory-daemon'
 	'libcommhistory'
 	'nemo-qml-plugin-messages'
 	'telepathy-mission-control'
 	'telepathy-ofono'
 	'glacier-contacts')
-makedepends=('git' 'cmake' 'qt5-tools')
+makedepends=('git' 'cmake' 'qt6-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

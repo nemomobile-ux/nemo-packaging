@@ -1,0 +1,276 @@
+From 641f556f9e02a1d60e9af101cc699d3d29bc6dad Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 14 Jul 2023 10:51:06 +0000
+Subject: [PATCH] fix build with qt6
+
+---
+ .gitignore                                    | 14 ++++++++
+ common.pri                                    |  2 +-
+ .../dbusextendedabstractinterface.cpp         | 35 +++++++++++++++++++
+ qtdbusextended/qtdbusextended.pro             |  2 +-
+ src/mprismanager.cpp                          | 19 +++++++++-
+ src/mprisplayer_p.h                           |  2 ++
+ src/mprisplayerinterface.cpp                  |  8 +++++
+ src/src.pro                                   |  4 +--
+ 8 files changed, 81 insertions(+), 5 deletions(-)
+ create mode 100644 .gitignore
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..f98a2d1
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,14 @@
++*.o
++*.so*
++moc_*
++*.moc
++*.a
++*.la
++Makefile
++.qmake.stash
++declarative/qmldir
++src/libmpris-qt5.prl
++src/mpris-qt5.prf
++src/libmpris-qt6.prl
++src/mpris-qt6.prf
++src/pkgconfig/
+diff --git a/common.pri b/common.pri
+index 4449fbc..a18cd54 100644
+--- a/common.pri
++++ b/common.pri
+@@ -1 +1 @@
+-MPRISQTLIB = mpris-qt5
++MPRISQTLIB = mpris-qt$${QT_MAJOR_VERSION}
+diff --git a/qtdbusextended/dbusextendedabstractinterface.cpp b/qtdbusextended/dbusextendedabstractinterface.cpp
+index 935278e..93f66da 100644
+--- a/qtdbusextended/dbusextendedabstractinterface.cpp
++++ b/qtdbusextended/dbusextendedabstractinterface.cpp
+@@ -153,7 +153,11 @@ QVariant DBusExtendedAbstractInterface::internalPropGet(const char *propname, vo
+     if (m_useCache) {
+         int propertyIndex = metaObject()->indexOfProperty(propname);
+         QMetaProperty metaProperty = metaObject()->property(propertyIndex);
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        return QVariant(QMetaType(metaProperty.typeId()), propertyPtr);
++#else
+         return QVariant(metaProperty.type(), propertyPtr);
++#endif
+     }
+ 
+     if (m_sync) {
+@@ -188,8 +192,14 @@ QVariant DBusExtendedAbstractInterface::internalPropGet(const char *propname, vo
+ 
+         // is this metatype registered?
+         const char *expectedSignature = "";
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        if (metaProperty.metaType().id() != QMetaType::QVariant) {
++            expectedSignature = QDBusMetaType::typeToSignature(metaProperty.metaType());
++#else
+         if (int(metaProperty.type()) != QMetaType::QVariant) {
+             expectedSignature = QDBusMetaType::typeToSignature(metaProperty.userType());
++#endif
++
+             if (0 == expectedSignature) {
+                 QString errorMessage =
+                     QStringLiteral("Type %1 must be registered with Qt D-Bus "
+@@ -205,7 +215,11 @@ QVariant DBusExtendedAbstractInterface::internalPropGet(const char *propname, vo
+         }
+ 
+         asyncProperty(propname);
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        return QVariant(QMetaType(metaProperty.typeId()), propertyPtr);
++#else
+         return QVariant(metaProperty.type(), propertyPtr);
++#endif
+     }
+ }
+ 
+@@ -243,7 +257,11 @@ void DBusExtendedAbstractInterface::internalPropSet(const char *propname, const
+             return;
+         }
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        asyncSetProperty(propname, QVariant(QMetaType(metaProperty.typeId()), propertyPtr));
++#else
+         asyncSetProperty(propname, QVariant(metaProperty.type(), propertyPtr));
++#endif
+     }
+ }
+ 
+@@ -385,16 +403,29 @@ QVariant DBusExtendedAbstractInterface::demarshall(const QString &interface, con
+         return value;
+     }
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++    QVariant result = QVariant(QMetaType(metaProperty.typeId()), nullptr);
++#else
+     QVariant result = QVariant(metaProperty.userType(), (void*)0);
++#endif
+     QString errorMessage;
++
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++    const char *expectedSignature = QDBusMetaType::typeToSignature(metaProperty.metaType());
++#else
+     const char *expectedSignature = QDBusMetaType::typeToSignature(metaProperty.userType());
++#endif
+ 
+     if (value.userType() == qMetaTypeId<QDBusArgument>()) {
+         // demarshalling a DBus argument ...
+         QDBusArgument dbusArg = value.value<QDBusArgument>();
+ 
+         if (expectedSignature == dbusArg.currentSignature().toLatin1()) {
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++            QDBusMetaType::demarshall(dbusArg, metaProperty.metaType(), result.data());
++#else
+             QDBusMetaType::demarshall(dbusArg, metaProperty.userType(), result.data());
++#endif
+             if (!result.isValid()) {
+                 errorMessage = QStringLiteral("Unexpected failure demarshalling "
+                                               "upon PropertiesChanged signal arrival "
+@@ -415,7 +446,11 @@ QVariant DBusExtendedAbstractInterface::demarshall(const QString &interface, con
+                          QString::fromLatin1(expectedSignature));
+         }
+     } else {
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        const char *actualSignature = QDBusMetaType::typeToSignature(value.metaType());
++#else
+         const char *actualSignature = QDBusMetaType::typeToSignature(value.userType());
++#endif
+ 
+         errorMessage = QStringLiteral("Unexpected `%1' (%2) "
+                                       "upon PropertiesChanged signal arrival "
+diff --git a/qtdbusextended/qtdbusextended.pro b/qtdbusextended/qtdbusextended.pro
+index 41c32c3..d65956c 100644
+--- a/qtdbusextended/qtdbusextended.pro
++++ b/qtdbusextended/qtdbusextended.pro
+@@ -3,7 +3,7 @@ CONFIG += qt staticlib
+ 
+ QT = core dbus
+ 
+-TARGET = dbusextended-qt5
++TARGET = dbusextended-qt$${QT_MAJOR_VERSION}
+ 
+ DEFINES += QT_DBUS_EXTENDED_LIBRARY
+ 
+diff --git a/src/mprismanager.cpp b/src/mprismanager.cpp
+index 0981b81..ffde4be 100644
+--- a/src/mprismanager.cpp
++++ b/src/mprismanager.cpp
+@@ -29,7 +29,9 @@
+ 
+ #include <QDBusConnection>
+ #include <QDBusConnectionInterface>
+-
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
++#include <QRegularExpression>
++#endif
+ #include <QtCore/QSignalMapper>
+ #include <QDebug>
+ 
+@@ -68,9 +70,14 @@ MprisManager::MprisManager(QObject *parent)
+     QStringList serviceNames = connection.interface()->registeredServiceNames();
+     QStringList::const_iterator i = serviceNames.constBegin();
+     while (i != serviceNames.constEnd()) {
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
++        QRegularExpression rx(QRegularExpression::wildcardToRegularExpression(mprisNameSpace));
++        if (rx.match(*i).hasMatch()) {
++#else
+         QRegExp rx(mprisNameSpace);
+         rx.setPatternSyntax(QRegExp::Wildcard);
+         if (rx.exactMatch(*i)) {
++#endif
+             onServiceAppeared(*i);
+         }
+ 
+@@ -173,9 +180,14 @@ void MprisManager::setCurrentService(const QString &service)
+         return;
+     }
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
++    QRegularExpression rx(QRegularExpression::wildcardToRegularExpression(mprisNameSpace));
++    if (!rx.match(service).hasMatch()) {
++#else
+     QRegExp rx(mprisNameSpace);
+     rx.setPatternSyntax(QRegExp::Wildcard);
+     if (!rx.exactMatch(service)) {
++#endif
+         qWarning() << "Mpris:" << service << "is not a proper Mpris2 service";
+         return;
+     }
+@@ -380,9 +392,14 @@ void MprisManager::onNameOwnerChanged(const QString &service, const QString &old
+     // bus, not just the ones for our name space of interest, and we
+     // will have to filter on our own :(
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
++    QRegularExpression rx(QRegularExpression::wildcardToRegularExpression(mprisNameSpace));
++    if (!rx.match(service).hasMatch()) {
++#else
+     QRegExp rx(mprisNameSpace);
+     rx.setPatternSyntax(QRegExp::Wildcard);
+     if (!rx.exactMatch(service)) {
++#endif
+         return;
+     }
+ 
+diff --git a/src/mprisplayer_p.h b/src/mprisplayer_p.h
+index 163be7e..b104549 100644
+--- a/src/mprisplayer_p.h
++++ b/src/mprisplayer_p.h
+@@ -46,7 +46,9 @@ class QByteArray;
+ template<class T> class QList;
+ template<class Key, class Value> class QMap;
+ class QString;
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+ class QStringList;
++#endif
+ class QVariant;
+ QT_END_NAMESPACE
+ 
+diff --git a/src/mprisplayerinterface.cpp b/src/mprisplayerinterface.cpp
+index a640f14..0a39403 100644
+--- a/src/mprisplayerinterface.cpp
++++ b/src/mprisplayerinterface.cpp
+@@ -42,10 +42,18 @@ MprisPlayerInterface::MprisPlayerInterface(const QString &service, const QString
+     , m_canPause(false)
+     , m_canPlay(false)
+     , m_canSeek(false)
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++    , m_loopStatus("None")
++#else
+     , m_loopStatus(Mpris::None)
++#endif
+     , m_maximumRate(1)
+     , m_minimumRate(1)
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++    , m_playbackStatus("Stopped")
++#else
+     , m_playbackStatus(Mpris::Stopped)
++#endif
+     , m_position(0)
+     , m_rate(1)
+     , m_shuffle(false)
+diff --git a/src/src.pro b/src/src.pro
+index 75fafca..80d1d6b 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -17,7 +17,7 @@ use_system_dbus {
+ 
+ DEPENDPATH += ../qtdbusextended
+ INCLUDEPATH += ../qtdbusextended
+-LIBS += -L../qtdbusextended -ldbusextended-qt5
++LIBS += -L../qtdbusextended -ldbusextended-qt$${QT_MAJOR_VERSION}
+ 
+ # Generate pkg-config support by default
+ # Note that we HAVE TO also create prl config as QMake implementation
+@@ -64,7 +64,7 @@ prf.files = $${TARGET}.prf
+ prf.path = $$[QMAKE_MKSPECS]/features
+ INSTALLS += target headers prf
+ 
+-QMAKE_PKGCONFIG_REQUIRES = Qt5Core Qt5DBus
++QMAKE_PKGCONFIG_REQUIRES = Qt$${QT_MAJOR_VERSION}Core Qt$${QT_MAJOR_VERSION}DBus
+ QMAKE_PKGCONFIG_LIBDIR = $$target.path
+ QMAKE_PKGCONFIG_INCDIR = $$headers.path
+ QMAKE_PKGCONFIG_DESTDIR = pkgconfig
+-- 
+2.40.1
+

@@ -1,0 +1,612 @@
+From 1d6fc83b774742ed2ac6f0a98a19526d13e76a28 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 16 Jul 2023 09:41:34 +0000
+Subject: [PATCH] build with Qt6
+
+---
+ .gitignore                                    |  8 +++++-
+ social.pro                                    |  4 +--
+ src/contentiteminterface.cpp                  |  4 +++
+ src/facebook/facebookinterface.cpp            | 22 ++++++++--------
+ src/facebook/facebookphotointerface.cpp       | 21 +++++++++++-----
+ src/facebook/facebookphotointerface_p.h       | 12 ++++-----
+ src/facebook/facebookpostinterface.cpp        | 24 +++++++++---------
+ src/facebook/facebookpostinterface_p.h        | 24 +++++++++---------
+ src/socialnetworkinterface.cpp                | 25 ++++++++++++++++---
+ src/socialnetworkmodelinterface.cpp           |  8 +++---
+ src/socialnetworkmodelinterface_p.h           |  8 +++---
+ src/twitter/twitterinterface.cpp              | 16 ++++++++++++
+ .../facebooksocialtest/facebooksocialtest.pro |  4 +--
+ tests/twittersocialtest/twittersocialtest.pro |  4 +--
+ 14 files changed, 119 insertions(+), 65 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 5ee9247..65c0269 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -10,4 +10,10 @@ build
+ install
+ 
+ # Python object files
+-*.pyc
+\ No newline at end of file
++*.pyc
++*.o
++moc_*
++*.moc
++*.so
++Makefile
++.qmake.stash
+diff --git a/social.pro b/social.pro
+index 0e98d64..6ee1d28 100644
+--- a/social.pro
++++ b/social.pro
+@@ -5,8 +5,8 @@ tests.depends = src
+ OTHER_FILES += \
+     rpm/nemo-qml-plugin-social.yaml \
+     rpm/nemo-qml-plugin-social.spec \
+-    rpm/nemo-qml-plugin-social-qt5.yaml \
+-    rpm/nemo-qml-plugin-social-qt5.spec \
++    rpm/nemo-qml-plugin-social-qt$${QT_MAJOR_VERSION}.yaml \
++    rpm/nemo-qml-plugin-social-qt$${QT_MAJOR_VERSION}.spec \
+     doc/social.qdoc \
+     doc/caching.qdoc \
+     doc/social.qdocconf
+diff --git a/src/contentiteminterface.cpp b/src/contentiteminterface.cpp
+index 2b46122..c82b041 100644
+--- a/src/contentiteminterface.cpp
++++ b/src/contentiteminterface.cpp
+@@ -122,7 +122,11 @@ QVariantMap ContentItemInterfacePrivate::parseReplyData(const QByteArray &replyD
+         return QVariantMap();
+     }
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++    if (data.userType() != QVariant::Map) {
++#else
+     if (data.type() != QVariant::Map) {
++#endif
+         *ok = false;
+         return QVariantMap();
+     }
+diff --git a/src/facebook/facebookinterface.cpp b/src/facebook/facebookinterface.cpp
+index 7296d02..7a34f58 100644
+--- a/src/facebook/facebookinterface.cpp
++++ b/src/facebook/facebookinterface.cpp
+@@ -494,14 +494,14 @@ QNetworkReply * FacebookInterfacePrivate::postRequest(const QString &objectIdent
+     QString multipartBoundary = QLatin1String("-------Sska2129ifcalksmqq3");
+     QByteArray postData;
+     foreach (const QString &key, data.keys()) {
+-        postData.append("--"+multipartBoundary+"\r\n");
+-        postData.append("Content-Disposition: form-data; name=\"");
+-        postData.append(key);
+-        postData.append("\"\r\n\r\n");
+-        postData.append(data.value(key).toString());
+-        postData.append("\r\n");
++        postData.append(QByteArray("--")+multipartBoundary.toLatin1()+QByteArray("\r\n"));
++        postData.append(QByteArray("Content-Disposition: form-data; name=\""));
++        postData.append(key.toLatin1());
++        postData.append(QByteArray("\"\r\n\r\n"));
++        postData.append(data.value(key).toString().toLatin1());
++        postData.append(QByteArray("\r\n"));
+     }
+-    postData.append("--"+multipartBoundary+"\r\n");
++    postData.append(QByteArray("--")+multipartBoundary.toLatin1()+QByteArray("\r\n"));
+ 
+     // create request
+     QNetworkRequest request(requestUrl(objectIdentifier, extraPath, QStringList(), extraData));
+@@ -591,12 +591,12 @@ QUrl FacebookInterfacePrivate::requestUrl(const QString &objectId, const QString
+     QString joinedFields = whichFields.join(QLatin1String(","));
+     QList<QPair<QString, QString> > queryItems;
+     if (!accessToken.isEmpty())
+-        queryItems.append(qMakePair<QString, QString>(QLatin1String("access_token"), accessToken));
++        queryItems.append(QPair<QString, QString>(QLatin1String("access_token"), accessToken));
+     if (!whichFields.isEmpty())
+-        queryItems.append(qMakePair<QString, QString>(QLatin1String("fields"), joinedFields));
++        queryItems.append(QPair<QString, QString>(QLatin1String("fields"), joinedFields));
+     QStringList extraDataKeys = extraData.keys();
+     foreach (const QString &key, extraDataKeys) {
+-        queryItems.append(qMakePair<QString, QString>(key, extraData.value(key).toString()));
++        queryItems.append(QPair<QString, QString>(key, extraData.value(key).toString()));
+     }
+ 
+     QUrl returnedUrl;
+@@ -646,7 +646,7 @@ QNetworkReply * FacebookInterfacePrivate::uploadImage(const QString &objectId,
+     f.close();
+ 
+     QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+-    multiPart->setBoundary("-------Sska2129ifcalksmqq3");
++    multiPart->setBoundary(QByteArray("-------Sska2129ifcalksmqq3"));
+ 
+     QHttpPart accessTokenPart;
+     accessTokenPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"access_token\""));
+diff --git a/src/facebook/facebookphotointerface.cpp b/src/facebook/facebookphotointerface.cpp
+index 65dee47..31557e9 100644
+--- a/src/facebook/facebookphotointerface.cpp
++++ b/src/facebook/facebookphotointerface.cpp
+@@ -240,7 +240,11 @@ void FacebookPhotoInterfacePrivate::emitPropertyChangeSignals(const QVariantMap
+         nameTags.clear();
+         // Update with the new name_tag data
+         // Only one entry
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        if (newNameTagsData.userType() == QVariant::List) {
++#else
+         if (newNameTagsData.type() == QVariant::List) {
++#endif
+             QVariantList newNameTagsList = newNameTagsData.toList();
+             if (newNameTagsList.count() == 1) {
+                 QVariantList nameTagList = newNameTagsList.at(0).toList();
+@@ -251,7 +255,12 @@ void FacebookPhotoInterfacePrivate::emitPropertyChangeSignals(const QVariantMap
+                     nameTags.append(nameTagInterface);
+                 }
+             }
++
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        } else if (newNameTagsData.userType() == QVariant::Map) {
++#else
+         } else if (newNameTagsData.type() == QVariant::Map) {
++#endif
+             foreach (QVariant nameTagList, newNameTagsData.toMap()) {
+                 foreach (QVariant nameTag, nameTagList.toList()) {
+                     QVariantMap nameTagMap = nameTag.toMap();
+@@ -390,7 +399,7 @@ void FacebookPhotoInterfacePrivate::tags_append(QQmlListProperty<FacebookPhotoTa
+ }
+ 
+ FacebookPhotoTagInterface * FacebookPhotoInterfacePrivate::tags_at(QQmlListProperty<FacebookPhotoTagInterface> *list,
+-                                                                   int index)
++                                                                   long long int index)
+ {
+     FacebookPhotoInterface *interface = qobject_cast<FacebookPhotoInterface *>(list->object);
+     if (interface
+@@ -412,7 +421,7 @@ void FacebookPhotoInterfacePrivate::tags_clear(QQmlListProperty<FacebookPhotoTag
+     }
+ }
+ 
+-int FacebookPhotoInterfacePrivate::tags_count(QQmlListProperty<FacebookPhotoTagInterface> *list)
++long long int FacebookPhotoInterfacePrivate::tags_count(QQmlListProperty<FacebookPhotoTagInterface> *list)
+ {
+     FacebookPhotoInterface *interface = qobject_cast<FacebookPhotoInterface *>(list->object);
+     if (interface) {
+@@ -432,7 +441,7 @@ void FacebookPhotoInterfacePrivate::name_tags_append(QQmlListProperty<FacebookNa
+ }
+ 
+ FacebookNameTagInterface * FacebookPhotoInterfacePrivate::name_tags_at(QQmlListProperty<FacebookNameTagInterface> *list,
+-                                                                       int index)
++                                                                       long long int index)
+ {
+     FacebookPhotoInterface *interface = qobject_cast<FacebookPhotoInterface *>(list->object);
+     if (interface
+@@ -454,7 +463,7 @@ void FacebookPhotoInterfacePrivate::name_tags_clear(QQmlListProperty<FacebookNam
+     }
+ }
+ 
+-int FacebookPhotoInterfacePrivate::name_tags_count(QQmlListProperty<FacebookNameTagInterface> *list)
++long long int FacebookPhotoInterfacePrivate::name_tags_count(QQmlListProperty<FacebookNameTagInterface> *list)
+ {
+     FacebookPhotoInterface *interface = qobject_cast<FacebookPhotoInterface *>(list->object);
+     if (interface) {
+@@ -474,7 +483,7 @@ void FacebookPhotoInterfacePrivate::images_append(QQmlListProperty<FacebookPhoto
+ }
+ 
+ FacebookPhotoImageInterface * FacebookPhotoInterfacePrivate::images_at(QQmlListProperty<FacebookPhotoImageInterface> *list,
+-                                                                       int index)
++                                                                       long long int index)
+ {
+     FacebookPhotoInterface *interface = qobject_cast<FacebookPhotoInterface *>(list->object);
+     if (interface
+@@ -496,7 +505,7 @@ void FacebookPhotoInterfacePrivate::images_clear(QQmlListProperty<FacebookPhotoI
+     }
+ }
+ 
+-int FacebookPhotoInterfacePrivate::images_count(QQmlListProperty<FacebookPhotoImageInterface> *list)
++long long int FacebookPhotoInterfacePrivate::images_count(QQmlListProperty<FacebookPhotoImageInterface> *list)
+ {
+     FacebookPhotoInterface *interface = qobject_cast<FacebookPhotoInterface *>(list->object);
+     if (interface) {
+diff --git a/src/facebook/facebookphotointerface_p.h b/src/facebook/facebookphotointerface_p.h
+index 5c5f044..13cfa63 100644
+--- a/src/facebook/facebookphotointerface_p.h
++++ b/src/facebook/facebookphotointerface_p.h
+@@ -56,21 +56,21 @@ private:
+     static void tags_append(QQmlListProperty<FacebookPhotoTagInterface> *list,
+                             FacebookPhotoTagInterface *data);
+     static FacebookPhotoTagInterface * tags_at(QQmlListProperty<FacebookPhotoTagInterface> *list,
+-                                               int index);
++                                               long long int index);
+     static void tags_clear(QQmlListProperty<FacebookPhotoTagInterface> *list);
+-    static int tags_count(QQmlListProperty<FacebookPhotoTagInterface> *list);
++    static long long int tags_count(QQmlListProperty<FacebookPhotoTagInterface> *list);
+     static void name_tags_append(QQmlListProperty<FacebookNameTagInterface> *list,
+                                  FacebookNameTagInterface *data);
+     static FacebookNameTagInterface * name_tags_at(QQmlListProperty<FacebookNameTagInterface> *list,
+-                                                   int index);
++                                                   long long int index);
+     static void name_tags_clear(QQmlListProperty<FacebookNameTagInterface> *list);
+-    static int name_tags_count(QQmlListProperty<FacebookNameTagInterface> *list);
++    static long long int name_tags_count(QQmlListProperty<FacebookNameTagInterface> *list);
+     static void images_append(QQmlListProperty<FacebookPhotoImageInterface> *list,
+                               FacebookPhotoImageInterface *data);
+     static FacebookPhotoImageInterface * images_at(QQmlListProperty<FacebookPhotoImageInterface> *list,
+-                                                   int index);
++                                                   long long int index);
+     static void images_clear(QQmlListProperty<FacebookPhotoImageInterface> *list);
+-    static int images_count(QQmlListProperty<FacebookPhotoImageInterface> *list);
++    static long long int images_count(QQmlListProperty<FacebookPhotoImageInterface> *list);
+ private:
+     int pendingTagToRemoveIndex;
+ };
+diff --git a/src/facebook/facebookpostinterface.cpp b/src/facebook/facebookpostinterface.cpp
+index 28a35bd..e93778a 100644
+--- a/src/facebook/facebookpostinterface.cpp
++++ b/src/facebook/facebookpostinterface.cpp
+@@ -458,7 +458,7 @@ void FacebookPostInterfacePrivate::to_append(QQmlListProperty<FacebookObjectRefe
+ }
+ 
+ FacebookObjectReferenceInterface * FacebookPostInterfacePrivate::to_at(QQmlListProperty<FacebookObjectReferenceInterface> *list,
+-                                                                       int index)
++                                                                       long long int index)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface
+@@ -480,7 +480,7 @@ void FacebookPostInterfacePrivate::to_clear(QQmlListProperty<FacebookObjectRefer
+     }
+ }
+ 
+-int FacebookPostInterfacePrivate::to_count(QQmlListProperty<FacebookObjectReferenceInterface> *list)
++long long int FacebookPostInterfacePrivate::to_count(QQmlListProperty<FacebookObjectReferenceInterface> *list)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface) {
+@@ -500,7 +500,7 @@ void FacebookPostInterfacePrivate::message_tags_append(QQmlListProperty<Facebook
+ }
+ 
+ FacebookNameTagInterface * FacebookPostInterfacePrivate::message_tags_at(QQmlListProperty<FacebookNameTagInterface> *list,
+-                                                                         int index)
++                                                                         long long int index)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface
+@@ -522,7 +522,7 @@ void FacebookPostInterfacePrivate::message_tags_clear(QQmlListProperty<FacebookN
+     }
+ }
+ 
+-int FacebookPostInterfacePrivate::message_tags_count(QQmlListProperty<FacebookNameTagInterface> *list)
++long long int FacebookPostInterfacePrivate::message_tags_count(QQmlListProperty<FacebookNameTagInterface> *list)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface) {
+@@ -542,7 +542,7 @@ void FacebookPostInterfacePrivate::properties_append(QQmlListProperty<FacebookPo
+ }
+ 
+ FacebookPostPropertyInterface * FacebookPostInterfacePrivate::properties_at(QQmlListProperty<FacebookPostPropertyInterface> *list,
+-                                                                            int index)
++                                                                            long long int index)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface
+@@ -564,7 +564,7 @@ void FacebookPostInterfacePrivate::properties_clear(QQmlListProperty<FacebookPos
+     }
+ }
+ 
+-int FacebookPostInterfacePrivate::properties_count(QQmlListProperty<FacebookPostPropertyInterface> *list)
++long long int FacebookPostInterfacePrivate::properties_count(QQmlListProperty<FacebookPostPropertyInterface> *list)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface) {
+@@ -584,7 +584,7 @@ void FacebookPostInterfacePrivate::actions_append(QQmlListProperty<FacebookPostA
+ }
+ 
+ FacebookPostActionInterface * FacebookPostInterfacePrivate::actions_at(QQmlListProperty<FacebookPostActionInterface> *list,
+-                                                                       int index)
++                                                                       long long int index)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface
+@@ -606,7 +606,7 @@ void FacebookPostInterfacePrivate::actions_clear(QQmlListProperty<FacebookPostAc
+     }
+ }
+ 
+-int FacebookPostInterfacePrivate::actions_count(QQmlListProperty<FacebookPostActionInterface> *list)
++long long int FacebookPostInterfacePrivate::actions_count(QQmlListProperty<FacebookPostActionInterface> *list)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface) {
+@@ -626,7 +626,7 @@ void FacebookPostInterfacePrivate::story_tags_append(QQmlListProperty<FacebookNa
+ }
+ 
+ FacebookNameTagInterface * FacebookPostInterfacePrivate::story_tags_at(QQmlListProperty<FacebookNameTagInterface> *list,
+-                                                                       int index)
++                                                                       long long int index)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface
+@@ -648,7 +648,7 @@ void FacebookPostInterfacePrivate::story_tags_clear(QQmlListProperty<FacebookNam
+     }
+ }
+ 
+-int FacebookPostInterfacePrivate::story_tags_count(QQmlListProperty<FacebookNameTagInterface> *list)
++long long int FacebookPostInterfacePrivate::story_tags_count(QQmlListProperty<FacebookNameTagInterface> *list)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface) {
+@@ -668,7 +668,7 @@ void FacebookPostInterfacePrivate::with_tags_append(QQmlListProperty<FacebookObj
+ }
+ 
+ FacebookObjectReferenceInterface * FacebookPostInterfacePrivate::with_tags_at(QQmlListProperty<FacebookObjectReferenceInterface> *list,
+-                                                                              int index)
++                                                                              long long int index)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface
+@@ -690,7 +690,7 @@ void FacebookPostInterfacePrivate::with_tags_clear(QQmlListProperty<FacebookObje
+     }
+ }
+ 
+-int FacebookPostInterfacePrivate::with_tags_count(QQmlListProperty<FacebookObjectReferenceInterface> *list)
++long long int FacebookPostInterfacePrivate::with_tags_count(QQmlListProperty<FacebookObjectReferenceInterface> *list)
+ {
+     FacebookPostInterface *interface = qobject_cast<FacebookPostInterface *>(list->object);
+     if (interface) {
+diff --git a/src/facebook/facebookpostinterface_p.h b/src/facebook/facebookpostinterface_p.h
+index d164d5f..2b3dba1 100644
+--- a/src/facebook/facebookpostinterface_p.h
++++ b/src/facebook/facebookpostinterface_p.h
+@@ -60,39 +60,39 @@ private:
+     static void to_append(QQmlListProperty<FacebookObjectReferenceInterface> *list,
+                           FacebookObjectReferenceInterface *data);
+     static FacebookObjectReferenceInterface * to_at(QQmlListProperty<FacebookObjectReferenceInterface> *list,
+-                                                    int index);
++                                                    long long int index);
+     static void to_clear(QQmlListProperty<FacebookObjectReferenceInterface> *list);
+-    static int to_count(QQmlListProperty<FacebookObjectReferenceInterface> *list);
++    static long long int to_count(QQmlListProperty<FacebookObjectReferenceInterface> *list);
+     static void message_tags_append(QQmlListProperty<FacebookNameTagInterface> *list,
+                                     FacebookNameTagInterface *data);
+     static FacebookNameTagInterface * message_tags_at(QQmlListProperty<FacebookNameTagInterface> *list,
+-                                                      int index);
++                                                      long long int index);
+     static void message_tags_clear(QQmlListProperty<FacebookNameTagInterface> *list);
+-    static int message_tags_count(QQmlListProperty<FacebookNameTagInterface> *list);
++    static long long int message_tags_count(QQmlListProperty<FacebookNameTagInterface> *list);
+     static void properties_append(QQmlListProperty<FacebookPostPropertyInterface> *list,
+                                   FacebookPostPropertyInterface *data);
+     static FacebookPostPropertyInterface * properties_at(QQmlListProperty<FacebookPostPropertyInterface> *list,
+-                                                         int index);
++                                                         long long int index);
+     static void properties_clear(QQmlListProperty<FacebookPostPropertyInterface> *list);
+-    static int properties_count(QQmlListProperty<FacebookPostPropertyInterface> *list);
++    static long long int properties_count(QQmlListProperty<FacebookPostPropertyInterface> *list);
+     static void actions_append(QQmlListProperty<FacebookPostActionInterface> *list,
+                                FacebookPostActionInterface *data);
+     static FacebookPostActionInterface * actions_at(QQmlListProperty<FacebookPostActionInterface> *list,
+-                                                    int index);
++                                                    long long int index);
+     static void actions_clear(QQmlListProperty<FacebookPostActionInterface> *list);
+-    static int actions_count(QQmlListProperty<FacebookPostActionInterface> *list);
++    static long long int actions_count(QQmlListProperty<FacebookPostActionInterface> *list);
+     static void story_tags_append(QQmlListProperty<FacebookNameTagInterface> *list,
+                                   FacebookNameTagInterface *data);
+     static FacebookNameTagInterface * story_tags_at(QQmlListProperty<FacebookNameTagInterface> *list,
+-                                                    int index);
++                                                    long long int index);
+     static void story_tags_clear(QQmlListProperty<FacebookNameTagInterface> *list);
+-    static int story_tags_count(QQmlListProperty<FacebookNameTagInterface> *list);
++    static long long int story_tags_count(QQmlListProperty<FacebookNameTagInterface> *list);
+     static void with_tags_append(QQmlListProperty<FacebookObjectReferenceInterface> *list,
+                                  FacebookObjectReferenceInterface *data);
+     static FacebookObjectReferenceInterface * with_tags_at(QQmlListProperty<FacebookObjectReferenceInterface> *list,
+-                                                           int index);
++                                                           long long int index);
+     static void with_tags_clear(QQmlListProperty<FacebookObjectReferenceInterface> *list);
+-    static int with_tags_count(QQmlListProperty<FacebookObjectReferenceInterface> *list);
++    static long long int with_tags_count(QQmlListProperty<FacebookObjectReferenceInterface> *list);
+ };
+ 
+ #endif // FACEBOOKPOSTINTERFACE_P_H
+diff --git a/src/socialnetworkinterface.cpp b/src/socialnetworkinterface.cpp
+index 4b02f1a..09e1ba0 100644
+--- a/src/socialnetworkinterface.cpp
++++ b/src/socialnetworkinterface.cpp
+@@ -685,7 +685,12 @@ bool ArbitraryRequestHandler::request(SocialNetworkInterface::RequestType reques
+     QStringList queryItemKeys = queryItems.keys();
+     foreach (const QString &key, queryItemKeys) {
+         formattedQueryItems.append(
+-                    qMakePair<QString, QString>(key, queryItems.value(key).toString()));
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++                    QPair<QString, QString>(key, queryItems.value(key).toString())
++#else
++                    qMakePair<QString, QString>(key, queryItems.value(key).toString())
++#endif
++                );
+     }
+ 
+     QUrl url(requestUri);
+@@ -1203,7 +1208,11 @@ void SocialNetworkInterfacePrivate::populate(SocialNetworkModelInterface *model,
+         return;
+     }
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++    QSet<FilterInterface *> filterSet(filters.begin(), filters.end());
++#else
+     QSet<FilterInterface *> filterSet = filters.toSet();
++#endif
+ 
+     int guessedType = guessType(identifier, type, filterSet);
+     // If we guessed a nice type, we should update all models that old description
+@@ -1338,7 +1347,12 @@ void SocialNetworkInterfacePrivate::removeModel(SocialNetworkModelInterface *mod
+ void SocialNetworkInterfacePrivate::loadNext(SocialNetworkModelInterface *model)
+ {
+     CacheNode::Ptr node = getNode(model->nodeIdentifier(), model->nodeType(),
+-                                  model->d_func()->filters.toSet());
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++                                  QSet(model->d_func()->filters.begin(), model->d_func()->filters.end())
++#else
++                                  model->d_func()->filters.toSet()
++#endif
++    );
+     if (node.isNull()) {
+         qWarning() << Q_FUNC_INFO << "The model is not loaded. Please call populate() first";
+         return;
+@@ -1351,7 +1365,12 @@ void SocialNetworkInterfacePrivate::loadNext(SocialNetworkModelInterface *model)
+ void SocialNetworkInterfacePrivate::loadPrevious(SocialNetworkModelInterface *model)
+ {
+     CacheNode::Ptr node = getNode(model->nodeIdentifier(), model->nodeType(),
+-                                  model->d_func()->filters.toSet());
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++                                  QSet(model->d_func()->filters.begin(), model->d_func()->filters.end())
++#else
++                                  model->d_func()->filters.toSet()
++#endif
++    );
+     if (node.isNull()) {
+         qWarning() << Q_FUNC_INFO << "The model is not loaded. Please call populate() first";
+         return;
+diff --git a/src/socialnetworkmodelinterface.cpp b/src/socialnetworkmodelinterface.cpp
+index f6ee13c..ddc3874 100644
+--- a/src/socialnetworkmodelinterface.cpp
++++ b/src/socialnetworkmodelinterface.cpp
+@@ -79,7 +79,7 @@ void SocialNetworkModelInterfacePrivate::filters_append(QQmlListProperty<FilterI
+ }
+ 
+ /*! \internal */
+-FilterInterface *SocialNetworkModelInterfacePrivate::filters_at(QQmlListProperty<FilterInterface> *list, int index)
++FilterInterface *SocialNetworkModelInterfacePrivate::filters_at(QQmlListProperty<FilterInterface> *list, long long int index)
+ {
+     SocialNetworkModelInterface *model = qobject_cast<SocialNetworkModelInterface *>(list->object);
+     if (model && model->d_func()->filters.count() > index && index >= 0)
+@@ -97,7 +97,7 @@ void SocialNetworkModelInterfacePrivate::filters_clear(QQmlListProperty<FilterIn
+ }
+ 
+ /*! \internal */
+-int SocialNetworkModelInterfacePrivate::filters_count(QQmlListProperty<FilterInterface> *list)
++long long int SocialNetworkModelInterfacePrivate::filters_count(QQmlListProperty<FilterInterface> *list)
+ {
+     SocialNetworkModelInterface *model = qobject_cast<SocialNetworkModelInterface *>(list->object);
+     if (model)
+@@ -122,7 +122,7 @@ void SocialNetworkModelInterfacePrivate::sorters_append(QQmlListProperty<SorterI
+ }
+ 
+ /*! \internal */
+-SorterInterface *SocialNetworkModelInterfacePrivate::sorters_at(QQmlListProperty<SorterInterface> *list, int index)
++SorterInterface *SocialNetworkModelInterfacePrivate::sorters_at(QQmlListProperty<SorterInterface> *list, long long int index)
+ {
+     SocialNetworkModelInterface *model = qobject_cast<SocialNetworkModelInterface *>(list->object);
+     if (model && model->d_func()->sorters.count() > index && index >= 0)
+@@ -144,7 +144,7 @@ void SocialNetworkModelInterfacePrivate::sorters_clear(QQmlListProperty<SorterIn
+ }
+ 
+ /*! \internal */
+-int SocialNetworkModelInterfacePrivate::sorters_count(QQmlListProperty<SorterInterface> *list)
++long long int SocialNetworkModelInterfacePrivate::sorters_count(QQmlListProperty<SorterInterface> *list)
+ {
+     SocialNetworkModelInterface *model = qobject_cast<SocialNetworkModelInterface *>(list->object);
+     if (model)
+diff --git a/src/socialnetworkmodelinterface_p.h b/src/socialnetworkmodelinterface_p.h
+index 893eb1a..d00c57c 100644
+--- a/src/socialnetworkmodelinterface_p.h
++++ b/src/socialnetworkmodelinterface_p.h
+@@ -59,15 +59,15 @@ private:
+ 
+     // Filters and sorters
+     static void filters_append(QQmlListProperty<FilterInterface> *list, FilterInterface *filter);
+-    static FilterInterface *filters_at(QQmlListProperty<FilterInterface> *list, int index);
++    static FilterInterface *filters_at(QQmlListProperty<FilterInterface> *list, long long int index);
+     static void filters_clear(QQmlListProperty<FilterInterface> *list);
+-    static int filters_count(QQmlListProperty<FilterInterface> *list);
++    static long long int filters_count(QQmlListProperty<FilterInterface> *list);
+     QList<FilterInterface*> filters;
+ 
+     static void sorters_append(QQmlListProperty<SorterInterface> *list, SorterInterface *sorter);
+-    static SorterInterface *sorters_at(QQmlListProperty<SorterInterface> *list, int index);
++    static SorterInterface *sorters_at(QQmlListProperty<SorterInterface> *list, long long int index);
+     static void sorters_clear(QQmlListProperty<SorterInterface> *list);
+-    static int sorters_count(QQmlListProperty<SorterInterface> *list);
++    static long long int sorters_count(QQmlListProperty<SorterInterface> *list);
+     QList<SorterInterface*> sorters;
+ 
+     void resort();
+diff --git a/src/twitter/twitterinterface.cpp b/src/twitter/twitterinterface.cpp
+index 9caac65..0813943 100644
+--- a/src/twitter/twitterinterface.cpp
++++ b/src/twitter/twitterinterface.cpp
+@@ -113,15 +113,26 @@ QNetworkRequest TwitterInterfacePrivate::networkRequest(const QString &extraPath
+ 
+     const QStringList &extraDataKeys = extraData.keys();
+     foreach (const QString &key, extraDataKeys) {
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        queryItems.append(QPair<QString, QString>(key, extraData.value(key).toString()));
++        parameters.append(QPair<QByteArray, QByteArray>(key.toLocal8Bit(),
++                                                            extraData.value(key).toByteArray()));
++#else
+         queryItems.append(qMakePair<QString, QString>(key, extraData.value(key).toString()));
+         parameters.append(qMakePair<QByteArray, QByteArray>(key.toLocal8Bit(),
+                                                             extraData.value(key).toByteArray()));
++#endif
+     }
+ 
+     const QStringList &postDataKeys = postData.keys();
+     foreach (const QString &key, postDataKeys) {
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++        parameters.append(QPair<QByteArray, QByteArray>(key.toLocal8Bit(),
++                                                            postData.value(key).toByteArray()));
++#else
+         parameters.append(qMakePair<QByteArray, QByteArray>(key.toLocal8Bit(),
+                                                             postData.value(key).toByteArray()));
++#endif
+     }
+ 
+ 
+@@ -364,7 +375,12 @@ void TwitterInterfacePrivate::populateDataForNode(CacheNode::Ptr node)
+ /*! \reimp */
+ void TwitterInterfacePrivate::populateRelatedDataforNode(CacheNode::Ptr node)
+ {
++
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++    if (!performRelatedDataRequest(node, node->identifier(), QList<FilterInterface *>(node->filters().begin(), node->filters().end()))) {
++#else
+     if (!performRelatedDataRequest(node, node->identifier(), node->filters().toList())) {
++#endif
+         setError(node, SocialNetworkInterface::DataUpdateError,
+                  QLatin1String("Cannot perform related data request"));
+     }
+diff --git a/tests/facebooksocialtest/facebooksocialtest.pro b/tests/facebooksocialtest/facebooksocialtest.pro
+index e54aa06..ec17e83 100644
+--- a/tests/facebooksocialtest/facebooksocialtest.pro
++++ b/tests/facebooksocialtest/facebooksocialtest.pro
+@@ -1,12 +1,12 @@
+ TARGET = facebooksocialtest
+-PREFIX = /opt/tests/nemo-qml-plugins-qt5/social/
++PREFIX = /opt/tests/nemo-qml-plugins-qt$${QT_MAJOR_VERSION}/social/
+ 
+ QT = core gui qml quick
+ 
+ target.path = $${PREFIX}
+ 
+ SOURCES += main.cpp
+-OTHER_FILES += $$system(./qt5ify.sh)
++OTHER_FILES += $$system(./qt$${QT_MAJOR_VERSION}ify.sh)
+ 
+ DEFINES *= PLUGIN_PATH=\"\\\"\"$${DEFINES_PREFIX}/$$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH\"\\\"\"
+ DEFINES *= DEPLOYMENT_PATH=\"\\\"\"$${DEFINES_PREFIX}/$${PREFIX}share/\"\\\"\"
+diff --git a/tests/twittersocialtest/twittersocialtest.pro b/tests/twittersocialtest/twittersocialtest.pro
+index 7731e63..70f06fc 100644
+--- a/tests/twittersocialtest/twittersocialtest.pro
++++ b/tests/twittersocialtest/twittersocialtest.pro
+@@ -1,5 +1,5 @@
+ TARGET = twittersocialtest
+-PREFIX = /opt/tests/nemo-qml-plugins-qt5/social/
++PREFIX = /opt/tests/nemo-qml-plugins-qt$${QT_MAJOR_VERSION}/social/
+ 
+ QT = core gui network qml quick
+ 
+@@ -10,7 +10,7 @@ HEADERS += ../../src/twitter/twitterdatautil_p.h
+ SOURCES += main.cpp \
+             ../../src/twitter/twitterdatautil.cpp
+ 
+-OTHER_FILES += $$system(./qt5ify.sh) 5/Web.qml
++OTHER_FILES += $$system(./qt$${QT_MAJOR_VERSION}ify.sh) 5/Web.qml
+ 
+ DEFINES *= PLUGIN_PATH=\"\\\"\"$${DEFINES_PREFIX}/$$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH\"\\\"\"
+ DEFINES *= DEPLOYMENT_PATH=\"\\\"\"$${DEFINES_PREFIX}/$${PREFIX}share/\"\\\"\"
+-- 
+2.41.0
+

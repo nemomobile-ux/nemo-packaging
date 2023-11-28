@@ -1,0 +1,277 @@
+diff --git a/common-project-config.pri b/common-project-config.pri
+index abe6cf6..af5f425 100644
+--- a/common-project-config.pri
++++ b/common-project-config.pri
+@@ -29,8 +29,8 @@ DEFINES += DEBUG_ENABLED
+ DEFINES += NO_SIGNON_USER
+ 
+ # Library name for CMake and pkg-config
+-LIBSIGNON = libsignon-qt5
+-CMAKE_BASENAME = SignOnQt5
++LIBSIGNON = libsignon-qt$${QT_MAJOR_VERSION}
++CMAKE_BASENAME = SignOnQt$${QT_MAJOR_VERSION}
+ 
+ #-----------------------------------------------------------------------------
+ # setup the installation prefix
+diff --git a/lib/SignOn/libsignon-qt-shared.pro b/lib/SignOn/libsignon-qt-shared.pro
+index 6cbe45d..363ad5c 100644
+--- a/lib/SignOn/libsignon-qt-shared.pro
++++ b/lib/SignOn/libsignon-qt-shared.pro
+@@ -1,3 +1,5 @@
+ include(libsignon-qt.pri)
+ CONFIG += shared
+ QMAKE_CXXFLAGS += -fvisibility=hidden
++
++DISTFILES +=
+diff --git a/lib/SignOn/libsignon-qt.pri b/lib/SignOn/libsignon-qt.pri
+index 1458c50..a318fe8 100644
+--- a/lib/SignOn/libsignon-qt.pri
++++ b/lib/SignOn/libsignon-qt.pri
+@@ -2,7 +2,7 @@ include( ../../common-project-config.pri )
+ include( ../../common-vars.pri )
+ TEMPLATE = lib
+ 
+-TARGET = signon-qt5
++TARGET = signon-qt$${QT_MAJOR_VERSION}
+ 
+ # Input
+ public_headers += \
+diff --git a/lib/SignOn/libsignon-qt6.pc.in b/lib/SignOn/libsignon-qt6.pc.in
+new file mode 100644
+index 0000000..f9415e3
+--- /dev/null
++++ b/lib/SignOn/libsignon-qt6.pc.in
+@@ -0,0 +1,11 @@
++prefix=$$INSTALL_PREFIX
++exec_prefix=${prefix}
++libdir=$$INSTALL_LIBDIR
++includedir=${prefix}/include
++
++Name: libsignon-qt6
++Description: Client library for the Single Sign On daemon, Qt5 bindings.
++Version: $$PROJECT_VERSION
++Libs: -L${libdir} -lsignon-qt6
++Requires: Qt6Core
++Cflags: -I${includedir}/signon-qt6 -I${includedir}/signon-qt6/SignOn
+diff --git a/lib/plugins/SignOn/authpluginif.h b/lib/plugins/SignOn/authpluginif.h
+index 7b3243c..d4a10d1 100644
+--- a/lib/plugins/SignOn/authpluginif.h
++++ b/lib/plugins/SignOn/authpluginif.h
+@@ -39,7 +39,11 @@
+ 
+ QT_BEGIN_NAMESPACE
+ class QString;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++using QStringList = class QList<QString>;
++#else
+ class QStringList;
++#endif
+ class QByteArray;
+ class QVariant;
+ QT_END_NAMESPACE
+@@ -72,6 +76,14 @@ enum AuthPluginState {
+             return _instance; \
+         }
+ 
++#ifndef Q_EXTERN_C
++#  ifdef __cplusplus
++#    define Q_EXTERN_C extern "C"
++#  else
++#    define Q_EXTERN_C extern
++#  endif
++#endif
++
+ #define SIGNON_DECL_AUTH_PLUGIN(pluginclass) \
+         Q_EXTERN_C AuthPluginInterface *auth_plugin_instance() \
+         SIGNON_PLUGIN_INSTANCE(pluginclass)
+diff --git a/src/signond/pluginproxy.cpp b/src/signond/pluginproxy.cpp
+index d31c712..5d142ce 100644
+--- a/src/signond/pluginproxy.cpp
++++ b/src/signond/pluginproxy.cpp
+@@ -125,10 +125,18 @@ PluginProxy::~PluginProxy()
+ 
+             if (!m_process->waitForFinished(PLUGINPROCESS_STOP_TIMEOUT))
+             {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++                if (m_process->processId()) {
++#else
+                 if (m_process->pid()) {
++#endif
+                     qCritical() << "The signon plugin seems to ignore kill(), "
+                         "killing it from command line";
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++                    QString killProcessCommand(QString::fromLatin1("kill -9 %1").arg(m_process->processId()));
++#else
+                     QString killProcessCommand(QString::fromLatin1("kill -9 %1").arg(m_process->pid()));
++#endif
+                     QProcess::execute(killProcessCommand);
+                 }
+             }
+diff --git a/src/signond/signonidentity.cpp b/src/signond/signonidentity.cpp
+index 92ff476..7d5353c 100644
+--- a/src/signond/signonidentity.cpp
++++ b/src/signond/signonidentity.cpp
+@@ -289,7 +289,11 @@ void SignonIdentity::verifyUser(const QVariantMap &params,
+ 
+     //create ui request to ask password
+     QVariantMap uiRequest;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    uiRequest.insert(params);
++#else
+     uiRequest.unite(params);
++#endif
+     uiRequest.insert(SSOUI_KEY_QUERYPASSWORD, true);
+     uiRequest.insert(SSOUI_KEY_USERNAME, info.userName());
+     uiRequest.insert(SSOUI_KEY_CAPTION, info.caption());
+diff --git a/src/signond/signonidentityinfo.cpp b/src/signond/signonidentityinfo.cpp
+index a5ae15d..0e57033 100644
+--- a/src/signond/signonidentityinfo.cpp
++++ b/src/signond/signonidentityinfo.cpp
+@@ -104,8 +104,12 @@ bool SignonIdentityInfo::checkMethodAndMechanism(const QString &method,
+      * mechanisms is allowed.
+      */
+     QStringList mechanisms =
+-        mechanism.split(QLatin1Char(' '), QString::SkipEmptyParts);
+-
++        mechanism.split(QLatin1Char(' ')
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++                                             , Qt::SkipEmptyParts);
++#else
++                                             , QString::SkipEmptyParts);
++#endif
+     /* if the list is empty of it has only one element, then we already know
+      * that it didn't pass the previous checks */
+     if (mechanisms.size() <= 1)
+diff --git a/src/signond/signonsessioncore.cpp b/src/signond/signonsessioncore.cpp
+index 93a7328..f2b6160 100644
+--- a/src/signond/signonsessioncore.cpp
++++ b/src/signond/signonsessioncore.cpp
+@@ -216,9 +216,13 @@ SignonSessionCore::queryAvailableMechanisms(const QStringList &wantedMechanisms)
+ 
+     if (!wantedMechanisms.size())
+         return m_plugin->mechanisms();
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    return QSet<QString>(m_plugin->mechanisms().begin(), m_plugin->mechanisms().end()).intersect(
++        QSet<QString>(wantedMechanisms.begin(), wantedMechanisms.end())).values();
++#else
+     return m_plugin->mechanisms().toSet().
+         intersect(wantedMechanisms.toSet()).toList();
++#endif
+ }
+ 
+ void SignonSessionCore::process(const PeerContext &peerContext,
+diff --git a/src/signond/signonsessioncoretools.cpp b/src/signond/signonsessioncoretools.cpp
+index 8b74840..c328dd7 100644
+--- a/src/signond/signonsessioncoretools.cpp
++++ b/src/signond/signonsessioncoretools.cpp
+@@ -24,6 +24,7 @@
+ #include "signonsessioncoretools.h"
+ 
+ #include <QDebug>
++#include <QVariantMap>
+ #include "signond-common.h"
+ 
+ using namespace SignonDaemonNS;
+@@ -39,10 +40,13 @@ QVariantMap SignonDaemonNS::mergeVariantMaps(const QVariantMap &map1,
+     QMapIterator<QString, QVariant> it(map2);
+     while (it.hasNext()) {
+         it.next();
+-        if (map.contains(it.key()))
++        if (map.contains(it.key())) {
+             map.remove(it.key());
++        }
++        map.insert(it.key(), it.value());
+     }
+-    return map.unite(map2);
++
++    return map;
+ }
+ 
+ /* --------------------- StoreOperation ---------------------- */
+diff --git a/tests/libsignon-qt-tests/libsignon-qt-tests.pro b/tests/libsignon-qt-tests/libsignon-qt-tests.pro
+index 4dd6ce4..7e44272 100644
+--- a/tests/libsignon-qt-tests/libsignon-qt-tests.pro
++++ b/tests/libsignon-qt-tests/libsignon-qt-tests.pro
+@@ -10,7 +10,7 @@ QT += \
+     testlib
+ QT -= gui
+ 
+-LIBS *= -lsignon-qt5
++LIBS *= -lsignon-qt$${QT_MAJOR_VERSION}
+ QMAKE_LIBDIR += $${TOP_BUILD_DIR}/lib/SignOn
+ QMAKE_RPATHDIR = $${QMAKE_LIBDIR}
+ 
+diff --git a/tests/signond-tests/databasetest.cpp b/tests/signond-tests/databasetest.cpp
+index b5ee761..586149e 100644
+--- a/tests/signond-tests/databasetest.cpp
++++ b/tests/signond-tests/databasetest.cpp
+@@ -353,6 +353,9 @@ void TestDatabase::updateCredentialsTest()
+ 
+     /* The sorting of the method's mechanisms might vary, so we cannot just
+      * compare the whole method map as a whole. */
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++
++#else
+     QCOMPARE(retInfo.methods().keys().toSet(),
+              updateInfo.methods().keys().toSet());
+     QMapIterator<QString, QStringList> it(retInfo.methods());
+@@ -364,6 +367,7 @@ void TestDatabase::updateCredentialsTest()
+     QCOMPARE(retInfo.realms().toSet(), updateInfo.realms().toSet());
+     QCOMPARE(retInfo.accessControlList().toSet(),
+              updateInfo.accessControlList().toSet());
++#endif
+ }
+ 
+ void TestDatabase::removeCredentialsTest()
+@@ -658,7 +662,11 @@ void TestDatabase::credentialsOwnerSecurityTokenTest()
+     QString token = m_db->credentialsOwnerSecurityToken(id);
+     QCOMPARE(token, QLatin1String("AID::12345678"));
+     QStringList tokens = m_db->ownerList(id);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QCOMPARE(QSet<QString>(tokens.begin(), tokens.end()), QSet<QString>(testAcl.begin(), testAcl.end()));
++#else
+     QCOMPARE(tokens.toSet(), testAcl.toSet());
++#endif
+ 
+ }
+ 
+diff --git a/tests/signond-tests/identity-tool.pro b/tests/signond-tests/identity-tool.pro
+index c90e046..3a99e9d 100644
+--- a/tests/signond-tests/identity-tool.pro
++++ b/tests/signond-tests/identity-tool.pro
+@@ -6,7 +6,7 @@ TARGET = identity-tool
+ QT += core
+ QT -= gui
+ 
+-LIBS += -lsignon-qt5
++LIBS += -lsignon-qt$${QT_MAJOR_VERSION}
+ 
+ QMAKE_LIBDIR += \
+     $${TOP_BUILD_DIR}/lib/signond/SignOn \
+diff --git a/tests/signond-tests/mock-ac-plugin/identity-ac-helper.pro b/tests/signond-tests/mock-ac-plugin/identity-ac-helper.pro
+index 2dac5ad..b78e691 100644
+--- a/tests/signond-tests/mock-ac-plugin/identity-ac-helper.pro
++++ b/tests/signond-tests/mock-ac-plugin/identity-ac-helper.pro
+@@ -6,7 +6,7 @@ TARGET = identity-ac-helper
+ QT += core
+ QT -= gui
+ 
+-LIBS += -lsignon-qt5
++LIBS += -lsignon-qt$${QT_MAJOR_VERSION}
+ 
+ QMAKE_LIBDIR += \
+     $${TOP_BUILD_DIR}/lib/signond/SignOn \
+diff --git a/tests/signond-tests/signond-tests.pri b/tests/signond-tests/signond-tests.pri
+index cbdfae3..74fa5b4 100644
+--- a/tests/signond-tests/signond-tests.pri
++++ b/tests/signond-tests/signond-tests.pri
+@@ -11,7 +11,7 @@ QT -= gui
+ 
+ LIBS += \
+     -lsignon-extension \
+-    -lsignon-qt5
++    -lsignon-qt$${QT_MAJOR_VERSION}
+ 
+ QMAKE_LIBDIR += \
+     $${TOP_BUILD_DIR}/lib/signond/SignOn \

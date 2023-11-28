@@ -11,9 +11,9 @@ license=('BSD')
 depends=('telepathy-qt'
     'libcommhistory'
     'qtcontacts-sqlite'
-    'libqofono-qt5'
-    'qt5-base'
-    'qt5-declarative'
+    'libqofono-qt6'
+    'qt6-base'
+    'qt6-declarative'
     'nemo-qml-plugin-dbus')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-fix_telepathy_client_name.patch")
@@ -27,7 +27,7 @@ prepare() {
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

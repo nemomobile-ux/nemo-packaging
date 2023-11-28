@@ -8,16 +8,16 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-signon"
 license=('BSD')
 depends=(
-    'signond'
-    'qt5-base'
-    'qt5-declarative'
+    'signond6'
+    'qt6-base'
+    'qt6-declarative'
 )
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('488283a12c475b6bf3d52a553c219db523d832ad4d4088be8b79c5334cecd88f')
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

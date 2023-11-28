@@ -1,0 +1,1477 @@
+diff --git a/src/versit/qvcard21writer.cpp b/src/versit/qvcard21writer.cpp
+index 2698899f..2e5b09b6 100644
+--- a/src/versit/qvcard21writer.cpp
++++ b/src/versit/qvcard21writer.cpp
+@@ -43,8 +43,6 @@
+ #include <QtCore/qvariant.h>
+ #include <QtCore/qurl.h>
+ 
+-#include <QTextCodec>
+-
+ #include "qversitproperty.h"
+ 
+ #include <algorithm>
+@@ -56,16 +54,6 @@ QVCard21Writer::QVCard21Writer(QVersitDocument::VersitType type) : QVersitDocume
+ {
+ }
+ 
+-QTextEncoder* QVCard21Writer::utf8Encoder()
+-{
+-    static QTextEncoder* encoder = 0;
+-    if (encoder == 0) {
+-        // prevent output of byte order mark for UTF-8 encoding
+-        encoder = QTextCodec::codecForName("UTF-8")->makeEncoder(QStringConverterBase::Flag::Default);
+-    }
+-    return encoder;
+-}
+-
+ /*! Destroys a writer. */
+ QVCard21Writer::~QVCard21Writer()
+ {
+@@ -106,12 +94,10 @@ void QVCard21Writer::encodeVersitProperty(const QVersitProperty& property)
+ 
+         // Check first if any of the values need to be UTF-8 encoded (if so, all of them must be
+         // UTF-8 encoded)
+-        bool forceUtf8 = requiresUtf8(values);
+-
+         bool first = true;
+         foreach (QString value, values) {
+             if (!(value.isEmpty() && property.valueType() == QVersitProperty::ListType)) {
+-                encodeVersitValue(parameters, value, forceUtf8);
++                encodeVersitValue(parameters, value);
+                 if (!first) {
+                     renderedValue += separator;
+                 }
+@@ -121,7 +107,7 @@ void QVCard21Writer::encodeVersitProperty(const QVersitProperty& property)
+         }
+     } else if (variant.metaType().id() == QMetaType::QString) {
+         renderedValue = variant.toString();
+-        encodeVersitValue(parameters, renderedValue, false);
++        encodeVersitValue(parameters, renderedValue);
+     } else if (variant.metaType().id() == QMetaType::QByteArray) {
+         parameters.replace(QStringLiteral("ENCODING"), QStringLiteral("BASE64"));
+         if (mCodecIsAsciiCompatible) // optimize by not converting to unicode
+@@ -163,30 +149,14 @@ void QVCard21Writer::encodeVersitProperty(const QVersitProperty& property)
+ 
+ /*! Returns true if and only if the current codec is incapable of encoding any of the \a values */
+ bool QVCard21Writer::requiresUtf8(const QStringList& values) {
+-    foreach (const QString& value, values) {
+-        if (!mCodec->canEncode(value)
+-            // if codec is ASCII and there is a character > U+007F in value, encode it as UTF-8
+-            || (mCodecIsAscii && containsNonAscii(value))) {
+-            return true;
+-        }
+-    }
++    //TODO: remove this
+     return false;
+ }
+ 
+ /*! Performs Quoted-Printable encoding and charset encoding on \a value as per vCard 2.1 spec.
+     Returns true if the value will need to be encoded with UTF-8, false if mCodec is sufficient. */
+-void QVCard21Writer::encodeVersitValue(QMultiHash<QString,QString>& parameters, QString& value,
+-                                       bool forceUtf8)
++void QVCard21Writer::encodeVersitValue(QMultiHash<QString,QString>& parameters, QString& value)
+ {
+-    // Add the CHARSET parameter, if necessary and encode in UTF-8 later
+-    if (forceUtf8
+-            || !mCodec->canEncode(value)
+-            // if codec is ASCII and there is a character > U+007F in value, encode it as UTF-8
+-            || (mCodecIsAscii && containsNonAscii(value))) {
+-        parameters.replace(QStringLiteral("CHARSET"), QStringLiteral("UTF-8"));
+-        value = QString::fromLatin1(utf8Encoder()->fromUnicode(value));
+-    }
+-
+     // Quoted-Printable encode the value and add Quoted-Printable parameter, if necessary
+     if (quotedPrintableEncode(value))
+         parameters.replace(QStringLiteral("ENCODING"), QStringLiteral("QUOTED-PRINTABLE"));
+diff --git a/src/versit/qvcard21writer_p.h b/src/versit/qvcard21writer_p.h
+index 78930fad..a8e8c57f 100644
+--- a/src/versit/qvcard21writer_p.h
++++ b/src/versit/qvcard21writer_p.h
+@@ -63,14 +63,11 @@ class Q_VERSIT_EXPORT QVCard21Writer : public QVersitDocumentWriter
+ 
+     void encodeVersitProperty(const QVersitProperty& property) override;
+     bool requiresUtf8(const QStringList& values);
+-    void encodeVersitValue(QMultiHash<QString,QString>& parameters, QString& value, bool forceUtf8);
++    void encodeVersitValue(QMultiHash<QString,QString>& parameters, QString& value);
+     void encodeParameters(const QMultiHash<QString,QString>& parameters) override;
+     static bool containsNonAscii(const QString& str);
+     static bool quotedPrintableEncode(QString& text);
+     static bool shouldBeQuotedPrintableEncoded(QChar chr);
+-
+-private:
+-    static QTextEncoder* utf8Encoder();
+ };
+ 
+ QT_END_NAMESPACE_VERSIT
+diff --git a/src/versit/qvcard30writer.cpp b/src/versit/qvcard30writer.cpp
+index 508fd85b..bf131125 100644
+--- a/src/versit/qvcard30writer.cpp
++++ b/src/versit/qvcard30writer.cpp
+@@ -44,8 +44,6 @@
+ #include <QtCore/qvariant.h>
+ #include <QtCore/qurl.h>
+ 
+-#include <QTextCodec>
+-
+ #include "qversitproperty.h"
+ #include "qversitutils_p.h"
+ 
+@@ -94,10 +92,9 @@ void QVCard30Writer::encodeVersitProperty(const QVersitProperty& property)
+         QBuffer buffer(&data);
+         buffer.open(QIODevice::WriteOnly);
+         QVCard30Writer subWriter(mType);
+-        subWriter.setCodec(mCodec);
+         subWriter.setDevice(&buffer);
+         subWriter.encodeVersitDocument(embeddedDocument);
+-        QString documentString(mCodec->toUnicode(data));
++        QString documentString(data);
+         backSlashEscape(&documentString);
+         renderedValue = documentString;
+     } else if (variant.metaType().id() == QMetaType::QString) {
+diff --git a/src/versit/qversitdocumentwriter_p.cpp b/src/versit/qversitdocumentwriter_p.cpp
+index aef1b26c..e446d315 100644
+--- a/src/versit/qversitdocumentwriter_p.cpp
++++ b/src/versit/qversitdocumentwriter_p.cpp
+@@ -42,8 +42,6 @@
+ #include <QtCore/qiodevice.h>
+ #include <QtCore/qbytearray.h>
+ 
+-#include <QTextCodec>
+-
+ #include "qversitutils_p.h"
+ 
+ QT_BEGIN_NAMESPACE_VERSIT
+@@ -66,7 +64,6 @@ QT_BEGIN_NAMESPACE_VERSIT
+ QVersitDocumentWriter::QVersitDocumentWriter(QVersitDocument::VersitType type)
+     : mType(type),
+     mDevice(0),
+-    mCodec(0),
+     mCodecIsAscii(false),
+     mEncoder(0),
+     mSuccessful(true),
+@@ -80,24 +77,6 @@ QVersitDocumentWriter::~QVersitDocumentWriter()
+         delete mEncoder;
+ }
+ 
+-/*!
+-  Sets the codec to write with.
+-  */
+-void QVersitDocumentWriter::setCodec(QTextCodec *codec)
+-{
+-    if (mEncoder)
+-        delete mEncoder;
+-    mCodec = codec;
+-    mEncoder = codec->makeEncoder(mCodec->name() == QByteArrayLiteral("UTF-8")
+-                ? QStringConverterBase::Flag::Default
+-                : QStringConverterBase::Flag::WriteBom);
+-
+-    // UTF-(16|32)(LE|BE) are the only codecs where characters in the base64 range aren't encoded
+-    // the same as in ASCII.  For ASCII compatible codecs, we can do some optimizations.
+-    mCodecIsAsciiCompatible = !(mCodec->name().startsWith("UTF-16")
+-                             || mCodec->name().startsWith("UTF-32"));
+-}
+-
+ /*!
+   Specifies that the codec is actually ASCII (setCodec must also be called with an ASCII-compatible
+   codec.
+@@ -225,15 +204,15 @@ void QVersitDocumentWriter::writeString(const QString &value)
+         // Write the first "spaceRemaining" characters
+         QStringView line(value.constData() + charsWritten, spaceRemaining);
+         charsWritten += spaceRemaining;
+-        const QByteArray encodedLine = mEncoder->fromUnicode(line.constData(), line.length());
+-        const QByteArray encodedCrlfSpace = mEncoder->fromUnicode(crlfSpace);
++        const QByteArray encodedLine = QString(line.data(), line.length()).toUtf8();
++        const QByteArray encodedCrlfSpace = QString(crlfSpace).toUtf8();
+         if (mDevice->write(encodedLine) < 0 || mDevice->write(encodedCrlfSpace) < 0)
+             mSuccessful = false;
+         spaceRemaining = MAX_LINE_LENGTH - 1; // minus 1 for the space at the front.
+         mCurrentLineLength = 1;
+     }
+ 
+-    const QByteArray encodedRemainder = mEncoder->fromUnicode(value.mid(charsWritten));
++    const QByteArray encodedRemainder = QString(value.mid(charsWritten)).toUtf8();
+     if (mDevice->write(encodedRemainder) < 0)
+         mSuccessful = false;
+     mCurrentLineLength += value.length() - charsWritten;
+@@ -261,14 +240,14 @@ void QVersitDocumentWriter::writeStringQp(const QString &value)
+         QStringView line(value.constData() + charsWritten, spaceRemaining);
+ 
+         charsWritten += spaceRemaining;
+-        if (mDevice->write(mEncoder->fromUnicode(line.constData(), line.length())) < 0
+-               || mDevice->write(mEncoder->fromUnicode(softBreak)) < 0)
++        if (mDevice->write(QString(line.constData(), line.length()).toUtf8()) < 0
++               || mDevice->write(softBreak.toUtf8()) < 0)
+             mSuccessful = false;
+         spaceRemaining = MAX_LINE_LENGTH - 1; // minus 1 for the equals required at the end
+         mCurrentLineLength = 0;
+     }
+ 
+-    if (mDevice->write(mEncoder->fromUnicode(value.mid(charsWritten))) < 0)
++    if (mDevice->write(QString(value.mid(charsWritten)).toUtf8()) < 0)
+         mSuccessful = false;
+     mCurrentLineLength += value.length() - charsWritten;
+ }
+diff --git a/src/versit/qversitdocumentwriter_p.h b/src/versit/qversitdocumentwriter_p.h
+index 8f95640b..b636a28e 100644
+--- a/src/versit/qversitdocumentwriter_p.h
++++ b/src/versit/qversitdocumentwriter_p.h
+@@ -58,7 +58,6 @@
+ 
+ QT_FORWARD_DECLARE_CLASS(QByteArray)
+ QT_FORWARD_DECLARE_CLASS(QIODevice)
+-QT_FORWARD_DECLARE_CLASS(QTextCodec)
+ QT_FORWARD_DECLARE_CLASS(QTextEncoder)
+ 
+ QT_BEGIN_NAMESPACE_VERSIT
+@@ -71,7 +70,6 @@ class Q_VERSIT_EXPORT QVersitDocumentWriter
+     QVersitDocumentWriter(QVersitDocument::VersitType type);
+     virtual ~QVersitDocumentWriter();
+ 
+-    void setCodec(QTextCodec* codec);
+     void setAsciiCodec();
+     void setDevice(QIODevice* device);
+ 
+@@ -88,7 +86,6 @@ class Q_VERSIT_EXPORT QVersitDocumentWriter
+ protected:
+     QVersitDocument::VersitType mType;
+     QIODevice* mDevice;
+-    QTextCodec* mCodec;
+     bool mCodecIsAscii;
+     bool mCodecIsAsciiCompatible;
+     QTextEncoder* mEncoder;
+diff --git a/src/versit/qversitproperty.cpp b/src/versit/qversitproperty.cpp
+index e1eacf25..6882cbb4 100644
+--- a/src/versit/qversitproperty.cpp
++++ b/src/versit/qversitproperty.cpp
+@@ -45,8 +45,6 @@
+ #include <QtCore/qdebug.h>
+ #endif
+ 
+-#include <QTextCodec>
+-
+ QT_BEGIN_NAMESPACE_VERSIT
+ 
+ /*!
+@@ -322,11 +320,7 @@ QString QVersitProperty::value() const
+ {
+     if (d->mValue.metaType().id() == QMetaType::QByteArray) {
+         if (d->mParameters.contains(QStringLiteral("CHARSET"))) {
+-            QTextCodec* codec = QTextCodec::codecForName(
+-                    d->mParameters.value(QStringLiteral("CHARSET")).toLatin1());
+-            if (codec != NULL) {
+-                return codec->toUnicode(d->mValue.toByteArray());
+-            }
++            return d->mValue.toByteArray();
+         }
+         return QString();
+     } else {
+diff --git a/src/versit/qversitreader.cpp b/src/versit/qversitreader.cpp
+index 17708efd..2fcc4eee 100644
+--- a/src/versit/qversitreader.cpp
++++ b/src/versit/qversitreader.cpp
+@@ -42,8 +42,6 @@
+ 
+ #include <QtCore/qbuffer.h>
+ 
+-#include <QTextCodec>
+-
+ QT_BEGIN_NAMESPACE_VERSIT
+ 
+ /*!
+@@ -172,28 +170,6 @@ void QVersitReader::setData(const QByteArray &inputData)
+     d->mIoDevice = d->mInputBytes.data();
+ }
+ 
+-/*!
+- * Sets \a codec as the codec for the reader to use when parsing the input stream to.
+- * This codec is not used for values where the CHARSET Versit parameter occurs.
+- * If the codec is null, this denotes that the reader will try to detect the codec
+- * from the input.  The codec autodetection algorithm can detect UTF-8, UTF-16 or
+- * UTF-32.  If the input is in some 8-bit codec, it will fall back to using the system
+- * locale's codec.
+- */
+-void QVersitReader::setDefaultCodec(QTextCodec *codec)
+-{
+-    d->mDefaultCodec = codec;
+-}
+-
+-/*!
+- * Returns the codec the reader uses when parsing the input stream.  If the codec is
+- * null, this denotes that the reader will try to detect the codec from the input.
+- */
+-QTextCodec* QVersitReader::defaultCodec() const
+-{
+-    return d->mDefaultCodec;
+-}
+-
+ /*!
+  * Returns the state of the reader.
+  */
+diff --git a/src/versit/qversitreader.h b/src/versit/qversitreader.h
+index aa7cf515..ded63e0a 100644
+--- a/src/versit/qversitreader.h
++++ b/src/versit/qversitreader.h
+@@ -47,7 +47,6 @@
+ 
+ QT_FORWARD_DECLARE_CLASS(QByteArray)
+ QT_FORWARD_DECLARE_CLASS(QIODevice)
+-QT_FORWARD_DECLARE_CLASS(QTextCodec)
+ 
+ QT_BEGIN_NAMESPACE_VERSIT
+ 
+@@ -84,9 +83,6 @@ class Q_VERSIT_EXPORT QVersitReader : public QObject
+     QIODevice* device() const;
+     void setData(const QByteArray& inputData);
+ 
+-    void setDefaultCodec(QTextCodec* codec);
+-    QTextCodec* defaultCodec() const;
+-
+     // output:
+     QList<QVersitDocument> results() const;
+ 
+diff --git a/src/versit/qversitreader_p.cpp b/src/versit/qversitreader_p.cpp
+index f0a4ab41..e421be4e 100644
+--- a/src/versit/qversitreader_p.cpp
++++ b/src/versit/qversitreader_p.cpp
+@@ -43,8 +43,6 @@
+ #include <QtCore/qbuffer.h>
+ #include <QtCore/qvariant.h>
+ 
+-#include <QTextCodec>
+-
+ #include "qversitutils_p.h"
+ 
+ QT_BEGIN_NAMESPACE_VERSIT
+@@ -66,58 +64,17 @@ QHash<QPair<QVersitDocument::VersitType,QString>, QVersitProperty::ValueType>*
+   The isCodecCertain constructor parameter/getter can be used by the client to indicate whether
+   the codec supplied is known for sure, or if it was a guess.
+  */
+-
+ /*!
+   Constructs a LineReader that reads from the given \a device using the given \a codec.
+   If the \a codec is null, it is guessed at by sniffing the first few bytes of the input.
+   */
+-LineReader::LineReader(QIODevice* device, QTextCodec *codec)
++LineReader::LineReader(QIODevice* device)
+     : mDevice(device),
+-    mCodec(codec),
+     mIsCodecUtf8Compatible(false),
+     mChunkSize(10000), // Read 10kB at a time
+     mOdometer(0),
+     mSearchFrom(0)
+ {
+-    if (!mCodec) {
+-        static QTextCodec* utf16be = QTextCodec::codecForName("UTF-16BE");
+-        static QTextCodec* utf16le = QTextCodec::codecForName("UTF-16LE");
+-        static QTextCodec* utf32be = QTextCodec::codecForName("UTF-32BE");
+-        static QTextCodec* utf32le = QTextCodec::codecForName("UTF-32LE");
+-        static const QByteArray beginUtf16be(VersitUtils::encode("BEGIN:", utf16be));
+-        static const QByteArray beginUtf16le(VersitUtils::encode("BEGIN:", utf16le));
+-        static const QByteArray beginUtf32be(VersitUtils::encode("BEGIN:", utf32be));
+-        static const QByteArray beginUtf32le(VersitUtils::encode("BEGIN:", utf32le));
+-
+-        // Do some basic charset detection using the byte-order-mark (BOM)
+-        // We need 4 bytes to do BOM sniffing for UTF-32, UTF-16 and UTF-8
+-        QByteArray firstSixBytes = mDevice->read(6);
+-        mCodec = QTextCodec::codecForUtfText(firstSixBytes, NULL);
+-        if (mCodec) {
+-            mIsCodecCertain = true;
+-        } else {
+-            if (beginUtf16be.startsWith(firstSixBytes)) {
+-                mCodec = utf16be;
+-                mIsCodecCertain = true;
+-            } else if (beginUtf16le.startsWith(firstSixBytes)) {
+-                mCodec = utf16le;
+-                mIsCodecCertain = true;
+-            } else if (beginUtf32be.startsWith(firstSixBytes)) {
+-                mCodec = utf32be;
+-                mIsCodecCertain = true;
+-            } else if (beginUtf32le.startsWith(firstSixBytes)) {
+-                mCodec = utf32le;
+-                mIsCodecCertain = true;
+-            } else {
+-                mCodec = QTextCodec::codecForLocale();
+-                mIsCodecCertain = false;
+-                mIsCodecUtf8Compatible = true;
+-            }
+-        }
+-        mBuffer = LByteArray(firstSixBytes, 0, 0);
+-    } else {
+-        mIsCodecCertain = true;
+-    }
+ }
+ 
+ /*!
+@@ -125,15 +82,12 @@ LineReader::LineReader(QIODevice* device, QTextCodec *codec)
+   \a chunkSize is the number of bytes to read at a time (it is useful for testing but this
+   constructor shouldn't otherwise be used).
+   */
+-LineReader::LineReader(QIODevice* device, QTextCodec *codec, int chunkSize)
++LineReader::LineReader(QIODevice* device, int chunkSize)
+     : mDevice(device),
+-    mCodec(codec),
+-    mIsCodecCertain(true),
+     mChunkSize(chunkSize),
+     mOdometer(0),
+     mSearchFrom(0)
+ {
+-    Q_ASSERT(mCodec != NULL);
+ }
+ 
+ /*!
+@@ -155,8 +109,8 @@ LineReader::LineReader(QIODevice* device, QTextCodec *codec, int chunkSize)
+   */
+ LByteArray LineReader::readLine()
+ {
+-    QByteArray colon(VersitUtils::encode(':', mCodec));
+-    QByteArray equals(VersitUtils::encode('=', mCodec));
++    QByteArray colon(":");
++    QByteArray equals("=");
+     if (!mPushedLines.isEmpty()) {
+         LByteArray retval(mPushedLines.pop());
+         return retval;
+@@ -199,9 +153,9 @@ LByteArray LineReader::readLine()
+   continuation of the next line)
+   */
+ void LineReader::readOneLine(LByteArray* cursor) {
+-    QByteArray cr(VersitUtils::encode('\r', mCodec));
+-    QByteArray lf(VersitUtils::encode('\n', mCodec));
+-    QByteArray crlf(VersitUtils::encode("\r\n", mCodec));
++    QByteArray cr("\r");
++    QByteArray lf("\n");
++    QByteArray crlf("\r\n");
+ 
+     cursor->mStart = cursor->mEnd;
+     mSearchFrom = cursor->mStart;
+@@ -276,23 +230,6 @@ bool LineReader::atEnd() const
+     return mPushedLines.isEmpty() && mDevice->atEnd() && mBuffer.mEnd == mBuffer.mData.size();
+ }
+ 
+-/*!
+-  Returns the codec that the LineReader reads with.
+- */
+-QTextCodec* LineReader::codec() const
+-{
+-    return mCodec;
+-}
+-
+-/*!
+-  Returns true if the line reader has been told for sure what the codec is, or if a byte-order-mark
+-  has told us for sure what the codec is.
+- */
+-bool LineReader::isCodecCertain() const
+-{
+-    return mIsCodecCertain;
+-}
+-
+ /*! Valid if isCodecCertain(), false iff we've seen an invalid utf8 sequence */
+ bool LineReader::isCodecUtf8Compatible() const {
+     return mIsCodecUtf8Compatible;
+@@ -319,10 +256,10 @@ bool LineReader::tryReadLine(LByteArray *cursor, bool atEnd)
+     int nlPos = -1;
+     int doubleNlCheck = -1;
+ 
+-    QByteArray nl(VersitUtils::encode('\n', mCodec));
+-    QByteArray tab(VersitUtils::encode('\t', mCodec));
+-    QByteArray space(VersitUtils::encode(' ', mCodec));
+-    QByteArray equals(VersitUtils::encode('=', mCodec));
++    QByteArray nl("\n");
++    QByteArray tab("\t");
++    QByteArray space(" ");
++    QByteArray equals("=");
+ 
+     int nlLength = nl.length();
+     int spaceLength = space.length();
+@@ -366,9 +303,9 @@ bool LineReader::tryReadLine(LByteArray *cursor, bool atEnd)
+                 // END:VCARDBEGIN:VCARD
+                 // In that situation, we should actually insert the newline sequence manually,
+                 // and return mEnd after the END:VCARD + NL position.
+-                QByteArray ev(VersitUtils::encode(QByteArray("END:VCARD"), mCodec));
+-                QByteArray evbv(VersitUtils::encode(QByteArray("END:VCARDBEGIN:VCARD"), mCodec));
+-                QByteArray evnl(VersitUtils::encode(QByteArray("END:VCARD\n"), mCodec));
++                QByteArray ev(QByteArray("END:VCARD"));
++                QByteArray evbv(QByteArray("END:VCARDBEGIN:VCARD"));
++                QByteArray evnl(QByteArray("END:VCARD\n"));
+ 
+                 QByteArray possiblyMalformedLine = cursor->mData.mid(cursor->mStart, nlPos-cursor->mStart);
+                 int pmlEnd = possiblyMalformedLine.size() - 1;
+@@ -415,7 +352,6 @@ void QVersitReaderPrivate::init(QVersitReader* reader)
+ QVersitReaderPrivate::QVersitReaderPrivate()
+     : mIoDevice(0),
+     mDocumentNestingLevel(0),
+-    mDefaultCodec(0),
+     mState(QVersitReader::InactiveState),
+     mError(QVersitReader::NoError),
+     mIsCanceling(false)
+@@ -552,7 +488,7 @@ void QVersitReaderPrivate::read()
+     mMutex.unlock();
+     bool canceled = false;
+ 
+-    LineReader lineReader(mIoDevice, mDefaultCodec);
++    LineReader lineReader(mIoDevice);
+     while(!lineReader.atEnd()) {
+         if (isCanceling()) {
+             canceled = true;
+@@ -723,8 +659,7 @@ QVersitProperty QVersitReaderPrivate::parseNextVersitProperty(
+         return QVersitProperty();
+ 
+     // Otherwise, do stuff.
+-    QPair<QStringList,QString> groupsAndName =
+-            extractPropertyGroupsAndName(&line, lineReader->codec());
++    QPair<QStringList,QString> groupsAndName = extractPropertyGroupsAndName(&line);
+ 
+     QVersitProperty property;
+     property.setGroups(groupsAndName.first);
+@@ -751,7 +686,7 @@ QVersitProperty QVersitReaderPrivate::parseNextVersitProperty(
+ void QVersitReaderPrivate::parseVCard21Property(LByteArray* line, QVersitProperty* property,
+                                                 LineReader* lineReader)
+ {
+-    property->setParameters(extractVCard21PropertyParams(line, lineReader->codec()));
++    property->setParameters(extractVCard21PropertyParams(line));
+ 
+     QByteArray value = line->toByteArray();
+     if (property->valueType() == QVersitProperty::VersitDocumentType) {
+@@ -776,8 +711,7 @@ void QVersitReaderPrivate::parseVCard21Property(LByteArray* line, QVersitPropert
+             property->setValueType(QVersitProperty::BinaryType);
+         }
+         else {
+-            QTextCodec* ignored = 0;
+-            property->setValue(decodeCharset(value, property, lineReader, &ignored));
++            property->setValue(decodeCharset(value, property, lineReader));
+             splitStructuredValue(property, false);
+         }
+     }
+@@ -791,21 +725,20 @@ void QVersitReaderPrivate::parseVCard30Property(QVersitDocument::VersitType vers
+                                                 LByteArray* line, QVersitProperty* property,
+                                                 LineReader* lineReader)
+ {
+-    property->setParameters(extractVCard30PropertyParams(line, lineReader->codec()));
++    property->setParameters(extractVCard30PropertyParams(line));
+ 
+     QByteArray value = line->toByteArray();
+ 
+ 
+     if (property->valueType() == QVersitProperty::VersitDocumentType) {
+-        QTextCodec* codec;
+-        QString valueString(decodeCharset(value, property, lineReader, &codec));
++        QString valueString(decodeCharset(value, property, lineReader));
+         removeBackSlashEscaping(&valueString);
+         // Make a line reader from the value of the property.
+-        QByteArray subDocumentValue(codec->fromUnicode(valueString));
++        QByteArray subDocumentValue = valueString.toUtf8();
+         QBuffer subDocumentData(&subDocumentValue);
+         subDocumentData.open(QIODevice::ReadOnly);
+         subDocumentData.seek(0);
+-        LineReader subDocumentLineReader(&subDocumentData, codec);
++        LineReader subDocumentLineReader(&subDocumentData);
+ 
+         // Recursive call!
+         QVersitDocument subDocument(versitType);
+@@ -820,8 +753,7 @@ void QVersitReaderPrivate::parseVCard30Property(QVersitDocument::VersitType vers
+             property->setValue(value);
+             property->setValueType(QVersitProperty::BinaryType);
+         } else {
+-            QTextCodec* ignored = 0;
+-            property->setValue(decodeCharset(value, property, lineReader, &ignored));
++            property->setValue(decodeCharset(value, property, lineReader));
+             bool isList = splitStructuredValue(property, true);
+             // Do backslash unescaping
+             if (isList) {
+@@ -908,33 +840,19 @@ bool QVersitReaderPrivate::unencode(QByteArray* value,
+  */
+ QString QVersitReaderPrivate::decodeCharset(const QByteArray& value,
+                                             QVersitProperty* property,
+-                                            LineReader* lineReader,
+-                                            QTextCodec** codec) const
++                                            LineReader* lineReader) const
+ {
+     static const QString charset(QStringLiteral("CHARSET"));
+ 
+-    *codec = NULL;
+     if (property->parameters().contains(charset)) {
+         QString charsetValue = *property->parameters().find(charset);
+         property->removeParameters(charset);
+-        *codec = QTextCodec::codecForName(charsetValue.toLatin1());
+-    } else if (!lineReader->isCodecCertain()
+-            && lineReader->isCodecUtf8Compatible()) {
+-        // Guess the codec because we don't know for sure what it is and it could possibly be
+-        // either UTF-8 or an 8-bit codec.
+-        if (VersitUtils::isValidUtf8(value)) {
+-            // Valid UTF-8
+-            *codec = QTextCodec::codecForName("UTF-8");
+-        } else {
+-            // Invalid UTF-8 - don't try to test future properties for UTF-8-compatibility
+-            lineReader->setCodecUtf8Incompatible();
+-        }
++    } else {
++        // Invalid UTF-8 - don't try to test future properties for UTF-8-compatibility
++        lineReader->setCodecUtf8Incompatible();
+     }
+ 
+-    if (*codec == NULL)
+-        *codec = lineReader->codec();
+-
+-    return (*codec)->toUnicode(value);
++    return QString::fromUtf8(value);
+ }
+ 
+ /*!
+@@ -973,12 +891,11 @@ void QVersitReaderPrivate::decodeQuotedPrintable(QByteArray* text) const
+  * On entry, \a line should contain a whole line
+  * On exit, \a line will be updated to remove the groups and name
+  */
+-QPair<QStringList,QString>QVersitReaderPrivate::extractPropertyGroupsAndName(
+-        LByteArray* line, QTextCodec *codec) const
++QPair<QStringList,QString>QVersitReaderPrivate::extractPropertyGroupsAndName(LByteArray* line) const
+ {
+-    const QByteArray semicolon = VersitUtils::encode(';', codec);
+-    const QByteArray colon = VersitUtils::encode(':', codec);
+-    const QByteArray backslash = VersitUtils::encode('\\', codec);
++    const QByteArray semicolon(";");
++    const QByteArray colon(":");
++    const QByteArray backslash("\\");
+     QPair<QStringList,QString> groupsAndName;
+     int length = 0;
+ 
+@@ -991,7 +908,7 @@ QPair<QStringList,QString>QVersitReaderPrivate::extractPropertyGroupsAndName(
+         }
+     }
+     if (length > 0) {
+-        QString trimmedGroupsAndName = codec->toUnicode(line->left(length)).trimmed();
++        QString trimmedGroupsAndName = QString::fromUtf8(line->left(length)).trimmed();
+         QStringList parts = trimmedGroupsAndName.split(QLatin1Char('.'));
+         if (parts.count() > 1) {
+             groupsAndName.second = parts.takeLast();
+@@ -1012,15 +929,14 @@ QPair<QStringList,QString>QVersitReaderPrivate::extractPropertyGroupsAndName(
+  * On entry \a line should contain the line sans the group and name
+  * On exit, line will be updated to have the parameters removed.
+  */
+-QMultiHash<QString,QString> QVersitReaderPrivate::extractVCard21PropertyParams(
+-        LByteArray* line, QTextCodec *codec) const
++QMultiHash<QString,QString> QVersitReaderPrivate::extractVCard21PropertyParams(LByteArray* line) const
+ {
+     QMultiHash<QString,QString> result;
+-    QList<QByteArray> paramList = extractParams(line, codec);
++    QList<QByteArray> paramList = extractParams(line);
+     while (!paramList.isEmpty()) {
+         QByteArray param = paramList.takeLast();
+-        QString name = paramName(param, codec);
+-        QString value = paramValue(param, codec);
++        QString name = paramName(param);
++        QString value = paramValue(param);
+         result.insert(name,value);
+     }
+ 
+@@ -1035,15 +951,15 @@ QMultiHash<QString,QString> QVersitReaderPrivate::extractVCard21PropertyParams(
+  * On exit, line will be updated to have the parameters removed.
+  */
+ QMultiHash<QString,QString> QVersitReaderPrivate::extractVCard30PropertyParams(
+-        LByteArray* line, QTextCodec *codec) const
++        LByteArray* line) const
+ {
+     QMultiHash<QString,QString> result;
+-    QList<QByteArray> paramList = extractParams(line, codec);
++    QList<QByteArray> paramList = extractParams(line);
+     while (!paramList.isEmpty()) {
+         QByteArray param = paramList.takeLast();
+-        QString name(paramName(param, codec));
++        QString name(paramName(param));
+         removeBackSlashEscaping(&name);
+-        QString values = paramValue(param, codec);
++        QString values = paramValue(param);
+         QStringList valueList = splitValue(values, QLatin1Char(','), Qt::SkipEmptyParts, true);
+         foreach (QString value, valueList) {
+             removeBackSlashEscaping(&value);
+@@ -1060,17 +976,17 @@ QMultiHash<QString,QString> QVersitReaderPrivate::extractVCard30PropertyParams(
+  * On entry \a line should contain the content line sans the group and name
+  * On exit, \a line will be updated to only have the value remain
+  */
+-QList<QByteArray> QVersitReaderPrivate::extractParams(LByteArray* line, QTextCodec *codec) const
++QList<QByteArray> QVersitReaderPrivate::extractParams(LByteArray* line) const
+ {
+-    const QByteArray colon = VersitUtils::encode(':', codec);
+-    const QByteArray semicolon = VersitUtils::encode(';', codec);
++    const QByteArray colon(":");
++    const QByteArray semicolon(";");
+     QList<QByteArray> params;
+ 
+     /* find the end of the name&params */
+     int colonIndex = line->indexOf(colon);
+     if (colonIndex > 0) {
+         QByteArray nameAndParamsString = line->left(colonIndex);
+-        params = extractParts(nameAndParamsString, semicolon, codec);
++        params = extractParts(nameAndParamsString, semicolon);
+ 
+         /* Update line */
+         line->chopLeft(colonIndex + colon.length());
+@@ -1086,14 +1002,13 @@ QList<QByteArray> QVersitReaderPrivate::extractParams(LByteArray* line, QTextCod
+  * Extracts the parts separated by separator discarding the separators escaped with a backslash
+  * encoded with \a codec
+  */
+-QList<QByteArray> QVersitReaderPrivate::extractParts(
+-        const QByteArray& text, const QByteArray& separator, QTextCodec* codec) const
++QList<QByteArray> QVersitReaderPrivate::extractParts(const QByteArray& text, const QByteArray& separator) const
+ {
+     QList<QByteArray> parts;
+     int partStartIndex = 0;
+     int textLength = text.length();
+     int separatorLength = separator.length();
+-    const QByteArray backslash = VersitUtils::encode('\\', codec);
++    const QByteArray backslash("\\");
+     int backslashLength = backslash.length();
+ 
+     for (int i=0; i < textLength-separatorLength+1; i++) {
+@@ -1131,14 +1046,14 @@ QByteArray QVersitReaderPrivate::extractPart(
+  * Extracts the name of the parameter using \a codec to determine the delimiters.
+  * No name is interpreted as an implicit "TYPE".
+  */
+-QString QVersitReaderPrivate::paramName(const QByteArray& parameter, QTextCodec* codec) const
++QString QVersitReaderPrivate::paramName(const QByteArray& parameter) const
+ {
+      if (parameter.trimmed().length() == 0)
+          return QString();
+-     const QByteArray equals = VersitUtils::encode('=', codec);
++     const QByteArray equals("=");
+      int equalsIndex = parameter.indexOf(equals);
+      if (equalsIndex > 0) {
+-         return codec->toUnicode(parameter.left(equalsIndex)).trimmed();
++         return QString::fromUtf8(parameter.left(equalsIndex)).trimmed();
+      }
+ 
+      return QStringLiteral("TYPE");
+@@ -1147,17 +1062,17 @@ QString QVersitReaderPrivate::paramName(const QByteArray& parameter, QTextCodec*
+ /*!
+  * Extracts the value of the parameter using \a codec to determine the delimiters
+  */
+-QString QVersitReaderPrivate::paramValue(const QByteArray& parameter, QTextCodec* codec) const
++QString QVersitReaderPrivate::paramValue(const QByteArray& parameter) const
+ {
+     QByteArray value(parameter);
+-    const QByteArray equals = VersitUtils::encode('=', codec);
++    const QByteArray equals("=");
+     int equalsIndex = parameter.indexOf(equals);
+     if (equalsIndex > 0) {
+         int valueLength = parameter.length() - (equalsIndex + equals.length());
+         value = parameter.right(valueLength).trimmed();
+     }
+ 
+-    return codec->toUnicode(value);
++    return QString::fromUtf8(value);
+ }
+ 
+ /*
+diff --git a/src/versit/qversitreader_p.h b/src/versit/qversitreader_p.h
+index 3ecbf432..475d0b61 100644
+--- a/src/versit/qversitreader_p.h
++++ b/src/versit/qversitreader_p.h
+@@ -68,7 +68,6 @@
+ 
+ QT_FORWARD_DECLARE_CLASS(QBuffer)
+ QT_FORWARD_DECLARE_CLASS(QIODevice)
+-QT_FORWARD_DECLARE_CLASS(QTextCodec)
+ 
+ QT_BEGIN_NAMESPACE_VERSIT
+ 
+@@ -162,15 +161,12 @@ class LByteArray
+ class Q_VERSIT_EXPORT LineReader
+ {
+ public:
+-    LineReader(QIODevice* device, QTextCodec* codec);
+     LineReader(QIODevice* device);
+-    LineReader(QIODevice* device, QTextCodec* codec, int chunkSize);
++    LineReader(QIODevice* device, int chunkSize);
+     void init();
+     void pushLine(const QByteArray& line);
+     int odometer() const;
+     bool atEnd() const;
+-    QTextCodec* codec() const;
+-    bool isCodecCertain() const;
+     bool isCodecUtf8Compatible() const;
+     void setCodecUtf8Incompatible();
+     LByteArray readLine();
+@@ -180,8 +176,6 @@ class Q_VERSIT_EXPORT LineReader
+     bool tryReadLine(LByteArray* cursor, bool atEnd);
+ 
+     QIODevice* const mDevice;
+-    QTextCodec* mCodec;
+-    bool mIsCodecCertain;
+     bool mIsCodecUtf8Compatible;
+     int mChunkSize; // How many bytes to read in one go.
+     QStack<QByteArray> mPushedLines; // Stores a lines that has been "pushed" in front by pushLine
+@@ -250,27 +244,22 @@ class Q_VERSIT_EXPORT QVersitReaderPrivate : public QThread
+     QString decodeCharset(
+         const QByteArray& value,
+         QVersitProperty* property,
+-        LineReader* lineReader,
+-        QTextCodec** codec) const;
++        LineReader* lineReader) const;
+ 
+     void decodeQuotedPrintable(QByteArray* text) const;
+ 
+ 
+     /* These functions operate on a cursor describing a single line */
+-    QPair<QStringList,QString> extractPropertyGroupsAndName(LByteArray* line, QTextCodec* codec)
+-            const;
+-    QMultiHash<QString,QString> extractVCard21PropertyParams(LByteArray* line, QTextCodec* codec)
+-            const;
+-    QMultiHash<QString,QString> extractVCard30PropertyParams(LByteArray* line, QTextCodec* codec)
+-            const;
++    QPair<QStringList,QString> extractPropertyGroupsAndName(LByteArray* line) const;
++    QMultiHash<QString,QString> extractVCard21PropertyParams(LByteArray* line) const;
++    QMultiHash<QString,QString> extractVCard30PropertyParams(LByteArray* line) const;
+ 
+     // "Private" functions
+-    QList<QByteArray> extractParams(LByteArray* line, QTextCodec *codec) const;
+-    QList<QByteArray> extractParts(const QByteArray& text, const QByteArray& separator,
+-                                   QTextCodec *codec) const;
++    QList<QByteArray> extractParams(LByteArray* line) const;
++    QList<QByteArray> extractParts(const QByteArray& text, const QByteArray& separator) const;
+     QByteArray extractPart(const QByteArray& text, int startPosition, int length=-1) const;
+-    QString paramName(const QByteArray& parameter, QTextCodec* codec) const;
+-    QString paramValue(const QByteArray& parameter, QTextCodec* codec) const;
++    QString paramName(const QByteArray& parameter) const;
++    QString paramValue(const QByteArray& parameter) const;
+     template <class T> static bool containsAt(const T& text, const QByteArray& ba, int index);
+     bool splitStructuredValue(QVersitProperty* property,
+                               bool hasEscapedBackslashes) const;
+@@ -286,7 +275,6 @@ class Q_VERSIT_EXPORT QVersitReaderPrivate : public QThread
+     QScopedPointer<QBuffer> mInputBytes; // Holds the data set by setData()
+     QList<QVersitDocument> mVersitDocuments;
+     int mDocumentNestingLevel; // Depth in parsing nested Versit documents
+-    QTextCodec* mDefaultCodec;
+     QVersitReader::State mState;
+     QVersitReader::Error mError;
+     bool mIsCanceling;
+diff --git a/src/versit/qversitutils.cpp b/src/versit/qversitutils.cpp
+index 08ff3901..5349e03b 100644
+--- a/src/versit/qversitutils.cpp
++++ b/src/versit/qversitutils.cpp
+@@ -46,72 +46,22 @@
+ #include <QtCore/QJsonDocument>
+ #include <QtCore/QJsonValue>
+ 
+-#include <QTextCodec>
+-
+ #include "qversitdocument.h"
+ 
+ QT_BEGIN_NAMESPACE_VERSIT
+ 
+-QTextCodec* VersitUtils::m_previousCodec = 0;
+ QList<QByteArrayMatcher>* VersitUtils::m_newlineList = 0;
+ QByteArray VersitUtils::m_encodingMap[256];
+ QBasicMutex VersitUtils::m_staticLock;
+ 
+-/*!
+- * Encode \a ch with \a codec, without adding an byte-order mark
+- */
+-QByteArray VersitUtils::encode(char ch, QTextCodec* codec)
+-{
+-    changeCodec(codec);
+-    return m_encodingMap[(int)ch];
+-}
+-
+-/*!
+- * Encode \a ba with \a codec, without adding an byte-order mark.  \a ba is interpreted as ASCII
+- */
+-QByteArray VersitUtils::encode(const QByteArray& ba, QTextCodec* codec)
+-{
+-    QTextCodec::ConverterState state(QTextCodec::IgnoreHeader);
+-    return codec->fromUnicode(QString::fromLatin1(ba.data()).data(), ba.length(), &state);
+-}
+-
+ /*!
+  * Returns the list of DOS, UNIX and Mac newline characters for \a codec.
+  */
+-QList<QByteArrayMatcher>* VersitUtils::newlineList(QTextCodec* codec)
++QList<QByteArrayMatcher>* VersitUtils::newlineList()
+ {
+-    changeCodec(codec);
+     return m_newlineList;
+ }
+ 
+-/*!
+- * Update the cached tables of pregenerated encoded text with \a codec.
+- */
+-void VersitUtils::changeCodec(QTextCodec* codec) {
+-    QMutexLocker readWriterLocker(&VersitUtils::m_staticLock);
+-
+-    if (VersitUtils::m_newlineList != 0 && codec == VersitUtils::m_previousCodec)
+-        return;
+-
+-    // Build m_encodingMap
+-    QChar qch;
+-    QTextCodec::ConverterState state(QTextCodec::IgnoreHeader);
+-    for (int c = 0; c < 256; c++) {
+-        qch = QLatin1Char(c);
+-        m_encodingMap[c] = codec->fromUnicode(&qch, 1, &state);
+-    }
+-
+-    // Build m_newlineList
+-    if (m_newlineList != 0)
+-        delete m_newlineList;
+-    m_newlineList = new QList<QByteArrayMatcher>;
+-    m_newlineList->append(QByteArrayMatcher(encode("\r\n", codec)));
+-    m_newlineList->append(QByteArrayMatcher(encode("\n", codec)));
+-    m_newlineList->append(QByteArrayMatcher(encode("\r", codec)));
+-
+-    m_previousCodec = codec;
+-}
+-
+ /*!
+  * Finds a property in the \a document with the given \a propertyName, adds it to \a toBeRemoved,
+  * and returns it.
+diff --git a/src/versit/qversitutils_p.h b/src/versit/qversitutils_p.h
+index c10147da..69a9b6d3 100644
+--- a/src/versit/qversitutils_p.h
++++ b/src/versit/qversitutils_p.h
+@@ -59,7 +59,6 @@
+ #include <QtVersit/qversitproperty.h>
+ 
+ QT_FORWARD_DECLARE_CLASS(QString)
+-QT_FORWARD_DECLARE_CLASS(QTextCodec)
+ QT_FORWARD_DECLARE_CLASS(QVariant)
+ 
+ QT_BEGIN_NAMESPACE_VERSIT
+@@ -69,10 +68,7 @@ class QVersitDocument;
+ class Q_VERSIT_EXPORT VersitUtils
+ {
+ public:
+-    static QByteArray encode(const QByteArray& ba, QTextCodec* codec);
+-    static QByteArray encode(char ch, QTextCodec* codec);
+-    static QList<QByteArrayMatcher>* newlineList(QTextCodec* codec);
+-    static void changeCodec(QTextCodec* codec);
++    static QList<QByteArrayMatcher>* newlineList();
+     static QVersitProperty takeProperty(const QVersitDocument& document,
+                                         const QString& propertyName,
+                                         QList<QVersitProperty>* toBeRemoved);
+@@ -82,8 +78,6 @@ class Q_VERSIT_EXPORT VersitUtils
+ 
+ private:
+     // These are caches for performance:
+-    // The previous codec that encode(char, QTextCodec) was called with
+-    static QTextCodec* m_previousCodec;
+     // The QByteArray corresponding to each char from 0-255, encoded with m_previousCodec
+     static QByteArray m_encodingMap[256];
+     // List of different newline delimeters, encoded with m_previousCodec
+diff --git a/src/versit/qversitwriter.cpp b/src/versit/qversitwriter.cpp
+index 150bbae5..6c8c36de 100644
+--- a/src/versit/qversitwriter.cpp
++++ b/src/versit/qversitwriter.cpp
+@@ -43,8 +43,6 @@
+ 
+ #include <QtCore/qbuffer.h>
+ 
+-#include <QTextCodec>
+-
+ QT_BEGIN_NAMESPACE_VERSIT
+ 
+ /*!
+@@ -156,25 +154,6 @@ QIODevice* QVersitWriter::device() const
+         return 0;
+ }
+ 
+-/*!
+- * Sets the default codec for the writer to use for writing the entire output.
+- *
+- * If \a codec is NULL, the writer uses the codec according to the specification prescribed default.
+- * (for vCard 2.1, ASCII; for vCard 3.0, UTF-8).
+- */
+-void QVersitWriter::setDefaultCodec(QTextCodec *codec)
+-{
+-    d->mDefaultCodec = codec;
+-}
+-
+-/*!
+- * Returns the document's codec.
+- */
+-QTextCodec* QVersitWriter::defaultCodec() const
+-{
+-    return d->mDefaultCodec;
+-}
+-
+ /*!
+  * Returns the state of the writer.
+  */
+diff --git a/src/versit/qversitwriter.h b/src/versit/qversitwriter.h
+index 0f514983..f64c1e3d 100644
+--- a/src/versit/qversitwriter.h
++++ b/src/versit/qversitwriter.h
+@@ -47,7 +47,6 @@
+ 
+ QT_FORWARD_DECLARE_CLASS(QByteArray)
+ QT_FORWARD_DECLARE_CLASS(QIODevice)
+-QT_FORWARD_DECLARE_CLASS(QTextCodec)
+ 
+ QT_BEGIN_NAMESPACE_VERSIT
+ 
+@@ -83,9 +82,6 @@ class Q_VERSIT_EXPORT QVersitWriter : public QObject
+     void setDevice(QIODevice* outputDevice);
+     QIODevice* device() const;
+ 
+-    void setDefaultCodec(QTextCodec* codec);
+-    QTextCodec* defaultCodec() const;
+-
+     State state() const;
+     Error error() const;
+ 
+diff --git a/src/versit/qversitwriter_p.cpp b/src/versit/qversitwriter_p.cpp
+index f10495f0..0347d503 100644
+--- a/src/versit/qversitwriter_p.cpp
++++ b/src/versit/qversitwriter_p.cpp
+@@ -42,8 +42,6 @@
+ #include <QtCore/qbuffer.h>
+ #include <QtCore/qstringlist.h>
+ 
+-#include <QTextCodec>
+-
+ #include "qvcard21writer_p.h"
+ #include "qvcard30writer_p.h"
+ #include "qversitdocumentwriter_p.h"
+@@ -56,8 +54,7 @@ QVersitWriterPrivate::QVersitWriterPrivate()
+     : mIoDevice(0),
+     mState(QVersitWriter::InactiveState),
+     mError(QVersitWriter::NoError),
+-    mIsCanceling(false),
+-    mDefaultCodec(0)
++    mIsCanceling(false)
+ {
+ }
+ 
+@@ -95,16 +92,6 @@ void QVersitWriterPrivate::write()
+             type = document.type();
+ 
+         QScopedPointer<QVersitDocumentWriter> writer(writerForType(type, document));
+-        QTextCodec* codec = mDefaultCodec;
+-        if (codec == NULL) {
+-            if (type == QVersitDocument::VCard21Type) {
+-                codec = QTextCodec::codecForName("ISO-8859-1");
+-                writer->setAsciiCodec();
+-            } else {
+-                codec = QTextCodec::codecForName("UTF-8");
+-            }
+-        }
+-        writer->setCodec(codec);
+         writer->setDevice(mIoDevice);
+         if (!writer->encodeVersitDocument(document)) {
+             setError(QVersitWriter::IOError);
+diff --git a/src/versit/qversitwriter_p.h b/src/versit/qversitwriter_p.h
+index 96e46a91..d399b562 100644
+--- a/src/versit/qversitwriter_p.h
++++ b/src/versit/qversitwriter_p.h
+@@ -98,7 +98,6 @@ class QVersitWriterPrivate : public QThread
+     QVersitWriter::Error mError;
+     bool mIsCanceling;
+     mutable QMutex mMutex;
+-    QTextCodec* mDefaultCodec;
+     QVersitDocument::VersitType mType;
+ };
+ 
+diff --git a/src/versit/versit.pro b/src/versit/versit.pro
+index c91928cb..06093a18 100644
+--- a/src/versit/versit.pro
++++ b/src/versit/versit.pro
+@@ -1,5 +1,5 @@
+ TARGET = QtVersit
+-QT = core contacts core5compat
++QT = core contacts
+ 
+ MODULE_PLUGIN_TYPES = \
+     versit
+diff --git a/tests/auto/versit/qvcard21writer/qvcard21writer.pro b/tests/auto/versit/qvcard21writer/qvcard21writer.pro
+index 6e5f8d9b..7e023086 100644
+--- a/tests/auto/versit/qvcard21writer/qvcard21writer.pro
++++ b/tests/auto/versit/qvcard21writer/qvcard21writer.pro
+@@ -1,6 +1,6 @@
+ include(../../auto.pri)
+ 
+-QT += versit versit-private core5compat
++QT += versit versit-private
+ 
+ HEADERS += tst_qvcard21writer.h
+ SOURCES += tst_qvcard21writer.cpp
+diff --git a/tests/auto/versit/qvcard21writer/tst_qvcard21writer.cpp b/tests/auto/versit/qvcard21writer/tst_qvcard21writer.cpp
+index 7673ecd7..3801486d 100644
+--- a/tests/auto/versit/qvcard21writer/tst_qvcard21writer.cpp
++++ b/tests/auto/versit/qvcard21writer/tst_qvcard21writer.cpp
+@@ -38,8 +38,6 @@
+ #include <QByteArray>
+ #include <QVariant>
+ 
+-#include <QTextCodec>
+-
+ // This says "NOKIA" in Katakana
+ const QString KATAKANA_NOKIA(QString::fromUtf8("\xe3\x83\x8e\xe3\x82\xad\xe3\x82\xa2"));
+ 
+@@ -54,7 +52,6 @@ Q_DECLARE_METATYPE(StringHash)
+ void tst_QVCard21Writer::init()
+ {
+     mWriter = new QVCard21Writer(QVersitDocument::VCard21Type);
+-    mWriter->setCodec(QTextCodec::codecForName("ISO_8859-1"));
+ }
+ 
+ void tst_QVCard21Writer::cleanup()
+@@ -67,7 +64,6 @@ void tst_QVCard21Writer::testEncodeVersitProperty()
+     QFETCH(QVersitProperty, property);
+     QFETCH(QByteArray, expectedResult);
+     QFETCH(QByteArray, codec);
+-    QTextCodec* textCodec = QTextCodec::codecForName(codec);
+     QByteArray encodedProperty;
+     QBuffer buffer(&encodedProperty);
+     mWriter->setDevice(&buffer);
+@@ -221,9 +217,7 @@ END:VCARD\r\n\
+     QTest::newRow("non-ASCII 3") << property << expectedResult << codec;
+ 
+     // In Shift-JIS codec.
+-    QTextCodec* jisCodec = QTextCodec::codecForName("Shift-JIS");
+-    expectedResult = jisCodec->fromUnicode(
+-            QStringLiteral("ORG:") + KATAKANA_NOKIA + QStringLiteral("\r\n"));
++    expectedResult = QStringLiteral("ORG:") + KATAKANA_NOKIA + QStringLiteral("\r\n");
+     property = QVersitProperty();
+     property.setName(QStringLiteral("ORG"));
+     property.setValue(KATAKANA_NOKIA);
+diff --git a/tests/auto/versit/qvcard30writer/qvcard30writer.pro b/tests/auto/versit/qvcard30writer/qvcard30writer.pro
+index 7fd95fa5..03a7f2c9 100644
+--- a/tests/auto/versit/qvcard30writer/qvcard30writer.pro
++++ b/tests/auto/versit/qvcard30writer/qvcard30writer.pro
+@@ -1,6 +1,6 @@
+ include(../../auto.pri)
+ 
+-QT += versit versit-private core5compat
++QT += versit versit-private
+ 
+ DEFINES += QT_ASCII_CAST_WARNINGS
+ 
+diff --git a/tests/auto/versit/qvcard30writer/tst_qvcard30writer.cpp b/tests/auto/versit/qvcard30writer/tst_qvcard30writer.cpp
+index 53070558..5779253a 100644
+--- a/tests/auto/versit/qvcard30writer/tst_qvcard30writer.cpp
++++ b/tests/auto/versit/qvcard30writer/tst_qvcard30writer.cpp
+@@ -38,8 +38,6 @@
+ #include <QByteArray>
+ #include <QVariant>
+ 
+-#include <QTextCodec>
+-
+ // This says "NOKIA" in Katakana encoded with UTF-8
+ const QString KATAKANA_NOKIA(QString::fromUtf8("\xe3\x83\x8e\xe3\x82\xad\xe3\x82\xa2"));
+ 
+@@ -50,7 +48,6 @@ Q_DECLARE_METATYPE(QVersitProperty)
+ void tst_QVCard30Writer::init()
+ {
+     mWriter = new QVCard30Writer(QVersitDocument::VCard30Type);
+-    mWriter->setCodec(QTextCodec::codecForName("UTF-8"));
+ }
+ 
+ void tst_QVCard30Writer::cleanup()
+diff --git a/tests/auto/versit/qversitreader/qversitreader.pro b/tests/auto/versit/qversitreader/qversitreader.pro
+index a8e26979..1187b4c2 100644
+--- a/tests/auto/versit/qversitreader/qversitreader.pro
++++ b/tests/auto/versit/qversitreader/qversitreader.pro
+@@ -1,6 +1,6 @@
+ include(../../auto.pri)
+ 
+-QT += versit versit-private core5compat
++QT += versit versit-private
+ 
+ HEADERS += tst_qversitreader.h
+ SOURCES += tst_qversitreader.cpp
+diff --git a/tests/auto/versit/qversitreader/tst_qversitreader.cpp b/tests/auto/versit/qversitreader/tst_qversitreader.cpp
+index 5657c6c7..f8ecf76c 100644
+--- a/tests/auto/versit/qversitreader/tst_qversitreader.cpp
++++ b/tests/auto/versit/qversitreader/tst_qversitreader.cpp
+@@ -35,8 +35,6 @@
+ #include <QtTest/QtTest>
+ #include <QSignalSpy>
+ 
+-#include <QTextCodec>
+-
+ // This says "NOKIA" in Katakana encoded with UTF-8
+ const QByteArray KATAKANA_NOKIA("\xe3\x83\x8e\xe3\x82\xad\xe3\x82\xa2");
+ 
+@@ -64,7 +62,6 @@ void tst_QVersitReader::init()
+             mSignalCatcher, SLOT(stateChanged(QVersitReader::State)));
+     connect(mReader, SIGNAL(resultsAvailable()),
+             mSignalCatcher, SLOT(resultsAvailable()));
+-    mAsciiCodec = QTextCodec::codecForName("ISO 8859-1");
+ }
+ 
+ void tst_QVersitReader::cleanup()
+@@ -117,13 +114,6 @@ void tst_QVersitReader::testNullDevice()
+ 
+ }
+ 
+-void tst_QVersitReader::testDefaultCodec()
+-{
+-    QVERIFY(mReader->defaultCodec() == 0);
+-    mReader->setDefaultCodec(QTextCodec::codecForName("UTF-16BE"));
+-    QVERIFY(mReader->defaultCodec() == QTextCodec::codecForName("UTF-16BE"));
+-}
+-
+ void tst_QVersitReader::testValidateUtf8()
+ {
+     QFETCH(QByteArray, bytes);
+@@ -245,18 +235,15 @@ void tst_QVersitReader::testDetectCodec()
+     QFETCH(QByteArray, bytes);
+     QFETCH(QString, expectedFnValue);
+ 
+-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("ISO 8859-1"));
+     mInputDevice->close();
+     mInputDevice->setData(bytes);
+     mInputDevice->open(QBuffer::ReadOnly);
+     mInputDevice->seek(0);
+     mReader->setDevice(mInputDevice);
+-    QVERIFY(mReader->defaultCodec() == 0);
+     QVERIFY2(mReader->startReading(), QString::number(mReader->error()).toLatin1().data());
+     QVERIFY2(mReader->waitForFinished(), QString::number(mReader->error()).toLatin1().data());
+     QCOMPARE(mReader->state(), QVersitReader::FinishedState);
+     QCOMPARE(mReader->error(), QVersitReader::NoError);
+-    QVERIFY(mReader->defaultCodec() == 0); // shouldn't change
+     QList<QVersitDocument> results = mReader->results();
+     QCOMPARE(results.count(),1);
+     QVersitDocument document = results.first();
+@@ -279,38 +266,25 @@ void tst_QVersitReader::testDetectCodec_data()
+         QTest::newRow("UTF-8 with BOM") << document << QString::fromLatin1("John");
+     }
+     {
+-        const QByteArray& document =
+-            QTextCodec::codecForName("UTF-16BE")->fromUnicode(documentString);
+-        QTest::newRow("UTF-16BE with BOM") << document << QString::fromLatin1("John");
++        QTest::newRow("UTF-16BE with BOM") << documentString << QString::fromLatin1("John");
+     }
+     {
+-        const QByteArray& document =
+-            QTextCodec::codecForName("UTF-16LE")->fromUnicode(documentString);
+-        QTest::newRow("UTF-16LE with BOM") << document << QString::fromLatin1("John");
++        QTest::newRow("UTF-16LE with BOM") << documentString << QString::fromLatin1("John");
+     }
+     {
+-        const QByteArray& document =
+-            VersitUtils::encode(documentString.toLatin1(), QTextCodec::codecForName("UTF-16BE"));
+-        QTest::newRow("UTF-16BE without BOM") << document << QString::fromLatin1("John");
++        QTest::newRow("UTF-16BE without BOM") << documentString << QString::fromLatin1("John");
+     }
+     {
+-        const QByteArray& document =
+-            VersitUtils::encode(documentString.toLatin1(), QTextCodec::codecForName("UTF-16LE"));
+-        QTest::newRow("UTF-16LE without BOM") << document << QString::fromLatin1("John");
++        QTest::newRow("UTF-16LE without BOM") << documentString << QString::fromLatin1("John");
+     }
+     {
+-        const QByteArray& document =
+-            QTextCodec::codecForName("UTF-32BE")->fromUnicode(documentString);
+-        QTest::newRow("UTF-32BE with BOM") << document << QString::fromLatin1("John");
++        QTest::newRow("UTF-32BE with BOM") << documentString << QString::fromLatin1("John");
+     }
+     {
+-        const QByteArray& document =
+-            QTextCodec::codecForName("UTF-32LE")->fromUnicode(documentString);
+-        QTest::newRow("UTF-32LE with BOM") << document << QString::fromLatin1("John");
++        QTest::newRow("UTF-32LE with BOM") << documentString << QString::fromLatin1("John");
+     }
+     {
+-        const QByteArray& document = documentString.toUtf8();
+-        QTest::newRow("Plain ASCII") << document << QString::fromLatin1("John");
++        QTest::newRow("Plain ASCII") << documentString << QString::fromLatin1("John");
+     }
+     {
+         const QByteArray& document = "BEGIN:VCARD\r\nVERSION:2.1\r\nFN:"
+@@ -549,24 +523,18 @@ void tst_QVersitReader::testReading()
+     QCOMPARE(mReader->error(), QVersitReader::NoError);
+     QCOMPARE(results.count(),1);
+ 
+-    // Wide charset with no byte-order mark
+-    QTextCodec* codec = QTextCodec::codecForName("UTF-16BE");
+-    QTextCodec::ConverterState converterState(QTextCodec::IgnoreHeader);
+     QString document = QStringLiteral("BEGIN:VCARD\r\nVERSION:2.1\r\nFN:John\r\nEND:VCARD\r\n");
+-    const QByteArray& wideDocument =
+-        codec->fromUnicode(document.data(), document.length(), &converterState);
++    const QByteArray& wideDocument = QString(document.data(), document.length()).toUtf8();
+     mInputDevice->close();
+     mInputDevice->setData(wideDocument);
+     mInputDevice->open(QBuffer::ReadOnly);
+     mInputDevice->seek(0);
+-    mReader->setDefaultCodec(codec);
+     QVERIFY2(mReader->startReading(), QString::number(mReader->error()).toLatin1().data());
+     QVERIFY2(mReader->waitForFinished(), QString::number(mReader->error()).toLatin1().data());
+     results = mReader->results();
+     QCOMPARE(mReader->state(), QVersitReader::FinishedState);
+     QCOMPARE(mReader->error(), QVersitReader::NoError);
+     QCOMPARE(mReader->results().count(),1);
+-    mReader->setDefaultCodec(NULL);
+ 
+     // Two documents
+     const QByteArray& twoDocuments =
+@@ -669,7 +637,7 @@ void tst_QVersitReader::testParseNextVersitProperty()
+ 
+     QBuffer buffer(&input);
+     buffer.open(QIODevice::ReadOnly);
+-    LineReader lineReader(&buffer, mAsciiCodec);
++    LineReader lineReader(&buffer);
+     QVersitProperty property = mReaderPrivate->parseNextVersitProperty(documentType, &lineReader);
+     if (property != expectedProperty) {
+         // compare each part of the property separately for easier debugging
+@@ -1050,7 +1018,7 @@ void tst_QVersitReader::testParseVersitDocument()
+ 
+     QBuffer buffer(&vCard);
+     buffer.open(QIODevice::ReadOnly);
+-    LineReader lineReader(&buffer, QTextCodec::codecForName("UTF-8"));
++    LineReader lineReader(&buffer);
+ 
+     mReader->setDevice(&buffer);
+     QVERIFY2(mReader->startReading(), QString::number(mReader->error()).toLatin1().data());
+@@ -1383,23 +1351,23 @@ void tst_QVersitReader::testParamName()
+ #else
+     // Empty value
+     QByteArray param;
+-    QCOMPARE(mReaderPrivate->paramName(param, mAsciiCodec),QString());
++    QCOMPARE(mReaderPrivate->paramName(param),QString());
+ 
+     // Only value present
+     param = "WORK";
+-    QCOMPARE(mReaderPrivate->paramName(param, mAsciiCodec),
++    QCOMPARE(mReaderPrivate->paramName(param),
+              QStringLiteral("TYPE"));
+ 
+     // The below tests intentionally use the misspelling TIPE to avoid the default behaviour of
+     // returning TYPE when the name can't be parsed.
+     // Both name and value, spaces after the name
+     param = "TIPE \t =WORK";
+-    QCOMPARE(mReaderPrivate->paramName(param, mAsciiCodec),
++    QCOMPARE(mReaderPrivate->paramName(param),
+              QStringLiteral("TIPE"));
+ 
+     // Both name and value, no spaces after the name
+     param = "TIPE=WORK";
+-    QCOMPARE(mReaderPrivate->paramName(param, mAsciiCodec),
++    QCOMPARE(mReaderPrivate->paramName(param),
+              QStringLiteral("TIPE"));
+ 
+     // Test wide character support.
+@@ -1417,11 +1385,11 @@ void tst_QVersitReader::testParamValue()
+ #else
+     // Empty value
+     QByteArray param;
+-    QCOMPARE(mReaderPrivate->paramValue(param, mAsciiCodec),QString());
++    QCOMPARE(mReaderPrivate->paramValue(param),QString());
+ 
+     // Only value present
+     param = "WORK";
+-    QCOMPARE(mReaderPrivate->paramValue(param, mAsciiCodec),
++    QCOMPARE(mReaderPrivate->paramValue(param),
+              QStringLiteral("WORK"));
+ 
+     // Name and equals sign, but no value
+diff --git a/tests/auto/versit/qversitreader/tst_qversitreader.h b/tests/auto/versit/qversitreader/tst_qversitreader.h
+index 64eaa03f..f3a93081 100644
+--- a/tests/auto/versit/qversitreader/tst_qversitreader.h
++++ b/tests/auto/versit/qversitreader/tst_qversitreader.h
+@@ -69,7 +69,6 @@ private slots: // Tests
+ 
+     void testDevice();
+     void testNullDevice();
+-    void testDefaultCodec();
+     void testValidateUtf8();
+     void testValidateUtf8_data();
+     void testDetectCodec();
+@@ -101,7 +100,6 @@ private slots: // Tests
+     QVersitReaderPrivate* mReaderPrivate;
+ #endif
+     QBuffer* mInputDevice;
+-    QTextCodec* mAsciiCodec;
+     SignalCatcher* mSignalCatcher;
+ };
+ 
+diff --git a/tests/auto/versit/qversitwriter/qversitwriter.pro b/tests/auto/versit/qversitwriter/qversitwriter.pro
+index 15eff951..947a219a 100644
+--- a/tests/auto/versit/qversitwriter/qversitwriter.pro
++++ b/tests/auto/versit/qversitwriter/qversitwriter.pro
+@@ -1,6 +1,6 @@
+ include(../../auto.pri)
+ 
+-QT += versit versit-private core5compat
++QT += versit versit-private
+ 
+ HEADERS += tst_qversitwriter.h
+ SOURCES += tst_qversitwriter.cpp
+diff --git a/tests/auto/versit/qversitwriter/tst_qversitwriter.cpp b/tests/auto/versit/qversitwriter/tst_qversitwriter.cpp
+index 59f38893..b5ff365e 100644
+--- a/tests/auto/versit/qversitwriter/tst_qversitwriter.cpp
++++ b/tests/auto/versit/qversitwriter/tst_qversitwriter.cpp
+@@ -34,8 +34,7 @@
+ #include <QtVersit/qversitproperty.h>
+ #include <QtTest/QtTest>
+ #include <QByteArray>
+-
+-#include <QTextCodec>
++#include <QString>
+ 
+ QTVERSIT_USE_NAMESPACE
+ 
+@@ -65,13 +64,6 @@ void tst_QVersitWriter::testDevice()
+     QVERIFY(mWriter->device() == mOutputDevice);
+ }
+ 
+-void tst_QVersitWriter::testDefaultCodec()
+-{
+-    QVERIFY(mWriter->defaultCodec() == 0);
+-    mWriter->setDefaultCodec(QTextCodec::codecForName("UTF-16BE"));
+-    QVERIFY(mWriter->defaultCodec() == QTextCodec::codecForName("UTF-16BE"));
+-}
+-
+ void tst_QVersitWriter::testWritingVersions()
+ {
+     mWriter->setDevice(mOutputDevice);
+@@ -162,8 +154,6 @@ END:VCARD\r\n");
+     mOutputDevice = new QBuffer;
+     mOutputDevice->open(QBuffer::ReadWrite);
+     mWriter->setDevice(mOutputDevice);
+-    QTextCodec* utf16(QTextCodec::codecForName("UTF-16"));
+-    mWriter->setDefaultCodec(utf16);
+     QVERIFY2(mWriter->startWriting(list), QString::number(mWriter->error()).toLatin1().data());
+     QVERIFY2(mWriter->waitForFinished(), QString::number(mWriter->error()).toLatin1().data());
+     QCOMPARE(mWriter->state(), QVersitWriter::FinishedState);
+@@ -171,9 +161,8 @@ END:VCARD\r\n");
+     mOutputDevice->seek(0);
+     result = mOutputDevice->readAll();
+ 
+-    QTextCodec::ConverterState state(QTextCodec::DefaultConversion);
+     const QString decodedData = QString::fromLatin1(vCard21.data());
+-    QByteArray expected(utf16->fromUnicode(decodedData.constData(), decodedData.size(), &state));
++    QByteArray expected = QString(decodedData.constData(), decodedData.size()).toUtf8();
+ 
+     QCOMPARE(result, expected);
+ }
+@@ -275,9 +264,7 @@ void tst_QVersitWriter::testWritingDocument()
+     if (result!=expected) qDebug() << result << expected;
+     QCOMPARE(result, expected);
+ 
+-    // try it again in another codec
+-    QTextCodec* utf16(QTextCodec::codecForName("UTF-16"));
+-    mWriter->setDefaultCodec(utf16);
++
+     mOutputDevice->buffer().clear();
+     mOutputDevice->seek(0);
+     QVERIFY2(mWriter->startWriting(document), QString::number(mWriter->error()).toLatin1().data());
+@@ -285,9 +272,8 @@ void tst_QVersitWriter::testWritingDocument()
+     mOutputDevice->seek(0);
+     result = mOutputDevice->readAll();
+ 
+-    QTextCodec::ConverterState state(QTextCodec::DefaultConversion);
+     const QString decodedData = QString::fromLatin1(expected);
+-    expected = utf16->fromUnicode(decodedData.constData(), decodedData.size(), &state);
++    expected = QString(decodedData.constData(), decodedData.size()).toUtf8();
+     if (result!=expected) qDebug() << result << expected;
+     QCOMPARE(result, expected);
+ }
+diff --git a/tests/auto/versit/qversitwriter/tst_qversitwriter.h b/tests/auto/versit/qversitwriter/tst_qversitwriter.h
+index b929d97d..4a84f3a3 100644
+--- a/tests/auto/versit/qversitwriter/tst_qversitwriter.h
++++ b/tests/auto/versit/qversitwriter/tst_qversitwriter.h
+@@ -62,7 +62,6 @@ private slots: // Tests
+     void cleanup();
+ 
+     void testDevice();
+-    void testDefaultCodec();
+     void testWritingVersions();
+     void testWriting21();
+     void testWriting30();

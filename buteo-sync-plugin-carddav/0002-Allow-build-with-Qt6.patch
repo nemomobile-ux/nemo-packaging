@@ -1,0 +1,104 @@
+From eb9916424ff90be24de28999ee731855c73d16d8 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Mon, 4 Sep 2023 11:37:19 +0000
+Subject: [PATCH 2/2] Allow build with Qt6
+
+---
+ .gitignore                  |  2 ++
+ src/logging.h               |  6 +++++-
+ src/src.pri                 | 10 +++++-----
+ src/src.pro                 |  2 +-
+ tools/cdavtool/cdavtool.pro |  6 +++---
+ 5 files changed, 16 insertions(+), 10 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 8b16787..b8f8174 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -3,3 +3,5 @@
+ Makefile
+ moc_*
+ *.moc
++.qmake.stash
++tests/replyparser/tst_replyparser
+diff --git a/src/logging.h b/src/logging.h
+index d836eaa..9cab165 100644
+--- a/src/logging.h
++++ b/src/logging.h
+@@ -24,7 +24,11 @@
+ 
+ #include <QLoggingCategory>
+ 
+-#include <buteosyncfw5/LogMacros.h>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    #include <buteosyncfw6/LogMacros.h>
++#else
++    #include <buteosyncfw5/LogMacros.h>
++#endif
+ 
+ Q_DECLARE_LOGGING_CATEGORY(lcCardDav)
+ Q_DECLARE_LOGGING_CATEGORY(lcCardDavProtocol)
+diff --git a/src/src.pri b/src/src.pri
+index 5d6ef8e..1b25859 100644
+--- a/src/src.pri
++++ b/src/src.pri
+@@ -2,21 +2,21 @@ QT       -= gui
+ QT       += network dbus
+ 
+ CONFIG += link_pkgconfig console c++11
+-PKGCONFIG += buteosyncfw5 libsignon-qt5 accounts-qt5
+-PKGCONFIG += Qt5Versit Qt5Contacts qtcontacts-sqlite-qt5-extensions
++PKGCONFIG += buteosyncfw$${QT_MAJOR_VERSION} libsignon-qt$${QT_MAJOR_VERSION} accounts-qt$${QT_MAJOR_VERSION}
++PKGCONFIG += Qt$${QT_MAJOR_VERSION}Versit Qt$${QT_MAJOR_VERSION}Contacts qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions
+ 
+ packagesExist(libsailfishkeyprovider) {
+     PKGCONFIG += libsailfishkeyprovider
+     DEFINES += USE_SAILFISHKEYPROVIDER
+ }
+ 
+-packagesExist(contactcache-qt5) {
+-    PKGCONFIG += contactcache-qt5
++packagesExist(contactcache-qt$${QT_MAJOR_VERSION}) {
++    PKGCONFIG += contactcache-qt$${QT_MAJOR_VERSION}
+     DEFINES += USE_LIBCONTACTS
+ }
+ 
+ # We need the moc output for the headers from sqlite-extensions
+-extensionsIncludePath = $$system(pkg-config --cflags-only-I qtcontacts-sqlite-qt5-extensions)
++extensionsIncludePath = $$system(pkg-config --cflags-only-I qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions)
+ VPATH += $$replace(extensionsIncludePath, -I, )
+ HEADERS += qcontactclearchangeflagsrequest.h contactmanagerengine.h
+ 
+diff --git a/src/src.pro b/src/src.pro
+index aeeb498..3c33a0d 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -9,7 +9,7 @@ QMAKE_CXXFLAGS = -Wall \
+ 
+ TEMPLATE = lib
+ CONFIG += plugin
+-target.path = $$[QT_INSTALL_LIBS]/buteo-plugins-qt5/oopp
++target.path = $$[QT_INSTALL_LIBS]/buteo-plugins-qt$${QT_MAJOR_VERSION}/oopp
+ 
+ sync.path = /etc/buteo/profiles/sync
+ sync.files = carddav.Contacts.xml
+diff --git a/tools/cdavtool/cdavtool.pro b/tools/cdavtool/cdavtool.pro
+index 39581ee..805e9b9 100644
+--- a/tools/cdavtool/cdavtool.pro
++++ b/tools/cdavtool/cdavtool.pro
+@@ -4,9 +4,9 @@ QT-=gui
+ QT+=network
+ 
+ CONFIG += link_pkgconfig console
+-PKGCONFIG += buteosyncfw5
+-PKGCONFIG += libsignon-qt5 accounts-qt5
+-PKGCONFIG += Qt5Contacts Qt5Versit contactcache-qt5
++PKGCONFIG += buteosyncfw$${QT_MAJOR_VERSION}
++PKGCONFIG += libsignon-qt$${QT_MAJOR_VERSION} accounts-qt$${QT_MAJOR_VERSION}
++PKGCONFIG += Qt$${QT_MAJOR_VERSION}Contacts Qt$${QT_MAJOR_VERSION}Versit contactcache-qt$${QT_MAJOR_VERSION}
+ 
+ QMAKE_CXXFLAGS += -fPIE -fvisibility=hidden -fvisibility-inlines-hidden
+ 
+-- 
+2.42.0
+

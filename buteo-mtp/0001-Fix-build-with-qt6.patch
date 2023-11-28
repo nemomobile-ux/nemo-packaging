@@ -1,0 +1,181 @@
+From 3f3d6b4487e435797fa73594c4f2d203ae1f717a Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 15 Sep 2023 15:03:04 +0000
+Subject: [PATCH] Fix build with qt6
+
+---
+ mts/common.pri                                              | 2 +-
+ mts/mts.pro                                                 | 2 +-
+ .../deviceinfo/unittests/deviceinfoprovider_test.cpp        | 2 +-
+ mts/platform/deviceinfo/unittests/unittests.pro             | 2 +-
+ mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp    | 6 ++++--
+ mts/platform/storage/fsstorageplugin/fsstorageplugin.pro    | 2 +-
+ .../storage/fsstorageplugin/unittests/unittests.pro         | 2 +-
+ mts/platform/storage/unittests/unittests.pro                | 2 +-
+ mts/protocol/unittests/unittests.pro                        | 2 +-
+ mts/transport/usb/threadio.cpp                              | 4 ++--
+ service/service.pro                                         | 2 +-
+ 11 files changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/mts/common.pri b/mts/common.pri
+index d67e44b..61bd044 100644
+--- a/mts/common.pri
++++ b/mts/common.pri
+@@ -1,5 +1,5 @@
+ CONFIG += link_pkgconfig
+-PKGCONFIG += systemsettings
++PKGCONFIG += systemsettings-qt6
+ DEFINES += MTP_PLUGINDIR=\\\"$$[QT_INSTALL_LIBS]/mtp\\\"
+ 
+ SOURCES += $$PWD/common/trace.cpp
+diff --git a/mts/mts.pro b/mts/mts.pro
+index 3e6d4a5..aa56181 100644
+--- a/mts/mts.pro
++++ b/mts/mts.pro
+@@ -1,6 +1,6 @@
+ include(common.pri)
+ 
+-QT += xml dbus
++QT += xml dbus core5compat
+ QT -= gui
+ 
+ LIBS += -lssu
+diff --git a/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp b/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp
+index c444293..fd30866 100644
+--- a/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp
++++ b/mts/platform/deviceinfo/unittests/deviceinfoprovider_test.cpp
+@@ -46,7 +46,7 @@ void DeviceInfoProvider_Test::initTestCase()
+     QCOMPARE(QFile::copy("/opt/tests/buteo-mtp/data/deviceinfo.xml", "/tmp/deviceinfo.xml"), true);
+     m_xmlDoc = new QDomDocument();
+     m_xmlFile = new QFile("/tmp/deviceinfo.xml");
+-    QCOMPARE(m_xmlDoc->setContent(m_xmlFile), true);
++    QCOMPARE(m_xmlDoc->setContent(m_xmlFile).errorMessage.isEmpty(), true);
+ 
+     // Original deviceinfo.xml may be changed during the test execution, so
+     // backup its current state.
+diff --git a/mts/platform/deviceinfo/unittests/unittests.pro b/mts/platform/deviceinfo/unittests/unittests.pro
+index e58a88e..f181fe3 100644
+--- a/mts/platform/deviceinfo/unittests/unittests.pro
++++ b/mts/platform/deviceinfo/unittests/unittests.pro
+@@ -1,6 +1,6 @@
+ include(../../../common.pri)
+ 
+-QT += dbus xml testlib
++QT += dbus xml testlib core5compat
+ QT -= gui
+ CONFIG += debug_and_release
+ 
+diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp b/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
+index 9556575..11aa015 100644
+--- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
++++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
+@@ -54,6 +54,7 @@
+ #include <QDateTime>
+ #include <QMetaObject>
+ #include <QLocale>
++#include <QRegularExpression>
+ 
+ #ifndef UT_ON
+ #include <blkid.h>
+@@ -3147,8 +3148,9 @@ bool FSStoragePlugin::isFileNameValid(const QString &fileName, const StorageItem
+ {
+     // Check if the file name contains illegal characters, or if the file with
+     // the same name is already present under the parent
+-    if (fileName.contains(QRegExp(FILENAMES_FILTER_REGEX)) ||
+-            QRegExp("[\\.]+").exactMatch(fileName)) {
++    QRegularExpression filterRegex(FILENAMES_FILTER_REGEX);
++    if (filterRegex.match(fileName).hasMatch() ||
++            QRegularExpression("^[\\.]+$").match(fileName).hasMatch()) {
+         // Illegal characters, or all .'s
+         return false;
+     }
+diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
+index eac97a9..6acff6b 100644
+--- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
++++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
+@@ -5,7 +5,7 @@ TARGET = fsstorage
+ 
+ CONFIG += plugin debug
+ 
+-QT += dbus xml
++QT += dbus xml core5compat
+ QT -= gui
+ 
+ PKGCONFIG += blkid mount
+diff --git a/mts/platform/storage/fsstorageplugin/unittests/unittests.pro b/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
+index 1c37b45..60e5a53 100644
+--- a/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
++++ b/mts/platform/storage/fsstorageplugin/unittests/unittests.pro
+@@ -5,7 +5,7 @@ CONFIG += debug_and_release
+ LIBS += -ldl -lssu
+ TEMPLATE = app
+ TARGET = storage-test
+-QT += dbus xml testlib
++QT += dbus xml testlib core5compat
+ DEFINES += UT_ON
+ #QMAKE_CXXFLAGS += -ftest-coverage -fprofile-arcs
+ #QMAKE_LFLAGS += -fprofile-arcs -ftest-coverage
+diff --git a/mts/platform/storage/unittests/unittests.pro b/mts/platform/storage/unittests/unittests.pro
+index e712b55..506c3f0 100644
+--- a/mts/platform/storage/unittests/unittests.pro
++++ b/mts/platform/storage/unittests/unittests.pro
+@@ -2,7 +2,7 @@ include(../../../common.pri)
+ 
+ TEMPLATE = app
+ TARGET = storagefactory-test
+-QT += testlib xml dbus
++QT += testlib xml dbus core5compat
+ QT -= gui
+ 
+ DEFINES += UT_ON
+diff --git a/mts/protocol/unittests/unittests.pro b/mts/protocol/unittests/unittests.pro
+index 8158bc0..8be8456 100644
+--- a/mts/protocol/unittests/unittests.pro
++++ b/mts/protocol/unittests/unittests.pro
+@@ -5,7 +5,7 @@ CONFIG += debug_and_release
+ LIBS += -ldl -lssu
+ TEMPLATE = app
+ TARGET = protocol-test
+-QT += dbus xml testlib
++QT += dbus xml testlib core5compat
+ QT -= gui
+ DEFINES += UT_ON
+ #QMAKE_CXXFLAGS += -ftest-coverage -fprofile-arcs
+diff --git a/mts/transport/usb/threadio.cpp b/mts/transport/usb/threadio.cpp
+index e961459..b04fb19 100644
+--- a/mts/transport/usb/threadio.cpp
++++ b/mts/transport/usb/threadio.cpp
+@@ -483,7 +483,7 @@ void BulkWriterThread::setData(const quint8 *buffer, quint32 dataLen, bool termi
+     m_dataLen = dataLen;
+     m_terminateTransfer = terminateTransfer;
+     m_result = false;
+-    m_result_ready.store(0);
++    m_result_ready.storeRelaxed(0);
+ }
+ 
+ void BulkWriterThread::execute()
+@@ -543,7 +543,7 @@ void BulkWriterThread::execute()
+ 
+ bool BulkWriterThread::resultReady()
+ {
+-    return m_result_ready.load() != 0;
++    return m_result_ready.loadRelaxed() != 0;
+ }
+ 
+ bool BulkWriterThread::getResult()
+diff --git a/service/service.pro b/service/service.pro
+index cf1b61a..7513501 100644
+--- a/service/service.pro
++++ b/service/service.pro
+@@ -10,7 +10,7 @@ LIBS += -L../mts -lmeegomtp
+ 
+ QT -= gui
+ CONFIG += link_pkgconfig
+-PKGCONFIG += mlite5
++PKGCONFIG += mlite$${QT_MAJOR_VERSION}
+ 
+ SOURCES += service.cpp
+ 
+-- 
+2.42.0
+

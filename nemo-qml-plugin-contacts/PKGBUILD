@@ -5,7 +5,7 @@
 
 pkgname=nemo-qml-plugin-contacts
 pkgver=0.3.26
-pkgrel=1
+pkgrel=3
 pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-contacts"
@@ -15,17 +15,28 @@ depends=('libphonenumber-nemo'
 	'mce'
 	'mce-headers'
 	'qtcontacts-sqlite'
+	'libaccounts-qt6'
 	'buteo-sync-plugin-carddav'
-	'icu=73.2')
+	'icu')
 
-makedepends=('qt5-tools')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('b9f1d35f834e4860ee7eeae9b70a5d5fae78f21c5eb58b686972913f7836aedc')
+makedepends=(
+    'qt6-tools'
+    'clang'
+)
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    "0001-fix_build_on_qt6.patch")
+sha256sums=('b9f1d35f834e4860ee7eeae9b70a5d5fae78f21c5eb58b686972913f7836aedc'
+    '230b4e3a3fc293e98fb207c6871560bd9fec424c93eb450d24c8b6bfbf88f500')
+
+prepare() {
+    cd "$srcdir/${pkgname}-${pkgver}"
+    patch -p1 --input="${srcdir}/0001-fix_build_on_qt6.patch"
+}
 
 build() {
   cd $pkgname-$pkgver
   # Not possible to install in build subdir
-  qmake-qt5 VERSION=$pkgver
+  qmake6 VERSION=$pkgver
   make
 }
 

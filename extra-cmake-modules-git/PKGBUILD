@@ -1,0 +1,33 @@
+pkgname=extra-cmake-modules-git
+pkgver=v5.240
+pkgrel=1
+pkgdesc='Extra modules and scripts for CMake'
+arch=('x86_64' 'aarch64')
+url='https://github.com/KDE/extra-cmake-modules#branch=master'
+license=(GPL2)
+depends=(cmake)
+makedepends=(python-requests qt6-tools git)
+optdepends=('python-pyxdg: to generate fastlane metadata for Android apps'
+            'python-requests: to generate fastlane metadata for Android apps'
+            'python-yaml: to generate fastlane metadata for Android apps')
+provides=("extra-cmake-modules")
+conflicts=("extra-cmake-modules")
+groups=(kf6)
+source=("${pkgname}::git+${url}")
+sha256sums=('SKIP')
+
+build() {
+  cd "${srcdir}/${pkgname}"
+  mkdir -p build
+  cd build
+  cmake ../ \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_HTML_DOCS=OFF \
+    -DBUILD_QTHELP_DOCS=OFF
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}/build"
+  make DESTDIR="$pkgdir" install
+}

@@ -5,14 +5,13 @@
 # Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=nemo-qml-plugin-systemsettings
-pkgver=0.10.3
+pkgver=1.0
 pkgrel=1
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
-url="https://github.com/sailfishos/nemo-qml-plugin-systemsettings"
+url="https://github.com/nemomobile-ux/nemo-qml-plugin-systemsettings"
 license=('BSD')
-depends=('qt5-systems'
-	'openssl'
+depends=('openssl'
 	'libusb-moded-qt'
 	'profiled'
 	'timed'
@@ -21,48 +20,17 @@ depends=('qt5-systems'
 	'mlite'
 	'mce>=1.113.0'
 	'nemo-qml-plugin-dbus'
-	'libqofono-qt5>=0.105'
-	'qt5-xmlpatterns'
+	'libqofono-qt6>=0.105'
 	'openssl>=3.0')
 
-makedepends=('qt5-tools' 'mce-headers>=1.32.0' 'pkgconf')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-disable-libsailfishkeyprovider.patch"
-    "0002-disable-ssu.patch"
-    "0003-disable-devmode.patch"
-    "0004-fixup-setlocale.patch"
-    "0005-geoclue-use-usr-lib.patch"
-    "0007-fixup_pkgconfig.patch"
-    "0008-use_standart_path_for_location_config.patch"
-    "0009-fix-supported-lanauges-directory.patch"
-)
+makedepends=('qt6-tools' 'mce-headers>=1.32.0' 'pkgconf' 'clang')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 
-sha256sums=('b69230621a3247a0658f638882f092a9b4293bcfde5d229e187515c81cf148e6'
-	    '95b628b623631eb3d1b9d43a8d28140eb98e491df8fd85dea527b3a68b272ac1'
-	    'c81267a18e0cd9d6b23d5ef2e8d9e60fd662ac4fe8a3035418a1e0205e556fd3'
-	    'ed9f7ccc5e8a1fe31419c11972fbcc4a9d54fe76f3d0fc4de6758b856ad6df27'
-	    'c80f108307625355bfa064b51d09c45b100034e03f281644136cfd7c9f83dcfe'
-	    'd4b6a68158391758bd586a383c5bde4d31ec55b1c5ad1c604b3885e700ebd053'
-	    '4bc36dae27bf1061bd9a703002cd96424de599a5eb72ddfeae694e79ece0964c'
-	    'ddbe1cb23229f0fe60c4290267dd6c5c774bf2b2c63b09ed3c2af1a58672ac11'
-	    'd01cd4b8f3bd0ad3cf0ff3c589a6a02bc541d21e86d147264520175179354eb9'
-)
-
-prepare() {
-    cd $pkgname-$pkgver
-    patch -Np1 -i "${srcdir}/0001-disable-libsailfishkeyprovider.patch"
-    patch -Np1 -i "${srcdir}/0002-disable-ssu.patch"
-    patch -Np1 -i "${srcdir}/0003-disable-devmode.patch"
-    patch -Np1 -i "${srcdir}/0004-fixup-setlocale.patch"
-    patch -Np1 -i "${srcdir}/0005-geoclue-use-usr-lib.patch"
-    patch -Np1 -i "${srcdir}/0007-fixup_pkgconfig.patch"
-    patch -Np1 -i "${srcdir}/0008-use_standart_path_for_location_config.patch"
-    patch -Np1 -i "${srcdir}/0009-fix-supported-lanauges-directory.patch"
-}
+sha256sums=('9162b1aa48847e8d638a9ea9d9227b1a525cf647ecf8ba7755a860cd42ba79be')
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

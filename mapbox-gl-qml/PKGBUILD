@@ -8,11 +8,11 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/rinigus/mapbox-gl-qml"
 license=('LGPL-3.0 License')
 depends=(
-    'qt5-base'
+    'qt6-base'
     'curl'
     'maplibre-gl-native'
-    'qt5-location'
-    'qt5-svg'
+    'qt6-positioning'
+    'qt6-svg'
 )
 makedepends=('cmake')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")

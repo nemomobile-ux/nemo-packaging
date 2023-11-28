@@ -6,7 +6,7 @@ pkgdesc="Cutiepie Cutoff - send power off to hardware on shutdown"
 arch=('x86_64' 'aarch64')
 url='https://github.com/cutiepi-io/cutiepi-middleware'
 license=('GPL')
-depends=('qt5-base' 'qt5-serialport')
+depends=('qt6-base' 'qt6-serialport')
 makedepends=('git')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -24,7 +24,7 @@ pkgver() {
 build() {
     mkdir -p "$pkgname/cutoff/build"
     cd "$pkgname/cutoff/build"
-    qmake-qt5 ..
+    qmake6 ..
     make
 }
 

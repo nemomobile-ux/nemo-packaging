@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=glacier-devicelock-plugin
-pkgver=0.2.2
+pkgver=0.2.3
 pkgrel=1
 pkgdesc="Glacier devicelock plugin"
 arch=('x86_64' 'aarch64')
@@ -11,7 +11,7 @@ license=('LGPL-2.1')
 depends=('nemo-qml-plugin-devicelock')
 makedepends=('cmake' 'glib2')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('bc0ddcc79299d163dd2a67b0957c64f9076b5097d1eb1396bceb7ce32e4a12e3')
+sha256sums=('318e2bdb6a4395090d058833e6c83ac3978bd2b7b42105ef7e1c0d9333fbd940')
 
 build() {
     cmake \

@@ -7,16 +7,20 @@
 
 pkgname=nemo-qml-plugin-devicelock
 pkgver=0.3.8
-pkgrel=1
+pkgrel=2
 pkgdesc="Device lock plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-devicelock"
 license=('BSD-3-Clause')
 depends=('nemo-qml-plugin-dbus' 'nemo-keepalive')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+	'0001-Fixup-build-on-qt6.patch'
+	'0002-features-mkspecs-must-go-to-QT_INSTALL_ARCHDATA.patch'
 	"nemo-devicelock.service"
 	"nemo-devicelock.socket")
 sha256sums=('34f15fbfebba912579e07d013ef695712560e86d85002ca9a519be194a82900a'
+	'72cae63d6caeee23430479abaae530883d91e5412ca58668b66d8c23378e9b98'
+	'c9fadd5a6bc840d75115f4cf9563d802892130759e17fd6c456c62665c426a66'
 	'460a0ad1d48f16d31ee26828536ce8bc6745f37de1b1a725d6b6c0e186eabb8e'
 	'cd9c280bf80a62c5a67b1369b085328ccc2886addcacd2c18eb3498f41d0fee1')
 
@@ -24,11 +28,13 @@ prepare() {
     cd $pkgname-$pkgver
     sed -i "s|libsystemd-daemon|libsystemd|g" ./src/nemo-devicelock/host/host.pro
     sed -i "s|libsystemd-daemon|libsystemd|g" ./src/daemon/daemon.pro
+    patch -p1 --input="${srcdir}/0001-Fixup-build-on-qt6.patch"
+    patch -p1 --input="${srcdir}/0002-features-mkspecs-must-go-to-QT_INSTALL_ARCHDATA.patch"
 }
 
 build() {
     cd $pkgname-$pkgver
-    qmake "VERSION=${pkgver}"
+    qmake6 "VERSION=${pkgver}"
     make
 }
 
@@ -41,10 +47,6 @@ package() {
     mkdir -p usr/bin
     mv usr/libexec/nemo-devicelock usr/bin/nemo-devicelock-daemon
     rm -rf usr/libexec
-
-    # move *.prf into right folder
-    mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
-    mv ${pkgdir}/usr/share/qt/mkspecs/features/nemo-devicelock-host.prf ${pkgdir}/usr/lib/qt/mkspecs/features/nemo-devicelock-host.prf
 
     #fixup systemd services
     rm -rf ${pkgdir}/usr/lib/systemd/system/nemo-devicelock.*

@@ -5,20 +5,25 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libiodata
-pkgver=0.19.13
+pkgver=0.19.14
 pkgrel=1
 pkgdesc="Mer library for input/output data"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libiodata"
 license=('LGPL-2.1-or-later')
-depends=('qt5-base')
+depends=('qt6-base')
 makedepends=('bison' 'flex')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('56e18738992d55893434052a9b8e5e60f6731e3daa932afcb1ec0776eda0d01a')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-features-should-be-installed-into-QT_INSTALL_ARCHDAT.patch'
+)
+sha256sums=('d141e2f4f9002d3affc503ed73697d0cd4f1c236a633f09f61ac18e03b52d553'
+    'ea846f6aa3571751d35ab22ccf29d5693b12ad120cf882a211743c68412ef421'
+)
 
 
 prepare() {
   cd "${pkgname}-${pkgver}"
+  patch -p1 --input="${srcdir}/0001-features-should-be-installed-into-QT_INSTALL_ARCHDAT.patch"
   # Logging macro cause compilation to fail otherwise
   sed -i "s@define LOG_LEVEL LOG_WARNING@define LOG_LEVEL LOG_NONE@" src/log.h
 }
@@ -26,15 +31,11 @@ prepare() {
 build() {
   cd "${pkgname}-${pkgver}"
   export IODATA_VERSION=${pkgver}
-  qmake
+  qmake6
   make -j1
 }
 
 package() {
   cd "${pkgname}-${pkgver}"
   make -j 1 INSTALL_ROOT="${pkgdir}" install
-
-  # move *.prf into right folder
-  mkdir -p ${pkgdir}/usr/lib/qt/mkspecs/features/
-  mv ${pkgdir}/usr/share/qt/mkspecs/features/iodata-qt5.prf ${pkgdir}/usr/lib/qt/mkspecs/features/iodata-qt5.prf
 }

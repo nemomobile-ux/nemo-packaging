@@ -4,25 +4,17 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_host="github.com"
-_project=nemomobile-ux
-_basename=nemo-qml-plugin-settings
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename
-
-pkgver=0.1.1
-
+pkgname=nemo-qml-plugin-settings
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="Nemomobile QML wrapper for QSettings class"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname"
+url="https://github.com/nemomobile-ux/nemo-qml-plugin-settings"
 license=('LGPL-2.0-or-later')
-depends=('qt5-declarative')
+depends=('qt6-declarative')
 makedepends=('cmake')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('ec95f061027589aa1d38405d74bc22b49ea554923d2f09fc394f374a7bd90055')
+sha256sums=('203c4c79d8c4140190fb79f263c07fda5cde7b4cf78f5681e8cddf86cdf6662f')
 
 build() {
     cd $pkgname-$pkgver

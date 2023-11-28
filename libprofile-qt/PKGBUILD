@@ -4,22 +4,21 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libprofile-qt
-pkgver=0.35.5
+pkgver=0.35.6
 pkgrel=1
-pkgdesc="Qt5 library for profiles"
+pkgdesc="qt6 library for profiles"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libprofile-qt"
 license=('BSD')
-depends=('qt5-base')
+depends=('qt6-base')
 makedepends=('sailfish-access-control')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('e47cbed6a67337de959b73fdd567edc435699da0075383d1bac37acb83a8155a')
+sha256sums=('e49a64d9afda31228a0ce34dd1fd424549e2721392a3579f897c8ebf21d2beb6')
 
 build() {
-  cd $pkgname-$pkgver
-  mkdir -p build
-  cd build
-  qmake ..
+  mkdir -p $pkgname-$pkgver/build
+  cd $pkgname-$pkgver/build
+  qmake6 ..
   make
 }
 

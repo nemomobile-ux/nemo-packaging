@@ -11,23 +11,30 @@ license=('BSD')
 depends=('mlite'
     'nemo-qml-plugin-systemsettings'
     'nemo-qml-plugin-dbus'
-    'nemo-qml-plugin-thumbnailer')
+    'nemo-qml-plugin-thumbnailer'
+    'qt6-5compat'
+)
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-disable_ssu.patch"
-    '0002-disable-storage-test.patch')
+    '0001-Fix-build-with-qt6.patch'
+    '0002-disable_ssu.patch'
+    '0003-disable-storage-test.patch'
+)
 sha256sums=('49652ff59dce4e0b29ccc605acd3693a773b82e9de4903fdb8f5a3ed3b932637'
+    'edc9d5c4a6d13961f8561e110f290f59af1e4d8ce085c3447dff95c490ec3f35'
     'eb46ea60f45151893d210d3e5e2a9229cec7455f25e1ee278287bfd1eda433d3'
-    '190b7b2eb1aa7e588d35ccdbed2e5787b17098799f3933a4a3ddec11f06c1bc3')
+    '190b7b2eb1aa7e588d35ccdbed2e5787b17098799f3933a4a3ddec11f06c1bc3'
+)
 
 prepare() {
     cd $pkgname-$pkgver
-    patch -p1 --input="${srcdir}/0001-disable_ssu.patch"
-    patch -p1 --input="${srcdir}/0002-disable-storage-test.patch"
+    patch -p1 --input="${srcdir}/0001-Fix-build-with-qt6.patch"
+    patch -p1 --input="${srcdir}/0002-disable_ssu.patch"
+    patch -p1 --input="${srcdir}/0003-disable-storage-test.patch"
 }
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 

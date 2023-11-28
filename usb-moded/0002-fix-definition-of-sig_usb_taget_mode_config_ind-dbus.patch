@@ -1,0 +1,44 @@
+From 07fc627e52eff951b45347d5620d51cc0897389a Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Mon, 24 Jul 2023 17:12:01 +0000
+Subject: [PATCH] fix definition of sig_usb_taget_mode_config_ind dbus
+ interface
+
+---
+ src/com.meego.usb_moded.xml | 4 ++--
+ src/usb_moded-dbus.c        | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/com.meego.usb_moded.xml b/src/com.meego.usb_moded.xml
+index 9459bd5..9959ba2 100644
+--- a/src/com.meego.usb_moded.xml
++++ b/src/com.meego.usb_moded.xml
+@@ -80,8 +80,8 @@
+       <arg name="mode" type="s"/>
+     </signal>
+     <signal name="sig_usb_taget_mode_config_ind">
+-      <arg name="config" type="a{sv}"/>
+-      <annotation name="org.qtproject.QtDBus.QtTypeName.In0" value="QVariantMap"/>
++      <arg name="config" type="a{sv}" direction="out"/>
++      <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
+     </signal>
+     <signal name="sig_usb_event_ind">
+       <arg name="event" type="s"/>
+diff --git a/src/usb_moded-dbus.c b/src/usb_moded-dbus.c
+index 537a866..7e101ef 100644
+--- a/src/usb_moded-dbus.c
++++ b/src/usb_moded-dbus.c
+@@ -1031,8 +1031,8 @@ static const member_info_t usb_moded_members[] =
+     ADD_SIGNAL(USB_MODE_TARGET_STATE_SIGNAL_NAME,
+                "      <arg name=\"mode\" type=\"s\"/>\n"),
+     ADD_SIGNAL(USB_MODE_TARGET_CONFIG_SIGNAL_NAME,
+-               "      <arg name=\"config\" type=\"a{sv}\"/>\n"
+-               "      <annotation name=\"org.qtproject.QtDBus.QtTypeName.In0\" value=\"QVariantMap\"/>\n"),
++               "      <arg name=\"config\" type=\"a{sv}\" direction=\"out\"/>\n"
++               "      <annotation name=\"org.qtproject.QtDBus.QtTypeName.Out0\" value=\"QVariantMap\"/>\n"),
+     ADD_SIGNAL(USB_MODE_EVENT_SIGNAL_NAME,
+                "      <arg name=\"event\" type=\"s\"/>\n"),
+     ADD_SIGNAL(USB_MODE_CONFIG_SIGNAL_NAME,
+-- 
+2.41.0
+

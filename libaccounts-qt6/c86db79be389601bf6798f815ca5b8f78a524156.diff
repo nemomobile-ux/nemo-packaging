@@ -1,0 +1,132 @@
+diff --git a/Accounts/account-service.cpp b/Accounts/account-service.cpp
+index f092986701019e85999b643f9a528c873393463b..e6c04f2b6d25df408dbb22723000665dc6325fa1 100644
+--- a/Accounts/account-service.cpp
++++ b/Accounts/account-service.cpp
+@@ -26,9 +26,7 @@
+ #include "manager.h"
+ #include "utils.h"
+ #include <QPointer>
+-#include <libaccounts-glib/ag-account.h>
+-#include <libaccounts-glib/ag-account-service.h>
+-#include <libaccounts-glib/ag-auth-data.h>
++#include <libaccounts-glib.h>
+ 
+ namespace Accounts
+ {
+diff --git a/Accounts/account.cpp b/Accounts/account.cpp
+index 2c07b6ed8a9e8aebd71cd009436474a2f1bfe75e..2e40c60056119cd67a7f6d36a6a53a882babd39e 100644
+--- a/Accounts/account.cpp
++++ b/Accounts/account.cpp
+@@ -28,7 +28,7 @@
+ #include "utils.h"
+ 
+ #include <QPointer>
+-#include <libaccounts-glib/ag-account.h>
++#include <libaccounts-glib.h>
+ 
+ namespace Accounts {
+ 
+diff --git a/Accounts/application.cpp b/Accounts/application.cpp
+index d6b92a79f0eaf05f087a2d38662e32a5e8c6c26e..22d8777cec23c3eaaa653098965f4daebd13ed04 100644
+--- a/Accounts/application.cpp
++++ b/Accounts/application.cpp
+@@ -25,7 +25,7 @@
+ #include "service.h"
+ 
+ #undef signals
+-#include <libaccounts-glib/ag-application.h>
++#include <libaccounts-glib.h>
+ 
+ using namespace Accounts;
+ 
+diff --git a/Accounts/auth-data.cpp b/Accounts/auth-data.cpp
+index 09fa92757cd556bb5bdcc8f25097b6f88ec1fd24..c6cde746cf2378dfa975d9c2abbc3da3006ad151 100644
+--- a/Accounts/auth-data.cpp
++++ b/Accounts/auth-data.cpp
+@@ -25,7 +25,7 @@
+ #include "utils.h"
+ 
+ #undef signals
+-#include <libaccounts-glib/ag-auth-data.h>
++#include <libaccounts-glib.h>
+ #include <QtDebug>
+ #include <QtGlobal>
+ 
+diff --git a/Accounts/error.cpp b/Accounts/error.cpp
+index 415ed25e6833d8693f5783ab2b479e7ed077099c..1537b5c4342a9ea34d47d5b0d0a0d5ddfebb46f4 100644
+--- a/Accounts/error.cpp
++++ b/Accounts/error.cpp
+@@ -23,7 +23,7 @@
+ 
+ #include "error.h"
+ 
+-#include <libaccounts-glib/ag-errors.h>
++#include <libaccounts-glib.h>
+ 
+ namespace Accounts {
+ 
+diff --git a/Accounts/manager.cpp b/Accounts/manager.cpp
+index 1236236c714e8404fafe134be21fea4b27424765..12d83d8d7bf92ce8e1d3a1a888b2e641ca5b4724 100644
+--- a/Accounts/manager.cpp
++++ b/Accounts/manager.cpp
+@@ -27,7 +27,7 @@
+ #include "manager.h"
+ #include "manager_p.h"
+ 
+-#include <libaccounts-glib/ag-account.h>
++#include <libaccounts-glib.h>
+ 
+ 
+ namespace Accounts {
+diff --git a/Accounts/manager_p.h b/Accounts/manager_p.h
+index 304438ba41038f98a35b53a85003dfa155b9cdde..a0fa6eaff5bd4b0d5e41638cac533d0871e50ac0 100644
+--- a/Accounts/manager_p.h
++++ b/Accounts/manager_p.h
+@@ -27,7 +27,7 @@
+ 
+ #include <QHash>
+ #include <QPointer>
+-#include <libaccounts-glib/ag-manager.h>
++#include <libaccounts-glib.h>
+ 
+ namespace Accounts {
+ 
+diff --git a/Accounts/provider.cpp b/Accounts/provider.cpp
+index 6d1c97c48b9fad8886328faf689850f367e60412..48acb69d54a00fd8366c430e7e2286132b17c28f 100644
+--- a/Accounts/provider.cpp
++++ b/Accounts/provider.cpp
+@@ -25,7 +25,7 @@
+ #include "provider.h"
+ 
+ #undef signals
+-#include <libaccounts-glib/ag-provider.h>
++#include <libaccounts-glib.h>
+ 
+ 
+ using namespace Accounts;
+diff --git a/Accounts/service-type.cpp b/Accounts/service-type.cpp
+index 6c3504e8d322239c7d771de0fbb17933dd82a1a9..c7161b4dd5675b035b56a7f96b41c7198d4f6980 100644
+--- a/Accounts/service-type.cpp
++++ b/Accounts/service-type.cpp
+@@ -27,7 +27,7 @@
+ #include "service-type.h"
+ 
+ #undef signals
+-#include <libaccounts-glib/ag-service-type.h>
++#include <libaccounts-glib.h>
+ 
+ using namespace Accounts;
+ 
+diff --git a/Accounts/service.cpp b/Accounts/service.cpp
+index 707ed19b192fb0ffc289171d9d84c1caac5bf70c..81c67f0f986aaf351fcb2cd49b2a16f71eced5c5 100644
+--- a/Accounts/service.cpp
++++ b/Accounts/service.cpp
+@@ -27,7 +27,7 @@
+ #include "service.h"
+ 
+ #undef signals
+-#include <libaccounts-glib/ag-service.h>
++#include <libaccounts-glib.h>
+ 
+ using namespace Accounts;
+ 

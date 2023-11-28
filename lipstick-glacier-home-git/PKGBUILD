@@ -4,6 +4,7 @@
 # Contributor: Chipligin Sergey (NeoChapay) <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
+_branch=master
 pkgname=lipstick-glacier-home-git
 pkgver=0.40.4.r2.gcc8199d
 pkgrel=1
@@ -11,13 +12,11 @@ pkgdesc="A nice homescreen for Glacier experience"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/glacier-home"
 license=('BSD-3-Clause AND MIT')
-depends=('bluez-qt'
-	'qt5-graphicaleffects'
-	'qt5-multimedia'
-	'qt5-feedback'
+depends=('qt6-multimedia'
+	'qt6-feedback'
 	'qtmpris'
-	'qt5-lipstick'
-	'qt5-quickcontrols-nemo'
+	'qt6-lipstick'
+	'qt6-quickcontrols-nemo'
 	'nemo-qml-plugin-configuration'
 	'nemo-qml-plugin-statusnotifier'
 	'nemo-qml-plugin-time'
@@ -30,9 +29,9 @@ depends=('bluez-qt'
 	'qt-mobility-haptics-ffmemless'
 	'ngfd'
 	'nemo-qml-plugin-devicelock'
-	'bluez-qt'
-	'qt5-wayland'
-	'polkit-qt5'
+	'bluez-qt6'
+	'qt6-wayland'
+	'polkit-qt6'
 	'pulseaudio-module-keepalive'
 	'glacier-settings-developermode')
 
@@ -40,10 +39,10 @@ makedepends=(
 	'git'
 	'extra-cmake-modules'
 	'mce-headers>=1.30.0'
-	'qt5-tools')
+	'qt6-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}")
+source=("${pkgname}::git+${url}#branch=${_branch}")
 sha512sums=('SKIP')
 
 pkgver() {

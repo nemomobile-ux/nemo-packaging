@@ -10,16 +10,16 @@ _basename=glacier-app
 _branch=master
 
 _gitname=lib${_basename//-/}
-pkgname=qt5-$_basename-git
+pkgname=qt6-$_basename-git
 
-pkgver=0.8.2.r17.ge28022e
+pkgver=0.9.2.r6.g628f0db
 
 pkgrel=1
 pkgdesc="Glacier Application library"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.0-or-later')
-depends=('qt5-declarative>=5.11')
+depends=('qt6-declarative>=5.11')
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -36,6 +36,7 @@ build() {
     mkdir -p build
     cd build
     cmake \
+	-DUSE_QT6:BOOL=true \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	-DCMAKE_INSTALL_LIBDIR=lib \

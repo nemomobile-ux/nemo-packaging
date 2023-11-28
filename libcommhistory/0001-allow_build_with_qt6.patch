@@ -1,0 +1,1678 @@
+diff --git a/common-vars.pri b/common-vars.pri
+index d7adfb5..81feb74 100644
+--- a/common-vars.pri
++++ b/common-vars.pri
+@@ -27,7 +27,7 @@
+ #------------------------------------------------------------------------------
+ # Project name (used e.g. in include file and doc install path).
+ #------------------------------------------------------------------------------
+-PROJECT_NAME = libcommhistory-qt5
++PROJECT_NAME = libcommhistory-qt$${QT_MAJOR_VERSION}
+ 
+ #------------------------------------------------------------------------------
+ # Project version
+diff --git a/declarative/declarative.pro b/declarative/declarative.pro
+index 280455a..a1855be 100644
+--- a/declarative/declarative.pro
++++ b/declarative/declarative.pro
+@@ -32,8 +32,8 @@ CONFIG += qt plugin hide_symbols
+ QT += qml contacts dbus
+ QT -= gui
+ 
+-LIBS += -L../src ../src/libcommhistory-qt5.so
+-PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
++LIBS += -L../src ../src/libcommhistory-qt$${QT_MAJOR_VERSION}.so
++PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions contactcache-qt$${QT_MAJOR_VERSION}
+ 
+ target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
+ INSTALLS += target
+diff --git a/declarative/src/mmshelper.cpp b/declarative/src/mmshelper.cpp
+index c91eeb7..9e84d89 100644
+--- a/declarative/src/mmshelper.cpp
++++ b/declarative/src/mmshelper.cpp
+@@ -33,7 +33,6 @@
+ #include "mmsconstants.h"
+ #include "singleeventmodel.h"
+ #include <QtDBus>
+-#include <QTextCodec>
+ #include <QTemporaryDir>
+ #include <QMimeDatabase>
+ #include <QDebug>
+diff --git a/declarative/src/plugin.cpp b/declarative/src/plugin.cpp
+index 0aac399..e39435c 100644
+--- a/declarative/src/plugin.cpp
++++ b/declarative/src/plugin.cpp
+@@ -73,6 +73,11 @@ void CommHistoryPlugin::registerTypes(const char *uri)
+     qmlRegisterType<DraftEvent>(uri, 1, 0, "DraftEvent");
+     qmlRegisterType<MmsHelper>(uri, 1, 0, "MmsHelper");
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    qmlRegisterAnonymousType<CommHistory::GroupObject>(uri, 0);
++    qmlRegisterAnonymousType<CommHistory::ContactGroup>(uri, 0);
++#else
+     qmlRegisterType<CommHistory::GroupObject>();
+     qmlRegisterType<CommHistory::ContactGroup>();
++#endif
+ }
+diff --git a/src/callmodel.cpp b/src/callmodel.cpp
+index 2d7b5ce..46c4caa 100644
+--- a/src/callmodel.cpp
++++ b/src/callmodel.cpp
+@@ -987,7 +987,11 @@ void CallModel::setFilterType(CallEvent::CallType type)
+ void CallModel::setFilterReferenceTime(const QDateTime &referenceTime)
+ {
+     Q_D(CallModel);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    d->referenceTime = referenceTime.isNull() ? 0 : referenceTime.toSecsSinceEpoch();
++#else
+     d->referenceTime = referenceTime.isNull() ? 0 : referenceTime.toTime_t();
++#endif
+ }
+ 
+ void CallModel::setFilterAccount(const QString &localUid)
+diff --git a/src/commhistory-qt6.pc.in b/src/commhistory-qt6.pc.in
+new file mode 100644
+index 0000000..95f33f3
+--- /dev/null
++++ b/src/commhistory-qt6.pc.in
+@@ -0,0 +1,12 @@
++prefix=/usr
++exec_prefix=${prefix}
++libdir=${prefix}/$$PKGCONFIG_LIB/
++includedir=${prefix}/include/commhistory-qt6/
++
++Name: libcommhistory-qt6
++Description: Messaging/Call-History Library
++Version: $$PROJECT_VERSION
++Libs: -L${libdir} -lcommhistory-qt6
++Libs.private: -L/usr/lib
++Cflags:  -I${includedir}
++Requires: contactcache-qt6 qtcontacts-sqlite-qt6-extensions
+diff --git a/src/contactgroup.cpp b/src/contactgroup.cpp
+index b276490..2eb9aee 100644
+--- a/src/contactgroup.cpp
++++ b/src/contactgroup.cpp
+@@ -294,13 +294,21 @@ QStringList ContactGroup::displayNames() const
+ QDateTime ContactGroup::startTime() const
+ {
+     Q_D(const ContactGroup);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    return QDateTime::fromSecsSinceEpoch(d->startTimeT);
++#else
+     return QDateTime::fromTime_t(d->startTimeT);
++#endif
+ }
+ 
+ QDateTime ContactGroup::endTime() const
+ {
+     Q_D(const ContactGroup);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    return QDateTime::fromSecsSinceEpoch(d->endTimeT);
++#else
+     return QDateTime::fromTime_t(d->endTimeT);
++#endif
+ }
+ 
+ int ContactGroup::unreadMessages() const
+@@ -360,7 +368,11 @@ bool ContactGroup::lastEventIsDraft() const
+ QDateTime ContactGroup::lastModified() const
+ {
+     Q_D(const ContactGroup);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    return QDateTime::fromSecsSinceEpoch(d->lastModifiedT);
++#else
+     return QDateTime::fromTime_t(d->lastModifiedT);
++#endif
+ }
+ 
+ QString ContactGroup::subscriberIdentity() const
+diff --git a/src/conversationmodel.cpp b/src/conversationmodel.cpp
+index 2ee6957..10aae2c 100644
+--- a/src/conversationmodel.cpp
++++ b/src/conversationmodel.cpp
+@@ -263,8 +263,11 @@ bool ConversationModel::getEvents(int groupId)
+ bool ConversationModel::getEvents(QList<int> groupIds)
+ {
+     Q_D(ConversationModel);
+-
++#if (QT_VERSION > QT_VERSION_CHECK(5, 15, 0))
++    d->filterGroupIds = QSet<int>(groupIds.begin(), groupIds.end());
++#else
+     d->filterGroupIds = QSet<int>::fromList(groupIds);
++#endif
+     d->allGroups = false;
+ 
+     beginResetModel();
+diff --git a/src/databaseio.cpp b/src/databaseio.cpp
+index dca4263..cefff62 100644
+--- a/src/databaseio.cpp
++++ b/src/databaseio.cpp
+@@ -864,7 +864,7 @@ bool DatabaseIO::modifyEvent(Event &event)
+             if (part.id() >= 0) {
+                 if (!idList.isEmpty())
+                     idList.append(',');
+-                idList.append(QString::number(part.id()));
++                idList.append(QString::number(part.id()).toUtf8());
+             }
+         }
+ 
+@@ -1059,7 +1059,7 @@ bool DatabaseIO::getGroups(const QString &localUid, const QString &remoteUid, QL
+         if (!remoteUid.isEmpty())
+             q += "Groups.remoteUids = :remoteUid ";
+     }
+-    q += "GROUP BY Groups.id " + queryOrder;
++    q += QString("GROUP BY Groups.id " + queryOrder).toUtf8();
+ 
+     QSqlQuery query = CommHistoryDatabase::prepare(q.data(), d->connection());
+     if (!localUid.isEmpty())
+diff --git a/src/draftsmodel.cpp b/src/draftsmodel.cpp
+index 485cd3f..205e275 100644
+--- a/src/draftsmodel.cpp
++++ b/src/draftsmodel.cpp
+@@ -61,7 +61,11 @@ QList<int> DraftsModel::filterGroups() const
+ void DraftsModel::setFilterGroups(const QList<int> &list)
+ {
+     Q_D(DraftsModel);
++#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
++    QSet<int> groupIds = QSet<int>(list.begin(), list.end());
++#else
+     QSet<int> groupIds = list.toSet();
++#endif
+     if (groupIds == d->filterGroups)
+         return;
+ 
+@@ -89,7 +93,11 @@ bool DraftsModel::getEvents()
+ 
+     // As in ConversationModel, a UNION ALL is used to get better
+     // optimization out of sqlite
++#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
++    QList<int> groups = QList<int>(d->filterGroups.begin(), d->filterGroups.end());
++#else
+     QList<int> groups = d->filterGroups.toList();
++#endif
+     int unionCount = 0;
+     QString q;
+     do {
+diff --git a/src/event.cpp b/src/event.cpp
+index 6c494b6..35f8ecb 100644
+--- a/src/event.cpp
++++ b/src/event.cpp
+@@ -269,8 +269,13 @@ QDataStream &operator>>(QDataStream &stream, CommHistory::Event &event)
+ 
+     event.setId(p.id);
+     event.setType(static_cast<Event::EventType>(type));
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    event.setStartTimeT(p.startTime.toSecsSinceEpoch());
++    event.setEndTimeT(p.endTime.toSecsSinceEpoch());
++#else
+     event.setStartTimeT(p.startTime.toTime_t());
+     event.setEndTimeT(p.endTime.toTime_t());
++#endif
+     event.setDirection(static_cast<Event::EventDirection>(direction));
+     event.setIsDraft(isDraft);
+     event.setIsRead(isRead);
+@@ -285,7 +290,11 @@ QDataStream &operator>>(QDataStream &stream, CommHistory::Event &event)
+     event.setGroupId(p.groupId);
+     event.setMessageToken(p.messageToken);
+     event.setMmsId(p.mmsId);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    event.setLastModifiedT(p.lastModified.toSecsSinceEpoch());
++#else
+     event.setLastModifiedT(p.lastModified.toTime_t());
++#endif
+     event.setFromVCard(p.fromVCardFileName, p.fromVCardLabel);
+     event.setReportDelivery(reportDelivery);
+     event.setValidityPeriod(p.validityPeriod);
+@@ -485,7 +494,11 @@ Event::EventCategory Event::category() const
+ QDateTime Event::startTime() const
+ {
+     if (d->startTime.isNull() && d->startTimeT != 0) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTime = QDateTime::fromSecsSinceEpoch(d->startTimeT);
++#else
+         d->startTime = QDateTime::fromTime_t(d->startTimeT);
++#endif
+     }
+     return d->startTime;
+ }
+@@ -493,7 +506,11 @@ QDateTime Event::startTime() const
+ QDateTime Event::endTime() const
+ {
+     if (d->endTime.isNull() && d->endTimeT != 0) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTime = QDateTime::fromSecsSinceEpoch(d->endTimeT);
++#else
+         d->endTime = QDateTime::fromTime_t(d->endTimeT);
++#endif
+     }
+     return d->endTime;
+ }
+@@ -620,7 +637,11 @@ QString Event::mmsId() const
+ QDateTime Event::lastModified() const
+ {
+     if (d->lastModified.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModified = QDateTime::fromSecsSinceEpoch(d->lastModifiedT);
++#else
+         d->lastModified = QDateTime::fromTime_t(d->lastModifiedT);
++#endif
+     }
+     return d->lastModified;
+ }
+@@ -637,17 +658,29 @@ QList<MessagePart> Event::messageParts() const
+ 
+ QStringList Event::toList() const
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
++    return d->headers.value(MMS_TO_HEADER).split("\x1e", Qt::SkipEmptyParts);
++#else
+     return d->headers.value(MMS_TO_HEADER).split("\x1e", QString::SkipEmptyParts);
++#endif
+ }
+ 
+ QStringList Event::ccList() const
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
++    return d->headers.value(MMS_CC_HEADER).split("\x1e", Qt::SkipEmptyParts);
++#else
+     return d->headers.value(MMS_CC_HEADER).split("\x1e", QString::SkipEmptyParts);
++#endif
+ }
+ 
+ QStringList Event::bccList() const
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
++    return d->headers.value(MMS_BCC_HEADER).split("\x1e", Qt::SkipEmptyParts);
++#else
+     return d->headers.value(MMS_BCC_HEADER).split("\x1e", QString::SkipEmptyParts);
++#endif
+ }
+ 
+ Event::EventReadStatus Event::readStatus() const
+@@ -755,10 +788,18 @@ void Event::setType(Event::EventType type)
+ void Event::setStartTime(const QDateTime &startTime)
+ {
+     if (d->startTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTimeT = startTime.toUTC().toSecsSinceEpoch();
++#else
+         d->startTimeT = startTime.toUTC().toTime_t();
++#endif
+     } else {
+         d->startTime = startTime.toUTC();
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTimeT = d->startTime.toSecsSinceEpoch();
++#else
+         d->startTimeT = d->startTime.toTime_t();
++#endif
+     }
+     d->propertyChanged(Event::StartTime);
+ }
+@@ -766,10 +807,18 @@ void Event::setStartTime(const QDateTime &startTime)
+ void Event::setEndTime(const QDateTime &endTime)
+ {
+     if (d->endTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTimeT = endTime.toUTC().toSecsSinceEpoch();
++#else
+         d->endTimeT = endTime.toUTC().toTime_t();
++#endif
+     } else {
+         d->endTime = endTime.toUTC();
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTimeT = d->endTime.toSecsSinceEpoch();
++#else
+         d->endTimeT = d->endTime.toTime_t();
++#endif
+     }
+     d->propertyChanged(Event::EndTime);
+ }
+@@ -876,10 +925,18 @@ void Event::setMmsId(const QString &mmsId)
+ void Event::setLastModified(const QDateTime &modified)
+ {
+     if (d->lastModified.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModifiedT = modified.toUTC().toSecsSinceEpoch();
++#else
+         d->lastModifiedT = modified.toUTC().toTime_t();
++#endif
+     } else {
+         d->lastModified = modified.toUTC();
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModifiedT = d->lastModified.toSecsSinceEpoch();
++#else
+         d->lastModifiedT = d->lastModified.toTime_t();
++#endif
+     }
+     d->propertyChanged(Event::LastModified);
+ }
+@@ -1035,7 +1092,11 @@ void Event::setStartTimeT(quint32 startTime)
+ {
+     d->startTimeT = startTime;
+     if (!d->startTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTime = QDateTime::fromMSecsSinceEpoch(d->startTimeT);
++#else
+         d->startTime = QDateTime::fromTime_t(d->startTimeT);
++#endif
+     }
+     d->propertyChanged(Event::StartTime);
+ }
+@@ -1044,7 +1105,11 @@ void Event::setEndTimeT(quint32 endTime)
+ {
+     d->endTimeT = endTime;
+     if (!d->endTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTime = QDateTime::fromMSecsSinceEpoch(d->endTimeT);
++#else
+         d->endTime = QDateTime::fromTime_t(d->endTimeT);
++#endif
+     }
+     d->propertyChanged(Event::EndTime);
+ }
+@@ -1053,7 +1118,11 @@ void Event::setLastModifiedT(quint32 modified)
+ {
+     d->lastModifiedT = modified;
+     if (!d->lastModified.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModified = QDateTime::fromMSecsSinceEpoch(d->lastModifiedT);
++#else
+         d->lastModified = QDateTime::fromTime_t(d->lastModifiedT);
++#endif
+     }
+     d->propertyChanged(Event::LastModified);
+ }
+diff --git a/src/event.h b/src/event.h
+index 0dc5f87..0bc7ecf 100644
+--- a/src/event.h
++++ b/src/event.h
+@@ -386,8 +386,11 @@ class LIBCOMMHISTORY_EXPORT Event
+      * \param another event
+      */
+     void copyValidProperties(const Event &other);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    static quint32 currentTime_t() { return QDateTime::currentDateTimeUtc().toSecsSinceEpoch(); }
++#else
+     static quint32 currentTime_t() { return QDateTime::currentDateTimeUtc().toTime_t(); }
++#endif
+ 
+ private:
+     QSharedDataPointer<EventPrivate> d;
+diff --git a/src/eventmodel_p.cpp b/src/eventmodel_p.cpp
+index fd7b9a7..07b0fbd 100644
+--- a/src/eventmodel_p.cpp
++++ b/src/eventmodel_p.cpp
+@@ -537,13 +537,21 @@ void EventModelPrivate::recipientsUpdated(const QSet<Recipient> &recipients, boo
+ 
+ void EventModelPrivate::slotContactInfoChanged(const RecipientList &recipients)
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
++    QSet<Recipient> changed = QSet<Recipient>(recipients.recipients().begin(), recipients.recipients().end());
++#else
+     QSet<Recipient> changed = QSet<Recipient>::fromList(recipients.recipients());
++#endif
+     recipientsUpdated(changed);
+ }
+ 
+ void EventModelPrivate::slotContactChanged(const RecipientList &recipients)
+ {
++#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
++    QSet<Recipient> changed = QSet<Recipient>(recipients.recipients().begin(), recipients.recipients().end());
++#else
+     QSet<Recipient> changed = QSet<Recipient>::fromList(recipients.recipients());
++#endif
+     recipientsUpdated(changed, true);
+ }
+ 
+diff --git a/src/eventmodel_p.h b/src/eventmodel_p.h
+index c3b602f..1c122ce 100644
+--- a/src/eventmodel_p.h
++++ b/src/eventmodel_p.h
+@@ -29,6 +29,7 @@
+ 
+ #include "eventmodel.h"
+ #include "event.h"
++#include "group.h"
+ #include "eventtreeitem.h"
+ #include "databaseio.h"
+ #include "libcommhistoryexport.h"
+diff --git a/src/group.cpp b/src/group.cpp
+index 8d6b162..9081a9a 100644
+--- a/src/group.cpp
++++ b/src/group.cpp
+@@ -216,7 +216,11 @@ QString Group::chatName() const
+ QDateTime Group::startTime() const
+ {
+     if (d->startTime.isNull() && d->startTimeT != 0) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTime = QDateTime::fromSecsSinceEpoch(d->startTimeT);
++#else
+         d->startTime = QDateTime::fromTime_t(d->startTimeT);
++#endif
+     }
+     return d->startTime;
+ }
+@@ -224,7 +228,11 @@ QDateTime Group::startTime() const
+ QDateTime Group::endTime() const
+ {
+     if (d->endTime.isNull() && d->endTimeT != 0) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTime = QDateTime::fromSecsSinceEpoch(d->endTimeT);
++#else
+         d->endTime = QDateTime::fromTime_t(d->endTimeT);
++#endif
+     }
+     return d->endTime;
+ }
+@@ -272,7 +280,11 @@ bool Group::lastEventIsDraft() const
+ QDateTime Group::lastModified() const
+ {
+     if (d->lastModified.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModified = QDateTime::fromSecsSinceEpoch(d->lastModifiedT);
++#else
+         d->lastModified = QDateTime::fromTime_t(d->lastModifiedT);
++#endif
+     }
+     return d->lastModified;
+ }
+@@ -340,10 +352,18 @@ void Group::setChatName(const QString &name)
+ void Group::setStartTime(const QDateTime &startTime)
+ {
+     if (d->startTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTimeT = startTime.toUTC().toSecsSinceEpoch();
++#else
+         d->startTimeT = startTime.toUTC().toTime_t();
++#endif
+     } else {
+         d->startTime = startTime.toUTC();
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTimeT = d->startTime.toSecsSinceEpoch();
++#else
+         d->startTimeT = d->startTime.toTime_t();
++#endif
+     }
+     d->propertyChanged(Group::StartTime);
+ }
+@@ -351,10 +371,18 @@ void Group::setStartTime(const QDateTime &startTime)
+ void Group::setEndTime(const QDateTime &endTime)
+ {
+     if (d->endTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTimeT = endTime.toUTC().toSecsSinceEpoch();
++#else
+         d->endTimeT = endTime.toUTC().toTime_t();
++#endif
+     } else {
+         d->endTime = endTime.toUTC();
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTimeT = d->endTime.toSecsSinceEpoch();
++#else
+         d->endTimeT = d->endTime.toTime_t();
++#endif
+     }
+     d->propertyChanged(Group::EndTime);
+ }
+@@ -410,10 +438,18 @@ void Group::setLastEventIsDraft(bool isDraft)
+ void Group::setLastModified(const QDateTime &modified)
+ {
+     if (d->lastModified.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModifiedT = modified.toUTC().toSecsSinceEpoch();
++#else
+         d->lastModifiedT = modified.toUTC().toTime_t();
++#endif
+     } else {
+         d->lastModified = modified.toUTC();
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModifiedT = d->lastModified.toSecsSinceEpoch();
++#else
+         d->lastModifiedT = d->lastModified.toTime_t();
++#endif
+     }
+     d->propertyChanged(Group::LastModified);
+ }
+@@ -430,7 +466,11 @@ void Group::setStartTimeT(quint32 startTime)
+     if (startTime == 0) {
+         d->startTime = QDateTime();
+     } else if (!d->startTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTime = QDateTime::fromSecsSinceEpoch(startTime);
++#else
+         d->startTime = QDateTime::fromTime_t(startTime);
++#endif
+     }
+     d->propertyChanged(Group::StartTime);
+ }
+@@ -441,7 +481,11 @@ void Group::setEndTimeT(quint32 endTime)
+     if (endTime == 0) {
+         d->endTime = QDateTime();
+     } else if (!d->endTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTime = QDateTime::fromSecsSinceEpoch(endTime);
++#else
+         d->endTime = QDateTime::fromTime_t(endTime);
++#endif
+     }
+     d->propertyChanged(Group::EndTime);
+ }
+@@ -450,7 +494,11 @@ void Group::setLastModifiedT(quint32 modified)
+ {
+     d->lastModifiedT = modified;
+     if (!d->lastModified.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModified = QDateTime::fromSecsSinceEpoch(d->lastModifiedT);
++#else
+         d->lastModified = QDateTime::fromTime_t(d->lastModifiedT);
++#endif
+     }
+     d->propertyChanged(Group::LastModified);
+ }
+@@ -586,8 +634,11 @@ QDataStream &operator>>(QDataStream &stream, CommHistory::Group &group)
+     group.setLastVCardLabel(p.lastVCardLabel);
+     group.setLastEventType((Event::EventType)type);
+     group.setLastEventStatus((Event::EventStatus)status);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    group.setLastModifiedT(p.lastModified.toSecsSinceEpoch());
++#else
+     group.setLastModifiedT(p.lastModified.toTime_t());
+-
++#endif
+     group.resetModifiedProperties();
+ 
+     return stream;
+diff --git a/src/groupmanager.cpp b/src/groupmanager.cpp
+index ba36a00..e8203c9 100644
+--- a/src/groupmanager.cpp
++++ b/src/groupmanager.cpp
+@@ -379,9 +379,11 @@ DatabaseIO* GroupManagerPrivate::database()
+ void GroupManagerPrivate::slotContactInfoChanged(const RecipientList &recipients)
+ {
+     Q_Q(GroupManager);
+-
++#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
++    QSet<Recipient> changed = QSet<Recipient>(recipients.recipients().begin(), recipients.recipients().end());
++#else
+     QSet<Recipient> changed = QSet<Recipient>::fromList(recipients.recipients());
+-
++#endif
+     foreach (GroupObject *group, groups) {
+         if (group->recipients().intersects(changed))
+             emit q->groupUpdated(group);
+@@ -391,9 +393,11 @@ void GroupManagerPrivate::slotContactInfoChanged(const RecipientList &recipients
+ void GroupManagerPrivate::slotContactChanged(const RecipientList &recipients)
+ {
+     Q_Q(GroupManager);
+-
++#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
++    QSet<Recipient> changed = QSet<Recipient>(recipients.recipients().begin(), recipients.recipients().end());
++#else
+     QSet<Recipient> changed = QSet<Recipient>::fromList(recipients.recipients());
+-
++#endif
+     foreach (GroupObject *group, groups) {
+         if (group->recipients().intersects(changed))
+             emit q->groupUpdated(group);
+diff --git a/src/groupobject.cpp b/src/groupobject.cpp
+index 2899892..ef6d08e 100644
+--- a/src/groupobject.cpp
++++ b/src/groupobject.cpp
+@@ -197,7 +197,11 @@ QString GroupObject::chatName() const
+ QDateTime GroupObject::startTime() const
+ {
+     if (d->startTime.isNull() && d->startTimeT != 0) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTime = QDateTime::fromSecsSinceEpoch(d->startTimeT);
++#else
+         d->startTime = QDateTime::fromTime_t(d->startTimeT);
++#endif
+     }
+     return d->startTime;
+ }
+@@ -205,7 +209,11 @@ QDateTime GroupObject::startTime() const
+ QDateTime GroupObject::endTime() const
+ {
+     if (d->endTime.isNull() && d->endTimeT != 0) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTime = QDateTime::fromSecsSinceEpoch(d->endTimeT);
++#else
+         d->endTime = QDateTime::fromTime_t(d->endTimeT);
++#endif
+     }
+     return d->endTime;
+ }
+@@ -258,7 +266,11 @@ bool GroupObject::lastEventIsDraft() const
+ QDateTime GroupObject::lastModified() const
+ {
+     if (d->lastModified.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModified = QDateTime::fromSecsSinceEpoch(d->lastModifiedT);
++#else
+         d->lastModified = QDateTime::fromTime_t(d->lastModifiedT);
++#endif
+     }
+     return d->lastModified;
+ }
+@@ -321,10 +333,18 @@ void GroupObject::setChatName(const QString &name)
+ void GroupObject::setStartTime(const QDateTime &startTime)
+ {
+     if (d->startTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTimeT = startTime.toUTC().toSecsSinceEpoch();
++#else
+         d->startTimeT = startTime.toUTC().toTime_t();
++#endif
+     } else {
+         d->startTime = startTime.toUTC();
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTimeT = d->startTime.toSecsSinceEpoch();
++#else
+         d->startTimeT = d->startTime.toTime_t();
++#endif
+     }
+     d->propertyChanged(Group::StartTime);
+ }
+@@ -332,10 +352,18 @@ void GroupObject::setStartTime(const QDateTime &startTime)
+ void GroupObject::setEndTime(const QDateTime &endTime)
+ {
+     if (d->endTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTimeT = endTime.toUTC().toSecsSinceEpoch();
++#else
+         d->endTimeT = endTime.toUTC().toTime_t();
++#endif
+     } else {
+         d->endTime = endTime.toUTC();
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTimeT = d->endTime.toSecsSinceEpoch();
++#else
+         d->endTimeT = d->endTime.toTime_t();
++#endif
+     }
+     d->propertyChanged(Group::EndTime);
+ }
+@@ -397,10 +425,18 @@ void GroupObject::setLastEventIsDraft(bool isDraft)
+ void GroupObject::setLastModified(const QDateTime &modified)
+ {
+     if (d->lastModified.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModifiedT = modified.toUTC().toSecsSinceEpoch();
++#else
+         d->lastModifiedT = modified.toUTC().toTime_t();
++#endif
+     } else {
+         d->lastModified = modified.toUTC();
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModifiedT = d->lastModified.toSecsSinceEpoch();
++#else
+         d->lastModifiedT = d->lastModified.toTime_t();
++#endif
+     }
+     d->propertyChanged(Group::LastModified);
+ }
+@@ -411,7 +447,11 @@ void GroupObject::setStartTimeT(quint32 startTime)
+     if (startTime == 0) {
+         d->startTime = QDateTime();
+     } else if (!d->startTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->startTime = QDateTime::fromSecsSinceEpoch(startTime);
++#else
+         d->startTime = QDateTime::fromTime_t(startTime);
++#endif
+     }
+     d->propertyChanged(Group::StartTime);
+ }
+@@ -422,7 +462,11 @@ void GroupObject::setEndTimeT(quint32 endTime)
+     if (endTime == 0) {
+         d->endTime = QDateTime();
+     } else if (!d->endTime.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->endTime = QDateTime::fromSecsSinceEpoch(endTime);
++#else
+         d->endTime = QDateTime::fromTime_t(endTime);
++#endif
+     }
+     d->propertyChanged(Group::EndTime);
+ }
+@@ -431,7 +475,11 @@ void GroupObject::setLastModifiedT(quint32 modified)
+ {
+     d->lastModifiedT = modified;
+     if (!d->lastModified.isNull()) {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++        d->lastModified = QDateTime::fromSecsSinceEpoch(d->lastModifiedT);
++#else
+         d->lastModified = QDateTime::fromTime_t(d->lastModifiedT);
++#endif
+     }
+     d->propertyChanged(Group::LastModified);
+ }
+diff --git a/src/messagepart.cpp b/src/messagepart.cpp
+index a8f62aa..f051697 100644
+--- a/src/messagepart.cpp
++++ b/src/messagepart.cpp
+@@ -27,7 +27,9 @@
+ #include <QStringBuilder>
+ #include <QFile>
+ #include <QFileInfo>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+ #include <QTextCodec>
++#endif
+ #include <QDataStream>
+ #include "messagepart.h"
+ 
+@@ -181,21 +183,24 @@ QString MessagePart::plainTextContent() const
+     }
+ 
+     QByteArray content = file.readAll();
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     QTextCodec *codec = 0;
++#endif
+     int pos = d->contentType.indexOf(";charset=");
+     if (pos > 0) {
+         pos += strlen(";charset=");
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+         QStringRef charset = d->contentType.midRef(pos, d->contentType.indexOf(';', pos) - pos).trimmed();
+-
+         codec = QTextCodec::codecForName(charset.toLatin1());
+         if (!codec)
+             qWarning() << "Missing text codec for" << charset << "when parsing content of type" << d->contentType;
++#endif
+     }
+-
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     if (codec)
+         return codec->toUnicode(content);
+     else
++#endif
+         return QString::fromUtf8(content);
+ }
+ 
+diff --git a/src/src.pro b/src/src.pro
+index f6ab051..183f83b 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -41,8 +41,8 @@ CONFIG  += shared \
+ QT += dbus sql contacts
+ QT -= gui
+ 
+-TARGET = commhistory-qt5
+-PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
++TARGET = commhistory-qt$${QT_MAJOR_VERSION}
++PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions contactcache-qt$${QT_MAJOR_VERSION}
+ LIBS += -lphonenumber
+ 
+ DEFINES += LIBCOMMHISTORY_SHARED
+@@ -154,7 +154,7 @@ SOURCES += commonutils.cpp \
+ headers.files = $$HEADERS \
+                 $$QT_LIKE_HEADERS
+ 
+-headers.path = $${INSTALL_PREFIX}/include/commhistory-qt5/CommHistory
++headers.path = $${INSTALL_PREFIX}/include/commhistory-qt$${QT_MAJOR_VERSION}/CommHistory
+ 
+ # -----------------------------------------------------------------------------
+ # Installation target for .pc file
+diff --git a/tests/common.cpp b/tests/common.cpp
+index d6e9372..7a62226 100644
+--- a/tests/common.cpp
++++ b/tests/common.cpp
+@@ -489,11 +489,19 @@ bool compareEvents(Event &e1, Event &e2)
+         qWarning() << Q_FUNC_INFO << "direction:" << e1.direction() << e2.direction();
+         return false;
+     }
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    if (e1.startTime().toSecsSinceEpoch() != e2.startTime().toSecsSinceEpoch()) {
++#else
+     if (e1.startTime().toTime_t() != e2.startTime().toTime_t()) {
++#endif
+         qWarning() << Q_FUNC_INFO << "startTime:" << e1.startTime().toString() << e2.startTime().toString();
+         return false;
+     }
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    if (e1.endTime().toSecsSinceEpoch() != e2.endTime().toSecsSinceEpoch()) {
++#else
+     if (e1.endTime().toTime_t() != e2.endTime().toTime_t()) {
++#endif
+         qWarning() << Q_FUNC_INFO << "endTime:" << e1.endTime().toString() << e2.endTime().toString();
+         return false;
+     }
+@@ -584,10 +592,18 @@ void deleteAll(bool deleteDb)
+ 
+ QString randomMessage(int words)
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
++
+     QString msg;
+     QTextStream msgStream(&msg, QIODevice::WriteOnly);
+     for(int j = 0; j < words; j++) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        msgStream << msgWords[qrand.generate() % numWords] << " ";
++#else
+         msgStream << msgWords[qrand() % numWords] << " ";
++#endif
+     }
+     return msg;
+ }
+diff --git a/tests/common.h b/tests/common.h
+index d55cb09..4708dd4 100644
+--- a/tests/common.h
++++ b/tests/common.h
+@@ -34,7 +34,9 @@
+ #include <QFile>
+ #include <QSignalSpy>
+ #include <QStandardPaths>
+-
++#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
++#include <QRandomGenerator>
++#endif
+ #include <iterator>
+ 
+ namespace CommHistory {
+@@ -42,10 +44,17 @@ namespace CommHistory {
+ template <class RandomAccessIterator>
+ void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     typename std::iterator_traits<RandomAccessIterator>::difference_type i, n;
+     n = (last-first);
+     for (i=n-1; i>0; --i) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        qSwap(first[i],first[qrand.generate() % (i+1)]);
++#else
+         qSwap(first[i],first[qrand() % (i+1)]);
++#endif
+     }
+ }
+ 
+diff --git a/tests/perf_callmodel/callmodelperftest.cpp b/tests/perf_callmodel/callmodelperftest.cpp
+index 2f6328b..5776b7d 100644
+--- a/tests/perf_callmodel/callmodelperftest.cpp
++++ b/tests/perf_callmodel/callmodelperftest.cpp
+@@ -39,8 +39,11 @@ void CallModelPerfTest::initTestCase()
+         qDebug() << "!!!! Failed to open log file !!!!";
+         logFile = 0;
+     }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ }
+ 
+ void CallModelPerfTest::init()
+@@ -82,6 +85,9 @@ void CallModelPerfTest::getEvents_data()
+ 
+ void CallModelPerfTest::getEvents()
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     QFETCH(int, events);
+     QFETCH(int, contacts);
+     QFETCH(int, selected);
+diff --git a/tests/perf_conversationmodel/conversationmodelperftest.cpp b/tests/perf_conversationmodel/conversationmodelperftest.cpp
+index 31b6d06..c7245ae 100644
+--- a/tests/perf_conversationmodel/conversationmodelperftest.cpp
++++ b/tests/perf_conversationmodel/conversationmodelperftest.cpp
+@@ -40,8 +40,11 @@ void ConversationModelPerfTest::initTestCase()
+         qDebug() << "!!!! Failed to open log file !!!!";
+         logFile = 0;
+     }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ }
+ 
+ void ConversationModelPerfTest::init()
+@@ -102,7 +105,9 @@ void ConversationModelPerfTest::getEvents()
+     qDebug() << Q_FUNC_INFO << "- Creating" << contacts << "contacts";
+ 
+     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     int ci = remoteUids.count();
+     while(ci < contacts) {
+         QString phoneNumber;
+diff --git a/tests/perf_groupmodel/groupmodelperftest.cpp b/tests/perf_groupmodel/groupmodelperftest.cpp
+index a4e6c58..535657b 100644
+--- a/tests/perf_groupmodel/groupmodelperftest.cpp
++++ b/tests/perf_groupmodel/groupmodelperftest.cpp
+@@ -40,8 +40,11 @@ void GroupModelPerfTest::initTestCase()
+         qDebug() << "!!!! Failed to open log file !!!!";
+         logFile = 0;
+     }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ }
+ 
+ void GroupModelPerfTest::init()
+@@ -90,6 +93,10 @@ void GroupModelPerfTest::getGroups()
+     QFETCH(int, contacts);
+     QFETCH(bool, resolve);
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
++
+     QDateTime startTime = QDateTime::currentDateTime();
+ 
+     cleanupTestGroups();
+diff --git a/tests/perf_recentcontactsmodel/recentcontactsmodelperftest.cpp b/tests/perf_recentcontactsmodel/recentcontactsmodelperftest.cpp
+index acde7cd..efe0bbb 100644
+--- a/tests/perf_recentcontactsmodel/recentcontactsmodelperftest.cpp
++++ b/tests/perf_recentcontactsmodel/recentcontactsmodelperftest.cpp
+@@ -41,7 +41,11 @@ void RecentContactsModelPerfTest::initTestCase()
+         logFile = 0;
+     }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ }
+ 
+ void RecentContactsModelPerfTest::init()
+@@ -76,7 +80,9 @@ void RecentContactsModelPerfTest::getEvents()
+     const int groups = contacts/2;
+ 
+     QDateTime startTime = QDateTime::currentDateTime();
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     cleanupTestGroups();
+     cleanupTestEvents();
+ 
+diff --git a/tests/performance_tests.pri b/tests/performance_tests.pri
+index b857691..fd0a09e 100644
+--- a/tests/performance_tests.pri
++++ b/tests/performance_tests.pri
+@@ -25,9 +25,9 @@ TEMPLATE     = app
+ INCLUDEPATH += . ../../src ..
+ DEPENDPATH  += $${INCLUDEPATH}
+ 
+-LIBS += ../../src/libcommhistory-qt5.so
++LIBS += ../../src/libcommhistory-qt$${QT_MAJOR_VERSION}.so
+ QT += contacts
+-PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
++PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions contactcache-qt$${QT_MAJOR_VERSION}
+ 
+ SOURCES += ../common.cpp
+ HEADERS += ../common.h
+diff --git a/tests/profile_callmodel/callmodelprofiletest.cpp b/tests/profile_callmodel/callmodelprofiletest.cpp
+index d6be571..51aa767 100644
+--- a/tests/profile_callmodel/callmodelprofiletest.cpp
++++ b/tests/profile_callmodel/callmodelprofiletest.cpp
+@@ -38,7 +38,11 @@ void CallModelProfileTest::initTestCase()
+ 
+     logFile = 0;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ }
+ 
+ void CallModelProfileTest::init()
+@@ -54,7 +58,9 @@ void CallModelProfileTest::prepare()
+     deleteAll();
+ 
+     int commitBatchSize = 100;
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     EventModel addModel;
+     QDateTime when = QDateTime::currentDateTime();
+ 
+diff --git a/tests/profile_conversationmodel/conversationmodelprofiletest.cpp b/tests/profile_conversationmodel/conversationmodelprofiletest.cpp
+index 72818b2..92b6e90 100644
+--- a/tests/profile_conversationmodel/conversationmodelprofiletest.cpp
++++ b/tests/profile_conversationmodel/conversationmodelprofiletest.cpp
+@@ -39,7 +39,11 @@ void ConversationModelProfileTest::initTestCase()
+ 
+     logFile = 0;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ }
+ 
+ void ConversationModelProfileTest::init()
+@@ -58,7 +62,9 @@ void ConversationModelProfileTest::prepare()
+     qDebug() << Q_FUNC_INFO << "- Creating" << contacts << "contacts";
+ 
+     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     int ci = remoteUids.count();
+     while(ci < contacts) {
+         QString phoneNumber;
+diff --git a/tests/profile_groupmodel/groupmodelprofiletest.cpp b/tests/profile_groupmodel/groupmodelprofiletest.cpp
+index 19745a1..cc2c983 100644
+--- a/tests/profile_groupmodel/groupmodelprofiletest.cpp
++++ b/tests/profile_groupmodel/groupmodelprofiletest.cpp
+@@ -37,7 +37,11 @@ void GroupModelProfileTest::initTestCase()
+ 
+     logFile = 0;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ }
+ 
+ void GroupModelProfileTest::init()
+@@ -55,7 +59,9 @@ void GroupModelProfileTest::prepare()
+     int commitBatchSize = 100;
+ 
+     qDebug() << Q_FUNC_INFO << "- Creating" << contacts << "contacts";
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
+ 
+     int ci = remoteUids.count();
+diff --git a/tests/profile_recentcontactsmodel/recentcontactsmodelprofiletest.cpp b/tests/profile_recentcontactsmodel/recentcontactsmodelprofiletest.cpp
+index 84f3b92..85d3ccb 100644
+--- a/tests/profile_recentcontactsmodel/recentcontactsmodelprofiletest.cpp
++++ b/tests/profile_recentcontactsmodel/recentcontactsmodelprofiletest.cpp
+@@ -37,7 +37,11 @@ void RecentContactsModelProfileTest::initTestCase()
+ 
+     logFile = 0;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ }
+ 
+ void RecentContactsModelProfileTest::init()
+@@ -60,7 +64,9 @@ void RecentContactsModelProfileTest::prepare()
+     qDebug() << Q_FUNC_INFO << "- Creating" << contacts << "contacts";
+ 
+     QList<QPair<QString, QPair<QString, QString> > > contactDetails;
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     int ci = remoteUids.count();
+     while(ci < contacts) {
+         QString phoneNumber;
+diff --git a/tests/tests.pri b/tests/tests.pri
+index ffaaaae..1391de4 100644
+--- a/tests/tests.pri
++++ b/tests/tests.pri
+@@ -25,9 +25,9 @@ TEMPLATE     = app
+ INCLUDEPATH += . ../../src ..
+ DEPENDPATH  += $${INCLUDEPATH}
+ 
+-LIBS += ../../src/libcommhistory-qt5.so
++LIBS += ../../src/libcommhistory-qt$${QT_MAJOR_VERSION}.so
+ QT += contacts
+-PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
++PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions contactcache-qt$${QT_MAJOR_VERSION}
+ 
+ SOURCES += ../common.cpp ../modelwatcher.cpp
+ HEADERS += ../common.h ../modelwatcher.h
+diff --git a/tests/tests.pro b/tests/tests.pro
+index 262b7af..bbaf679 100644
+--- a/tests/tests.pro
++++ b/tests/tests.pro
+@@ -21,5 +21,6 @@
+ ###############################################################################
+ 
+ TEMPLATE = subdirs
++CONFIG += ORDERED
+ SUBDIRS = unit_tests.pro performance_tests.pro tests_xml.pro
+ 
+diff --git a/tests/tests_xml.pro b/tests/tests_xml.pro
+index 2c9e25d..f68add6 100644
+--- a/tests/tests_xml.pro
++++ b/tests/tests_xml.pro
+@@ -2,19 +2,19 @@ TEMPLATE = aux
+ 
+ OTHER_FILES += $$PWD/ performance_tests.xml.in $$PWD/run_test.sh
+ 
+-RUN_TEST=/opt/tests/libcommhistory-qt5/run_test.sh
++RUN_TEST=/opt/tests/libcommhistory-qt$${QT_MAJOR_VERSION}/run_test.sh
+ 
+ 
+ run_test_install.files = $$PWD/run_test.sh
+-run_test_install.path = /opt/tests/libcommhistory-qt5
++run_test_install.path = /opt/tests/libcommhistory-qt$${QT_MAJOR_VERSION}
+ 
+ 
+ unit_xml.target = tests.xml
+-unit_xml.depends = $$PWD/tests.xml.in
++unit_xml.depends = $$tests.xml.in
+ unit_xml.commands = sed -e "s:@RUN_TEST@:$${RUN_TEST}:g" $< > $@
+ unit_xml.CONFIG += no_check_exist
+ 
+-unit_tests_install.path = /opt/tests/libcommhistory-qt5/auto
++unit_tests_install.path = /opt/tests/libcommhistory-qt$${QT_MAJOR_VERSION}/auto
+ unit_tests_install.files = $$unit_xml.target
+ unit_tests_install.depends = unit_xml
+ unit_tests_install.CONFIG += no_check_exist
+@@ -25,7 +25,7 @@ perf_xml.depends = $$PWD/performance_tests.xml.in
+ perf_xml.commands = sed -e "s:@RUN_TEST@:$${RUN_TEST}:g" $< > $@
+ perf_xml.CONFIG += no_check_exist
+ 
+-perf_tests_install.path = /opt/tests/libcommhistory-qt5/performance
++perf_tests_install.path = /opt/tests/libcommhistory-qt$${QT_MAJOR_VERSION}/performance
+ perf_tests_install.files = $$perf_xml.target
+ perf_tests_install.depends = perf_xml
+ perf_tests_install.CONFIG += no_check_exist
+diff --git a/tests/ut_callmodel/callmodeltest.cpp b/tests/ut_callmodel/callmodeltest.cpp
+index 6163e15..800091e 100644
+--- a/tests/ut_callmodel/callmodeltest.cpp
++++ b/tests/ut_callmodel/callmodeltest.cpp
+@@ -58,8 +58,11 @@ void CallModelTest::initTestCase()
+ {
+     initTestDatabase();
+     QVERIFY( QDBusConnection::sessionBus().isConnected() );
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ 
+     Group group1, group2;
+     addTestGroups( group1, group2 );
+diff --git a/tests/ut_conversationmodel/conversationmodeltest.cpp b/tests/ut_conversationmodel/conversationmodeltest.cpp
+index 137d97d..6e987d0 100644
+--- a/tests/ut_conversationmodel/conversationmodeltest.cpp
++++ b/tests/ut_conversationmodel/conversationmodeltest.cpp
+@@ -45,7 +45,11 @@ void ConversationModelTest::initTestCase()
+ 
+     loop = new QEventLoop(this);
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand(QDateTime::currentDateTime().toSecsSinceEpoch());
++#else
+     qsrand(QDateTime::currentDateTime().toTime_t());
++#endif
+ 
+     addTestGroups(group1, group2);
+ 
+diff --git a/tests/ut_eventmodel/eventmodeltest.cpp b/tests/ut_eventmodel/eventmodeltest.cpp
+index 482245b..b92f8b1 100644
+--- a/tests/ut_eventmodel/eventmodeltest.cpp
++++ b/tests/ut_eventmodel/eventmodeltest.cpp
+@@ -59,9 +59,11 @@ void EventModelTest::groupsDeletedSlot(const QList<int> &groupIds)
+ void EventModelTest::initTestCase()
+ {
+     initTestDatabase();
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand(QDateTime::currentDateTime().toSecsSinceEpoch());
++#else
+     qsrand(QDateTime::currentDateTime().toTime_t());
+-
++#endif
+     new Adaptor(this);
+     QVERIFY(QDBusConnection::sessionBus().registerObject(
+                 "/EventModelTest", this));
+@@ -997,10 +999,15 @@ void EventModelTest::testCcBcc()
+     Event e;
+     QVERIFY(model.databaseIO().getEvent(event.id(), e));
+     QVERIFY(compareEvents(event, e));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QCOMPARE(QSet<QString>(e.ccList().begin(),e.ccList().end()) , QSet<QString>(ccList.begin(), ccList.end()));
++    QCOMPARE(QSet<QString>(e.bccList().begin(),e.bccList().end()) , QSet<QString>(bccList.begin(), bccList.end()));
++    QCOMPARE(QSet<QString>(e.toList().begin(),e.toList().end()) , QSet<QString>(toList.begin(), toList.end()));
++#else
+     QCOMPARE(e.ccList().toSet(), ccList.toSet());
+     QCOMPARE(e.bccList().toSet(), bccList.toSet());
+     QCOMPARE(e.toList().toSet(), toList.toSet());
+-
++#endif
+     event.resetModifiedProperties();
+     ccList.clear();
+     ccList << "112" << "358" << "mcc@mms.com";
+@@ -1020,9 +1027,15 @@ void EventModelTest::testCcBcc()
+ 
+     QVERIFY(model.databaseIO().getEvent(event.id(), e));
+     QVERIFY(compareEvents(event, e));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QCOMPARE(QSet<QString>(e.ccList().begin(),e.ccList().end()) , QSet<QString>(ccList.begin(), ccList.end()));
++    QCOMPARE(QSet<QString>(e.bccList().begin(),e.bccList().end()) , QSet<QString>(bccList.begin(), bccList.end()));
++    QCOMPARE(QSet<QString>(e.toList().begin(),e.toList().end()) , QSet<QString>(toList.begin(), toList.end()));
++#else
+     QCOMPARE(e.ccList().toSet(), ccList.toSet());
+     QCOMPARE(e.bccList().toSet(), bccList.toSet());
+     QCOMPARE(e.toList().toSet(), toList.toSet());
++#endif
+ 
+     event.resetModifiedProperties();
+     ccList.clear();
+diff --git a/tests/ut_groupmodel/groupmodeltest.cpp b/tests/ut_groupmodel/groupmodeltest.cpp
+index 0729f3e..8006cbe 100644
+--- a/tests/ut_groupmodel/groupmodeltest.cpp
++++ b/tests/ut_groupmodel/groupmodeltest.cpp
+@@ -107,8 +107,11 @@ void GroupModelTest::initTestCase()
+                 this, SLOT(groupsDeletedSlot(const QList<int> &))));
+ 
+     loop = new QEventLoop(this);
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand(QDateTime::currentDateTime().toSecsSinceEpoch());
++#else
+     qsrand(QDateTime::currentDateTime().toTime_t());
++#endif
+ }
+ 
+ void GroupModelTest::addInitialTestGroups()
+@@ -435,14 +438,24 @@ void GroupModelTest::updateGroups()
+     QVERIFY(model.databaseIO().getEvent(eventId, event));
+     QCOMPARE(group.lastEventId(), eventId);
+     QCOMPARE(group.lastMessageText(), QString("added to group"));
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(group.startTime().toSecsSinceEpoch(), event.startTime().toSecsSinceEpoch());
++    QCOMPARE(group.endTime().toSecsSinceEpoch(), event.endTime().toSecsSinceEpoch());
++#else
+     QCOMPARE(group.startTime().toTime_t(), event.startTime().toTime_t());
+     QCOMPARE(group.endTime().toTime_t(), event.endTime().toTime_t());
++#endif
+     QCOMPARE(group.subscriberIdentity(), event.subscriberIdentity());
+ 
+     // add older event
+     int lastEventId = eventId;
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    uint lastStartTime = group.startTime().toSecsSinceEpoch();
++    uint lastEndTime = group.endTime().toSecsSinceEpoch();
++#else
+     uint lastStartTime = group.startTime().toTime_t();
+     uint lastEndTime = group.endTime().toTime_t();
++#endif
+     QString lastSubscriberIdentity = group.subscriberIdentity();
+     eventsCommitted.clear();
+     groupMoved.clear();
+@@ -459,8 +472,13 @@ void GroupModelTest::updateGroups()
+     QVERIFY(model.databaseIO().getEvent(eventId, event));
+     QCOMPARE(group.lastEventId(), lastEventId);
+     QCOMPARE(group.lastMessageText(), QString("added to group"));
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(group.startTime().toSecsSinceEpoch(), lastStartTime);
++    QCOMPARE(group.endTime().toSecsSinceEpoch(), lastEndTime);
++#else
+     QCOMPARE(group.startTime().toTime_t(), lastStartTime);
+     QCOMPARE(group.endTime().toTime_t(), lastEndTime);
++#endif
+     QCOMPARE(group.subscriberIdentity(), lastSubscriberIdentity);
+ 
+     // add new SMS event for second group, check for resorted list, correct contents and date
+@@ -478,8 +496,13 @@ void GroupModelTest::updateGroups()
+     QVERIFY(group.endTime() > modified);
+     Group testGroup;
+     QVERIFY(groupModel.databaseIO().getGroup(id, testGroup));
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(testGroup.startTime().toSecsSinceEpoch(), group.startTime().toSecsSinceEpoch());
++    QCOMPARE(testGroup.endTime().toSecsSinceEpoch(), group.endTime().toSecsSinceEpoch());
++#else
+     QCOMPARE(testGroup.startTime().toTime_t(), group.startTime().toTime_t());
+     QCOMPARE(testGroup.endTime().toTime_t(), group.endTime().toTime_t());
++#endif
+     QCOMPARE(testGroup.subscriberIdentity(), group.subscriberIdentity());
+ 
+     // add new IM event for second group, check for resorted list, correct contents and date
+@@ -499,8 +522,13 @@ void GroupModelTest::updateGroups()
+     QVERIFY(group.endTime() > modified);
+ 
+     QVERIFY(groupModel.databaseIO().getGroup(id, testGroup));
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(testGroup.startTime().toSecsSinceEpoch(), group.startTime().toSecsSinceEpoch());
++    QCOMPARE(testGroup.endTime().toSecsSinceEpoch(), group.endTime().toSecsSinceEpoch());
++#else
+     QCOMPARE(testGroup.startTime().toTime_t(), group.startTime().toTime_t());
+     QCOMPARE(testGroup.endTime().toTime_t(), group.endTime().toTime_t());
++#endif
+     QCOMPARE(testGroup.subscriberIdentity(), group.subscriberIdentity());
+ 
+     // check if status message is really not added to the group
+@@ -706,9 +734,15 @@ void GroupModelTest::streamingQuery()
+ 
+     QTRY_COMPARE(modelReady.count(), 1);
+     QVERIFY(!streamModel.canFetchMore(QModelIndex()));
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QCOMPARE(QSet<int>(idsOrig.begin(), idsOrig.end()).size(), idsOrig.size());
++    QCOMPARE(QSet<int>(idsStream.begin(), idsStream.end()).size(), idsStream.size());
++    QVERIFY(QSet<int>(idsOrig.begin(), idsOrig.end()) == QSet<int>(idsStream.begin(), idsStream.end()));
++#else
+     QCOMPARE(idsOrig.toSet().size(), idsOrig.size());
+     QCOMPARE(idsStream.toSet().size(), idsStream.size());
+     QVERIFY(idsOrig.toSet() == idsStream.toSet());
++#endif
+ 
+     modelThread.quit();
+     modelThread.wait(5000);
+@@ -962,6 +996,10 @@ void GroupModelTest::resolveContact()
+ {
+     ContactChangeListener contactChangeListener;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
++
+     GroupModel groupModel;
+     groupModel.setResolveContacts(GroupManager::ResolveImmediately);
+     groupModel.setQueryMode(EventModel::AsyncQuery);
+@@ -1303,16 +1341,24 @@ void GroupModelTest::endTimeUpdate()
+     groupUpdated.clear();
+ 
+     // verify run-time update
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
++    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
++#else
+     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestDate.toTime_t());
+     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestDate.toTime_t());
+-
++#endif
+     // and database update
+     modelReady.clear();
+     QVERIFY(model.getGroups("endTimeUpdate"));
+     QTRY_COMPARE(modelReady.count(), 1);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
++    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
++#else
+     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestDate.toTime_t());
+     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestDate.toTime_t());
+-
++#endif
+     // add an event to each group to get them to show up in getGroups()
+     eventsCommitted.clear();
+     addTestEvent(eventModel, Event::IMEvent, Event::Outbound, "endTimeUpdate",
+@@ -1327,16 +1373,25 @@ void GroupModelTest::endTimeUpdate()
+ 
+     // verify run-time update
+     QCOMPARE(model.group(model.index(0, 0)).lastEventId(), latestEventId);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
++    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
++#else
+     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestDate.toTime_t());
+     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestDate.toTime_t());
+-
++#endif
+     // and database update
+     modelReady.clear();
+     QVERIFY(model.getGroups("endTimeUpdate"));
+     QTRY_COMPARE(modelReady.count(), 1);
+     QCOMPARE(model.group(model.index(0, 0)).lastEventId(), latestEventId);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
++    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestDate.toSecsSinceEpoch());
++#else
+     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestDate.toTime_t());
+     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestDate.toTime_t());
++#endif
+ 
+     // check group updates on modify event
+     Event event;
+@@ -1354,8 +1409,13 @@ void GroupModelTest::endTimeUpdate()
+     QVERIFY(model.getGroups("endTimeUpdate"));
+     QTRY_COMPARE(modelReady.count(), 1);
+     QCOMPARE(model.group(model.index(0, 0)).lastEventId(), latestEventId);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), latestestDate.toSecsSinceEpoch());
++    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), latestestDate.toSecsSinceEpoch());
++#else
+     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), latestestDate.toTime_t());
+     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), latestestDate.toTime_t());
++#endif
+ 
+     // check group updates on delete event
+     eventsCommitted.clear();
+@@ -1366,8 +1426,13 @@ void GroupModelTest::endTimeUpdate()
+     modelReady.clear();
+     QVERIFY(model.getGroups("endTimeUpdate"));
+     QTRY_COMPARE(modelReady.count(), 1);
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QCOMPARE(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch(), oldDate.toSecsSinceEpoch());
++    QCOMPARE(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch(), oldDate.toSecsSinceEpoch());
++#else
+     QCOMPARE(model.group(model.index(0, 0)).startTime().toTime_t(), oldDate.toTime_t());
+     QCOMPARE(model.group(model.index(0, 0)).endTime().toTime_t(), oldDate.toTime_t());
++#endif
+ 
+     // add overlapping event with receive time older than oldDate but the newest sent time
+     // the event should not be picked up as the last event because of the old receive time
+@@ -1392,16 +1457,26 @@ void GroupModelTest::endTimeUpdate()
+ 
+     // verify run-time update
+     QVERIFY(model.group(model.index(0, 0)).lastEventId() != olEvent.id());
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QVERIFY(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch() != olEvent.startTime().toSecsSinceEpoch());
++    QVERIFY(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch() != olEvent.endTime().toSecsSinceEpoch());
++#else
+     QVERIFY(model.group(model.index(0, 0)).startTime().toTime_t() != olEvent.startTime().toTime_t());
+     QVERIFY(model.group(model.index(0, 0)).endTime().toTime_t() != olEvent.endTime().toTime_t());
++#endif
+ 
+     // and tracker update
+     modelReady.clear();
+     QVERIFY(model.getGroups("endTimeUpdate"));
+     QTRY_COMPARE(modelReady.count(), 1);
+     QVERIFY(model.group(model.index(0, 0)).lastEventId() != olEvent.id());
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    QVERIFY(model.group(model.index(0, 0)).startTime().toSecsSinceEpoch() != olEvent.startTime().toSecsSinceEpoch());
++    QVERIFY(model.group(model.index(0, 0)).endTime().toSecsSinceEpoch() != olEvent.endTime().toSecsSinceEpoch());
++#else
+     QVERIFY(model.group(model.index(0, 0)).startTime().toTime_t() != olEvent.startTime().toTime_t());
+     QVERIFY(model.group(model.index(0, 0)).endTime().toTime_t() != olEvent.endTime().toTime_t());
++#endif
+ }
+ 
+ QTEST_MAIN(GroupModelTest)
+diff --git a/tests/ut_recentcontactsmodel/recentcontactsmodeltest.cpp b/tests/ut_recentcontactsmodel/recentcontactsmodeltest.cpp
+index a0d2286..262f96d 100644
+--- a/tests/ut_recentcontactsmodel/recentcontactsmodeltest.cpp
++++ b/tests/ut_recentcontactsmodel/recentcontactsmodeltest.cpp
+@@ -136,7 +136,11 @@ void RecentContactsModelTest::initTestCase()
+     QVERIFY(QDBusConnection::sessionBus().isConnected());
+     ContactChangeListener contactChangeListener;
+ 
+-    qsrand(QDateTime::currentDateTime().toTime_t());
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
++    qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ 
+     addTestGroups( group1, group2 );
+ 
+diff --git a/tests/ut_recipienteventmodel/recipienteventmodeltest.cpp b/tests/ut_recipienteventmodel/recipienteventmodeltest.cpp
+index 208ca03..cdc2c97 100644
+--- a/tests/ut_recipienteventmodel/recipienteventmodeltest.cpp
++++ b/tests/ut_recipienteventmodel/recipienteventmodeltest.cpp
+@@ -36,7 +36,11 @@ void RecipientEventModelTest::initTestCase()
+ {
+     initTestDatabase();
+ 
+-    qsrand(QDateTime::currentDateTime().toTime_t());
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
++    qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ }
+ 
+ void RecipientEventModelTest::cleanupTestCase()
+diff --git a/tests/ut_singleeventmodel/singleeventmodeltest.cpp b/tests/ut_singleeventmodel/singleeventmodeltest.cpp
+index 7383c16..5e69736 100644
+--- a/tests/ut_singleeventmodel/singleeventmodeltest.cpp
++++ b/tests/ut_singleeventmodel/singleeventmodeltest.cpp
+@@ -20,7 +20,11 @@ void SingleEventModelTest::initTestCase()
+ {
+     initTestDatabase();
+ 
+-    qsrand(QDateTime::currentDateTime().toTime_t());
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
++    qsrand( QDateTime::currentDateTime().toTime_t() );
++#endif
+ 
+     addTestGroups(group1, group2);
+ }
+diff --git a/tools/commhistory-tool.cpp b/tools/commhistory-tool.cpp
+index cd65376..1cf136a 100644
+--- a/tools/commhistory-tool.cpp
++++ b/tools/commhistory-tool.cpp
+@@ -25,6 +25,9 @@
+ #include <QDebug>
+ #include <QUuid>
+ #include <QEventLoop>
++#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
++#include <QRandomGenerator>
++#endif
+ 
+ #include "../src/groupmodel.h"
+ #include "../src/conversationmodel.h"
+@@ -267,21 +270,30 @@ int doAdd(const QStringList &arguments, const QVariantMap &options)
+         direction = Event::Inbound;
+     if (options.contains("-out"))
+         direction = Event::Outbound;
+-
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    srand(QDateTime::currentDateTime().toSecsSinceEpoch());
++#else
+     qsrand(QDateTime::currentDateTime().toTime_t());
++#endif
+     bool randomRemote = true;
+     if (arguments.count() > 3) {
+         remoteUid = arguments.at(3);
+         randomRemote = false;
+     }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     EventModel model;
+     QList<Event> events;
+     for (int i = 0; i < count; i++) {
+         Event e;
+ 
+         if (direction == Event::UnknownDirection)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            e.setDirection((Event::EventDirection)((qrand.generate() & 1) + 1));
++#else
+             e.setDirection((Event::EventDirection)((qrand() & 1) + 1));
++#endif
+         else
+             e.setDirection(direction);
+ 
+@@ -371,9 +383,11 @@ int doAdd(const QStringList &arguments, const QVariantMap &options)
+ int doAddCall( const QStringList &arguments, const QVariantMap &options )
+ {
+     Q_UNUSED( options )
+-
++#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
++    srand( QDateTime::currentDateTime().toSecsSinceEpoch() );
++#else
+     qsrand( QDateTime::currentDateTime().toTime_t() );
+-
++#endif
+     int count = 1;
+     if (options.contains("-n")) {
+         count = options.value("-n").toInt();
+@@ -405,9 +419,15 @@ int doAddCall( const QStringList &arguments, const QVariantMap &options )
+         } else if (arguments.last() == "received") {
+             callType = 2;
+         }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+         if (callType == -1)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            callType = qrand.generate() % 3;
++#else
+             callType = qrand() % 3;
++#endif
+ 
+         Event::EventDirection direction = Event::Inbound;
+         bool isMissed = false;
+@@ -487,14 +507,26 @@ int doAddClass0(const QStringList &arguments, const QVariantMap &options)
+                 << "Class Zero SMS"
+                 << "The Steelers has won the Superbowl. Party-time!";
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    QRandomGenerator qrand;
++#endif
+     // prepare class zero sms
+     Event e;
+ 
+     e.setLocalUid(RING_ACCOUNT);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    e.setRecipients(Recipient(e.localUid(), sosRemoteUids.at(qrand.generate() % sosRemoteUids.count())));
++#else
+     e.setRecipients(Recipient(e.localUid(), sosRemoteUids.at(qrand() % sosRemoteUids.count())));
++#endif
+     e.setDirection(Event::Inbound);
+     e.setType(Event::ClassZeroSMSEvent);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++    e.setFreeText(sosMessages.at(qrand.generate() % sosMessages.count()));
++#else
+     e.setFreeText(sosMessages.at(qrand() % sosMessages.count()));
++#endif
++
+     QDateTime now = QDateTime::currentDateTime();
+     e.setStartTime(now);
+     e.setEndTime(now);
+@@ -1176,8 +1208,11 @@ int doJsonImport(const QStringList &arguments, const QVariantMap &options)
+             qCritical() << "Invalid end time";
+             return -1;
+         }
+-
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++        dateOffset = endTime.secsTo(QDateTime(QDate::currentDate().startOfDay()));
++#else
+         dateOffset = endTime.secsTo(QDateTime(QDate::currentDate()));
++#endif
+     }
+ 
+     bool ok = true;
+diff --git a/tools/tools.pro b/tools/tools.pro
+index 33a54d5..70910cb 100644
+--- a/tools/tools.pro
++++ b/tools/tools.pro
+@@ -31,8 +31,8 @@ QT += dbus contacts
+ CONFIG += debug \
+     pkgconfig
+ 
+-PKGCONFIG += qtcontacts-sqlite-qt5-extensions contactcache-qt5
+-LIBS += -L../src ../src/libcommhistory-qt5.so
++PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions contactcache-qt$${QT_MAJOR_VERSION}
++LIBS += -L../src ../src/libcommhistory-qt$${QT_MAJOR_VERSION}.so
+ 
+ INCLUDEPATH += ../src 
+ HEADERS += catcher.h

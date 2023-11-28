@@ -1,0 +1,135 @@
+From 88eb316adc7ef16d20ad2c5bf9051c8a6fc67199 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 16 Jul 2023 12:06:07 +0000
+Subject: [PATCH] compile with qt6
+
+---
+ src/notification.h       |  4 +++-
+ src/notification_p.h     |  8 +++++---
+ src/notificationexport.h | 10 ++++++++++
+ src/plugin/plugin.pro    |  2 +-
+ src/src.pro              | 11 +++++++----
+ 5 files changed, 26 insertions(+), 9 deletions(-)
+ create mode 100644 src/notificationexport.h
+
+diff --git a/src/notification.h b/src/notification.h
+index 667b05a..e70958d 100644
+--- a/src/notification.h
++++ b/src/notification.h
+@@ -33,6 +33,8 @@
+ #ifndef NOTIFICATION_H
+ #define NOTIFICATION_H
+ 
++#include <notificationexport.h>
++
+ #include <QStringList>
+ #include <QDateTime>
+ #include <QVariantHash>
+@@ -43,7 +45,7 @@ struct NotificationData;
+ class NotificationManagerProxy;
+ class NotificationPrivate;
+ 
+-class Q_DECL_EXPORT Notification : public QObject
++class NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT Notification : public QObject
+ {
+     Q_OBJECT
+     Q_PROPERTY(QString category READ category WRITE setCategory NOTIFY categoryChanged)
+diff --git a/src/notification_p.h b/src/notification_p.h
+index 4b3164e..a6fe493 100644
+--- a/src/notification_p.h
++++ b/src/notification_p.h
+@@ -33,6 +33,8 @@
+ #ifndef NOTIFICATION_P_H
+ #define NOTIFICATION_P_H
+ 
++#include <notificationexport.h>
++
+ #include <QStringList>
+ #include <QDateTime>
+ #include <QVariantHash>
+@@ -59,7 +61,7 @@ struct NotificationData
+ 
+ class NotificationManagerProxy;
+ 
+-class Q_DECL_EXPORT NotificationConnectionManager {
++class NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT NotificationConnectionManager {
+ public:
+     QSharedPointer<NotificationManagerProxy> proxy;
+     QSharedPointer<QDBusConnection> dBusConnection;
+@@ -67,8 +69,8 @@ public:
+     static bool useDBusConnection(const QDBusConnection &bus);
+ };
+ 
+-Q_DECL_EXPORT QDBusArgument &operator<<(QDBusArgument &, const NotificationData &);
+-Q_DECL_EXPORT const QDBusArgument &operator>>(const QDBusArgument &, NotificationData &);
++NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT QDBusArgument &operator<<(QDBusArgument &, const NotificationData &);
++NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT const QDBusArgument &operator>>(const QDBusArgument &, NotificationData &);
+ 
+ Q_DECLARE_METATYPE(NotificationData)
+ Q_DECLARE_METATYPE(QList<NotificationData>)
+diff --git a/src/notificationexport.h b/src/notificationexport.h
+new file mode 100644
+index 0000000..2ce8200
+--- /dev/null
++++ b/src/notificationexport.h
+@@ -0,0 +1,10 @@
++#ifndef NEMOTHUMBNAIL_EXPORTS_H
++#define NEMOTHUMBNAIL_EXPORTS_H
++
++#if defined(BUILD_NEMO_QML_PLUGIN_NOTIFICATIONS_LIB)
++    #define NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT Q_DECL_EXPORT
++#else
++    #define NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT Q_DECL_IMPORT
++#endif
++
++#endif // NEMOTHUMBNAIL_EXPORTS_H
+\ No newline at end of file
+diff --git a/src/plugin/plugin.pro b/src/plugin/plugin.pro
+index 2d90052..7837f62 100644
+--- a/src/plugin/plugin.pro
++++ b/src/plugin/plugin.pro
+@@ -8,7 +8,7 @@ CONFIG += qt plugin hide_symbols
+ QT += qml
+ 
+ INCLUDEPATH += ..
+-LIBS += -L.. -lnemonotifications-qt5
++LIBS += -L.. -lnemonotifications-qt$${QT_MAJOR_VERSION}
+ SOURCES += plugin.cpp
+ 
+ target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
+diff --git a/src/src.pro b/src/src.pro
+index 5b383ba..7a93631 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -1,7 +1,7 @@
+ system($$[QT_HOST_BINS]/qdbusxml2cpp org.freedesktop.Notifications.xml -p notificationmanagerproxy -c NotificationManagerProxy -i notification_p.h)
+ 
+ TEMPLATE = lib
+-TARGET = nemonotifications-qt5
++TARGET = nemonotifications-qt$${QT_MAJOR_VERSION}
+ CONFIG += qt hide_symbols create_pc create_prl
+ QT += dbus
+ 
+@@ -11,13 +11,16 @@ SOURCES += notification.cpp \
+ HEADERS += \
+     notification.h \
+     notification_p.h \
+-    notificationmanagerproxy.h
++    notificationmanagerproxy.h \
++    notificationexport.h
++
++DEFINES += BUILD_NEMO_QML_PLUGIN_NOTIFICATIONS_LIB
+ 
+ target.path = $$[QT_INSTALL_LIBS]
+ pkgconfig.files = $$TARGET.pc
+ pkgconfig.path = $$target.path/pkgconfig
+-headers.files = notification.h notification_p.h
+-headers.path = /usr/include/nemonotifications-qt5
++headers.files = notification.h notification_p.h notificationexport.h
++headers.path = /usr/include/nemonotifications-qt$${QT_MAJOR_VERSION}
+ 
+ QMAKE_PKGCONFIG_NAME = lib$$TARGET
+ QMAKE_PKGCONFIG_DESCRIPTION = Convenience library for sending notifications
+-- 
+2.41.0
+

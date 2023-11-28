@@ -19,9 +19,9 @@ pkgdesc="Glacier Camera"
 arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('LGPL-2.0-or-later')
-depends=('qt5-glacier-app' 'nemo-qml-plugin-settings')
+depends=('qt6-glacier-app' 'nemo-qml-plugin-settings')
 optdepends=()
-makedepends=('git' 'qt5-tools' 'cmake')
+makedepends=('git' 'qt6-tools' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

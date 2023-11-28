@@ -11,15 +11,25 @@ pkgdesc="Nemo QML notifications plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-notifications"
 license=('BSD-3-Clause')
-depends=('qt5-declarative')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('6ae6f85cb7d51a347a209f34926ac221963af226f7393479c803115a4c4bc13d')
+depends=('qt6-declarative')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-compile-with-qt6.patch'
+)
+sha256sums=('6ae6f85cb7d51a347a209f34926ac221963af226f7393479c803115a4c4bc13d'
+    'ce626e0355ce08a5eca2d7fe33424202b0245ba2523018c2e988880671325eae'
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 --input="${srcdir}/0001-compile-with-qt6.patch"
+}
+
 
 build() {
   cd $pkgname-$pkgver
   mkdir -p build
   cd build
-  qmake VERSION=${pkgver} ..
+  qmake6 VERSION=${pkgver} ..
   make
 }
 

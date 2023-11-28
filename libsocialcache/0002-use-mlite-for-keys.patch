@@ -1,0 +1,134 @@
+From 8f957648043630cb0c5dd7afe38a2f0735d38ad6 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Thu, 14 Sep 2023 17:34:08 +0000
+Subject: [PATCH 2/2] use mlite for keys
+
+---
+ src/qml/keyproviderhelper.cpp | 54 +++++++++++++----------------------
+ src/qml/qml.pro               |  2 +-
+ 2 files changed, 21 insertions(+), 35 deletions(-)
+
+diff --git a/src/qml/keyproviderhelper.cpp b/src/qml/keyproviderhelper.cpp
+index 9be7201..a02b82d 100644
+--- a/src/qml/keyproviderhelper.cpp
++++ b/src/qml/keyproviderhelper.cpp
+@@ -18,7 +18,7 @@
+  */
+ 
+ #include "keyproviderhelper.h"
+-#include <sailfishkeyprovider.h>
++#include <MGConfItem>
+ 
+ KeyProviderHelper::KeyProviderHelper(QObject *parent)
+     : QObject(parent)
+@@ -42,15 +42,12 @@ QString KeyProviderHelper::dropboxClientId()
+ void KeyProviderHelper::loadDropbox()
+ {
+     m_triedLoadingDropbox = true;
+-    char *cClientId = NULL;
+-    int cSuccess = SailfishKeyProvider_storedKey("dropbox", "dropbox-sync", "client_id",
+-                                                 &cClientId);
+-    if (cSuccess != 0 || cClientId == NULL) {
++    QString cClientId = MGConfItem(QStringLiteral("/socialcache/keys/dropbox/client_id")).value(0).toString();
++    if (cClientId.isEmpty()) {
+         return;
+     }
+ 
+-    m_dropboxClientId = QLatin1String(cClientId);
+-    free(cClientId);
++    m_dropboxClientId = cClientId;
+ }
+ 
+ QString KeyProviderHelper::facebookClientId()
+@@ -101,59 +98,48 @@ QString KeyProviderHelper::vkClientId()
+ void KeyProviderHelper::loadFacebook()
+ {
+     m_triedLoadingFacebook = true;
+-    char *cClientId = NULL;
+-    int cSuccess = SailfishKeyProvider_storedKey("facebook", "facebook-sync", "client_id",
+-                                                 &cClientId);
+-    if (cSuccess != 0 || cClientId == NULL) {
++    QString cClientId = MGConfItem(QStringLiteral("/socialcache/keys/facebook/client_id")).value(0).toString();
++
++    if (cClientId.isEmpty()) {
+         return;
+     }
+ 
+-    m_facebookClientId = QLatin1String(cClientId);
+-    free(cClientId);
++    m_facebookClientId = cClientId;
+ }
+ 
+ void KeyProviderHelper::loadTwitter()
+ {
+     m_triedLoadingTwitter = true;
+-    char *cConsumerKey = NULL;
+-    char *cConsumerSecret = NULL;
+-    int ckSuccess = SailfishKeyProvider_storedKey("twitter", "twitter-sync", "consumer_key", &cConsumerKey);
+-    int csSuccess = SailfishKeyProvider_storedKey("twitter", "twitter-sync", "consumer_secret", &cConsumerSecret);
++    QString cConsumerKey = MGConfItem(QStringLiteral("/socialcache/keys/twitter/consumer_key")).value(0).toString();
++    QString cConsumerSecret = MGConfItem(QStringLiteral("/socialcache/keys/twitter/consumer_secret")).value(0).toString();
+ 
+-    if (ckSuccess != 0 || cConsumerKey == NULL || csSuccess != 0 || cConsumerSecret == NULL) {
++    if (cConsumerKey.isEmpty() || cConsumerSecret.isEmpty()) {
+         return;
+     }
+ 
+-    m_twitterConsumerKey = QLatin1String(cConsumerKey);
+-    m_twitterConsumerSecret = QLatin1String(cConsumerSecret);
+-    free(cConsumerKey);
+-    free(cConsumerSecret);
++    m_twitterConsumerKey = cConsumerKey;
++    m_twitterConsumerSecret = cConsumerSecret;
+ }
+ 
+ void KeyProviderHelper::loadOneDrive()
+ {
+     m_triedLoadingOneDrive = true;
+-    char *cClientId = NULL;
+-    int cSuccess = SailfishKeyProvider_storedKey("onedrive", "onedrive-sync", "client_id",
+-                                                 &cClientId);
+-    if (cSuccess != 0 || cClientId == NULL) {
++    QString cClientId = MGConfItem(QStringLiteral("/socialcache/keys/onedrive/client_id")).value(0).toString();
++    if (cClientId.isEmpty()) {
+         return;
+     }
+ 
+-    m_oneDriveClientId = QLatin1String(cClientId);
+-    free(cClientId);
++    m_oneDriveClientId = cClientId;
+ }
+ 
+ void KeyProviderHelper::loadVk()
+ {
+     m_triedLoadingVk = true;
+-    char *cClientId = NULL;
+-    int cSuccess = SailfishKeyProvider_storedKey("vk", "vk-sync", "client_id",
+-                                                 &cClientId);
+-    if (cSuccess != 0 || cClientId == NULL) {
++    QString cClientId = MGConfItem(QStringLiteral("/socialcache/keys/vk/client_id")).value(0).toString();
++
++    if (cClientId.isEmpty()) {
+         return;
+     }
+ 
+-    m_vkClientId = QLatin1String(cClientId);
+-    free(cClientId);
++    m_vkClientId = cClientId;
+ }
+diff --git a/src/qml/qml.pro b/src/qml/qml.pro
+index 1609326..e3493d1 100644
+--- a/src/qml/qml.pro
++++ b/src/qml/qml.pro
+@@ -18,7 +18,7 @@ CONFIG(nodeps):{
+ DEFINES += NO_DEPS
+ } else {
+ CONFIG += link_pkgconfig
+-PKGCONFIG += buteosyncfw$${QT_MAJOR_VERSION} libsailfishkeyprovider
++PKGCONFIG += buteosyncfw$${QT_MAJOR_VERSION} mlite$${QT_MAJOR_VERSION}
+ HEADERS += synchelper.h \
+     keyproviderhelper.h
+ SOURCES += synchelper.cpp \
+-- 
+2.42.0
+

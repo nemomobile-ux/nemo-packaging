@@ -1,0 +1,201 @@
+diff --git a/.qmake.conf b/.qmake.conf
+index 8840bd9..0742660 100644
+--- a/.qmake.conf
++++ b/.qmake.conf
+@@ -1,3 +1 @@
+-load(qt_build_config)
+-
+ MODULE_VERSION = 0.0.0
+diff --git a/qtfeedback.pro b/qtfeedback.pro
+index 58c33f2..bd0b8c4 100644
+--- a/qtfeedback.pro
++++ b/qtfeedback.pro
+@@ -1 +1,2 @@
+-load(qt_parts)
++TEMPLATE = subdirs
++SUBDIRS += src examples
+diff --git a/src/feedback/feedback.pro b/src/feedback/feedback.pro
+index 06350fd..aae141a 100644
+--- a/src/feedback/feedback.pro
++++ b/src/feedback/feedback.pro
+@@ -1,13 +1,12 @@
+-TARGET = QtFeedback
++TARGET = Qt$${QT_MAJOR_VERSION}Feedback
+ QT = core
++TEMPLATE = lib
+ 
+ QMAKE_DOCS = $$PWD/../../doc/qtfeedback.qdocconf
+ 
+ MODULE_PLUGIN_TYPES = \
+     feedback
+ 
+-load(qt_module)
+-
+ PUBLIC_HEADERS += qfeedbackglobal.h \
+                   qfeedbackactuator.h \
+                   qfeedbackeffect.h \
+@@ -22,3 +21,12 @@ HEADERS =  $$PUBLIC_HEADERS $$PRIVATE_HEADERS
+ SOURCES += qfeedbackactuator.cpp \
+            qfeedbackeffect.cpp \
+            qfeedbackplugin.cpp
++
++public_headers.files = $$PUBLIC_HEADERS
++public_headers.path = /usr/include/qt6/QtFeedback
++
++target.path = $$[QT_INSTALL_LIBS]
++
++INSTALLS += \
++        public_headers \
++        target
+diff --git a/src/feedback/qfeedbackactuator.h b/src/feedback/qfeedbackactuator.h
+index 845f561..cbb25e1 100644
+--- a/src/feedback/qfeedbackactuator.h
++++ b/src/feedback/qfeedbackactuator.h
+@@ -43,7 +43,6 @@
+ #include "qfeedbackglobal.h"
+ #include <QtCore/QObject>
+ 
+-QT_BEGIN_HEADER
+ QT_BEGIN_NAMESPACE
+ 
+ class QFeedbackEffect;
+@@ -99,6 +98,5 @@ private:
+ };
+ 
+ QT_END_NAMESPACE
+-QT_END_HEADER
+ 
+ #endif // QFEEDBACKACTUATOR_H
+diff --git a/src/feedback/qfeedbackeffect.h b/src/feedback/qfeedbackeffect.h
+index 59c2b79..0df21b5 100644
+--- a/src/feedback/qfeedbackeffect.h
++++ b/src/feedback/qfeedbackeffect.h
+@@ -41,12 +41,12 @@
+ #define QFEEDBACKEFFECT_H
+ 
+ #include "qfeedbackglobal.h"
++#include "qfeedbackactuator.h"
+ 
+ #include <QtCore/QObject>
+ #include <QtCore/QStringList>
+ #include <QtCore/QUrl>
+ 
+-QT_BEGIN_HEADER
+ QT_BEGIN_NAMESPACE
+ 
+ class QFeedbackActuator;
+@@ -205,6 +205,5 @@ private:
+ };
+ 
+ QT_END_NAMESPACE
+-QT_END_HEADER
+ 
+ #endif // QFEEDBACKEFFECT_H
+diff --git a/src/feedback/qfeedbackplugininterfaces.h b/src/feedback/qfeedbackplugininterfaces.h
+index c3e27bd..60ca25c 100644
+--- a/src/feedback/qfeedbackplugininterfaces.h
++++ b/src/feedback/qfeedbackplugininterfaces.h
+@@ -43,7 +43,6 @@
+ #include <qfeedbackactuator.h>
+ #include <qfeedbackeffect.h>
+ 
+-QT_BEGIN_HEADER
+ QT_BEGIN_NAMESPACE
+ 
+ class Q_FEEDBACK_EXPORT QFeedbackInterface
+@@ -132,6 +131,5 @@ Q_DECLARE_INTERFACE(QFeedbackThemeInterface, "com.nokia.qt.QFeedbackThemeInterfa
+ Q_DECLARE_INTERFACE(QFeedbackFileInterface, "com.nokia.qt.QFeedbackFileInterface/1.0")
+ 
+ QT_END_NAMESPACE
+-QT_END_HEADER
+ 
+ #endif // QFEEDBACKPLUGININTERFACES_H
+diff --git a/src/imports/feedback/feedback.pro b/src/imports/feedback/feedback.pro
+index c1170d4..7cf024c 100644
+--- a/src/imports/feedback/feedback.pro
++++ b/src/imports/feedback/feedback.pro
+@@ -1,4 +1,16 @@
+-QT = core qml feedback
++TEMPLATE = lib
++QT = core qml
++TARGET = declarative_feedback
++MODULENAME = feedback
++TARGETPATH = $$[QT_INSTALL_QML]/$$MODULENAME
++
++INCLUDEPATH += ../../feedback
++
++CONFIG += \
++        plugin \
++        hide_symbols \
++        c++11 \
++        link_pkgconfig
+ 
+ HEADERS += qdeclarativehapticseffect_p.h \
+            qdeclarativefileeffect_p.h \
+@@ -13,4 +25,15 @@ SOURCES += qdeclarativehapticseffect.cpp \
+            qdeclarativefeedbackactuator.cpp \
+            qdeclarativefeedbackeffect.cpp
+ 
+-load(qml_plugin)
++import.files = \
++        plugins.qmltypes \
++        qmldir
++
++import.path = $$TARGETPATH
++
++target.path = $$TARGETPATH
++
++INSTALLS += \
++        import \
++        target
++
+diff --git a/src/imports/feedback/qdeclarativehapticseffect.cpp b/src/imports/feedback/qdeclarativehapticseffect.cpp
+index 47e2634..de04f97 100644
+--- a/src/imports/feedback/qdeclarativehapticseffect.cpp
++++ b/src/imports/feedback/qdeclarativehapticseffect.cpp
+@@ -37,6 +37,7 @@
+ **
+ ****************************************************************************/
+ 
++#include "qdeclarativefeedbackeffect_p.h"
+ #include "qdeclarativehapticseffect_p.h"
+ /*!
+     \qmltype HapticsEffect
+@@ -220,12 +221,16 @@ QDeclarativeFeedbackActuator* QDeclarativeHapticsEffect::actuator() const
+     \sa Actuator
+ */
+ QQmlListProperty<QDeclarativeFeedbackActuator> QDeclarativeHapticsEffect::availableActuators() {
++#if (QT_VERSION > QT_VERSION_CHECK(6,0,0))
++    return QQmlListProperty<QDeclarativeFeedbackActuator>();
++#else
+     return QQmlListProperty<QDeclarativeFeedbackActuator>(this,
+                                                                   0,
+                                                                   0 /*appending actuators are not allowed*/,
+                                                                   actuator_count,
+                                                                   actuator_at,
+                                                                   0 /*removing actuators are not allowed*/);
++#endif
+ }
+ 
+ int QDeclarativeHapticsEffect::actuator_count(QQmlListProperty<QDeclarativeFeedbackActuator> *prop)
+diff --git a/src/src.pro b/src/src.pro
+index ac223c9..13125a8 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -1,3 +1,3 @@
+ TEMPLATE = subdirs
+ CONFIG  += ordered
+-SUBDIRS = feedback plugins imports
++SUBDIRS = feedback imports
+diff --git a/tests/auto/qfeedbackplugin/testplugin/testplugin.pro b/tests/auto/qfeedbackplugin/testplugin/testplugin.pro
+index 774a82a..ea4cc0f 100644
+--- a/tests/auto/qfeedbackplugin/testplugin/testplugin.pro
++++ b/tests/auto/qfeedbackplugin/testplugin/testplugin.pro
+@@ -2,7 +2,6 @@ TARGET = qtfeedback_testplugin
+ QT = core feedback
+ 
+ PLUGIN_TYPE = feedback
+-load(qt_plugin)
+ 
+ HEADERS += qfeedbacktestplugin.h
+ SOURCES += qfeedbacktestplugin.cpp

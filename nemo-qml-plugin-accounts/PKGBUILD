@@ -8,13 +8,13 @@ pkgdesc="Accounts plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-accounts"
 license=('BSD')
-depends=('qt5-base')
+depends=('qt6-base')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('1e05b3e537ba12ef948f74c3a86842da2f358dc854401d120e35dfe7e6eddd53')
 
 build() {
     cd $pkgname-$pkgver
-    qmake
+    qmake6
     make
 }
 
