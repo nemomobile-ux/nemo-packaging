@@ -5,25 +5,15 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-notifications
-pkgver=1.2.23
+pkgver=1.2.24
 pkgrel=1
 pkgdesc="Nemo QML notifications plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-notifications"
 license=('BSD-3-Clause')
 depends=('qt6-declarative')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    '0001-compile-with-qt6.patch'
-)
-sha256sums=('6ae6f85cb7d51a347a209f34926ac221963af226f7393479c803115a4c4bc13d'
-    'ce626e0355ce08a5eca2d7fe33424202b0245ba2523018c2e988880671325eae'
-)
-
-prepare() {
-  cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-compile-with-qt6.patch"
-}
-
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('66b71901a428d7100c19210c7c5ef7455cc77e49feeec42c26e6bc7b102a769e')
 
 build() {
   cd $pkgname-$pkgver
