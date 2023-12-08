@@ -4,14 +4,24 @@
 pkgname=python-pyotherside
 _pyname=pyotherside
 pkgver=1.6.0
-pkgrel=1
+pkgrel=2
 pkgdesc='Asynchronous Python 3 Bindings for Qt6'
 arch=('x86_64')
 url='https://thp.io/2011/pyotherside'
 license=('ISC')
 depends=('python' 'qt6-base' 'qt6-declarative' 'qt6-svg')
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/thp/${_pyname}/archive/${pkgver}.tar.gz")
-sha256sums=('ead71d0a549acb6664d72745fae5b1d4e433274c64be6a680ceeeef0754451ab')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/thp/${_pyname}/archive/${pkgver}.tar.gz"
+    '0001-Fix-build-error-with-Qt-6.5-fixes-128.patch'
+)
+sha256sums=('ead71d0a549acb6664d72745fae5b1d4e433274c64be6a680ceeeef0754451ab'
+'38c812fd58d2e566f0c93e7ad3510e2816e3dc14f1640dfc88c38bc064e4a72a'
+
+)
+
+prepare() {
+    cd "${_pyname}-${pkgver}/"
+    patch -p1 --input="${srcdir}/0001-Fix-build-error-with-Qt-6.5-fixes-128.patch"
+}
 
 build() {
 	cd "${_pyname}-${pkgver}/"
