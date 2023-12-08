@@ -16,7 +16,7 @@ depends=('qt6-base'
     'libmlocale'
     'telepathy-qt'
     'libqofono-qt6'
-    'libngf-qt'
+    'libngf-qt6'
     'nemo-qml-plugin-contacts'
     'nemo-qml-plugin-notifications>=1.0.12'
     'libqofonoext')
