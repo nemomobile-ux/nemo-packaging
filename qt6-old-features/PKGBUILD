@@ -9,8 +9,19 @@ url="https://github.com/nemomobile-ux"
 arch=('any')
 license=('GPL')
 depends=('perl')
-source=("https://github.com/nemomobile-ux/qt6-old-features/archive/refs/heads/master.zip")
-sha256sums=(SKIP)
+source=("https://github.com/nemomobile-ux/qt6-old-features/archive/refs/heads/master.zip"
+    '0001-trouble-with-c-11.patch'
+)
+sha256sums=(
+    SKIP
+    '9f6137df6050c353ca6fc822262d65afa2606becf9ede8e12d3a1bbf17aea499'
+)
+
+prepare() {
+    cd $pkgname-master
+    patch -p1 --input="${srcdir}/0001-trouble-with-c-11.patch"
+}
+
 package() {
     cd $pkgname-master
     mkdir -p $pkgdir/usr/lib/qt6/mkspecs/features/
