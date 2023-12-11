@@ -1,0 +1,57 @@
+From c6be1e20b789cf690eef7d7937d1b8aefa8a1a33 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sat, 9 Dec 2023 07:41:16 +0000
+Subject: [PATCH] update for qt6
+
+---
+ CMakeLists.txt                                 | 6 +++---
+ gtk-input-context/client-gtk/qt-keysym-map.cpp | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9503723..16066e1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -18,7 +18,7 @@ if(ENABLE_X11)
+     add_definitions(-DHAVE_X11)
+ endif()
+ 
+-find_package(Qt5Gui REQUIRED)
++find_package(Qt6Gui REQUIRED)
+ find_package(MaliitGLib REQUIRED)
+ 
+ if(ENABLE_GTK2)
+@@ -36,7 +36,7 @@ if(ENABLE_GTK2)
+         gtk-input-context/client-gtk/qt-keysym-map.h)
+ 
+     add_library(im-maliit2 MODULE ${SOURCE_FILES})
+-    target_link_libraries(im-maliit2 PRIVATE Gtk2::Gtk Qt5::Gui Maliit::GLib)
++    target_link_libraries(im-maliit2 PRIVATE Gtk2::Gtk Qt6::Gui Maliit::GLib)
+     set_property(TARGET im-maliit2 PROPERTY OUTPUT_NAME im-maliit)
+     set_property(TARGET im-maliit2 PROPERTY PREFIX "")
+     set_property(TARGET im-maliit2 PROPERTY LIBRARY_OUTPUT_DIRECTORY gtk-2.0)
+@@ -59,7 +59,7 @@ if(ENABLE_GTK3)
+             gtk-input-context/client-gtk/qt-keysym-map.h)
+ 
+     add_library(im-maliit3 MODULE ${SOURCE_FILES})
+-    target_link_libraries(im-maliit3 PRIVATE Gtk3::Gtk Qt5::Gui Maliit::GLib)
++    target_link_libraries(im-maliit3 PRIVATE Gtk3::Gtk Qt6::Gui Maliit::GLib)
+     set_property(TARGET im-maliit3 PROPERTY OUTPUT_NAME im-maliit)
+     set_property(TARGET im-maliit3 PROPERTY PREFIX "")
+     set_property(TARGET im-maliit3 PROPERTY LIBRARY_OUTPUT_DIRECTORY gtk-3.0)
+diff --git a/gtk-input-context/client-gtk/qt-keysym-map.cpp b/gtk-input-context/client-gtk/qt-keysym-map.cpp
+index 2c896d8..937ef9c 100644
+--- a/gtk-input-context/client-gtk/qt-keysym-map.cpp
++++ b/gtk-input-context/client-gtk/qt-keysym-map.cpp
+@@ -277,7 +277,7 @@ XKeySymToQTKey(uint keySym)
+                 return keySym;
+ #else
+ 	if (keySym < 0x3000 )
+-		return keySym | Qt::UNICODE_ACCEL;
++		return keySym;
+ 
+ 	for(i = 0; i < count; i++)
+ 		if(QtKeyXSymMaps[i].XKeySym == keySym)
+-- 
+2.43.0
+

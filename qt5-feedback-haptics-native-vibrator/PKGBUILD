@@ -6,7 +6,7 @@
 #set -o errexit
 #set -o xtrace
 
-pkgname=qt5-feedback-haptics-native-vibrator
+pkgname=qt6-feedback-haptics-native-vibrator
 pkgver=0.2.1
 pkgrel=1
 pkgdesc='Haptic feedback plugin using native vibrator'
