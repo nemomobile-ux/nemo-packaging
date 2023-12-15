@@ -9,8 +9,17 @@ arch=('aarch64')
 url='https://github.com/mer-hybris/qt5-qpa-hwcomposer-plugin.git'
 license=('GPL3' 'LGPL' 'custom')
 pkgdesc='Qt QPA plugin for Android hwcomposer'
-depends=('qt5-base' 'qt5-wayland' 'qt5-sensors-sensorfw' 'android-headers' 'libhybris')
-makedepends=('git')
+depends=(
+    'qt6-base'
+    'qt6-wayland'
+    'qt6-sensors-sensorfw'
+    'android-headers'
+    'libhybris'
+)
+makedepends=(
+    'git'
+    'qt6-old-features'
+)
 source=(${_pkgname}::git+https://github.com/nemomobile-ux/qt5-qpa-hwcomposer-plugin.git)
 md5sums=('SKIP')
 
