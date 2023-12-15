@@ -29,7 +29,7 @@ depends=('qt6-glacier-app'
 	'nemo-qml-plugin-configuration'
 	'nemo-qml-plugin-models>=0.2.1'
 	'nemo-qml-plugin-systemsettings>=0.8.0')
-makedepends=('git' 'qt6-tools' 'cmake')
+makedepends=('git' 'qt6-tools' 'clang' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

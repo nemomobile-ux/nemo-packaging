@@ -15,7 +15,7 @@ depends=('qt6-glacier-app'
     'libqofono-qt6'
     'nemo-qml-plugin-dbus')
 
-makedepends=('git' 'cmake' 'qt6-tools')
+makedepends=('git' 'cmake' 'qt6-tools' 'clang')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

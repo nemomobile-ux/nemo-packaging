@@ -21,7 +21,7 @@ url="https://$_host/$_project/$_gitname#branch=$_branch"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-thumbnailer' 'libresourceqt' 'qtdocgallery')
 optdepends=()
-makedepends=('git' 'qt6-tools' 'cmake')
+makedepends=('git' 'qt6-tools' 'clang' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

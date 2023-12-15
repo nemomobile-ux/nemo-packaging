@@ -9,7 +9,7 @@ url="https://github.com/nemomobile-ux/glacier-settings-developermode/#branch=mas
 license=('BSD-3-Clause')
 depends=('glacier-settings')
 
-makedepends=('git' 'qt6-tools' 'cmake')
+makedepends=('git' 'qt6-tools' 'clang' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

@@ -20,7 +20,7 @@ depends=('qt6-glacier-app'
 	'telepathy-mission-control'
 	'telepathy-ofono'
 	'glacier-contacts')
-makedepends=('git' 'cmake' 'qt6-tools')
+makedepends=('git' 'cmake' 'qt6-tools' 'clang')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")

@@ -14,7 +14,7 @@ depends=('glacier-settings'
     'qt6-networkauth'
     'qt6-declarative')
 
-makedepends=('git' 'qt6-tools' 'cmake')
+makedepends=('git' 'qt6-tools' 'clang' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
