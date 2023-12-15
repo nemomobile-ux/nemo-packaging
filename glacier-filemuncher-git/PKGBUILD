@@ -14,7 +14,7 @@ url="https://github.com/nemomobile-ux/glacier-filemuncher"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-folderlistmodel')
 optdepends=()
-makedepends=('git' 'cmake' 'qt6-tools')
+makedepends=('git' 'cmake' 'qt6-tools' 'clang')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}#branch=$_branch")

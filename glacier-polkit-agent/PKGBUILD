@@ -12,7 +12,7 @@ arch=('x86_64' 'aarch64')
 url="https://$_host/$_project/$pkgname"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app' 'polkit-qt6')
-makedepends=('cmake' 'qt6-tools')
+makedepends=('cmake' 'qt6-tools' 'clang')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=("01408b2a9b1408fa9841f4899c3bae2b282f67de5f8a3c3f4209467198b3880f")
 

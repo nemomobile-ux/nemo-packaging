@@ -28,7 +28,7 @@ depends=(
     'qtmpris'
 )
 optdepends=()
-makedepends=('git' 'qt6-multimedia' 'cmake' 'qt6-tools')
+makedepends=('git' 'qt6-multimedia' 'cmake' 'qt6-tools' 'clang')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
