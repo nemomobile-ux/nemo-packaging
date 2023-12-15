@@ -2,8 +2,8 @@
 # Maintainer: Felix Yan <felixonm...@archlinux.org>
 
 pkgname=mlite
-pkgver=0.4.0
-pkgrel=2
+pkgver=0.4.1
+pkgrel=1
 pkgdesc="Useful classes originating from MeeGo Touch"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/mlite";
@@ -14,7 +14,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-Fixup-build-on-qt6.patch'
     '0002-qt6-compatibility.patch'
 )
-sha256sums=('6403c5b7551fae31bfa8d0cc5173905873ffc0ef34d377f09ab10af7bf833aba'
+sha256sums=('60c68c192e35d5278bcce3440cb736b3388e0192ad5f2aefbb56e0fc34359dc8'
     '2a191ec52f73699a1d77b9e4e346a49fb265b6040eba513d27a058be56af9efa'
     '26aa16bdd32ee54b0e882065b4aa04fff99a0200dd487c17f3ed9680bdb10245'
 )
