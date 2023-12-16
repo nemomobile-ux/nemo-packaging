@@ -1,7 +1,7 @@
 # Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=glacier-dialer-git
-pkgver=0.5.4.r0.ga0023c5
+pkgver=0.5.4.r9.gc1a5bb7
 pkgrel=1
 pkgdesc="QML based dialer application for nemomobile"
 arch=('x86_64' 'aarch64')
@@ -10,7 +10,6 @@ license=('BSD-3-Clause')
 depends=('qt6-glacier-app'
     'nemo-qml-plugin-contacts'
     'voicecall'
-    'commhistory-daemon'
     'libcommhistory'
     'libqofono-qt6'
     'nemo-qml-plugin-dbus')
