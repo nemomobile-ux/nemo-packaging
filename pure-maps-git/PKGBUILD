@@ -14,9 +14,9 @@ depends=(
     'mapbox-gl-qml'
     's2geometry'
     'nemo-qml-plugin-dbus'
-    'qt5-quickcontrols2'
+    'qt6-quickcontrols2'
 )
-makedepends=('git' 'cmake' 'qt5-tools')
+makedepends=('git' 'cmake' 'qt6-tools')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}#branch=master"

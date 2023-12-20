@@ -12,7 +12,7 @@ depends=('glacier-wayland-session'
 	'usb-moded'
 	'maliit-nemo-keyboard'
 	'sensorfw'
-	'qt5-sensors-sensorfw'
+	'qt6-sensors-sensorfw'
 	'qt-mobility-haptics-ffmemless'
 )
 
