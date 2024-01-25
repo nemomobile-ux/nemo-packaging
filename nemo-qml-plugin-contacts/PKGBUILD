@@ -4,8 +4,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-contacts
-pkgver=0.3.26
-pkgrel=3
+pkgver=0.3.27
+pkgrel=1
 pkgdesc="Nemo QML contacts plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-contacts"
@@ -23,14 +23,11 @@ makedepends=(
     'qt6-tools'
     'clang'
 )
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-fix_build_on_qt6.patch")
-sha256sums=('b9f1d35f834e4860ee7eeae9b70a5d5fae78f21c5eb58b686972913f7836aedc'
-    '230b4e3a3fc293e98fb207c6871560bd9fec424c93eb450d24c8b6bfbf88f500')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('47e95f0b879992b5d75dd5a18dc0d694c8a4e8cd97c5b43a0cc25c972bc07e1c')
 
 prepare() {
     cd "$srcdir/${pkgname}-${pkgver}"
-    patch -p1 --input="${srcdir}/0001-fix_build_on_qt6.patch"
 }
 
 build() {
