@@ -1,0 +1,274 @@
+diff --git a/configure b/configure
+index dc7181c..9dd43af 100755
+--- a/configure
++++ b/configure
+@@ -30,11 +30,7 @@ if [ -z $VERSION ]; then
+ fi
+ 
+ # Qt Version
+-QMAKE=`which qmake 2>/dev/null`
+-
+-if [ -z "$QMAKE" ] ; then
+-	QMAKE=`which qmake-qt4 2>/dev/null`
+-fi
++QMAKE=`which qmake6 2>/dev/null`
+ 
+ if [ -z "$QMAKE" ] ; then
+ 	echo
+diff --git a/lib.pri b/lib.pri
+index 85c3a4b..e66f9ed 100644
+--- a/lib.pri
++++ b/lib.pri
+@@ -1,2 +1,2 @@
+ INCLUDEPATH=$$PWD/lib
+-LIBS+=-L$$PWD/lib/ -lcontactsd
++LIBS+=-L../lib/ -lcontactsd
+diff --git a/lib/base-plugin.h b/lib/base-plugin.h
+index 8fb2b2b..40cca24 100644
+--- a/lib/base-plugin.h
++++ b/lib/base-plugin.h
+@@ -32,10 +32,16 @@
+ #include <QThreadStorage>
+ #include <QDir>
+ 
++#if defined(CONTACTSD_LIBRARY)
++#  define CONTACTSDSHARED_EXPORT Q_DECL_EXPORT
++#else
++#  define CONTACTSDSHARED_EXPORT Q_DECL_IMPORT
++#endif
++
+ namespace Contactsd
+ {
+ 
+-class Q_DECL_EXPORT BasePlugin : public QObject
++class CONTACTSDSHARED_EXPORT BasePlugin : public QObject
+ {
+     Q_OBJECT
+ 
+diff --git a/lib/lib.pro b/lib/lib.pro
+index 2f9872d..88d2f3b 100644
+--- a/lib/lib.pro
++++ b/lib/lib.pro
+@@ -2,6 +2,7 @@ TEMPLATE = lib
+ 
+ QT -= gui
+ QT += dbus
++DEFINES += CONTACTSD_LIBRARY
+ TARGET = contactsd
+ TARGET = $$qtLibraryTarget($$TARGET)
+ TARGETPATH = $$[QT_INSTALL_LIBS]
+diff --git a/plugins/birthday/birthday.pro b/plugins/birthday/birthday.pro
+index a49685d..7b9e9e5 100644
+--- a/plugins/birthday/birthday.pro
++++ b/plugins/birthday/birthday.pro
+@@ -28,8 +28,8 @@ QT -= gui
+ CONFIG += plugin
+ 
+ CONFIG += link_pkgconfig
+-PKGCONFIG += mlocale5 libmkcal-qt5 KF5CalendarCore
+-PKGCONFIG += Qt5Contacts contactcache-qt5 qtcontacts-sqlite-qt5-extensions
++PKGCONFIG += mlocale$${QT_MAJOR_VERSION} KF$${QT_MAJOR_VERSION}CalendarCore
++PKGCONFIG += Qt$${QT_MAJOR_VERSION}Contacts contactcache-qt$${QT_MAJOR_VERSION} qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions
+ 
+ CONFIG(coverage):{
+ QMAKE_CXXFLAGS += -c -g  --coverage -ftest-coverage -fprofile-arcs
+diff --git a/plugins/calendar/calendar.pro b/plugins/calendar/calendar.pro
+index 70fb0ac..549ef1c 100644
+--- a/plugins/calendar/calendar.pro
++++ b/plugins/calendar/calendar.pro
+@@ -7,8 +7,7 @@ QT += contacts-private
+ CONFIG += plugin
+ 
+ CONFIG += link_pkgconfig
+-PKGCONFIG += accounts-qt5 KF5CalendarCore libmkcal-qt5
+-
++PKGCONFIG += accounts-qt$${QT_MAJOR_VERSION} KF$${QT_MAJOR_VERSION}CalendarCore
+ DEFINES -= QT_NO_CAST_TO_ASCII
+ DEFINES -= QT_NO_CAST_FROM_ASCII
+ 
+diff --git a/plugins/contacts-extensions.pri b/plugins/contacts-extensions.pri
+index 49f91f6..91f0db3 100644
+--- a/plugins/contacts-extensions.pri
++++ b/plugins/contacts-extensions.pri
+@@ -1,9 +1,9 @@
+ QT += contacts-private
+ CONFIG += link_pkgconfig
+-PKGCONFIG += qtcontacts-sqlite-qt5-extensions
++PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions
+ 
+ # We need the moc output for ContactManagerEngine from sqlite-extensions
+-extensionsIncludePath = $$system(pkg-config --cflags-only-I qtcontacts-sqlite-qt5-extensions)
++extensionsIncludePath = $$system(pkg-config --cflags-only-I qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions)
+ VPATH += $$replace(extensionsIncludePath, -I, )
+ HEADERS += contactmanagerengine.h
+ 
+diff --git a/plugins/exporter/exporter.pro b/plugins/exporter/exporter.pro
+index c675469..8804181 100644
+--- a/plugins/exporter/exporter.pro
++++ b/plugins/exporter/exporter.pro
+@@ -7,7 +7,9 @@ QT += dbus
+ 
+ CONFIG += plugin
+ 
+-PKGCONFIG += buteosyncfw5 accounts-qt5
++LIBS += -L../../lib
++
++PKGCONFIG += buteosyncfw$${QT_MAJOR_VERSION} accounts-qt$${QT_MAJOR_VERSION}
+ DEFINES *= QTCONTACTS_SQLITE_PERFORM_AGGREGATION
+ 
+ DEFINES -= QT_NO_CAST_TO_ASCII
+diff --git a/plugins/plugins.pro b/plugins/plugins.pro
+index a07ef50..f7181bd 100644
+--- a/plugins/plugins.pro
++++ b/plugins/plugins.pro
+@@ -22,4 +22,8 @@
+ 
+ TEMPLATE = subdirs
+ 
+-SUBDIRS += telepathy birthday sim exporter calendar
++SUBDIRS += sim exporter
++
++enable-telepathy {
++    SUBDIRS += telepathy
++}
+diff --git a/plugins/sim/sim.pro b/plugins/sim/sim.pro
+index 46ac5b1..d83b10d 100644
+--- a/plugins/sim/sim.pro
++++ b/plugins/sim/sim.pro
+@@ -7,8 +7,10 @@ QT += dbus
+ 
+ CONFIG += plugin
+ 
++LIBS += -L../../lib
++
+ CONFIG += link_pkgconfig
+-PKGCONFIG += mlite5 Qt5Contacts Qt5Versit qofono-qt5 qofonoext
++PKGCONFIG += mlite$${QT_MAJOR_VERSION} Qt$${QT_MAJOR_VERSION}Contacts Qt$${QT_MAJOR_VERSION}Versit qofono-qt$${QT_MAJOR_VERSION} qofonoext
+ 
+ DEFINES += QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_ASCII
+ 
+diff --git a/src/contactsdpluginloader.h b/src/contactsdpluginloader.h
+index 31bb3fe..7da54cb 100644
+--- a/src/contactsdpluginloader.h
++++ b/src/contactsdpluginloader.h
+@@ -33,7 +33,11 @@
+ class QTimer;
+ class QPluginLoader;
+ class QString;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++using QStringList = QList<QString>;
++#else
+ class QStringList;
++#endif
+ class QDBusConnection;
+ 
+ class Q_DECL_EXPORT ContactsdPluginLoader : public QObject
+diff --git a/src/main.cpp b/src/main.cpp
+index 10c850b..cfc97f2 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -35,7 +35,7 @@
+ #include "debug.h"
+ 
+ using namespace Contactsd;
+-
++Q_DECLARE_LOGGING_CATEGORY(lcContactsd)
+ static bool useDebug = false;
+ static QLoggingCategory::CategoryFilter defaultCategoryFilter;
+ 
+@@ -107,7 +107,11 @@ Q_DECL_EXPORT int main(int argc, char **argv)
+ 
+             QString value = args.at(i);
+             value.replace(" ", ",");
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++            plugins << value.split(",", Qt::SkipEmptyParts);
++#else
+             plugins << value.split(",", QString::SkipEmptyParts);
++#endif
+         } else if (arg == "--version") {
+             qDebug() << "contactsd version" << VERSION;
+             return 0;
+diff --git a/src/src.pro b/src/src.pro
+index 0d7ec6c..ba7e225 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -25,10 +25,10 @@ TARGET = contactsd
+ 
+ VERSIONED_TARGET = $$TARGET-1.0
+ 
+-QT += dbus
++QT += dbus network
+ QT -= gui
+ 
+-system(qdbusxml2cpp -c ContactsImportProgressAdaptor -a contactsimportprogressadaptor.h:contactsimportprogressadaptor.cpp com.nokia.contacts.importprogress.xml)
++system($$[QT_INSTALL_BINS]/qdbusxml2cpp -c ContactsImportProgressAdaptor -a contactsimportprogressadaptor.h:contactsimportprogressadaptor.cpp com.nokia.contacts.importprogress.xml)
+ 
+ include(../lib.pri)
+ 
+@@ -36,7 +36,7 @@ TRANSLATIONS_INSTALL_PATH = "/usr/share/translations"
+ DEFINES += TRANSLATIONS_INSTALL_PATH=\"\\\"\"$${TRANSLATIONS_INSTALL_PATH}\"\\\"\"
+ 
+ CONFIG += link_pkgconfig
+-PKGCONFIG += buteosyncfw5
++PKGCONFIG += buteosyncfw$${QT_MAJOR_VERSION}
+ 
+ packagesExist(qt5-boostable) {
+     DEFINES += HAS_BOOSTER
+diff --git a/tests/tests.pro b/tests/tests.pro
+index e4e404d..a09055b 100644
+--- a/tests/tests.pro
++++ b/tests/tests.pro
+@@ -23,11 +23,15 @@
+ PACKAGENAME = contactsd
+ 
+ TEMPLATE = subdirs
+-SUBDIRS += libtelepathy ut_birthdayplugin ut_telepathyplugin ut_simplugin
++SUBDIRS += ut_simplugin
+ 
+-ut_telepathyplugin.depends = libtelepathy
++enable-telepathy {
++    SUBDIRS += libtelepathy ut_telepathyplugin
++    ut_telepathyplugin.depends = libtelepathy
++    UNIT_TESTS += ut_telepathyplugin
++}
+ 
+-UNIT_TESTS += ut_birthdayplugin ut_telepathyplugin ut_simplugin
++UNIT_TESTS += ut_birthdayplugin ut_simplugin
+ 
+ testxml.target = tests.xml
+ testxml.commands = sh $$PWD/mktests.sh $$UNIT_TESTS >$@ || rm -f $@
+diff --git a/tests/ut_birthdayplugin/ut_birthdayplugin.pro b/tests/ut_birthdayplugin/ut_birthdayplugin.pro
+index b34843b..4254746 100644
+--- a/tests/ut_birthdayplugin/ut_birthdayplugin.pro
++++ b/tests/ut_birthdayplugin/ut_birthdayplugin.pro
+@@ -33,8 +33,8 @@ CONFIG += test link_pkgconfig
+ QT -= gui
+ QT += testlib
+ 
+-PKGCONFIG += Qt5Contacts
+-PKGCONFIG += mlite5 mlocale5 libmkcal-qt5 KF5CalendarCore
++PKGCONFIG += Qt$${QT_MAJOR_VERSION}Contacts
++PKGCONFIG += mlite$${QT_MAJOR_VERSION} mlocale$${QT_MAJOR_VERSION} KF$${QT_MAJOR_VERSION}CalendarCore
+ 
+ CONFIG(coverage):{
+ QMAKE_CXXFLAGS +=  -ftest-coverage -fprofile-arcs
+diff --git a/tests/ut_simplugin/ut_simplugin.pro b/tests/ut_simplugin/ut_simplugin.pro
+index 4a5a765..107be3e 100644
+--- a/tests/ut_simplugin/ut_simplugin.pro
++++ b/tests/ut_simplugin/ut_simplugin.pro
+@@ -5,11 +5,13 @@ target.path = /opt/tests/$${PACKAGENAME}/$$TARGET
+ 
+ CONFIG += test link_pkgconfig
+ 
++LIBS += -L../../lib
++
+ QT -= gui
+ QT += dbus testlib
+ 
+-PKGCONFIG += mlite5 Qt5Contacts Qt5Versit qofono-qt5
+-PKGCONFIG += qtcontacts-sqlite-qt5-extensions qofonoext
++PKGCONFIG += mlite$${QT_MAJOR_VERSION} Qt$${QT_MAJOR_VERSION}Contacts Qt$${QT_MAJOR_VERSION}Versit qofono-qt$${QT_MAJOR_VERSION}
++PKGCONFIG += qtcontacts-sqlite-qt$${QT_MAJOR_VERSION}-extensions qofonoext
+ 
+ INCLUDEPATH += \
+     ../../plugins/sim \

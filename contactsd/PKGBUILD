@@ -2,36 +2,31 @@
 
 pkgname=contactsd
 pkgver=1.4.14
-pkgrel=1
+pkgrel=2
 pkgdesc="Telepathy <> QtContacts bridge for contacts"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/contactsd"
 license=('BSD-3-Clause')
-depends=('telepathy-qt'
-    'mlite'
+depends=('mlite'
     'libmlocale'
     'libqofono-qt6'
     'qtcontacts-sqlite'
     'buteo-syncfw'
     'kcalendarcore6'
-    'mkcal'
     'nemo-qml-plugin-contacts'
     'libqofonoext')
 
 makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-KcalendarCore_not_provide_pc_files.patch"
-    "0002-plugins-requires-QIcon-which-is-in-gui-module.patch"
+    "0001-fix_build_on_qt6.patch"
     "contactsd.service")
 sha256sums=('bb2b028f471ac3316839a037cc5a0ed5e1b831347e3997f6e09cf77fa9e0fdf3'
-    '5475ddc2c885cdd8c5a8c9489801a0392183b14d3ee5bf56ccd60958e5b11db7'
-    'b2598d9410684dfd9b903469ed2a3ea088bfa3ebadbbe66ac4c3c15bb1393cdb'
+    '9afe7ff465e03d1c884169f18675ddeb3a5009bb479f30d44891e3f309be0109'
     'd9898e7dada3fb0c68d9f63d13c233d9875501b48dafac0dadeb226043bf6b70')
 
 prepare() {
   cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-KcalendarCore_not_provide_pc_files.patch"
-  patch -p1 --input="${srcdir}/0002-plugins-requires-QIcon-which-is-in-gui-module.patch"
+  patch -p1 --input="${srcdir}/0001-fix_build_on_qt6.patch"
 }
 
 build() {
