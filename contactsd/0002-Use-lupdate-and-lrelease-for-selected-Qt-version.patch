@@ -1,0 +1,43 @@
+From 6f62f0106a3620e0fe617b977383349673e36b22 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 26 Jan 2024 17:16:54 +0200
+Subject: [PATCH 2/2] Use lupdate and lrelease for selected Qt version
+
+lupdate and lrelease aren't available in path when qt5-base is not installed
+---
+ translations/translations.pro | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/translations/translations.pro b/translations/translations.pro
+index 566eb38..25bb40e 100644
+--- a/translations/translations.pro
++++ b/translations/translations.pro
+@@ -26,11 +26,14 @@ QMAKE_LFLAGS = --version
+ TS_FILENAME = $${_PRO_FILE_PWD_}/$${CATALOGNAME}.ts
+ QM_FILENAME = $${_PRO_FILE_PWD_}/$${CATALOGNAME}.qm
+ 
++qtPrepareTool(LUPDATE, lupdate)
++qtPrepareTool(LRELEASE, lrelease)
++
+ # LUPDATE and LRELEASE --------------------------------------------------------
+-LUPDATE_CMD = lupdate \
++LUPDATE_CMD = $${LUPDATE} \
+               $${SOURCEPATHS} \
+               -ts $${TS_FILENAME} && \
+-              lrelease \
++              $${LRELEASE} \
+               -idbased \
+               $${TS_FILENAME} \
+               -qm $${QM_FILENAME}
+@@ -60,7 +63,7 @@ QMAKE_CLEAN += $${TS_FILENAME} $${QM_FILENAME}
+ # Engineering english fallback ----------------------
+ EE_QM_FILENAME = $${_PRO_FILE_PWD_}/$${CATALOGNAME}_eng_en.qm
+ 
+-engineering_english.commands += lrelease -idbased $${TS_FILENAME} -qm $${EE_QM_FILENAME}
++engineering_english.commands += $${LRELEASE} -idbased $${TS_FILENAME} -qm $${EE_QM_FILENAME}
+ engineering_english.CONFIG += no_check_exist no_link
+ engineering_english.depends = lupdate
+ engineering_english.input = $${TS_FILENAME}
+-- 
+2.43.0
+
