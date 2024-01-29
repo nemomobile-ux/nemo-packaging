@@ -6,13 +6,13 @@
 
 pkgname=libresource
 pkgver=0.25.1
-pkgrel=1
+pkgrel=2
 pkgdesc="MeeGo resource management low level C API libraries"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libresource"
 license=('LGPL-2.1-only')
-depends=('git' 'dbus-glib' 'check')
-makedepends=('automake' 'autoconf' 'libtool')
+depends=('dbus-glib' 'check')
+makedepends=('automake' 'autoconf' 'libtool' 'git')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('3956ce8fa54f75b6db651e6d82dfce7294d433c8792bf360af1f0e86c13a3aa1')
 
