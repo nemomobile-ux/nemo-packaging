@@ -16,17 +16,20 @@ depends=('mlite'
     'nemo-qml-plugin-contacts'
     'libqofonoext')
 
-makedepends=('qt6-tools')
+makedepends=('qt6-tools' 'clang')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-fix_build_on_qt6.patch"
+    '0002-Use-lupdate-and-lrelease-for-selected-Qt-version.patch'
     "contactsd.service")
 sha256sums=('bb2b028f471ac3316839a037cc5a0ed5e1b831347e3997f6e09cf77fa9e0fdf3'
     '9afe7ff465e03d1c884169f18675ddeb3a5009bb479f30d44891e3f309be0109'
+    'cc7af77f1518585ae8add0b52450c9c9878f2ad04017cdb36c838e3fe6b75c6d'
     'd9898e7dada3fb0c68d9f63d13c233d9875501b48dafac0dadeb226043bf6b70')
 
 prepare() {
   cd $pkgname-$pkgver
   patch -p1 --input="${srcdir}/0001-fix_build_on_qt6.patch"
+  patch -p1 --input="${srcdir}/0002-Use-lupdate-and-lrelease-for-selected-Qt-version.patch"
 }
 
 build() {
