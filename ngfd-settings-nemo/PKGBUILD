@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=ngfd-settings-nemo
-pkgver=0.4.1
+pkgver=0.4.2
 pkgrel=1
 pkgdesc="NGFD configuration for Nemo"
 arch=('any')
@@ -11,7 +11,7 @@ license=('LGPL-2.0')
 depends=('ngfd' 'nemo-theme-glacier')
 makedepends=('git')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('be571911ef2b187e4f99825aa6ff1469302bf60e0bf521d8c9d2fe9c6820f4f9')
+sha256sums=('465580906ed9e7abd91cde36f82461fe67890e683453bf8c47212e5a7b7e6bbb')
 
 package() {
     cd $pkgname-$pkgver
