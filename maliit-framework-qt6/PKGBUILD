@@ -1,6 +1,6 @@
 pkgname=maliit-framework-qt6
 pkgver=2.3.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Framework for Maliit"
 arch=('aarch64' 'x86_64')
 url="https://github.com/maliit/framework"
@@ -11,7 +11,7 @@ conflicts=("maliit-framework")
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-move_to_qt6.patch")
 sha256sums=('bfc23919ac8b960243f85e8228ad7dfc28d557b52182a0b5a2a216a5c6a8057c'
-    '93ffe28b0cd5c97184c78f129f19d69c9087a57c065c425868aa43714d7c8845')
+    '3445f7e446b703a2280589d490c822bbb25aa9e1fd26c2ffecb818510c01e43d')
 
 prepare() {
     cd framework-$pkgver
