@@ -1,25 +1,5 @@
-From 7cfa8cef888eaed3e2e957746bcdf41271b55209 Mon Sep 17 00:00:00 2001
-From: Chupligin Sergey <neochapay@gmail.com>
-Date: Tue, 7 Nov 2023 12:19:07 +0000
-Subject: [PATCH] Move to qt6
-
----
- .gitignore                                  |  3 +-
- CMakeLists.txt                              | 75 +++++++++++----------
- cmake/FindQtWaylandScanner.cmake            |  2 +-
- common/maliit/namespace.h                   |  1 +
- common/maliit/settingdata.h                 |  1 -
- connection/dbusserverconnection.h           |  1 +
- connection/minputcontextconnection.h        |  3 +
- connection/waylandinputmethodconnection.cpp | 22 +++---
- input-context/minputcontext.cpp             |  3 +-
- src/MaliitPluginsConfig.cmake.in            |  8 +--
- src/maliit/plugins/abstractinputmethod.h    |  2 +
- src/msharedattributeextensionmanager.cpp    |  2 +-
- 12 files changed, 66 insertions(+), 57 deletions(-)
-
 diff --git a/.gitignore b/.gitignore
-index c0175e14..996bcde6 100644
+index c0175e1..996bcde 100644
 --- a/.gitignore
 +++ b/.gitignore
 @@ -19,4 +19,5 @@ gen_*
@@ -32,7 +12,7 @@ index c0175e14..996bcde6 100644
 +CMakeLists.txt.user
 \ No newline at end of file
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7d4d1f26..26a6a52b 100644
+index 7d4d1f2..26a6a52 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -13,7 +13,7 @@ option(enable-glib "Build GLib support" ON)
@@ -248,7 +228,7 @@ index 7d4d1f26..26a6a52b 100644
  
      function(create_test name)
 diff --git a/cmake/FindQtWaylandScanner.cmake b/cmake/FindQtWaylandScanner.cmake
-index f38ee7f9..19786351 100644
+index f38ee7f..1978635 100644
 --- a/cmake/FindQtWaylandScanner.cmake
 +++ b/cmake/FindQtWaylandScanner.cmake
 @@ -70,7 +70,7 @@ ecm_find_package_version_check(QtWaylandScanner)
@@ -261,7 +241,7 @@ index f38ee7f9..19786351 100644
  include(FindPackageHandleStandardArgs)
  find_package_handle_standard_args(QtWaylandScanner
 diff --git a/common/maliit/namespace.h b/common/maliit/namespace.h
-index 2e47b176..5f96372e 100644
+index 2e47b17..5f96372 100644
 --- a/common/maliit/namespace.h
 +++ b/common/maliit/namespace.h
 @@ -14,6 +14,7 @@
@@ -272,20 +252,8 @@ index 2e47b176..5f96372e 100644
  #include <QMetaType>
  #include <QSharedPointer>
  
-diff --git a/common/maliit/settingdata.h b/common/maliit/settingdata.h
-index 343f9705..818e3371 100644
---- a/common/maliit/settingdata.h
-+++ b/common/maliit/settingdata.h
-@@ -13,7 +13,6 @@
- #define MALIIT_SETTINGDATA_H
- 
- #include <maliit/namespace.h>
--
- #include <QString>
- #include <QVariant>
- #include <QList>
 diff --git a/connection/dbusserverconnection.h b/connection/dbusserverconnection.h
-index 3d252978..2553177f 100644
+index 3d25297..2553177 100644
 --- a/connection/dbusserverconnection.h
 +++ b/connection/dbusserverconnection.h
 @@ -14,6 +14,7 @@
@@ -297,10 +265,10 @@ index 3d252978..2553177f 100644
  
  #include "inputcontextdbusaddress.h"
 diff --git a/connection/minputcontextconnection.h b/connection/minputcontextconnection.h
-index c9d223fb..91d03a80 100644
+index c9d223f..be03502 100644
 --- a/connection/minputcontextconnection.h
 +++ b/connection/minputcontextconnection.h
-@@ -23,11 +23,14 @@ QT_BEGIN_NAMESPACE
+@@ -23,6 +23,8 @@ QT_BEGIN_NAMESPACE
  class QKeyEvent;
  QT_END_NAMESPACE
  
@@ -309,14 +277,8 @@ index c9d223fb..91d03a80 100644
  class MInputContextConnectionPrivate;
  class MAbstractInputMethod;
  class MAttributeExtensionId;
- class MImPluginSettingsInfo;
- 
-+
- /*! \internal
-  * \ingroup maliitserver
-  * \brief Base class of the input method communication implementation between
 diff --git a/connection/waylandinputmethodconnection.cpp b/connection/waylandinputmethodconnection.cpp
-index 25e6fbfa..0fb40178 100644
+index 25e6fbf..eaab6e3 100644
 --- a/connection/waylandinputmethodconnection.cpp
 +++ b/connection/waylandinputmethodconnection.cpp
 @@ -338,15 +338,15 @@ void WaylandInputMethodConnection::sendPreeditString(const QString &string,
@@ -325,8 +287,8 @@ index 25e6fbfa..0fb40178 100644
          int cursor = widgetState().value(CursorPositionAttribute).toInt();
 -        uint32_t index = string.midRef(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
 -        uint32_t length = string.midRef(cursor + replace_start, replace_length).toUtf8().size();
-+        uint32_t index = QStringView(string).mid(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
-+        uint32_t length = QStringView(string).mid(cursor + replace_start, replace_length).toUtf8().size();
++        uint32_t index = string.mid(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
++        uint32_t length = string.mid(cursor + replace_start, replace_length).toUtf8().size();
          d->context()->delete_surrounding_text(index, length);
      }
  
@@ -334,8 +296,8 @@ index 25e6fbfa..0fb40178 100644
          QtWayland::zwp_text_input_v2::preedit_style style = preeditStyleFromMaliit(format.preeditFace);
 -        uint32_t index = string.leftRef(format.start).toUtf8().size();
 -        uint32_t length = string.leftRef(format.start + format.length).toUtf8().size() - index;
-+        uint32_t index = QStringView(string).left(format.start).toUtf8().size();
-+        uint32_t length = QStringView(string).left(format.start + format.length).toUtf8().size() - index;
++        uint32_t index = string.left(format.start).toUtf8().size();
++        uint32_t length = string.left(format.start + format.length).toUtf8().size() - index;
          qCDebug(lcWaylandConnection) << Q_FUNC_INFO << "preedit_styling" << index << length;
          d->context()->preedit_styling(index, length, style);
      }
@@ -345,8 +307,8 @@ index 25e6fbfa..0fb40178 100644
  
 -    qCDebug(lcWaylandConnection) << Q_FUNC_INFO << "preedit_cursor" << string.leftRef(cursor_pos).toUtf8().size();
 -    d->context()->preedit_cursor(string.leftRef(cursor_pos).toUtf8().size());
-+    qCDebug(lcWaylandConnection) << Q_FUNC_INFO << "preedit_cursor" << QStringView(string).left(cursor_pos).toUtf8().size();
-+    d->context()->preedit_cursor(QStringView(string).left(cursor_pos).toUtf8().size());
++    qCDebug(lcWaylandConnection) << Q_FUNC_INFO << "preedit_cursor" << string.left(cursor_pos).toUtf8().size();
++    d->context()->preedit_cursor(string.left(cursor_pos).toUtf8().size());
      qCDebug(lcWaylandConnection) << Q_FUNC_INFO << "preedit_string" << string;
      d->context()->preedit_string(d->context()->serial(), string, string);
  }
@@ -356,13 +318,13 @@ index 25e6fbfa..0fb40178 100644
          int cursor = widgetState().value(CursorPositionAttribute).toInt();
 -        uint32_t index = string.midRef(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
 -        uint32_t length = string.midRef(cursor + replace_start, replace_length).toUtf8().size();
-+        uint32_t index = QStringView(string).mid(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
-+        uint32_t length = QStringView(string).mid(cursor + replace_start, replace_length).toUtf8().size();
++        uint32_t index = string.mid(qMin(cursor + replace_start, cursor), qAbs(replace_start)).toUtf8().size();
++        uint32_t length = string.mid(cursor + replace_start, replace_length).toUtf8().size();
          d->context()->delete_surrounding_text(index, length);
      }
  
 -    cursor_pos = string.leftRef(cursor_pos).toUtf8().size();
-+    cursor_pos = QStringView(string).left(cursor_pos).toUtf8().size();
++    cursor_pos = string.left(cursor_pos).toUtf8().size();
      d->context()->cursor_position(cursor_pos, cursor_pos);
      d->context()->commit_string(d->context()->serial(), string);
  }
@@ -372,27 +334,50 @@ index 25e6fbfa..0fb40178 100644
      QString surrounding = widgetState().value(SurroundingTextAttribute).toString();
 -    uint32_t index(surrounding.leftRef(start + length).toUtf8().size());
 -    uint32_t anchor(surrounding.leftRef(start).toUtf8().size());
-+    uint32_t index(QStringView(surrounding).left(start + length).toUtf8().size());
-+    uint32_t anchor(QStringView(surrounding).left(start).toUtf8().size());
++    uint32_t index(surrounding.left(start + length).toUtf8().size());
++    uint32_t anchor(surrounding.left(start).toUtf8().size());
  
      d->context()->cursor_position(index, anchor);
      d->context()->commit_string(d->context()->serial(), QString());
 diff --git a/input-context/minputcontext.cpp b/input-context/minputcontext.cpp
-index c300753f..c0d56891 100644
+index c300753..3bfe6ef 100644
 --- a/input-context/minputcontext.cpp
 +++ b/input-context/minputcontext.cpp
-@@ -624,7 +624,8 @@ void MInputContext::onInvokeAction(const QString &action, const QKeySequence &se
+@@ -403,6 +403,11 @@ bool MInputContext::isInputPanelVisible() const
+     return !keyboardRectangle.isEmpty();
+ }
+ 
++bool MInputContext::inputMethodAccepted() const
++{
++    return true;
++}
++
+ QLocale MInputContext::locale() const
+ {
+     return inputLocale;
+@@ -624,7 +629,7 @@ void MInputContext::onInvokeAction(const QString &action, const QKeySequence &se
          const int modifiers = sequence[i] & AllModifiers;
          QString text("");
          if (modifiers == Qt::NoModifier || modifiers == Qt::ShiftModifier) {
 -            text = QString(key);
-+            qWarning() << "Need to check" << Q_FUNC_INFO;
 +            text = QString::number(key);
          }
          keyEvent(QEvent::KeyPress, key, modifiers, text, false, 1);
          keyEvent(QEvent::KeyRelease, key, modifiers, text, false, 1);
+diff --git a/input-context/minputcontext.h b/input-context/minputcontext.h
+index 5ba219a..c532a2b 100644
+--- a/input-context/minputcontext.h
++++ b/input-context/minputcontext.h
+@@ -55,6 +55,7 @@ public:
+     virtual void showInputPanel();
+     virtual void hideInputPanel();
+     virtual bool isInputPanelVisible() const;
++    bool inputMethodAccepted() const;
+     virtual QLocale locale() const;
+     virtual Qt::LayoutDirection inputDirection() const;
+     virtual void setFocusObject(QObject *object);
 diff --git a/src/MaliitPluginsConfig.cmake.in b/src/MaliitPluginsConfig.cmake.in
-index e9178da4..85f99a4e 100644
+index e9178da..85f99a4 100644
 --- a/src/MaliitPluginsConfig.cmake.in
 +++ b/src/MaliitPluginsConfig.cmake.in
 @@ -1,7 +1,7 @@
@@ -409,7 +394,7 @@ index e9178da4..85f99a4e 100644
 \ No newline at end of file
 +include("${CMAKE_CURRENT_LIST_DIR}/MaliitPluginsTargets.cmake")
 diff --git a/src/maliit/plugins/abstractinputmethod.h b/src/maliit/plugins/abstractinputmethod.h
-index 1a93207f..07295068 100644
+index 1a93207..0729506 100644
 --- a/src/maliit/plugins/abstractinputmethod.h
 +++ b/src/maliit/plugins/abstractinputmethod.h
 @@ -21,6 +21,8 @@
@@ -421,8 +406,21 @@ index 1a93207f..07295068 100644
  QT_BEGIN_NAMESPACE
  class QRegion;
  class QPoint;
+diff --git a/src/mimpluginmanager.cpp b/src/mimpluginmanager.cpp
+index b5048a6..8b54fa6 100644
+--- a/src/mimpluginmanager.cpp
++++ b/src/mimpluginmanager.cpp
+@@ -836,7 +836,7 @@ void MIMPluginManagerPrivate::loadHandlerMap()
+         QObject::connect(handlerItem, SIGNAL(valueChanged()), signalMapper, SLOT(map()));
+         signalMapper->setMapping(handlerItem, i.key());
+     }
+-    QObject::connect(signalMapper, SIGNAL(mapped(int)), q, SLOT(_q_syncHandlerMap(int)));
++    QObject::connect(signalMapper, SIGNAL(mappedInt(int)), q, SLOT(_q_syncHandlerMap(int)));
+ }
+ 
+ 
 diff --git a/src/msharedattributeextensionmanager.cpp b/src/msharedattributeextensionmanager.cpp
-index e8bf50b5..56379190 100644
+index e8bf50b..b9ec393 100644
 --- a/src/msharedattributeextensionmanager.cpp
 +++ b/src/msharedattributeextensionmanager.cpp
 @@ -39,7 +39,7 @@ MSharedAttributeExtensionManager::~MSharedAttributeExtensionManager()
@@ -430,7 +428,7 @@ index e8bf50b5..56379190 100644
                                                               QVariantMap attributes)
  {
 -    QString key = fullName.section(1, -1);
-+    QString key = fullName.section(QLatin1Char('\\'), 1, -1);
++    QString key = fullName.section(QChar(), -1);
      QSharedPointer<MSharedAttributeExtensionManagerPluginSetting> value(new MSharedAttributeExtensionManagerPluginSetting(key, type, attributes));
  
      sharedAttributeExtensions[key] = value;
