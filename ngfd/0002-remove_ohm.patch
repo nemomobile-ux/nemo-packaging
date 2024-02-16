@@ -1,0 +1,141 @@
+diff --git a/configure.ac b/configure.ac
+index 44820cf..4e6c46b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -212,10 +212,7 @@ fi
+ 
+ AM_CONDITIONAL(BUILD_MCE, test x$enable_mce = xyes)
+ 
+-PKG_CHECK_MODULES(ROUTE, ohm-ext-route >= 2, [has_route=yes], [has_route=no])
+-AC_SUBST(ROUTE_CFLAGS)
+-
+-if test x$has_route = xyes; then
++if test x$enable_dbus = xyes; then
+     enable_route=yes
+ else
+     enable_route=no
+@@ -231,11 +228,6 @@ else
+     enable_streamrestore=no
+ fi
+ 
+-if test x$enable_route = xno ; then
+-    enable_streamrestore=no
+-fi
+-
+-
+ AM_CONDITIONAL(BUILD_STREAMRESTORE, test x$enable_streamrestore = xyes)
+ 
+ # Tonegen plugin needs DBus
+diff --git a/src/plugins/route/Makefile.am b/src/plugins/route/Makefile.am
+index 20c2079..34409d2 100644
+--- a/src/plugins/route/Makefile.am
++++ b/src/plugins/route/Makefile.am
+@@ -3,4 +3,4 @@ plugin_LTLIBRARIES = libngfd_route.la
+ libngfd_route_la_SOURCES = plugin.c
+ libngfd_route_la_LIBADD = @NGFD_PLUGIN_LIBS@ @DBUS_LIBS@
+ libngfd_route_la_LDFLAGS = -module -avoid-version
+-libngfd_route_la_CFLAGS = @NGFD_PLUGIN_CFLAGS@ @DBUS_CFLAGS@ @ROUTE_CFLAGS@ -I$(top_srcdir)/src/include
++libngfd_route_la_CFLAGS = @NGFD_PLUGIN_CFLAGS@ @DBUS_CFLAGS@ -I$(top_srcdir)/src/include
+diff --git a/src/plugins/route/plugin.c b/src/plugins/route/plugin.c
+index e09601f..a3d436f 100644
+--- a/src/plugins/route/plugin.c
++++ b/src/plugins/route/plugin.c
+@@ -22,7 +22,6 @@
+ #include <ngf/plugin.h>
+ #include <ngf/core-dbus.h>
+ #include <dbus/dbus.h>
+-#include <ohm-ext/route.h>
+ #include "keys.h"
+ 
+ #define LOG_CAT "route: "
+@@ -41,7 +40,7 @@ update_context (NContext *context, guint output_type)
+     n_context_set_value (context, CONTEXT_ROUTE_OUTPUT_TYPE_KEY, v);
+ 
+     v = n_value_new ();
+-    n_value_set_string (v, output_type & OHM_EXT_ROUTE_TYPE_BUILTIN ? "builtin" : "external");
++    n_value_set_string (v, output_type ? "builtin" : "external");
+     n_context_set_value (context, CONTEXT_ROUTE_OUTPUT_CLASS_KEY, v);
+ }
+ 
+@@ -84,7 +83,7 @@ filter_cb (NCore *core, DBusConnection *connection, DBusMessage *msg, void *user
+                                DBUS_TYPE_UINT32, &route_type,
+                                DBUS_TYPE_INVALID))
+     {
+-        if (route_type & OHM_EXT_ROUTE_TYPE_OUTPUT) {
++        if (route_type) {
+             N_DEBUG (LOG_CAT "output route changed to %s (%u)", name, route_type);
+ 
+             update_context (context, route_type);
+@@ -107,19 +106,19 @@ N_PLUGIN_LOAD (plugin)
+ 
+     if (n_dbus_add_match (core, filter_cb, context,
+                           DBUS_BUS_SYSTEM,
+-                          OHM_EXT_ROUTE_MANAGER_INTERFACE,
+-                          OHM_EXT_ROUTE_MANAGER_PATH,
+-                          OHM_EXT_ROUTE_CHANGED_SIGNAL) == 0) {
++                          "org.nemomobile.Route.Manager",
++                          "/org/nemomobile/Route/Manager",
++                          "AudioRouteChanged") == 0) {
+         N_ERROR (LOG_CAT "failed to add signal handler");
+         return FALSE;
+     }
+ 
+     if (!n_dbus_async_call (core, query_active_routes_cb, context,
+                             DBUS_BUS_SYSTEM,
+-                            OHM_EXT_ROUTE_MANAGER_INTERFACE,
+-                            OHM_EXT_ROUTE_MANAGER_PATH,
+-                            OHM_EXT_ROUTE_MANAGER_INTERFACE,
+-                            OHM_EXT_ROUTE_ACTIVE_ROUTES_METHOD))
++                            "org.nemomobile.Route.Manager",
++                            "/org/nemomobile/Route/Manager",
++                            "org.nemomobile.Route.Manager",
++                            "ActiveRoutes"))
+         N_WARNING (LOG_CAT "failed to query initial state");
+ 
+     return TRUE;
+diff --git a/src/plugins/streamrestore/Makefile.am b/src/plugins/streamrestore/Makefile.am
+index 09a7e79..acb8219 100644
+--- a/src/plugins/streamrestore/Makefile.am
++++ b/src/plugins/streamrestore/Makefile.am
+@@ -3,4 +3,4 @@ plugin_LTLIBRARIES = libngfd_streamrestore.la
+ libngfd_streamrestore_la_SOURCES = plugin.c volume-controller.c
+ libngfd_streamrestore_la_LIBADD = @NGFD_PLUGIN_LIBS@ @DBUS_LIBS@ $(top_srcdir)/dbus-gmain/libdbus-gmain.la
+ libngfd_streamrestore_la_LDFLAGS = -module -avoid-version
+-libngfd_streamrestore_la_CFLAGS = @NGFD_PLUGIN_CFLAGS@ @DBUS_CFLAGS@ @ROUTE_CFLAGS@ -I$(top_srcdir)/src/include
++libngfd_streamrestore_la_CFLAGS = @NGFD_PLUGIN_CFLAGS@ @DBUS_CFLAGS@ -I$(top_srcdir)/src/include
+diff --git a/src/plugins/streamrestore/plugin.c b/src/plugins/streamrestore/plugin.c
+index afd74af..1c69cd7 100644
+--- a/src/plugins/streamrestore/plugin.c
++++ b/src/plugins/streamrestore/plugin.c
+@@ -23,7 +23,6 @@
+ #include <stdlib.h>
+ #include <ngf/plugin.h>
+ #include "volume-controller.h"
+-#include <ohm-ext/route.h>
+ #include "../route/keys.h"
+ 
+ #define LOG_CAT         "stream-restore: "
+@@ -86,9 +85,9 @@ static void context_value_changed_cb (NContext *context, const char *key,
+ static const char*
+ output_route_type_to_string ()
+ {
+-    if (output_route_type_val & OHM_EXT_ROUTE_TYPE_BUILTIN)
++    if (output_route_type_val)
+         return "builtin";
+-    else if (output_route_type_val & (OHM_EXT_ROUTE_TYPE_WIRED | OHM_EXT_ROUTE_TYPE_WIRELESS))
++    else if (output_route_type_val)
+         return "external";
+ 
+     return "unknown";
+@@ -97,9 +96,9 @@ output_route_type_to_string ()
+ static guint
+ output_route_type ()
+ {
+-    if (output_route_type_val & OHM_EXT_ROUTE_TYPE_BUILTIN)
++    if (output_route_type_val)
+         return TYPE_BUILTIN;
+-    else if (output_route_type_val & (OHM_EXT_ROUTE_TYPE_WIRED | OHM_EXT_ROUTE_TYPE_WIRELESS))
++    else if (output_route_type_val)
+         return TYPE_EXTERNAL;
+ 
+     return TYPE_DEFAULT;
