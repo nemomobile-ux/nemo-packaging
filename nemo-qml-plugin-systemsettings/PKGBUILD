@@ -1,11 +1,5 @@
-## $Id$
-# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
-# Contributor: Bart Ribbers <bribbers@disroot.org>
-# Contributor: Alexey Andreyev (aa13q) <aa13q@ya.ru>
-# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
-
 pkgname=nemo-qml-plugin-systemsettings
-pkgver=1.0.1
+pkgver=1.1.2
 pkgrel=1
 pkgdesc="System settings plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
@@ -17,6 +11,7 @@ depends=('openssl'
 	'timed'
 	'nemo-qml-plugin-models'
 	'libconnman-qt>=1.2.38'
+	'nemo-qml-plugin-connectivity>=0.2.15'
 	'mlite'
 	'mce>=1.113.0'
 	'nemo-qml-plugin-dbus'
@@ -26,7 +21,7 @@ depends=('openssl'
 makedepends=('qt6-tools' 'mce-headers>=1.32.0' 'pkgconf' 'clang')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 
-sha256sums=('b779362ec4e68fbefa0b4dc57d6e1334d3a0ce59df5867bb26ea82db078bfab7')
+sha256sums=('b83fa87e5e0b87187a6898da034de30425618b983f2967d0d6506fe9795b292c')
 
 build() {
     cd $pkgname-$pkgver
