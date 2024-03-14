@@ -1,0 +1,165 @@
+From b0fe9ac91471203649a6bac40be17fe5756ed445 Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Tue, 12 Mar 2024 07:05:41 +0000
+Subject: [PATCH] Fixup build on Qt6
+
+---
+ src/nemo-connectivity/nemo-connectivity.pro | 10 ++-
+ src/nemo-connectivity/settingsvpnmodel.cpp  | 69 +++++++++++++++++++++
+ 2 files changed, 76 insertions(+), 3 deletions(-)
+
+diff --git a/src/nemo-connectivity/nemo-connectivity.pro b/src/nemo-connectivity/nemo-connectivity.pro
+index 5509d98..40bb224 100644
+--- a/src/nemo-connectivity/nemo-connectivity.pro
++++ b/src/nemo-connectivity/nemo-connectivity.pro
+@@ -8,8 +8,12 @@ CONFIG += \
+         create_prl \
+         no_install_prl
+ 
+-QT = dbus network qml xmlpatterns
+-
++QT = dbus network qml
++lessThan(QT_MAJOR_VERSION, 6) {
++    QT+=xmlpatterns
++} else {
++    QT+=xml
++}
+ INCLUDEPATH += ..
+ 
+ DEFINES += NEMO_BUILD_CONNECTIVITY_LIBRARY
+@@ -44,7 +48,7 @@ QMAKE_PKGCONFIG_LIBDIR = $$target.path
+ QMAKE_PKGCONFIG_INCDIR = $$public_headers.path
+ QMAKE_PKGCONFIG_DESTDIR = pkgconfig
+ QMAKE_PKGCONFIG_VERSION = $$VERSION
+-QMAKE_PKGCONFIG_REQUIRES = Qt5Core Qt5DBus connman-qt$${QT_MAJOR_VERSION}
++QMAKE_PKGCONFIG_REQUIRES = Qt$${QT_MAJOR_VERSION}Core Qt$${QT_MAJOR_VERSION}DBus connman-qt$${QT_MAJOR_VERSION}
+ 
+ INSTALLS += \
+         public_headers \
+diff --git a/src/nemo-connectivity/settingsvpnmodel.cpp b/src/nemo-connectivity/settingsvpnmodel.cpp
+index 3d1c62f..9f6241f 100644
+--- a/src/nemo-connectivity/settingsvpnmodel.cpp
++++ b/src/nemo-connectivity/settingsvpnmodel.cpp
+@@ -36,8 +36,12 @@
+ #include <QCryptographicHash>
+ #include <QQmlEngine>
+ #include <QDir>
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+ #include <QXmlQuery>
+ #include <QXmlResultItems>
++#else
++#include <QDomDocument>
++#endif
+ #include <QSettings>
+ #include <QLoggingCategory>
+ 
+@@ -728,7 +732,11 @@ QVariantMap SettingsVpnModel::processOpenVpnProvisioningFile(QFile &provisioning
+         } else if (!embeddedMarker.isEmpty()) {
+             embeddedContent.append(line + QStringLiteral("\n"));
+         } else {
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+             QStringList tokens(line.split(whitespace, QString::SkipEmptyParts));
++#else
++            QStringList tokens(line.split(whitespace, Qt::SkipEmptyParts));
++#endif
+             if (!tokens.isEmpty()) {
+                 // Find directives that become part of the connman configuration
+                 const QString& directive(tokens.front());
+@@ -888,7 +896,11 @@ QVariantMap SettingsVpnModel::processOpenVpnProvisioningFile(QFile &provisioning
+             } else {
+                 QTextStream os(&outputFile);
+                 foreach (const QString &line, extraOptions) {
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+                     os << line << endl;
++#else
++                    os << line << Qt::endl;
++#endif
+                 }
+ 
+                 rv.insert(QStringLiteral("OpenVPN.ConfigFile"), outputFile.fileName());
+@@ -992,6 +1004,7 @@ QVariantMap SettingsVpnModel::processOpenconnectProvisioningFile(QFile &provisio
+ 
+     if (first == '<') {
+ #define NS "declare default element namespace \"http://schemas.xmlsoap.org/encoding/\"; "
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+         QXmlQuery query;
+         QXmlResultItems entries;
+ 
+@@ -1032,6 +1045,34 @@ QVariantMap SettingsVpnModel::processOpenconnectProvisioningFile(QFile &provisio
+                 rv.insert(QStringLiteral("OpenConnect.Usergroup"), userGroup[0]);
+             }
+         }
++#else
++        QDomDocument config("config");
++        if(provisioningFile.open(QIODevice::ReadOnly)) {
++            return QVariantMap();
++        }
++
++        if(config.setContent(&provisioningFile)) {
++            provisioningFile.close();
++            return QVariantMap();
++        }
++        QDomElement configElement = config.documentElement();
++        QDomNode configNode = configElement.firstChild();
++        while(!configNode.isNull()) {
++            QDomElement element = configNode.toElement();
++            if(!element.isNull()) {
++                if(element.tagName() == "Name") {
++                    rv.insert("Name", element.text());
++                }
++                if(element.tagName() == "Host") {
++                    rv.insert("Host", element.text());
++                }
++                if(element.tagName() == "OpenConnect.Usergroup") {
++                    rv.insert("OpenConnect.Usergroup", element.text());
++                }
++            }
++            configNode.nextSibling();
++        }
++#endif
+     } else {
+         struct ArgMapping {
+             bool hasArgument;
+@@ -1125,6 +1166,7 @@ QVariantMap SettingsVpnModel::processOpenfortivpnProvisioningFile(QFile &provisi
+     }
+ 
+     if (first == '<') {
++#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+         QXmlQuery query;
+         QXmlResultItems entries;
+ 
+@@ -1183,7 +1225,34 @@ QVariantMap SettingsVpnModel::processOpenfortivpnProvisioningFile(QFile &provisi
+         if (option[0] == QLatin1String("0")) {
+             rv.insert(QStringLiteral("openfortivpn.AllowSelfSignedCert"), QStringLiteral("true"));
+         }
++#else
++        QDomDocument config("config");
++        if(provisioningFile.open(QIODevice::ReadOnly)) {
++            return QVariantMap();
++        }
+ 
++        if(config.setContent(&provisioningFile)) {
++            provisioningFile.close();
++            return QVariantMap();
++        }
++        QDomElement configElement = config.documentElement();
++        QDomNode configNode = configElement.firstChild();
++        while(!configNode.isNull()) {
++            QDomElement element = configNode.toElement();
++            if(!element.isNull()) {
++                if(element.tagName() == "Name") {
++                    rv.insert("Name", element.text());
++                }
++                if(element.tagName() == "Host") {
++                    rv.insert("Host", element.text());
++                }
++                if(element.tagName() == "openfortivpn.Port") {
++                    rv.insert("openfortivpn.Port", element.text());
++                }
++            }
++            configNode.nextSibling();
++        }
++#endif
+     } else {
+         QTextStream is(&provisioningFile);
+ 
