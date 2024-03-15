@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 _basever=0.86.0
-_merver=64
+_merver=66
 
 pkgname=usb-moded
 pkgver=$_basever+mer$_merver
@@ -27,19 +27,16 @@ source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
 	'https://github.com/sailfishos-mirror/dbus-glib/archive/d42176ae4763e5288ef37ea314fe58387faf2005.tar.gz'
 	'dhcpd.conf'
 	'0001-use_etc-hw-release.patch'
-	'0002-fix-definition-of-sig_usb_taget_mode_config_ind-dbus.patch'
 	)
-sha256sums=('5a5e7c2c12b63e934c7088d2a98473ffde8a7044364aba8c7ee24944f353226f'
+sha256sums=('8534840a57cf87379eb482832aa771060c2600a8ce864f44dfecb8afb77f2008'
 	'f4c28d4740ac90863082e81c869e5178d25238b179747984faf0509e40d1afef'
 	'a2408b6692339595f98fd5e46398da794019b4818ee865fd22953576f26366c9'
 	'e340d6a21b94518ebb16b6ab76b0a12f197e5b5ae0861c1c46201f863a3b971f'
-	'b0bd0366ac9f55acdc293c2786c9fbef09a31b61540b15cac9f72d9099257069'
 )
 
 prepare() {
     cd $pkgname-mer-$_basever-mer$_merver
     patch -p1 --input="${srcdir}/0001-use_etc-hw-release.patch"
-    patch -p1 --input="${srcdir}/0002-fix-definition-of-sig_usb_taget_mode_config_ind-dbus.patch"
     cp -r ../dbus-glib-d42176ae4763e5288ef37ea314fe58387faf2005/* dbus-gmain/
 }
 
