@@ -2,7 +2,7 @@
 
 pkgname=pulsecore-headers
 pkgdesc="A featureful, general-purpose sound server"
-pkgver=16.1
+pkgver=17.0
 pkgrel=1
 arch=(any)
 url="https://www.freedesktop.org/wiki/Software/PulseAudio/"
@@ -11,8 +11,8 @@ makedepends=('libpulse')
 source=("https://github.com/pulseaudio/pulseaudio/archive/refs/tags/v${pkgver}.tar.gz"
     "pulsecore.pc"
 )
-sha256sums=('26af6fd3b449d9e2d6e8de9d6e4a2446bdc51ba0369920a53d11b28522d263d6'
-    'ad5e3050c073690afeafa5f4c54b0c6bd84c2f79cd194455d3fa455bef9991cc')
+sha256sums=('ed36c8a0cdff7b57382a258d3e1a916f42500fbafd64dd3c2e258ed8f017ee90'
+    '62359e32983f6125e513b5104a2d6f5b8059ad9766d0c6e10cc1978f6639cfb2')
 
 package() {
     mkdir -p ${pkgdir}/usr/include/pulsecore/filter
