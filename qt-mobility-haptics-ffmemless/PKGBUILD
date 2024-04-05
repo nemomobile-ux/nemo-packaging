@@ -13,7 +13,7 @@ url="https://github.com/sailfishos/qt-mobility-haptics-ffmemless"
 license=('GPL')
 depends=('qt6-base'
     'qt6-feedback'
-    'libprofile-qt')
+    'libprofile-qt>=0.35.6')
 
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('a1e18651b0cde2357ad90514821e3a613d06997dd242c9b76478bd5306c534f7')
