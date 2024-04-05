@@ -4,8 +4,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libmlocale
-pkgver=0.7.6
-pkgrel=6
+pkgver=0.7.7
+pkgrel=1
 pkgdesc="Contains classes MLocale and friends originally from libmeegotouch"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libmlocale"
@@ -19,7 +19,7 @@ source=(
   "disable-werror.patch"
   '0002-mlocale-Fix-build-with-Qt6-JB-52793.patch'
 )
-sha256sums=('1b0db667a124be67251af0c5a3d920798a77b83ff11b404852f7fcb12d0f17af'
+sha256sums=('675b14bde46b6a4305aa3f1dd597bcc6edfb5a2fb07ab06aad28a8f5ac4ab0ad'
     '74a0ea1a421144c1fe9d5c3624d8e4eb4977a6286137b724a0b24999b1b0643b'
     'a3b0494ff99a424ba583bfa660470c06437d472a2cba27ea0cb25f705f081f91'
 )
@@ -42,8 +42,7 @@ package() {
   make INSTALL_ROOT="${pkgdir}" install
 
   # remove tests mess
-  rm -rf "${pkgdir}/usr/lib/libmlocale-benchmarks5"
-  rm -rf "${pkgdir}/usr/share/libmlocale-tests"
+  rm -rf "${pkgdir}/usr/lib/libmlocale-benchmarks6"
   rm -rf "${pkgdir}/usr/lib/libmlocale-tests5"
-  rm -rf "${pkgdir}/usr/share/doc"
+  rm -rf "${pkgdir}/usr/share/"
 }
