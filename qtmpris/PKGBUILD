@@ -7,7 +7,7 @@
 
 pkgname=qtmpris
 pkgver=1.0.6
-pkgrel=1
+pkgrel=2
 pkgdesc="Qt and QML MPRIS interface and adaptor"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/qtmpris"

@@ -5,8 +5,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=buteo-syncfw
-pkgver=0.11.2
-pkgrel=2
+pkgver=0.11.3
+pkgrel=1
 pkgdesc="Synchronization backend"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/buteo-syncfw"
@@ -16,15 +16,18 @@ makedepends=('qt6-tools' 'doxygen')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	"msyncd.service"
 	'0001-Allow-build-with-qt6.patch'
+	'0002-disble_docs.patch'
 	)
-sha256sums=('bf3ecad907d58f672b709fd9e75ddaf9f430bd8853aab9647685d1a7085a48bf'
+sha256sums=('85f73fff0dc80ca76ec8e565e52592c844491d8cbfc8cd1b8a59566e61350952'
 	'3781f5d9c22f1f8a3c32e30bb6ef7f07371e4b7a9d2c7d20720df338d3cd002e'
 	'eb20eb51d10af8b94d686cf9fc86096fca74c75b0d0abb4f3f4fac5110abe07e'
+	'95d7619600de33a675cbdb7a1a185966ba994d09d9b3347e47ee86c8f991a75c'
 )
 
 prepare() {
   cd $pkgname-$pkgver
   patch -p1 --input="${srcdir}/0001-Allow-build-with-qt6.patch"
+  patch -p1 --input="${srcdir}/0002-disble_docs.patch"
 }
 
 build() {

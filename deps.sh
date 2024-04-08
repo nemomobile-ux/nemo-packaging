@@ -2,12 +2,13 @@
 
 # list of packages grabbed from manjaro
 declare have
-have+="curl icu zlib lightdm glib2 dbus-glib sqlite systemd systemd-libs libsystemd net-tools dhcp udev git tzdata gstreamer readline cryptsetup "
-have+="qt6-location qt6-webengine qt6-svg qt6-declarative qt6-base qt6-quickcontrols qt6-wayland qt6-multimedia qt6-feedback qt6-charts qt6-graphicaleffects qt6-quickcontrols2 "
+have+="clang curl icu zlib lightdm glib2 dbus-glib sqlite systemd systemd-libs libsystemd net-tools dhcp udev git tzdata gstreamer readline cryptsetup "
+have+="qt6-location qt6-webengine qt6-svg qt6-declarative qt6-base qt6-quickcontrols qt6-wayland qt6-multimedia qt6-feedback qt6-charts qt6-graphicaleffects "
+have+="qt6-quickcontrols2 qt6-connectivity ninja qt6-5compat python-requests qt6-doc "
 have+="telepathy-qt telepathy-glib telepathy-ofono libpulse pulseaudio python openssl bluez-qt maliit-framework qt6-xmlpatterns dconf libarchive "
 have+="tracker3 tracker3-miners ofono connman check kmod signond gtest libpamac fprintd taglib nemo-qml-plugin-dbus polkit-qt5 geoclue gmp "
 have+="libcanberra python-pyxdg libsoup json-glib libmm-glib avahi geocode-glib gobject-introspection vala meson libnotify libxml2 pkgconf "
-have+="bluez dbus modemmanager mobile-broadband-provider-info qt5-networkauth telepathy-mission-control libofono-qt debianutils pcre hunspell-en_us presage2-lang-en_US "
+have+="bluez dbus modemmanager mobile-broadband-provider-info qt6-networkauth qt6-shadertools qt6-positioning perl telepathy-mission-control libofono-qt debianutils pcre hunspell-en_us presage2-lang-en_US "
 have+="libatomic_ops alsa-lib bluez-libs wayland-protocols "
 have+="cmake qt6-tools automake autoconf libtool doxygen bison flex libxft libjpeg libxpm extra-cmake-modules libxslt graphviz gtk-doc python-setuptools unixodbc libxinerama " # makedepends
 have+="make pkgconfig gtk2 gtk3 boost boost-libs protobuf "

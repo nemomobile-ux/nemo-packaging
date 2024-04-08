@@ -10,7 +10,8 @@ pkgdesc="Nemo QML models plugin"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-models"
 license=('BSD')
-depends=('nemo-qml-plugin-dbus' 'libmlocale')
+depends=('nemo-qml-plugin-dbus' 'libmlocale>=0.7.6')
+makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('c598175da56b067340165549d171bd908064b451e3a3253cc3241d0a32e2c081')
 

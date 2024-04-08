@@ -1,0 +1,14 @@
+diff --git a/buteo-sync.pro b/buteo-sync.pro
+index 9c83383..2dc96ea 100644
+--- a/buteo-sync.pro
++++ b/buteo-sync.pro
+@@ -5,8 +5,7 @@ SUBDIRS += \
+     declarative \
+     msyncd \
+     oopp-runner \
+-    unittests \
+-    doc
++    unittests
+ 
+ declarative.depends = libbuteosyncfw
+ msyncd.depends = libbuteosyncfw

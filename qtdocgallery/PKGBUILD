@@ -1,7 +1,7 @@
 pkgname=qtdocgallery
 
 _basever=5.3.0
-_gitver=5
+_gitver=6
 
 pkgver=$_basever+git$_gitver
 
@@ -16,7 +16,7 @@ makedepends=('qt6-tools' 'qt6-old-features')
 source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
     '0001-workaround-missing-G_BEGIN-END_DECLS-in-tracker.patch'
     '0002-Allow-build-on-Qt6.patch')
-sha256sums=('3f18a69f62d3d60a566519784834af885419a4bbbdaa7f47392deb9e1e247b41'
+sha256sums=('dd9a684011ca4e318452964ae6abc25a3c4da8ca7c8c45214bf2f6cbcb644a94'
     '43e1184286366eb01c66e5d7ec4bfa01b37ca7c56d37054888a2396adb056ff3'
     '75b9abbf7cb14ff68a0c2739e69970addc4986c3933f5a6694244164c47f7cc0')
 
