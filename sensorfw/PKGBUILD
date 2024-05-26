@@ -3,12 +3,12 @@
 
 pkgname=sensorfw
 pkgver=0.14.8
-pkgrel=1
+pkgrel=2
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/sensorfw"
 license=('LGPLv2')
-depends=('libngf' 'libiphb' 'mlite')
+depends=('libngf' 'libiphb' 'mlite6')
 makedepends=('doxygen' 'qt6-base')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "sensorfwd.service")
