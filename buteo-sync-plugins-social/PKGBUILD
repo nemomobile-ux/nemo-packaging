@@ -11,7 +11,7 @@ license=('BSD-3-Clause')
 depends=('libsocialcache'
 	'buteo-syncfw'
 	'qtcontacts-sqlite'
-	'mlite'
+	'mlite6'
 	'qt6-pim'
 	'mkcal'
 	'kcalendarcore6'
