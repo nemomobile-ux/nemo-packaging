@@ -23,10 +23,11 @@ depends=(
 	    'libngf-qt6'
 	    'nemo-qml-plugin-devicelock'
 	    'nemo-qml-plugin-systemsettings'
+	    'nemo-qml-plugin-connectivity'
 	    'pulseaudio'
 	    'pulseaudio-modules-nemo'
 	    'pulseaudio-policy-enforcement'
-	    'bluez-qt6')
+	    'bluez-qt>=6.0')
 
 makedepends=('git'
 	'qt6-tools'

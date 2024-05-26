@@ -17,7 +17,7 @@ license=('LGPL-2.1-only AND Apache-2.0')
 depends=('qt6-quickcontrols-nemo'
         'qt6-glacier-app'
         'nemo-qml-plugin-statusnotifier'
-        'mlite')
+        'mlite6')
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")

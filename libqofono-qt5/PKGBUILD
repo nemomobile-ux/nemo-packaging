@@ -17,11 +17,13 @@ depends=('qt6-declarative'
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "context-preferred.patch"
     "mtk_settings_binding.patch"
+    '0003-fix-invalid-xml.patch'
 )
 
 sha256sums=('7f4a3ecfca41c4549473c68cfe2f0fe4bfbb910b4a7a288799789018ae0e1fe7'
     'f793347078553903c7e6f6b235091c1863b18cd9b4078f34addc7a3ded7f2bd8'
     '1f63b04d05be4988498cba96c9700d6f4b6237325d65e508cf6fa2f21247a765'
+    '96bf3f083de016a35fdf68a304093c7e096819de635db144e4c857ad87afa21f'
 )
 
 prepare() {
@@ -34,6 +36,7 @@ prepare() {
     # Not upstreamed patches
     patch -Np1 -i "${srcdir}/context-preferred.patch"
     patch -Np1 -i "${srcdir}/mtk_settings_binding.patch"
+    patch -Np1 -i "${srcdir}/0003-fix-invalid-xml.patch"
 }
 
 build() {

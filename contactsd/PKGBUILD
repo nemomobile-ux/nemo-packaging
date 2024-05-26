@@ -7,7 +7,7 @@ pkgdesc="Telepathy <> QtContacts bridge for contacts"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/contactsd"
 license=('BSD-3-Clause')
-depends=('mlite'
+depends=('mlite6'
     'libmlocale'
     'libqofono-qt6'
     'qtcontacts-sqlite'
