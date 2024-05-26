@@ -20,7 +20,7 @@ depends=(
     'nemo-theme-default'
     'qt6-svg'
     'google-opensans-fonts'
-    'mlite'
+    'mlite6'
 )
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
