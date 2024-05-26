@@ -12,14 +12,12 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/glacier-messages"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app'
-	'nemo-qml-plugin-contacts'
-	'nemo-qml-plugin-dbus'
-#	'commhistory-daemon'
-	'libcommhistory'
-	'nemo-qml-plugin-messages'
-	'telepathy-mission-control'
-	'telepathy-ofono'
-	'glacier-contacts')
+        'nemo-qml-plugin-contacts'
+        'nemo-qml-plugin-notifications'
+        'nemo-qml-plugin-dbus'
+        'libcommhistory'
+        'libqofono-qt6'
+        'glacier-contacts>=0.9')
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")

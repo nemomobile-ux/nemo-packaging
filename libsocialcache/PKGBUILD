@@ -3,12 +3,12 @@
 
 pkgname=libsocialcache
 pkgver=0.1.7
-pkgrel=1
+pkgrel=2
 pkgdesc="A library that manages data from social networks"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libsocialcache"
 license=('BSD-3-Clause')
-depends=('buteo-syncfw' 'mlite')
+depends=('buteo-syncfw' 'mlite6')
 makedepends=('qt6-tools' 'clang')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-Allow-build-with-Qt6.patch'

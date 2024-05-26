@@ -3,7 +3,7 @@
 
 pkgname=libcommhistory
 pkgver=1.12.1
-pkgrel=2
+pkgrel=3
 pkgdesc="Communications event history database API"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libcommhistory"
@@ -11,6 +11,7 @@ license=('LGPL-2.1-only AND Apache-2.0')
 depends=('libphonenumber-nemo'
     'qt6-base'
     'qtcontacts-sqlite'
+    'mlite6'
     'nemo-qml-plugin-contacts')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-allow_build_with_qt6.patch")

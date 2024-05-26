@@ -7,12 +7,12 @@
 
 pkgname=nemo-qml-plugin-thumbnailer
 pkgver=1.0.9
-pkgrel=1
+pkgrel=2
 pkgdesc="Thumbnail provider plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-thumbnailer"
 license=('BSD-3-Clause')
-depends=('qt6-declarative' 'mlite')
+depends=('qt6-declarative' 'mlite6')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('d307493a09c70dab70d03cd092ecb79ba77fda945b02f0e787dcab13e45178cb')
 

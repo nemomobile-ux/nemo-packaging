@@ -6,12 +6,12 @@
 
 pkgname=nemo-qml-plugin-configuration
 pkgver=0.2.8
-pkgrel=1
+pkgrel=2
 pkgdesc="Configuration plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-configuration"
 license=('BSD')
-depends=('mlite' 'nemo-qml-plugin-dbus')
+depends=('mlite6' 'nemo-qml-plugin-dbus')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('a796b742570526211da93c7ae7b70fccdf97ab592483e3311cf5748fb737a147')
 

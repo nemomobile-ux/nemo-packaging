@@ -8,7 +8,7 @@ pkgdesc="MTP library"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/$pkgname"
 license=('BSD')
-depends=('mlite'
+depends=('mlite6'
     'nemo-qml-plugin-systemsettings'
     'nemo-qml-plugin-dbus'
     'nemo-qml-plugin-thumbnailer'
