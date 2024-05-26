@@ -11,7 +11,7 @@ depends=('geoclue1'
     'libconnman-qt'
     'libqofono-qt6'
     'libqofonoext'
-    'mlite')
+    'mlite6')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-disable_libsailfiskeyprovider.patch"
     "0003-use_standart_path_for_location_config.patch")
