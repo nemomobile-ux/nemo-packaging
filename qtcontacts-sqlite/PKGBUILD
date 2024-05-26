@@ -10,7 +10,7 @@ pkgdesc="SQLite-based plugin for QtPIM Contacts"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/qtcontacts-sqlite"
 license=('BSD-3-Clause')
-depends=('qt6-pim' 'mlite')
+depends=('qt6-pim' 'mlite6')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-fix_build_with_qt6.patch")
 sha256sums=('4c8b2b4120cb501e4e00dc3f3ab40b7620c8800ef72338a3b5ba0255f9fc2088'
