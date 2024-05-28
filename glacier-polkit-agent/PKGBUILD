@@ -1,30 +1,28 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="github.com"
-_project=nemomobile-ux
-
 pkgname=glacier-polkit-agent
-pkgver=0.1.4
+pkgver=0.1.5
 pkgrel=1
 pkgdesc="Nemo polkit agent"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$pkgname"
+url="https://github.com/nemomobile-ux/glacier-polkit-agent"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app' 'polkit-qt6')
 makedepends=('cmake' 'qt6-tools' 'clang')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=("01408b2a9b1408fa9841f4899c3bae2b282f67de5f8a3c3f4209467198b3880f")
+sha256sums=("15e9b15f80723836874ebd702f665656c5425cf12bc3a7c417b86d43afaf2b7a")
 
 build() {
-    cd $pkgname-$pkgver
-    cmake -DCMAKE_INSTALL_PREFIX:PATH='/usr'
-    make all
+    cmake \
+        -B "${pkgname}-${pkgver}/build" \
+        -S "${pkgname}-${pkgver}" \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    make -C "${pkgname}-${pkgver}/build" all
 }
 
 package() {
-    cd $pkgname-$pkgver
-    make DESTDIR="$pkgdir" install
+    make -C "${srcdir}/${pkgname}-${pkgver}/build" DESTDIR="$pkgdir" install
     mkdir -p ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
     ln -s ../glacier-polkit-agent.service ${pkgdir}/usr/lib/systemd/user/user-session.target.wants/
 }
