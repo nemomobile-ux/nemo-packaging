@@ -26,7 +26,6 @@ fi
 eval "$BUILD nemo-theme-glacier"
 eval "$BUILD qt6-old-features"
 
-eval "$BUILD extra-cmake-modules-git"
 eval "$BUILD polkit-qt6-git"
 
 eval "$BUILD libphonenumber-nemo"
