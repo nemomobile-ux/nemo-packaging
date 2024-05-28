@@ -8,7 +8,7 @@ _branch=master
 _gitname=$_basename
 pkgname=$_basename-git
 
-pkgver=0.8.1.r4.g8ce5fa3
+pkgver=0.9.r0.ga551505
 
 pkgrel=1
 pkgdesc="QML based contacts application for nemomobile"
@@ -19,8 +19,8 @@ makedepends=('git' 'cmake' 'qt6-tools' 'clang')
 depends=('nemo-qml-plugin-thumbnailer'
         'nemo-qml-plugin-contacts'
         'nemo-qml-plugin-folderlistmodel'
-        'glacier-gallery>=0.4'
-        'glacier-filemuncher>=0.4'
+        'glacier-gallery-git'
+        'glacier-filemuncher-git'
         'nemo-qml-plugin-dbus'
         'qt6-glacier-app')
 provides=("${pkgname%-git}")
