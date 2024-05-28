@@ -17,7 +17,7 @@ depends=('qt6-glacier-app'
         'nemo-qml-plugin-dbus'
         'libcommhistory'
         'libqofono-qt6'
-        'glacier-contacts>=0.9')
+        'glacier-contacts-git')
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
