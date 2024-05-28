@@ -6,7 +6,7 @@ arch=('x86_64' 'aarch64')
 url='https://github.com/KDE/polkit-qt-1#branch=master'
 license=(GPL2)
 depends=(qt6-base polkit)
-makedepends=('extra-cmake-modules-git'
+makedepends=('extra-cmake-modules>=6.0'
 	    'cmake'
 	    'git')
 provides=("polkit-qt6")
