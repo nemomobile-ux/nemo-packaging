@@ -1,15 +1,12 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="github.com"
-_project=nemomobile-ux
-
 pkgname=glacier-polkit-agent
 pkgver=0.1.5
 pkgrel=1
 pkgdesc="Nemo polkit agent"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$pkgname"
+url="https://github.com/nemomobile-ux/glacier-polkit-agent"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app' 'polkit-qt6')
 makedepends=('cmake' 'qt6-tools' 'clang')
