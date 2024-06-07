@@ -12,7 +12,7 @@ url="https://github.com/sailfishos/libmlocale"
 license=('LGPLv2')
 depends=('qt6-base'
     'qt6-declarative'
-    'icu=74.2')
+    'icu=75.1')
 makedepends=('qt6-tools' 'clang')
 source=(
   "${url}/archive/refs/tags/$pkgver.tar.gz"
