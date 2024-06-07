@@ -1,0 +1,263 @@
+From e5fb066b7dbcc7971d647b632d23acb74889c3b9 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Tue, 28 May 2024 22:09:07 +0300
+Subject: [PATCH] qt5 -> qt6
+
+---
+ benchmarks/tst_messageserver/tst_messageserver.pro      | 2 +-
+ common.pri                                              | 4 ++--
+ src/libraries/qmfclient/qmfclient.pro                   | 4 ++--
+ src/libraries/qmfmessageserver/qmfmessageserver.pro     | 4 ++--
+ src/libraries/qmfwidgets/qmfwidgets.pro                 | 4 ++--
+ src/plugins/messageservices/imap/imap.pro               | 4 ++--
+ src/plugins/messageservices/pop/pop.pro                 | 4 ++--
+ src/plugins/messageservices/smtp/smtp.pro               | 4 ++--
+ src/plugins/ssoauth/password/password.pro               | 4 ++--
+ src/tools/accountscheck/accountscheck.pro               | 2 +-
+ src/tools/messageserver/messageserver.pro               | 6 +++---
+ src/tools/systemd/messageserver5-accounts-check.service | 4 ++--
+ src/tools/systemd/messageserver5.service                | 4 ++--
+ tests/tests.pri                                         | 2 +-
+ tests/tests.pro                                         | 4 ++--
+ tests/tst_python_email/tst_python_email.pro             | 2 +-
+ 16 files changed, 29 insertions(+), 29 deletions(-)
+
+diff --git a/benchmarks/tst_messageserver/tst_messageserver.pro b/benchmarks/tst_messageserver/tst_messageserver.pro
+index 1dc2ddd5..502c514f 100644
+--- a/benchmarks/tst_messageserver/tst_messageserver.pro
++++ b/benchmarks/tst_messageserver/tst_messageserver.pro
+@@ -2,7 +2,7 @@ TEMPLATE = app
+ CONFIG += unittest
+ QT += testlib widgets qmfclient qmfclient-private qmfmessageserver
+ TARGET = tst_messageserver
+-target.path += /opt/tests/qmf-qt5
++target.path += /opt/tests/qmf-qt6
+ 
+ BASE=../../
+ include($$BASE/common.pri)
+diff --git a/common.pri b/common.pri
+index bfd17e85..94c0a949 100644
+--- a/common.pri
++++ b/common.pri
+@@ -5,8 +5,8 @@ CONFIG(debug,debug|release) {
+ contains(DEFINES,USE_ACCOUNTS_QT) {
+     CONFIG += link_pkgconfig
+     QT += xml
+-    PKGCONFIG += accounts-qt5
+-    PKGCONFIG += libsignon-qt5
++    PKGCONFIG += accounts-qt6
++    PKGCONFIG += libsignon-qt6
+ }
+ 
+ win32 | macx {
+diff --git a/src/libraries/qmfclient/qmfclient.pro b/src/libraries/qmfclient/qmfclient.pro
+index ebb08fcf..d29ca0d0 100644
+--- a/src/libraries/qmfclient/qmfclient.pro
++++ b/src/libraries/qmfclient/qmfclient.pro
+@@ -7,8 +7,8 @@ CONFIG    += warn_on
+ # on accounts enabled version, let's just allow the dependency. See also qmfmessageserver.pro
+ contains(DEFINES,USE_ACCOUNTS_QT) {
+     CONFIG += link_pkgconfig
+-    PKGCONFIG += accounts-qt5
+-    PKGCONFIG += libsignon-qt5
++    PKGCONFIG += accounts-qt6
++    PKGCONFIG += libsignon-qt6
+ 
+     HEADERS += ssoaccountmanager.h \
+                ssosessionmanager.h \
+diff --git a/src/libraries/qmfmessageserver/qmfmessageserver.pro b/src/libraries/qmfmessageserver/qmfmessageserver.pro
+index 62d1e28d..714c826e 100644
+--- a/src/libraries/qmfmessageserver/qmfmessageserver.pro
++++ b/src/libraries/qmfmessageserver/qmfmessageserver.pro
+@@ -45,6 +45,6 @@ SOURCES += qmailauthenticator.cpp \
+ # on accounts enabled version, let's just allow the dependency. See also qmfclient.pro
+ contains(DEFINES,USE_ACCOUNTS_QT) {
+     CONFIG += link_pkgconfig
+-    PKGCONFIG += accounts-qt5
+-    PKGCONFIG += libsignon-qt5
++    PKGCONFIG += accounts-qt6
++    PKGCONFIG += libsignon-qt6
+ }
+diff --git a/src/libraries/qmfwidgets/qmfwidgets.pro b/src/libraries/qmfwidgets/qmfwidgets.pro
+index dafd090a..1647642a 100644
+--- a/src/libraries/qmfwidgets/qmfwidgets.pro
++++ b/src/libraries/qmfwidgets/qmfwidgets.pro
+@@ -44,6 +44,6 @@ RESOURCES += qmfutil.qrc
+ contains(DEFINES,USE_ACCOUNTS_QT) {
+     CONFIG += link_pkgconfig
+     QT += xml
+-    PKGCONFIG += accounts-qt5
+-    PKGCONFIG += libsignon-qt5
++    PKGCONFIG += accounts-qt6
++    PKGCONFIG += libsignon-qt6
+ }
+diff --git a/src/plugins/messageservices/imap/imap.pro b/src/plugins/messageservices/imap/imap.pro
+index b2ad48eb..3cd593f6 100644
+--- a/src/plugins/messageservices/imap/imap.pro
++++ b/src/plugins/messageservices/imap/imap.pro
+@@ -17,8 +17,8 @@ contains(DEFINES,QT_QMF_USE_ALIGNEDTIMER) {
+ contains(DEFINES,USE_ACCOUNTS_QT) {
+     CONFIG += link_pkgconfig
+     QT += xml
+-    PKGCONFIG += accounts-qt5
+-    PKGCONFIG += libsignon-qt5
++    PKGCONFIG += accounts-qt6
++    PKGCONFIG += libsignon-qt6
+ }
+ 
+ HEADERS += imapclient.h \
+diff --git a/src/plugins/messageservices/pop/pop.pro b/src/plugins/messageservices/pop/pop.pro
+index eb96f74d..386e162d 100644
+--- a/src/plugins/messageservices/pop/pop.pro
++++ b/src/plugins/messageservices/pop/pop.pro
+@@ -8,8 +8,8 @@ QT = core network qmfclient qmfclient-private qmfmessageserver
+ contains(DEFINES,USE_ACCOUNTS_QT) {
+     CONFIG += link_pkgconfig
+     QT += xml
+-    PKGCONFIG += accounts-qt5
+-    PKGCONFIG += libsignon-qt5
++    PKGCONFIG += accounts-qt6
++    PKGCONFIG += libsignon-qt6
+ }
+ 
+ HEADERS += popclient.h \
+diff --git a/src/plugins/messageservices/smtp/smtp.pro b/src/plugins/messageservices/smtp/smtp.pro
+index 7663a28a..5714c1c0 100644
+--- a/src/plugins/messageservices/smtp/smtp.pro
++++ b/src/plugins/messageservices/smtp/smtp.pro
+@@ -8,8 +8,8 @@ QT = core network qmfclient qmfmessageserver
+ contains(DEFINES,USE_ACCOUNTS_QT) {
+     CONFIG += link_pkgconfig
+     QT += xml
+-    PKGCONFIG += accounts-qt5
+-    PKGCONFIG += libsignon-qt5
++    PKGCONFIG += accounts-qt6
++    PKGCONFIG += libsignon-qt6
+ }
+ 
+ HEADERS += smtpauthenticator.h \
+diff --git a/src/plugins/ssoauth/password/password.pro b/src/plugins/ssoauth/password/password.pro
+index f41e80ad..dc6490f1 100644
+--- a/src/plugins/ssoauth/password/password.pro
++++ b/src/plugins/ssoauth/password/password.pro
+@@ -11,8 +11,8 @@ DEPENDPATH += .
+ contains(DEFINES,USE_ACCOUNTS_QT) {
+     CONFIG += link_pkgconfig
+     QT += xml
+-    PKGCONFIG += accounts-qt5
+-    PKGCONFIG += libsignon-qt5
++    PKGCONFIG += accounts-qt6
++    PKGCONFIG += libsignon-qt6
+ }
+ 
+ HEADERS += passwordplugin.h
+diff --git a/src/tools/accountscheck/accountscheck.pro b/src/tools/accountscheck/accountscheck.pro
+index 0c707b92..daf49d86 100644
+--- a/src/tools/accountscheck/accountscheck.pro
++++ b/src/tools/accountscheck/accountscheck.pro
+@@ -7,7 +7,7 @@ QT += qmfclient
+ target.path += /usr/bin
+ 
+ CONFIG += link_pkgconfig
+-PKGCONFIG += accounts-qt5
++PKGCONFIG += accounts-qt6
+ 
+ SOURCES += accountscheck.cpp
+ 
+diff --git a/src/tools/messageserver/messageserver.pro b/src/tools/messageserver/messageserver.pro
+index a092b8ce..ec82a049 100644
+--- a/src/tools/messageserver/messageserver.pro
++++ b/src/tools/messageserver/messageserver.pro
+@@ -17,10 +17,10 @@ contains(DEFINES, USE_HTML_PARSER) {
+     QT += gui widgets
+ }
+ 
+-packagesExist(qt5-boostable) {
+-    PKGCONFIG += qt5-boostable
++packagesExist(qt6-boostable) {
++    PKGCONFIG += qt6-boostable
+ } else {
+-    warning("qt5-boostable not available; startup times will be slower")
++    warning("qt6-boostable not available; startup times will be slower")
+ }
+ 
+ CONFIG -= app_bundle
+diff --git a/src/tools/systemd/messageserver5-accounts-check.service b/src/tools/systemd/messageserver5-accounts-check.service
+index f5194daa..42bc7978 100644
+--- a/src/tools/systemd/messageserver5-accounts-check.service
++++ b/src/tools/systemd/messageserver5-accounts-check.service
+@@ -1,10 +1,10 @@
+ [Unit]
+ Description=check accounts for messageserver5
+-Requires=booster-qt5.service
++Requires=booster-qt6.service
+ After=oneshot-user.service
+ After=jolla-settings-accounts-update.service
+ Before=messageserver5.service
+-After=booster-qt5.service
++After=booster-qt6.service
+ 
+ [Service]
+ Type=oneshot
+diff --git a/src/tools/systemd/messageserver5.service b/src/tools/systemd/messageserver5.service
+index 9622d701..97a7cfe0 100644
+--- a/src/tools/systemd/messageserver5.service
++++ b/src/tools/systemd/messageserver5.service
+@@ -1,13 +1,13 @@
+ [Unit]
+ Description=messageserver5
+ Requires=messageserver5-accounts-check.service
+-Requires=booster-qt5.service
++Requires=booster-qt6.service
+ After=msyncd.service
+ After=messageserver5-accounts-check.service
+ 
+ [Service]
+ Type=simple
+-ExecStart=/usr/bin/invoker -o --type=qt5 --global-syms /usr/bin/messageserver5
++ExecStart=/usr/bin/invoker -o --type=qt6 --global-syms /usr/bin/messageserver5
+ Restart=on-failure
+ RestartSec=1
+ 
+diff --git a/tests/tests.pri b/tests/tests.pri
+index 1d3ba39e..2430d2fd 100644
+--- a/tests/tests.pri
++++ b/tests/tests.pri
+@@ -3,7 +3,7 @@ QT += testlib
+ CONFIG += testcase
+ 
+ QT += qmfclient qmfclient-private
+-target.path += /opt/tests/qmf-qt5
++target.path += /opt/tests/qmf-qt6
+ 
+ include(../common.pri)
+ 
+diff --git a/tests/tests.pro b/tests/tests.pro
+index de368ce1..00c30520 100644
+--- a/tests/tests.pro
++++ b/tests/tests.pro
+@@ -41,6 +41,6 @@ exists(/usr/bin/gpgme-config) {
+ CONFIG += unittest
+ 
+ # Install test file description
+-test_description.files = qt5/tests.xml
+-test_description.path  = /opt/tests/qmf-qt5/test-definition
++test_description.files = qt6/tests.xml
++test_description.path  = /opt/tests/qmf-qt6/test-definition
+ INSTALLS += test_description
+diff --git a/tests/tst_python_email/tst_python_email.pro b/tests/tst_python_email/tst_python_email.pro
+index 204ecd5a..e6b11255 100644
+--- a/tests/tst_python_email/tst_python_email.pro
++++ b/tests/tst_python_email/tst_python_email.pro
+@@ -4,7 +4,7 @@ TARGET = tst_python_email
+ 
+ DEFINES += SRCDIR=\\\"$$_PRO_FILE_PWD_\\\"
+ 
+-testdata.path = /opt/tests/qmf-qt5/testdata
++testdata.path = /opt/tests/qmf-qt6/testdata
+ testdata.files = testdata/*
+ 
+ INSTALLS += testdata
+-- 
+2.45.0
+
