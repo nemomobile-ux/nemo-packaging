@@ -5,7 +5,7 @@
 
 pkgname=libmlocale
 pkgver=0.7.7
-pkgrel=1
+pkgrel=2
 pkgdesc="Contains classes MLocale and friends originally from libmeegotouch"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libmlocale"
