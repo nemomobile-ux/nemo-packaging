@@ -1,0 +1,260 @@
+From 1ddb4bf4e049fa8673c672ca3dc53a9e1345041c Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Tue, 28 May 2024 22:46:37 +0300
+Subject: [PATCH] Qt6
+
+---
+ src/accountinterface.cpp        | 42 ++++++++++++++++-----------------
+ src/accountinterface.h          |  2 +-
+ src/accountmanagerinterface.cpp | 12 +++++-----
+ src/accountmanagerinterface.h   |  2 +-
+ src/service-account-model.cpp   |  4 ++--
+ src/serviceaccountinterface.cpp |  2 +-
+ src/serviceinterface.cpp        |  2 +-
+ src/servicetypeinterface.cpp    |  2 +-
+ src/src.pro                     |  3 +++
+ tests/common.pri                |  5 ++++
+ tests/tests.pro                 |  1 +
+ 11 files changed, 43 insertions(+), 34 deletions(-)
+
+diff --git a/src/accountinterface.cpp b/src/accountinterface.cpp
+index 622bff7..2b734d1 100644
+--- a/src/accountinterface.cpp
++++ b/src/accountinterface.cpp
+@@ -680,17 +680,17 @@ void AccountInterface::setConfigurationValue(const QString &key, const QVariant
+     if (d->status == AccountInterface::Invalid || d->status == AccountInterface::SyncInProgress)
+         return;
+ 
+-    if (value.type() == QVariant::List) {
++    if (value.typeId() == QVariant::List) {
+         setConfigurationValue(key, value.toStringList(), serviceName);
+         return;
+     }
+ 
+-    if (value.type() != QVariant::Int
+-            && value.type() != QVariant::LongLong
+-            && value.type() != QVariant::ULongLong
+-            && value.type() != QVariant::Bool
+-            && value.type() != QVariant::String
+-            && value.type() != QVariant::StringList) {
++    if (value.typeId() != QVariant::Int
++            && value.typeId() != QVariant::LongLong
++            && value.typeId() != QVariant::ULongLong
++            && value.typeId() != QVariant::Bool
++            && value.typeId() != QVariant::String
++            && value.typeId() != QVariant::StringList) {
+         qWarning() << Q_FUNC_INFO << "Unsupported configuration value type!  Must be int, quint64, bool, string or string list.";
+         return; // unsupported value type.
+     }
+@@ -816,14 +816,14 @@ void AccountInterface::setConfigurationValues(const QVariantMap &values, const Q
+     QStringList vkeys = values.keys();
+     foreach (const QString &key, vkeys) {
+         QVariant currValue = values.value(key);
+-        if (currValue.type() == QVariant::Bool
+-                || currValue.type() == QVariant::Int
+-                || currValue.type() == QVariant::LongLong
+-                || currValue.type() == QVariant::ULongLong
+-                || currValue.type() == QVariant::String
+-                || currValue.type() == QVariant::StringList) {
++        if (currValue.typeId() == QVariant::Bool
++                || currValue.typeId() == QVariant::Int
++                || currValue.typeId() == QVariant::LongLong
++                || currValue.typeId() == QVariant::ULongLong
++                || currValue.typeId() == QVariant::String
++                || currValue.typeId() == QVariant::StringList) {
+             validValues.insert(key, currValue);
+-        } else if (currValue.type() == QVariant::List) {
++        } else if (currValue.typeId() == QVariant::List) {
+             validValues.insert(key, currValue.toStringList());
+         }
+     }
+@@ -1220,14 +1220,14 @@ void AccountInterface::setConfigurationValues(const QVariantMap &values)
+     QStringList vkeys = values.keys();
+     foreach (const QString &key, vkeys) {
+         QVariant currValue = values.value(key);
+-        if (currValue.type() == QVariant::Bool
+-                || currValue.type() == QVariant::Int
+-                || currValue.type() == QVariant::LongLong
+-                || currValue.type() == QVariant::ULongLong
+-                || currValue.type() == QVariant::String
+-                || currValue.type() == QVariant::StringList) {
++        if (currValue.typeId() == QVariant::Bool
++                || currValue.typeId() == QVariant::Int
++                || currValue.typeId() == QVariant::LongLong
++                || currValue.typeId() == QVariant::ULongLong
++                || currValue.typeId() == QVariant::String
++                || currValue.typeId() == QVariant::StringList) {
+             validValues.insert(key, currValue);
+-        } else if (currValue.type() == QVariant::List) {
++        } else if (currValue.typeId() == QVariant::List) {
+             validValues.insert(key, currValue.toStringList());
+         }
+     }
+diff --git a/src/accountinterface.h b/src/accountinterface.h
+index bace16d..e972c5f 100644
+--- a/src/accountinterface.h
++++ b/src/accountinterface.h
+@@ -38,7 +38,7 @@
+ #include <QtCore/QString>
+ 
+ #include <QtGlobal>
+-#if QT_VERSION_5
++#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+ #include <QtQml>
+ #include <QQmlParserStatus>
+ #define QDeclarativeParserStatus QQmlParserStatus
+diff --git a/src/accountmanagerinterface.cpp b/src/accountmanagerinterface.cpp
+index a9acff0..8a853b9 100644
+--- a/src/accountmanagerinterface.cpp
++++ b/src/accountmanagerinterface.cpp
+@@ -119,18 +119,18 @@ void AccountManagerInterfacePrivate::updateEverything()
+     }
+ 
+     // calculate change deltas and emit appropriately.
+-    QSet<QString> oldPN = QSet<QString>::fromList(tmpProviderNames);
+-    QSet<QString> newPN = QSet<QString>::fromList(providerNames);
++    QSet<QString> oldPN = QSet<QString>(tmpProviderNames.begin(), tmpProviderNames.end());
++    QSet<QString> newPN = QSet<QString>(providerNames.begin(), providerNames.end());
+     if (!(oldPN == newPN))
+         emit q->providerNamesChanged();
+ 
+-    QSet<QString> oldSN = QSet<QString>::fromList(tmpServiceNames);
+-    QSet<QString> newSN = QSet<QString>::fromList(serviceNames);
++    QSet<QString> oldSN = QSet<QString>(tmpServiceNames.begin(), tmpServiceNames.end());
++    QSet<QString> newSN = QSet<QString>(serviceNames.begin(), serviceNames.end());
+     if (!(oldSN == newSN))
+         emit q->serviceNamesChanged();
+ 
+-    QSet<QString> oldAI = QSet<QString>::fromList(tmpAccountIdentifiers);
+-    QSet<QString> newAI = QSet<QString>::fromList(accountIdentifiers);
++    QSet<QString> oldAI = QSet<QString>(tmpAccountIdentifiers.begin(), tmpAccountIdentifiers.end());
++    QSet<QString> newAI = QSet<QString>(accountIdentifiers.begin(), accountIdentifiers.end());
+     if (!(oldAI == newAI))
+         emit q->accountIdentifiersChanged();
+ }
+diff --git a/src/accountmanagerinterface.h b/src/accountmanagerinterface.h
+index 405b4bc..27b55e9 100644
+--- a/src/accountmanagerinterface.h
++++ b/src/accountmanagerinterface.h
+@@ -35,7 +35,7 @@
+ #include <QtCore/QObject>
+ 
+ #include <QtGlobal>
+-#if QT_VERSION_5
++#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+ #include <QtQml>
+ #include <QQmlParserStatus>
+ #define QDeclarativeParserStatus QQmlParserStatus
+diff --git a/src/service-account-model.cpp b/src/service-account-model.cpp
+index 51858d0..c898c05 100644
+--- a/src/service-account-model.cpp
++++ b/src/service-account-model.cpp
+@@ -261,7 +261,7 @@ void ServiceAccountModel::accountRemoved(Accounts::AccountId id)
+     QList<DisplayData *> cleanupList;
+ 
+     // remove them in contiguous chunks if possible.
+-    qSort(indexes);
++    std::sort(indexes.begin(), indexes.end());
+     int maxIdx = indexes.last();
+     int firstIdx = indexes.first();
+     int lastIdx = firstIdx;
+@@ -308,7 +308,7 @@ void ServiceAccountModel::accountUpdated(Accounts::AccountId id)
+     }
+ 
+     // emit change signals for contiguous chunks
+-    qSort(indexes);
++    std::sort(indexes.begin(), indexes.end());
+     int maxIdx = indexes.last();
+     int firstIdx = indexes.first();
+     int lastIdx = firstIdx;
+diff --git a/src/serviceaccountinterface.cpp b/src/serviceaccountinterface.cpp
+index 5668f65..c5a64ce 100644
+--- a/src/serviceaccountinterface.cpp
++++ b/src/serviceaccountinterface.cpp
+@@ -170,7 +170,7 @@ ProviderInterface *ServiceAccountInterface::provider() const
+ */
+ void ServiceAccountInterface::setConfigurationValue(const QString &key, const QVariant &value)
+ {
+-    if (value.type() == QVariant::List) {
++    if (value.typeId() == QVariant::List) {
+         setConfigurationValue(key, value.toStringList());
+         return;
+     }
+diff --git a/src/serviceinterface.cpp b/src/serviceinterface.cpp
+index 449422d..4dabe87 100644
+--- a/src/serviceinterface.cpp
++++ b/src/serviceinterface.cpp
+@@ -120,6 +120,6 @@ QString ServiceInterface::iconName() const
+ 
+ QStringList ServiceInterface::tags() const
+ {
+-    return d->service.tags().toList();
++    return QList<QString>(d->service.tags().begin(), d->service.tags().end());
+ }
+ 
+diff --git a/src/servicetypeinterface.cpp b/src/servicetypeinterface.cpp
+index 61b538f..45d26e1 100644
+--- a/src/servicetypeinterface.cpp
++++ b/src/servicetypeinterface.cpp
+@@ -97,6 +97,6 @@ QString ServiceTypeInterface::iconName() const
+ 
+ QStringList ServiceTypeInterface::tags() const
+ {
+-    return d->serviceType.tags().toList();
++    return QList<QString>(d->serviceType.tags().begin(), d->serviceType.tags().end());
+ }
+ 
+diff --git a/src/src.pro b/src/src.pro
+index 86ff6d4..c325616 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -5,10 +5,12 @@ TEMPLATE = lib
+ CONFIG += qt plugin hide_symbols
+ equals(QT_MAJOR_VERSION, 4): QT += declarative
+ equals(QT_MAJOR_VERSION, 5): QT += qml
++equals(QT_MAJOR_VERSION, 6): QT += qml
+ QT -= gui
+ 
+ equals(QT_MAJOR_VERSION, 4): target.path = $$[QT_INSTALL_IMPORTS]/$$PLUGIN_IMPORT_PATH
+ equals(QT_MAJOR_VERSION, 5): target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
++equals(QT_MAJOR_VERSION, 6): target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
+ INSTALLS += target
+ 
+ qmldir.files += qmldir plugins.qmltypes
+@@ -21,6 +23,7 @@ QMAKE_EXTRA_TARGETS += qmltypes
+ CONFIG += link_pkgconfig
+ equals(QT_MAJOR_VERSION, 4): PKGCONFIG += accounts-qt
+ equals(QT_MAJOR_VERSION, 5): PKGCONFIG += accounts-qt5
++equals(QT_MAJOR_VERSION, 6): PKGCONFIG += accounts-qt6
+ 
+ equals(QT_MAJOR_VERSION, 5): DEFINES += QT_VERSION_5
+ 
+diff --git a/tests/common.pri b/tests/common.pri
+index 5d7b696..49f4236 100644
+--- a/tests/common.pri
++++ b/tests/common.pri
+@@ -17,4 +17,9 @@ equals(QT_MAJOR_VERSION, 5) {
+     target.path = /opt/tests/nemo-qml-plugins-qt5/accounts
+ }
+ 
++equals(QT_MAJOR_VERSION, 6) {
++    PKGCONFIG += accounts-qt6 Qt6Qml Qt6Gui
++    target.path = /opt/tests/nemo-qml-plugins-qt6/accounts
++}
++
+ INSTALLS += target
+diff --git a/tests/tests.pro b/tests/tests.pro
+index 4be6b10..9517574 100644
+--- a/tests/tests.pro
++++ b/tests/tests.pro
+@@ -12,6 +12,7 @@ tests_xml.target = tests.xml
+ tests_xml.files = tests.xml
+ equals(QT_MAJOR_VERSION, 4): tests_xml.path = /opt/tests/nemo-qml-plugins/accounts
+ equals(QT_MAJOR_VERSION, 5): tests_xml.path = /opt/tests/nemo-qml-plugins-qt5/accounts
++equals(QT_MAJOR_VERSION, 6): tests_xml.path = /opt/tests/nemo-qml-plugins-qt6/accounts
+ INSTALLS += tests_xml
+ 
+ tests_provider.target = test-provider.provider
+-- 
+2.45.0
+

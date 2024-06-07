@@ -16,6 +16,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0090-fix_missing_librares.patch"
     "0091-use_std_list.patch"
     "0092-fix_build.patch"
+    "0093-qt5-qt6.patch"
     "messageserver5.service"
     "messageserver5-accounts-check.service")
 
@@ -23,6 +24,7 @@ sha256sums=('844e7232cb8520e38a6cacd4e6e0cfdb0584641daee096f6741b803b4737fdd9'
     'a839b7130aec6f06291aea0ddb2c739f6641a209ab90877be6eb954d49f537e8'
     'becad4f91271b383ad1e687a6aec9410043e0ede58922ab0c158ac9344073977'
     'b2b219fd0a88e26f2f62223cd2142232131924fa3d78a7942677f4598e4e0b5e'
+    'df4fb25e6bf7727ace4fa9abbc104549fefe00b4388a5b2f62732ee3059f7cc4'
     '943d9b6d0eecd3b340742238cf9e7dd46b6ea5166f349d930609808a00bb31b2'
     'b619e1b888b1de43c051a39daf75b0d1e3d04a9ed52987dad599efeb0b5d116e')
 
@@ -70,6 +72,8 @@ prepare() {
   patch -p1 --input="${srcdir}/0090-fix_missing_librares.patch"
   patch -p1 --input="${srcdir}/0091-use_std_list.patch"
   patch -p1 --input="${srcdir}/0092-fix_build.patch"
+  patch -p1 --input="${srcdir}/0093-qt5-qt6.patch"
+
 }
 
 build() {
