@@ -13,8 +13,8 @@ depends=('libsocialcache'
 	'qtcontacts-sqlite'
 	'mlite6'
 	'qt6-pim'
-	'mkcal'
-	'kcalendarcore6'
+	'mkcal6'
+	'kcalendarcore>=6.0'
 	'libaccounts-qt6'
 	'nemo-qml-plugin-notifications')
 

@@ -26,7 +26,6 @@ fi
 eval "$BUILD nemo-theme-glacier"
 eval "$BUILD qt6-old-features"
 
-eval "$BUILD extra-cmake-modules-git"
 eval "$BUILD polkit-qt6-git"
 
 eval "$BUILD libphonenumber-nemo"
@@ -122,8 +121,7 @@ eval "$BUILD commhistory-daemon"
 eval "$BUILD qmf-qt5"
 eval "$BUILD nemo-qml-plugin-accounts"
 eval "$BUILD nemo-qml-plugin-messages"
-eval "$BUILD kcalendarcore6"
-eval "$BUILD mkcal"
+eval "$BUILD mkcal6"
 eval "$BUILD contactsd"
 eval "$BUILD telepathy-mission-control"
 eval "$BUILD telepathy-ring"
