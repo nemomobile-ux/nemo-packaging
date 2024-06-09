@@ -2,13 +2,14 @@
 
 pkgname=libdbuslog
 pkgver=1.0.22
-pkgrel=1
+pkgrel=2
 pkgdesc="Library of logging utilities for libdbus based programs"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/${pkgname}"
 license=('LGPLv2')
-depends=('glib2' 
+depends=('glib2'
     'dbus'
+    'python-packaging'
     'libglibutil'
     'libdbusaccess')
 makedepends=('python')
