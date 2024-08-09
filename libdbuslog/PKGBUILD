@@ -12,7 +12,9 @@ depends=('glib2'
     'python-packaging'
     'libglibutil'
     'libdbusaccess')
-makedepends=('python')
+makedepends=('python'
+    'glib2-devel'
+)
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('e8dce3056e97109ced4b288bbbdb76dcbb5709e8d2e2f83ee1a1d563d8985c72')
 
