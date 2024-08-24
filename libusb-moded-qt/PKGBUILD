@@ -6,24 +6,15 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libusb-moded-qt
-pkgver=1.11
-pkgrel=2
+pkgver=1.13
+pkgrel=1
 pkgdesc="A library of qt6 bindings for usb_moded"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libusb-moded-qt"
 license=('BSD-2-Clause')
 depends=('qt6-base' 'usb-moded')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    '0001-qt6.patch'
-)
-sha256sums=('0af17dbb23dfec10133e9e734322cc8399bedfc45166437f91cd955674819db2'
-    'b7c884b36070f181a07ce7d85d8e88075742dfd354bf4dff4242b8430cc3075d'
-)
-
-prepare() {
-  cd $pkgname-$pkgver
-  patch -p1 --input="${srcdir}/0001-qt6.patch"
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('f9cb3540f3b12c1f1a7717e815a9f8d5ee258a376d9611c8c4af1e5ecd27cb70')
 
 build() {
     cd $pkgname-$pkgver
