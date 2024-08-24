@@ -5,22 +5,15 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libngf-qt6
-pkgver=0.8.6
+pkgver=0.8.7
 pkgrel=1
 pkgdesc="Qt-based client library for Non-Graphic Feedback daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libngf-qt"
 license=('GPL')
 depends=('qt6-declarative' 'libngf' 'qt6-feedback')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-fix_build_with_qt6.patch")
-sha256sums=('e51e33a1875eb69c0cbcc59dad5c20b99bbadd4c998b4dd64da4a4dde69267e8'
-    '8e90974568fa70110d38b8c2da597acf5eab22388ed3dc588a097c04843c019b')
-
-prepare() {
-    cd libngf-qt-$pkgver
-    patch -Np1 -i "${srcdir}/0001-fix_build_with_qt6.patch"
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('bb301ad2fa0895add1cc70285de97c61c04b9f9b8ce6bf2316ce5127872641ad')
 
 build() {
     cd libngf-qt-$pkgver
