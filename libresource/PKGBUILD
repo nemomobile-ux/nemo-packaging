@@ -5,8 +5,8 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=libresource
-pkgver=0.25.1
-pkgrel=2
+pkgver=0.25.2
+pkgrel=1
 pkgdesc="MeeGo resource management low level C API libraries"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libresource"
@@ -14,7 +14,7 @@ license=('LGPL-2.1-only')
 depends=('dbus-glib' 'check')
 makedepends=('automake' 'autoconf' 'libtool' 'git')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('3956ce8fa54f75b6db651e6d82dfce7294d433c8792bf360af1f0e86c13a3aa1')
+sha256sums=('1bbc00ca839830a46bee198220ec6889e6bd4bdce2cc9623e4207c4a3e75f258')
 
 prepare() {
     cd $pkgname-$pkgver
@@ -41,4 +41,3 @@ package() {
     # Remove tests
     rm -rf "$pkgdir"/opt
 }
-
