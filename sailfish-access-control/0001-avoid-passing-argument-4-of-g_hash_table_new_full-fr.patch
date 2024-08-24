@@ -1,0 +1,26 @@
+From b457b06b465b786437d3853bb171acd6660d786d Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sat, 24 Aug 2024 15:06:40 +0000
+Subject: [PATCH] avoid passing argument 4 of 'g_hash_table_new_full' from
+ incompatible pointer type
+
+---
+ glib/sailfishaccesscontrol.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/glib/sailfishaccesscontrol.c b/glib/sailfishaccesscontrol.c
+index ff2ad58..5823f18 100644
+--- a/glib/sailfishaccesscontrol.c
++++ b/glib/sailfishaccesscontrol.c
+@@ -92,7 +92,7 @@ bool sailfish_access_control_hasgroup(uid_t uid, const char *group_name)
+     ensure_groups_validity();
+ 
+     if (!s_groups)
+-        s_groups = g_hash_table_new_full(NULL, NULL, NULL, destroy_group_list);
++        s_groups = g_hash_table_new_full(NULL, NULL, NULL, (GDestroyNotify)destroy_group_list);
+ 
+     groups = g_hash_table_lookup(s_groups, GINT_TO_POINTER(uid));
+     if (!groups)
+-- 
+2.46.0
+
