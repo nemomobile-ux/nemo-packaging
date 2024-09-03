@@ -10,11 +10,16 @@ url="https://github.com/sailfishos/ohm"
 license=('LGPL-2.1-only')
 depends=('glib2' 'libtrace-ohm' 'dbus-glib')
 makedepends=('automake' 'autoconf' 'check')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('bc2b93686721461a282d61fc6bd2203e8ab65d401d56e6ebc06c759b6d84e63b')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-fix-passing-argument-1-of-ohm_value_from_pointer-mak.patch'
+)
+sha256sums=('bc2b93686721461a282d61fc6bd2203e8ab65d401d56e6ebc06c759b6d84e63b'
+    'dba56bc3a82d439cc656238b508b045b78286448d160925a197950d51217ba4d'
+)
 
 prepare() {
     cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-fix-passing-argument-1-of-ohm_value_from_pointer-mak.patch"
     echo -n "${pkgver}" > .tarball-version
     ./autogen.sh
 }
