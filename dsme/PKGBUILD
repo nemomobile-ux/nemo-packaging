@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=dsme
-pkgver=0.84.1
+pkgver=0.84.2
 pkgrel=1
 pkgdesc="Device State Management Entity"
 arch=('x86_64' 'aarch64')
