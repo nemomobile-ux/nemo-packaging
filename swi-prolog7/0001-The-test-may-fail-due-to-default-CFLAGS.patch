@@ -1,0 +1,26 @@
+From bc3397e7ca015617d9879cae9dec4b8ac6584b2d Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Tue, 3 Sep 2024 15:11:37 +0000
+Subject: [PATCH] The test may fail due to default CFLAGS
+
+---
+ src/configure.ac | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/configure.ac b/src/configure.ac
+index 3883872..63d3301 100644
+--- a/src/configure.ac
++++ b/src/configure.ac
+@@ -999,7 +999,8 @@ dnl ================================================================
+ 
+ AC_MSG_CHECKING(for cc -c -o)
+   cat > conftest.c << _EOP_
+-main()
++#include <stdlib.h>
++int main()
+ { exit(0);
+ }
+ _EOP_
+-- 
+2.46.0
+

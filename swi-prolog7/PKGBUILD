@@ -21,9 +21,19 @@ optdepends=('unixodbc: for using the odbc4pl library'
             'libxft: for using the pl2xpce library'
             'java-environment: for interfacing java with the jpl package')
 #options=('!makeflags')
-source=("https://github.com/SWI-Prolog/swipl/archive/refs/tags/V$pkgver.tar.gz")
-sha256sums=('02fa31f0cd587deda6f3446e2e045aa45afe3d845834fb295ae8eb535bfdc533')
+source=("https://github.com/SWI-Prolog/swipl/archive/refs/tags/V$pkgver.tar.gz"
+    '0001-The-test-may-fail-due-to-default-CFLAGS.patch'
+)
+sha256sums=('02fa31f0cd587deda6f3446e2e045aa45afe3d845834fb295ae8eb535bfdc533'
+    '5527f05f9cb1fa7fe111edea1bb1b9869fbfa8025f3c6ad74f7d9e9e802c8a4d'
+)
 conflicts=('swi-prolog')
+
+prepare() {
+    cd "${srcdir}/swipl-$pkgver"
+    patch -p1 --input="${srcdir}/0001-The-test-may-fail-due-to-default-CFLAGS.patch"
+}
+
 
 build() {
   cd "${srcdir}/swipl-$pkgver/src/"
