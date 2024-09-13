@@ -14,7 +14,7 @@ url="https://github.com/nemomobile-ux/glacier-home"
 license=('BSD-3-Clause AND MIT')
 depends=('qt6-multimedia'
 	'qt6-feedback'
-	'qtmpris'
+	'amber-mpris'
 	'qt6-lipstick'
 	'qt6-quickcontrols-nemo'
 	'nemo-qml-plugin-configuration'
