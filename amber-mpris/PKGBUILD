@@ -1,0 +1,28 @@
+# $Id$
+# Contributor: TheKit <nekit1000 at gmail.com>
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Contributor: Alexey Andreyev <aa13q@ya.ru>
+# Contributor: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
+# Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
+
+pkgname=amber-mpris
+pkgver=1.2.9
+pkgrel=1
+pkgdesc="Qt and QML MPRIS interface and adaptor"
+arch=('x86_64' 'aarch64')
+url="https://github.com/sailfishos/amber-mpris"
+license=('LGPL-2.1-or-later')
+depends=('qt6-declarative')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('d30c3d2cde008a4d2165664c4bebd71cb24575904930c62cc0d2f24936b746c7')
+
+build() {
+    cd $pkgname-$pkgver
+    qmake6
+    make
+}
+
+package() {
+    cd $pkgname-$pkgver
+    make -j 1 INSTALL_ROOT="$pkgdir/" install
+}
