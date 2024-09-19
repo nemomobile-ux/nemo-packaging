@@ -9,7 +9,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/ohm"
 license=('LGPL-2.1-only')
 depends=('glib2' 'libtrace-ohm' 'dbus-glib')
-makedepends=('automake' 'autoconf' 'check')
+makedepends=('automake' 'autoconf' 'check' 'glib2-devel')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('2f9b01e380e81463bfede8741ec694466875edce77d0b9a8f2909f56a03398a3')
 
