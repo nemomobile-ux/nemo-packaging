@@ -2,7 +2,7 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=dsme
-pkgver=0.84.2
+pkgver=0.84.3
 pkgrel=1
 pkgdesc="Device State Management Entity"
 arch=('x86_64' 'aarch64')
@@ -13,7 +13,7 @@ makedepends=('git' 'autoconf' 'automake' 'mce-headers')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	'fix-dsme_server_path.patch'
 	'dsme.service')
-sha256sums=('51bfd40c3a31223d9ddbdf4c439d9b7ce0529ab2b04904c80c7b6e66d7295c3b'
+sha256sums=('5db55661bc7ec517b0805f20ae5b03c34d858ca1a8df58f823cc8825723178c2'
 	'4db9158b9a866eed11139c6bb70cd1de2f4f7fd289c7f2187181063cad5abaeb'
 	'8da87f608944b52c009c3734f491538d7206a61d5876c064958e3f5f225e83b4')
 

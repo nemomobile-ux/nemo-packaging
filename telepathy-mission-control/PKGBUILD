@@ -16,7 +16,8 @@ depends=(telepathy-glib
 	dconf
 	connman
 	mce
-	mce-headers)
+	mce-headers
+	glib2-devel)
 makedepends=(libxslt python gtk-doc)
 source=("https://github.com/TelepathyIM/telepathy-mission-control/archive/telepathy-mission-control-$pkgver.tar.gz"
 	"0002-Disable-gtkdoc.patch"

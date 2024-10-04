@@ -6,7 +6,12 @@ arch=('aarch64' 'x86_64')
 url="https://github.com/maliit/framework"
 license=('LGPL')
 depends=('qt6-declarative' 'wayland-protocols' 'qt6-wayland')
-makedepends=('git' 'cmake' 'doxygen' 'graphviz')
+makedepends=('git'
+    'cmake'
+    'doxygen'
+    'graphviz'
+    'glib2-devel'
+)
 conflicts=("maliit-framework")
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0001-move_to_qt6.patch")
