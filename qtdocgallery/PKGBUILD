@@ -13,7 +13,6 @@ license=('LGPLv2')
 optdepends=()
 depends=('qt6-declarative' 'tracker3' 'tracker3-miners')
 makedepends=('qt6-tools' 'qt6-old-features')
-options=(!buildflags)
 source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
     '0001-workaround-missing-G_BEGIN-END_DECLS-in-tracker.patch'
     '0002-Allow-build-on-Qt6.patch')

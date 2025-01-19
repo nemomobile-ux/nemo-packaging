@@ -16,7 +16,6 @@ arch=(x86_64 aarch64)
 license=(LGPL-2.1-only LGPL-3.0-only GPL-3.0-only Qt-GPL-exception-1.0)
 depends=('qt6-declarative')
 makedepends=('qt6-old-features')
-options=(!buildflags)
 source=(https://github.com/qt/$_pkgfqn/archive/$_commit.zip
     0001-fix_build_on_qt6.patch
     0002-remove_qtextcodec.patch)
