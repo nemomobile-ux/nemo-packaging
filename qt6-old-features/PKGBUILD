@@ -4,27 +4,13 @@ pkgbase=qt6-old-features
 pkgdesc="Old qt features"
 pkgname=('qt6-old-features')
 pkgver=0.2
-pkgrel=1
+pkgrel=2
 url="https://github.com/nemomobile-ux"
 arch=('any')
 license=('GPL')
 depends=('perl')
-source=("https://github.com/nemomobile-ux/qt6-old-features/archive/refs/heads/master.zip"
-    '0001-trouble-with-c-11.patch'
-    '0002-trouble-with-stack-protector-strong.patch'
-)
-sha256sums=(
-    SKIP
-    '9f6137df6050c353ca6fc822262d65afa2606becf9ede8e12d3a1bbf17aea499'
-    '16cca495771b87ac1787151fd48a18ac59209105fef211bacf66b3f202a06abf'
-
-)
-
-prepare() {
-    cd $pkgname-master
-    patch -p1 --input="${srcdir}/0001-trouble-with-c-11.patch"
-    patch -p1 --input="${srcdir}/0002-trouble-with-stack-protector-strong.patch"
-}
+source=("https://github.com/nemomobile-ux/qt6-old-features/archive/refs/heads/master.zip")
+sha256sums=(SKIP)
 
 package() {
     cd $pkgname-master
