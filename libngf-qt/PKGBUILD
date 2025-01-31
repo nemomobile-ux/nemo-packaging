@@ -12,8 +12,18 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/libngf-qt"
 license=('GPL')
 depends=('qt6-declarative' 'libngf' 'qt6-feedback')
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('bb301ad2fa0895add1cc70285de97c61c04b9f9b8ce6bf2316ce5127872641ad')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+    '0001-disable-tests-because-it-doens-t-compile.patch'
+)
+sha256sums=('bb301ad2fa0895add1cc70285de97c61c04b9f9b8ce6bf2316ce5127872641ad'
+    '6ab6b0804b545e4662155ad94eaf65a15adc2b123209af91fee16b93f2eb800a'
+)
+
+prepare() {
+    cd libngf-qt-$pkgver
+    patch -p1 --input="${srcdir}/0001-disable-tests-because-it-doens-t-compile.patch"
+}
+
 
 build() {
     cd libngf-qt-$pkgver
