@@ -1,0 +1,41 @@
+From 41cf5d0c52301e495d9a0002457e0afa3ca3fe0c Mon Sep 17 00:00:00 2001
+From: Chupligin Sergey <neochapay@gmail.com>
+Date: Mon, 12 Dec 2022 14:56:48 +0000
+Subject: [PATCH] Fixup build with qt6
+
+---
+ tests/testbase.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/tests/testbase.h b/tests/testbase.h
+index 431ec53..c9a3059 100644
+--- a/tests/testbase.h
++++ b/tests/testbase.h
+@@ -1,6 +1,7 @@
+ #ifndef TESTBASE_H
+ #define TESTBASE_H
+ 
++#include <QtCore/QObject>
+ #include <QtCore/QMetaProperty>
+ #include <QtCore/QObject>
+ #include <QtCore/QPointer>
+@@ -123,13 +124,14 @@ private:
+  *    It connects the signals to QEventLoop::quit(). When used together with QDBusInterface, it is
+  *    usually too late to connect -- that is why the signalEmitted() signal exists.
+  */
+-class TestBase::SignalSpy : public QSignalSpy
++class TestBase::SignalSpy : public QObject, public QSignalSpy
+ {
+     Q_OBJECT
+ 
+ public:
+     SignalSpy(QObject *object, const char *signal)
+-        : QSignalSpy(object, signal)
++        : QObject()
++        , QSignalSpy(object, signal)
+     {
+         connect(object, signal, this, SIGNAL(signalEmitted()));
+     }
+-- 
+2.47.1
+

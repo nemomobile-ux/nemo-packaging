@@ -2,7 +2,7 @@
 # Maintainer: Felix Yan <felixonm...@archlinux.org>
 _gitname=mlite
 pkgname=${_gitname}6
-pkgver=0.4.5
+pkgver=0.5.0
 pkgrel=1
 pkgdesc="Useful classes originating from MeeGo Touch"
 arch=('x86_64' 'aarch64')
@@ -16,7 +16,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-Fixup-build-on-qt6.patch'
     '0002-qt6-compatibility.patch'
 )
-sha256sums=('cfcee411c563915d050b2f53f25e0b73b810cd14cbff1908269696f73123302b'
+sha256sums=('07870b878164c9bde9af8e9e9d7646d2e643442af37efacd798686a9be47e7c0'
     '2a191ec52f73699a1d77b9e4e346a49fb265b6040eba513d27a058be56af9efa'
     '26aa16bdd32ee54b0e882065b4aa04fff99a0200dd487c17f3ed9680bdb10245'
 )
