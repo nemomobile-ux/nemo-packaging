@@ -2,7 +2,7 @@
 # Maintainer: Felix Yan <felixonm...@archlinux.org>
 _gitname=mlite
 pkgname=${_gitname}6
-pkgver=0.5.1
+pkgver=0.5.2
 pkgrel=1
 pkgdesc="Useful classes originating from MeeGo Touch"
 arch=('x86_64' 'aarch64')
@@ -12,16 +12,11 @@ depends=('qt6-base' 'dconf')
 makedepends=('qt6-tools')
 provides=("${_gitname}")
 conflicts=("${_gitname}")
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    '0002-qt6-compatibility.patch'
-)
-sha256sums=('fd2b380a9f6a82e848d3eb203a6c89f877f407ed2c5fb82d3e1dd00631d33301'
-    '26aa16bdd32ee54b0e882065b4aa04fff99a0200dd487c17f3ed9680bdb10245'
-)
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('fea84dc132e1e33e7c65cbbab280dc3099e6dbf91a86c9ad23845a857da167da')
 
 prepare() {
   cd ${_gitname}-$pkgver
-  patch -p1 --input="${srcdir}/0002-qt6-compatibility.patch"
   sed -i -e 's|/usr/libexec|/usr/lib|' \
       tools/mliteremoteaction/mliteremoteaction.pro \
       tools/mliteremoteaction/main.cpp \
