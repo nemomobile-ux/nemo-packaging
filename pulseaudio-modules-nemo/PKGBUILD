@@ -2,25 +2,24 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
 pkgname=pulseaudio-modules-nemo
-pkgver=14.2.31
-PA_MODULE_VERSION=30
+pkgver=14.2.32
 pkgrel=1
 pkgdesc="PulseAudio modules for Nemo"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/pulseaudio-modules-nemo"
 license=('LGPLv2+')
-depends=('libpulse' 'alsa-lib' 'pulseaudio')
-makedepends=('meson' 'pulsecore-headers' 'check')
+depends=('libpulse' 'alsa-lib' 'manjaro-pulse')
+makedepends=('meson' 'pulsecore-headers' 'check' 'manjaro-pulse')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0001-stream-restore-nemo-fix-path-for-L-usr-lib-pulseaudi.patch'
 )
-sha256sums=('26e0906c41d1d647c0e7d37afb99070752a3d30e6a4c281ae106888e5a0d5896'
+sha256sums=('e8b2a05dd776bb9e0f4ebbae40d905f612e82df334447fc8d12c5bf7121eb96f'
     '10ef9e02d8238751d57c6b9631b5ef5b0b987d06055ef3ad633fa52c5cec3e4c'
 )
 
 prepare() {
     cd $pkgname-$pkgver
-    echo "$(pulseaudio --version | sed 's/pulseaudio \|//').${PA_MODULE_VERSION}" > .tarball-version
+    echo "${pkgver}" > .tarball-version
     patch -p1 --input="${srcdir}/0001-stream-restore-nemo-fix-path-for-L-usr-lib-pulseaudi.patch"
 }
 
