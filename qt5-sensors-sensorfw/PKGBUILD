@@ -2,7 +2,7 @@
 # Contributor: Andrea Scarpino <andrea@archlinux.org>
 
 pkgname=qt6-sensors-sensorfw
-pkgver=6.8.1
+pkgver=6.8.2
 pkgrel=1
 arch=('x86_64' 'aarch64')
 url='https://www.qt.io'
@@ -15,7 +15,7 @@ groups=('qt' 'qt6')
 source=("https://github.com/qt/qtsensors/archive/refs/tags/v${pkgver}.tar.gz"
     '2001-convert-sensorfw-plugin-into-a-standalone-plugin.patch'
 )
-sha256sums=('447e6e8383b71bfa116a0ac41ed06adef17be45845175675159b7dda23a1b757'
+sha256sums=('b4b3da4e05964e7998a8eb2cc7d570a68feccb4a71d0c01683665a21e928802d'
     '71d42ab07c7dff329f9bd156e0fc5b154097aab1f3caa095734a3c021a433814'
 )
 
