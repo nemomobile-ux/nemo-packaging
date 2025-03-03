@@ -12,7 +12,6 @@ pkgdesc="QML based PIN query application using libqofono"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/glacier-pinquery"
 license=('BSD-3-Clause')
-# https://github.com/TelepathyIM/telepathy-qt/wiki/Connection-Managers#fragmentation-story-s01e03
 depends=('qt6-glacier-app' 'libqofono-qt6')
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
 provides=("${pkgname%-git}")

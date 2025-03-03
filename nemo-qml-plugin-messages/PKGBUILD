@@ -8,8 +8,7 @@ pkgdesc="Messages plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-messages"
 license=('BSD')
-depends=('telepathy-qt'
-    'libcommhistory'
+depends=('libcommhistory'
     'qtcontacts-sqlite'
     'libqofono-qt6'
     'qt6-base'
