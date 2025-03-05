@@ -17,7 +17,7 @@ depends=('libphonenumber-nemo'
 	'qtcontacts-sqlite'
 	'libaccounts-qt6'
 	'buteo-sync-plugin-carddav'
-	'icu=75.1')
+	'icu=76.1')
 
 makedepends=(
     'qt6-tools'
