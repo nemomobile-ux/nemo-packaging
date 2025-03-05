@@ -8,7 +8,7 @@ arch=('x86_64' 'aarch64')
 url='https://www.qt.io'
 license=('GPL3' 'LGPL3' 'FDL' 'custom')
 pkgdesc='SensorFW plugin for qt6-sensors'
-depends=('sensorfw' 'qt6-sensors')
+depends=('sensorfw>=0.14.7' 'qt6-sensors')
 makedepends=('qt6-declarative' 'cmake' 'git')
 optdepends=('qt6-declarative: QML bindings')
 groups=('qt' 'qt6')
