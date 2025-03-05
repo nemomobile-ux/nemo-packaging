@@ -2,7 +2,7 @@
 # Maintainer: Felix Yan <felixonm...@archlinux.org>
 _gitname=mlite
 pkgname=${_gitname}6
-pkgver=0.5.2
+pkgver=0.5.3
 pkgrel=1
 pkgdesc="Useful classes originating from MeeGo Touch"
 arch=('x86_64' 'aarch64')
@@ -13,7 +13,7 @@ makedepends=('qt6-tools')
 provides=("${_gitname}")
 conflicts=("${_gitname}")
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('fea84dc132e1e33e7c65cbbab280dc3099e6dbf91a86c9ad23845a857da167da')
+sha256sums=('1f2db95df805b30817f3f251a91d70c10292fdb4a2200a9f8514b8e38852d24e')
 
 prepare() {
   cd ${_gitname}-$pkgver
