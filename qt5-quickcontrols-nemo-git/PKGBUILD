@@ -5,11 +5,12 @@
 # Contributor: Chupligin Sergey <neochapay@gmail.com>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=qt6-quickcontrols-nemo-git
+_basename=qt6-quickcontrols-nemo
+pkgname=${_basename}-git
 pkgver=6.2.1.r0.g226d210
 _branch=master
 
-pkgrel=1
+pkgrel=2
 pkgdesc="Nemomobile Qt Quick Controls"
 arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/qtquickcontrols-nemo"
@@ -23,7 +24,7 @@ depends=(
     'mlite6>=0.5.3'
 )
 makedepends=('git' 'cmake')
-provides=("${pkgname%-git}")
+provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}#branch=${_branch}")
 sha256sums=('SKIP')
