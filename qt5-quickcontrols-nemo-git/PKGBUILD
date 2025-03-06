@@ -6,7 +6,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=qt6-quickcontrols-nemo-git
-pkgver=5.7.7.r22.gee24cab
+pkgver=6.2.1.r0.g226d210
 _branch=master
 
 pkgrel=1
@@ -20,7 +20,7 @@ depends=(
     'nemo-theme-default'
     'qt6-svg'
     'google-opensans-fonts'
-    'mlite6'
+    'mlite6>=0.5.3'
 )
 makedepends=('git' 'cmake')
 provides=("${pkgname%-git}")
