@@ -1,7 +1,7 @@
 ## $Id$
 
 pkgname=nemo-qml-plugin-alarms
-pkgver=0.3.13
+pkgver=0.3.14
 pkgrel=1
 pkgdesc="alarms plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
@@ -11,7 +11,7 @@ depends=('qt6-base' 'timed' 'qt6-declarative')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0002-distinguish-wakeup-type-in-AlarmObject.patch'
 )
-sha256sums=('bc17e1f0efaadca6af6d1b46b0e45c09657d96a5d4f39d5b5152e7e17a1c70e4'
+sha256sums=('cafb400ec66b836a080f2e2a7a5340799dc70808dcbd173c1bc7dec2323669e8'
     'b8e94c842fe3050ef742c69b5d1967d70e45fa4f308e3b9e185c5775a64a3e5d'
 )
 
