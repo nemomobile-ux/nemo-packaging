@@ -1,230 +1,31 @@
-From 0a60e659a17651846b2a6d7e41e771e94a6302ae Mon Sep 17 00:00:00 2001
-From: Chupligin Sergey <neochapay@gmail.com>
-Date: Sun, 3 Sep 2023 18:41:57 +0000
-Subject: [PATCH] Allow build with qt6
-
----
- declarative/declarative.pro                   |  2 +-
- libbuteosyncfw/clientfw/SyncDaemonProxy.h     | 40 +++++----
- libbuteosyncfw/common/SyncCommonDefs.h        |  9 +-
- libbuteosyncfw/common/TransportTracker.cpp    | 51 ++++++++++-
- libbuteosyncfw/common/TransportTracker.h      | 33 +++++--
- libbuteosyncfw/libbuteosyncfw.pro             | 15 ++--
- libbuteosyncfw/pluginmgr/OOPClientPlugin.cpp  |  9 +-
- libbuteosyncfw/pluginmgr/OOPServerPlugin.cpp  |  8 ++
- libbuteosyncfw/pluginmgr/PluginManager.cpp    |  9 +-
- libbuteosyncfw/profile/Profile.cpp            | 39 ++++++++-
- libbuteosyncfw/profile/ProfileManager.cpp     |  4 +
- libbuteosyncfw/profile/SyncProfile.cpp        | 36 +++++++-
- libbuteosyncfw/profile/SyncProfile.h          | 15 +++-
- libbuteosyncfw/profile/SyncSchedule.cpp       |  7 +-
- msyncd/StorageBooker.cpp                      |  4 +
- msyncd/SyncBackupAdaptor.h                    |  6 +-
- msyncd/SyncDBusAdaptor.h                      |  4 +
- msyncd/SyncSession.cpp                        | 26 ++++--
- msyncd/SyncSession.h                          |  2 +
- msyncd/msyncd-app.pro                         | 10 +--
- msyncd/msyncd-lib.pro                         | 14 +--
- msyncd/synchronizer.cpp                       | 85 +++++++++++++++++--
- msyncd/synchronizer.h                         | 15 +++-
- oopp-runner/ButeoPluginIfaceAdaptor.h         |  4 +
- oopp-runner/main.cpp                          |  8 ++
- oopp-runner/oopp-runner.pro                   |  4 +-
- .../dummyplugins/dummyclient/dummyclient.pro  |  1 +
- .../dummyplugins/dummyserver/dummyserver.pro  |  1 +
- .../dummystorage/dummystorage.pro             |  1 +
- .../SyncSchedulerTest/SyncSchedulerTest.h     |  5 ++
- .../SyncSessionTest/SyncSessionTest.cpp       |  2 +-
- .../SynchronizerTest/SynchronizerTest.cpp     |  3 +-
- .../TransportTrackerTest.cpp                  |  8 +-
- .../DeletedItemsIdStorageTest.cpp             | 12 ++-
- .../ProfileManagerTest/ProfileManagerTest.cpp | 26 +++---
- .../ProfileTest/ProfileTest.cpp               |  2 +-
- unittests/tests/tests_common.pri              |  4 +-
- 37 files changed, 421 insertions(+), 103 deletions(-)
-
 diff --git a/declarative/declarative.pro b/declarative/declarative.pro
-index 7c5614a..2417146 100644
+index 1c523a1..5977b51 100644
 --- a/declarative/declarative.pro
 +++ b/declarative/declarative.pro
 @@ -7,7 +7,7 @@ CONFIG += qt plugin hide_symbols
+ 
  INCLUDEPATH += ../libbuteosyncfw ../libbuteosyncfw/common ../libbuteosyncfw/profile
  
- QT += qml dbus
 -LIBS += -L../libbuteosyncfw -lbuteosyncfw5
 +LIBS += -L../libbuteosyncfw -lbuteosyncfw$${QT_MAJOR_VERSION}
  target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
  
  SOURCES += plugin.cpp \
 diff --git a/libbuteosyncfw/clientfw/SyncDaemonProxy.h b/libbuteosyncfw/clientfw/SyncDaemonProxy.h
-index 96488ed..efd3078 100644
+index 1055a69..4bdc0cf 100644
 --- a/libbuteosyncfw/clientfw/SyncDaemonProxy.h
 +++ b/libbuteosyncfw/clientfw/SyncDaemonProxy.h
-@@ -42,6 +42,12 @@
+@@ -42,6 +42,10 @@
  #include <QtCore/QStringList>
  #include <QtCore/QVariant>
  #include <QtDBus/QtDBus>
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-+#define VFV QVariant::fromValue
-+#else
-+#define VFV qVariantFromValue
++#define qVariantFromValue QVariant::fromValue
 +#endif
 +
  
  /*! \brief Proxy class for interface com.meego.msyncd
   */
-@@ -68,7 +74,7 @@ public Q_SLOTS: // METHODS
-     inline Q_NOREPLY void abortSync(const QString &aProfileId)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId);
-+        argumentList << VFV(aProfileId);
-         callWithArgumentList(QDBus::NoBlock, QLatin1String("abortSync"), argumentList);
-     }
- 
-@@ -76,7 +82,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<bool> addProfile(const QString &aProfileAsXml)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileAsXml);
-+        argumentList << VFV(aProfileAsXml);
-         return asyncCallWithArgumentList(QLatin1String("addProfile"), argumentList);
-     }
- 
-@@ -98,7 +104,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<QString> getLastSyncResult(const QString &aProfileId)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId);
-+        argumentList << VFV(aProfileId);
-         return asyncCallWithArgumentList(QLatin1String("getLastSyncResult"), argumentList);
-     }
- 
-@@ -106,7 +112,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<bool> isLastSyncScheduled(const QString &aProfileId)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId);
-+        argumentList << VFV(aProfileId);
-         return asyncCallWithArgumentList(QLatin1String("isLastSyncScheduled"), argumentList);
-     }
- 
-@@ -114,7 +120,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<int> lastSyncMajorCode(const QString &aProfileId)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId);
-+        argumentList << VFV(aProfileId);
-         return asyncCallWithArgumentList(QLatin1String("lastSyncMajorCode"), argumentList);
-     }
- 
-@@ -122,14 +128,14 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<int> lastSyncMinorCode(const QString &aProfileId)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId);
-+        argumentList << VFV(aProfileId);
-         return asyncCallWithArgumentList(QLatin1String("lastSyncMinorCode"), argumentList);
-     }
-     //! \see SyncDBusInterface::lastSyncTime()
-     inline QDBusPendingReply<QString> lastSyncTime(const QString &aProfileId)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId);
-+        argumentList << VFV(aProfileId);
-         return asyncCallWithArgumentList(QLatin1String("lastSyncTime"), argumentList);
-     }
- 
-@@ -137,7 +143,7 @@ public Q_SLOTS: // METHODS
-     inline Q_NOREPLY void releaseStorages(const QStringList &aStorageNames)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aStorageNames);
-+        argumentList << VFV(aStorageNames);
-         callWithArgumentList(QDBus::NoBlock, QLatin1String("releaseStorages"), argumentList);
-     }
- 
-@@ -145,7 +151,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<bool> removeProfile(const QString &aProfileId)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId);
-+        argumentList << VFV(aProfileId);
-         return asyncCallWithArgumentList(QLatin1String("removeProfile"), argumentList);
-     }
- 
-@@ -153,7 +159,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<bool> requestStorages(const QStringList &aStorageNames)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aStorageNames);
-+        argumentList << VFV(aStorageNames);
-         return asyncCallWithArgumentList(QLatin1String("requestStorages"), argumentList);
-     }
- 
-@@ -168,7 +174,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<bool> saveSyncResults(const QString &aProfileId, const QString &aSyncResults)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId) << qVariantFromValue(aSyncResults);
-+        argumentList << VFV(aProfileId) << VFV(aSyncResults);
-         return asyncCallWithArgumentList(QLatin1String("saveSyncResults"), argumentList);
-     }
- 
-@@ -176,7 +182,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<bool> setSyncSchedule(const QString &aProfileId, const QString &aScheduleAsXml)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId) << qVariantFromValue(aScheduleAsXml);
-+        argumentList << VFV(aProfileId) << VFV(aScheduleAsXml);
-         return asyncCallWithArgumentList(QLatin1String("setSyncSchedule"), argumentList);
-     }
- 
-@@ -184,7 +190,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<bool> startSync(const QString &aProfileId)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId);
-+        argumentList << VFV(aProfileId);
-         return asyncCallWithArgumentList(QLatin1String("startSync"), argumentList);
-     }
- 
-@@ -192,7 +198,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<QString> syncProfile(const QString &aProfileId)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileId);
-+        argumentList << VFV(aProfileId);
-         return callWithArgumentList(QDBus::Block, QLatin1String("syncProfile"), argumentList);
-     }
- 
-@@ -200,7 +206,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<QStringList> syncProfilesByKey(const QString &aKey, const QString &aValue)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aKey) << qVariantFromValue(aValue);
-+        argumentList << VFV(aKey) << VFV(aValue);
-         return asyncCallWithArgumentList(QLatin1String("syncProfilesByKey"), argumentList);
-     }
- 
-@@ -208,7 +214,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<QStringList> syncProfilesByType(const QString &aType)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aType);
-+        argumentList << VFV(aType);
-         return asyncCallWithArgumentList(QLatin1String("syncProfilesByType"), argumentList);
-     }
- 
-@@ -216,7 +222,7 @@ public Q_SLOTS: // METHODS
-     inline QDBusPendingReply<bool> updateProfile(const QString &aProfileAsXml)
-     {
-         QList<QVariant> argumentList;
--        argumentList << qVariantFromValue(aProfileAsXml);
-+        argumentList << VFV(aProfileAsXml);
-         return asyncCallWithArgumentList(QLatin1String("updateProfile"), argumentList);
-     }
- 
 diff --git a/libbuteosyncfw/common/SyncCommonDefs.h b/libbuteosyncfw/common/SyncCommonDefs.h
 index c0735fb..2b9da21 100644
 --- a/libbuteosyncfw/common/SyncCommonDefs.h
@@ -367,7 +168,7 @@ index ba51fa4..3919ec5 100644
  bool TransportTracker::btConnectivityStatus()
  {
 diff --git a/libbuteosyncfw/common/TransportTracker.h b/libbuteosyncfw/common/TransportTracker.h
-index 0132976..10efa9f 100644
+index ffda549..307f524 100644
 --- a/libbuteosyncfw/common/TransportTracker.h
 +++ b/libbuteosyncfw/common/TransportTracker.h
 @@ -31,7 +31,9 @@
@@ -381,7 +182,7 @@ index 0132976..10efa9f 100644
  #ifdef HAVE_BLUEZ_5
  #include <BtCommon.h>
  #endif
-@@ -75,15 +77,21 @@ signals:
+@@ -75,15 +77,21 @@ class TransportTracker : public QObject
       * @param aType Connectivity type whose state has changed
       * @param aState New state. True if available, false if not.
       */
@@ -405,8 +206,8 @@ index 0132976..10efa9f 100644
      /*! \brief Signal emitted when a network session is successfully opened
       */
      void sessionConnected();
-@@ -103,16 +111,24 @@ private slots:
- 
+@@ -100,16 +108,24 @@ private slots:
+     void onBtInterfacesAdded(const QDBusObjectPath &path, const InterfacesMap &interfaces);
      void onBtInterfacesRemoved(const QDBusObjectPath &path, const QStringList &interfaces);
  #endif
 -
@@ -433,7 +234,7 @@ index 0132976..10efa9f 100644
      QDBusConnection iSystemBus;
      QString iDefaultBtAdapter;
  
-@@ -123,8 +139,11 @@ private:
+@@ -120,8 +136,11 @@ private slots:
       * @param aType Connectivity type
       * @param aState Connectivity State
       */
@@ -447,35 +248,36 @@ index 0132976..10efa9f 100644
      friend class TransportTrackerTest;
      friend class SynchronizerTest;
 diff --git a/libbuteosyncfw/libbuteosyncfw.pro b/libbuteosyncfw/libbuteosyncfw.pro
-index c229898..c3db3b0 100644
+index 9761f16..81d0128 100644
 --- a/libbuteosyncfw/libbuteosyncfw.pro
 +++ b/libbuteosyncfw/libbuteosyncfw.pro
 @@ -1,5 +1,5 @@
  TEMPLATE = lib
 -TARGET = buteosyncfw5
 +TARGET = buteosyncfw$${QT_MAJOR_VERSION}
- DEPENDPATH += . clientfw  common  pluginmgr  profile
- INCLUDEPATH += . clientfw  common  pluginmgr  profile
+ DEPENDPATH += . clientfw common pluginmgr profile
+ INCLUDEPATH += . clientfw common pluginmgr profile
  
-@@ -16,14 +16,13 @@ CONFIG += dll \
+@@ -16,7 +16,7 @@ CONFIG += dll \
  
  #DEFINES += BUTEO_ENABLE_DEBUG
  
 -DEFINES += DEFAULT_PLUGIN_PATH=\"\\\"$$[QT_INSTALL_LIBS]/buteo-plugins-qt5\\\"\"
 +DEFINES += DEFAULT_PLUGIN_PATH=\"\\\"$$[QT_INSTALL_LIBS]/buteo-plugins-qt$${QT_MAJOR_VERSION}\\\"\"
  
- # Input
- HEADERS += common/Logger.h \
+ # there might be something still here which shouldn't really be publicly offered
+ PUBLIC_HEADERS += \
+@@ -24,7 +24,6 @@ PUBLIC_HEADERS += \
             common/LogMacros.h \
             common/SyncCommonDefs.h \
             common/TransportTracker.h \
 -           common/NetworkManager.h \
             clientfw/SyncClientInterface.h \
-            clientfw/SyncClientInterfacePrivate.h \
-            clientfw/SyncDaemonProxy.h \
-@@ -57,8 +56,7 @@ HEADERS += common/Logger.h \
-            pluginmgr/OOPServerPlugin.h \
-            pluginmgr/ButeoPluginIface.h
+            pluginmgr/ClientPlugin.h \
+            pluginmgr/DeletedItemsIdStorage.h \
+@@ -62,8 +61,7 @@ HEADERS += $$PUBLIC_HEADERS \
+ 
+ 
  SOURCES += common/Logger.cpp \
 -           common/TransportTracker.cpp \
 -           common/NetworkManager.cpp \
@@ -483,7 +285,7 @@ index c229898..c3db3b0 100644
             clientfw/SyncClientInterface.cpp \
             clientfw/SyncClientInterfacePrivate.cpp \
             clientfw/SyncDaemonProxy.cpp \
-@@ -85,6 +83,8 @@ SOURCES += common/Logger.cpp \
+@@ -90,6 +88,8 @@ SOURCES += common/Logger.cpp \
             pluginmgr/OOPServerPlugin.cpp \
             pluginmgr/ButeoPluginIface.cpp
  
@@ -492,24 +294,14 @@ index c229898..c3db3b0 100644
  usb-moded {
    message("Building with usb-moded")
    DEFINES += __USBMODED__
-@@ -105,13 +105,12 @@ QMAKE_CLEAN += lib$${TARGET}.prl pkgconfig/*
+@@ -105,10 +105,12 @@ QMAKE_CLEAN += lib$${TARGET}.prl pkgconfig/*
  
  # install
  target.path = $$[QT_INSTALL_LIBS]
 -headers.path = /usr/include/buteosyncfw5/
 +headers.path = /usr/include/buteosyncfw$${QT_MAJOR_VERSION}/
  
- headers.files = common/Logger.h \
-            common/LogMacros.h \
-            common/SyncCommonDefs.h \
-            common/TransportTracker.h \
--           common/NetworkManager.h \
-            clientfw/SyncClientInterface.h \
-            clientfw/SyncClientInterfacePrivate.h \
-            clientfw/SyncDaemonProxy.h \
-@@ -143,6 +142,8 @@ headers.files = common/Logger.h \
-            profile/SyncSchedule_p.h \
-            profile/TargetResults.h
+ headers.files = $$PUBLIC_HEADERS
  
 +equals(QT_MAJOR_VERSION, 5): headers.files += common/NetworkManager.h
 +
@@ -597,7 +389,7 @@ index eb3d9d5..2f8022d 100644
          }
          connect(process, SIGNAL(finished(int, QProcess::ExitStatus)),
 diff --git a/libbuteosyncfw/profile/Profile.cpp b/libbuteosyncfw/profile/Profile.cpp
-index d006ee8..07090c0 100644
+index a87e8fd..238a114 100644
 --- a/libbuteosyncfw/profile/Profile.cpp
 +++ b/libbuteosyncfw/profile/Profile.cpp
 @@ -66,7 +66,11 @@ Profile::Profile(const QDomElement &aRoot)
@@ -714,10 +506,10 @@ index cc82b94..bbf2932 100644
  
              if (!parsingOk) {
 diff --git a/libbuteosyncfw/profile/SyncProfile.cpp b/libbuteosyncfw/profile/SyncProfile.cpp
-index a39b75b..1f821f3 100644
+index bd546f9..9458f5a 100644
 --- a/libbuteosyncfw/profile/SyncProfile.cpp
 +++ b/libbuteosyncfw/profile/SyncProfile.cpp
-@@ -326,26 +326,56 @@ void SyncProfile::setSyncSchedule(const SyncSchedule &aSchedule)
+@@ -324,26 +324,56 @@ void SyncProfile::setSyncSchedule(const SyncSchedule &aSchedule)
  {
      d_ptr->iSchedule = aSchedule;
  }
@@ -793,7 +585,7 @@ index 425292a..0810b45 100644
  #include "Profile.h"
  #include "SyncLog.h"
  #include "SyncSchedule.h"
-@@ -269,16 +274,22 @@ public:
+@@ -269,16 +274,22 @@ class SyncProfile : public Profile
       *
       * \return List of allowed connection types.
       */
@@ -819,10 +611,10 @@ index 425292a..0810b45 100644
       *
       * \return Service profile. NULL if not found.
 diff --git a/libbuteosyncfw/profile/SyncSchedule.cpp b/libbuteosyncfw/profile/SyncSchedule.cpp
-index 0186cca..8191865 100644
+index 66d0212..8154195 100644
 --- a/libbuteosyncfw/profile/SyncSchedule.cpp
 +++ b/libbuteosyncfw/profile/SyncSchedule.cpp
-@@ -561,7 +561,8 @@ bool SyncSchedule::isSyncScheduled(const QDateTime &aActualDateTime, const QDate
+@@ -567,7 +567,8 @@ bool SyncSchedule::isSyncScheduled(const QDateTime &aActualDateTime, const QDate
  
  SyncSchedule::Days SyncSchedulePrivate::parseDays(const QString &aDays) const
  {
@@ -832,7 +624,7 @@ index 0186cca..8191865 100644
      const SyncSchedule::Day fromStrDays[] =
          {SyncSchedule::Monday, SyncSchedule::Tuesday,
           SyncSchedule::Wednesday, SyncSchedule::Thursday,
-@@ -569,7 +570,11 @@ SyncSchedule::Days SyncSchedulePrivate::parseDays(const QString &aDays) const
+@@ -575,7 +576,11 @@ SyncSchedule::Days SyncSchedulePrivate::parseDays(const QString &aDays) const
           SyncSchedule::Sunday};
      if (!aDays.isNull()) {
          QStringList dayList = aDays.split(DAY_SEPARATOR,
@@ -845,20 +637,36 @@ index 0186cca..8191865 100644
              bool ok;
              int dayNum = dayStr.toInt(&ok);
 diff --git a/msyncd/StorageBooker.cpp b/msyncd/StorageBooker.cpp
-index d5130be..da33a9d 100644
+index b74aac4..3aa5074 100644
 --- a/msyncd/StorageBooker.cpp
 +++ b/msyncd/StorageBooker.cpp
 @@ -27,7 +27,11 @@
  using namespace Buteo;
  
  StorageBooker::StorageBooker()
-+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-+    :   iMutex()
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     : iMutex(QMutex::Recursive)
 +#else
-     :   iMutex(QMutex::Recursive)
++    : iMutex()
 +#endif
  {
      FUNCTION_CALL_TRACE(lcButeoTrace);
+ }
+diff --git a/msyncd/StorageBooker.h b/msyncd/StorageBooker.h
+index 4b59be9..c75a766 100644
+--- a/msyncd/StorageBooker.h
++++ b/msyncd/StorageBooker.h
+@@ -117,7 +117,11 @@ class StorageBooker
+     };
+ 
+     QMap<QString, StorageMapItem> iStorageMap;
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+     mutable QMutex iMutex;
++#else
++    mutable QRecursiveMutex iMutex;
++#endif
+ };
+ 
  }
 diff --git a/msyncd/SyncBackupAdaptor.h b/msyncd/SyncBackupAdaptor.h
 index 69229b4..f34132b 100644
@@ -884,7 +692,7 @@ index 69229b4..f34132b 100644
  
  namespace Buteo {
 diff --git a/msyncd/SyncDBusAdaptor.h b/msyncd/SyncDBusAdaptor.h
-index b5ace00..4c76c37 100644
+index 6676164..4971e83 100644
 --- a/msyncd/SyncDBusAdaptor.h
 +++ b/msyncd/SyncDBusAdaptor.h
 @@ -31,7 +31,11 @@ class QByteArray;
@@ -900,7 +708,7 @@ index b5ace00..4c76c37 100644
  
  /*
 diff --git a/msyncd/SyncSession.cpp b/msyncd/SyncSession.cpp
-index f76ecc1..acc276b 100644
+index 03cb890..6119e55 100644
 --- a/msyncd/SyncSession.cpp
 +++ b/msyncd/SyncSession.cpp
 @@ -25,7 +25,9 @@
@@ -913,15 +721,12 @@ index f76ecc1..acc276b 100644
  #include "LogMacros.h"
  
  using namespace Buteo;
-@@ -42,8 +44,10 @@ SyncSession::SyncSession(SyncProfile *aProfile, QObject *aParent)
-         iStarted(false),
-         iFinished(false),
-         iCreateProfile(false),
--        iStorageBooker(0),
--        iNetworkManager(0)
-+        iStorageBooker(0)
+@@ -43,7 +45,9 @@ SyncSession::SyncSession(SyncProfile *aProfile, QObject *aParent)
+     , iFinished(false)
+     , iCreateProfile(false)
+     , iStorageBooker(0)
 +#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-+        , iNetworkManager(0)
+     , iNetworkManager(0)
 +#endif
  {
      FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -1001,10 +806,10 @@ index f76ecc1..acc276b 100644
                                SyncResults::SYNC_RESULT_FAILED,
                                Buteo::SyncResults::CONNECTION_ERROR));
 diff --git a/msyncd/SyncSession.h b/msyncd/SyncSession.h
-index 8f6c193..b81a7cf 100644
+index 463d5ab..cb8e6ca 100644
 --- a/msyncd/SyncSession.h
 +++ b/msyncd/SyncSession.h
-@@ -258,7 +258,9 @@ private:
+@@ -246,7 +246,9 @@ private slots:
      QString iRemoteId;
      StorageBooker *iStorageBooker;
      QMap<QString, bool> iStorageMap;
@@ -1015,7 +820,7 @@ index 8f6c193..b81a7cf 100644
  #ifdef SYNCFW_UNIT_TESTS
      friend class SyncSessionTest;
 diff --git a/msyncd/msyncd-app.pro b/msyncd/msyncd-app.pro
-index daf13eb..35f7e3a 100644
+index a219bb4..fec85fc 100644
 --- a/msyncd/msyncd-app.pro
 +++ b/msyncd/msyncd-app.pro
 @@ -19,13 +19,13 @@ INCLUDEPATH += . \
@@ -1038,19 +843,26 @@ index daf13eb..35f7e3a 100644
  
  QMAKE_LIBDIR_QT += ../libsyncprofile/
 diff --git a/msyncd/msyncd-lib.pro b/msyncd/msyncd-lib.pro
-index d043bd7..6fe7340 100644
+index 1dab61c..e74a4b0 100644
 --- a/msyncd/msyncd-lib.pro
 +++ b/msyncd/msyncd-lib.pro
-@@ -19,14 +19,14 @@ INCLUDEPATH += . \
+@@ -19,19 +19,19 @@ INCLUDEPATH += . \
      ../libbuteosyncfw/profile
  
  
 -PKGCONFIG += dbus-1 gio-2.0 libsignon-qt5 accounts-qt5
--PKGCONFIG += mce-qt5
+-packagesExist(mce-qt5) {
+-    PKGCONFIG += mce-qt5
++PKGCONFIG += dbus-1 gio-2.0 libsignon-qt$${QT_MAJOR_VERSION} accounts-qt$${QT_MAJOR_VERSION}
++packagesExist(mce-qt$${QT_MAJOR_VERSION}) {
++    PKGCONFIG += mce-qt$${QT_MAJOR_VERSION}
+     DEFINES += HAS_MCE
+ } else {
+-    message("mce-qt5 not found, MCE support disabled")
++    message("mce-qt not found, MCE support disabled")
+ }
 -LIBS += -lbuteosyncfw5
 -packagesExist(qt5-boostable) {
-+PKGCONFIG += dbus-1 gio-2.0 libsignon-qt$${QT_MAJOR_VERSION} accounts-qt$${QT_MAJOR_VERSION}
-+PKGCONFIG += mce-qt$${QT_MAJOR_VERSION}
 +LIBS += -lbuteosyncfw$${QT_MAJOR_VERSION}
 +packagesExist(qt$${QT_MAJOR_VERSION}-boostable) {
      DEFINES += HAS_BOOSTER
@@ -1062,7 +874,7 @@ index d043bd7..6fe7340 100644
  }
  
  QMAKE_LIBDIR_QT += ../libsyncprofile/
-@@ -77,6 +77,7 @@ SOURCES += ServerActivator.cpp \
+@@ -82,6 +82,7 @@ SOURCES += ServerActivator.cpp \
      SyncOnChangeScheduler.cpp
  
  contains(DEFINES, USE_KEEPALIVE) {
@@ -1070,16 +882,18 @@ index d043bd7..6fe7340 100644
      PKGCONFIG += keepalive
  
      HEADERS += \
-@@ -86,6 +87,7 @@ contains(DEFINES, USE_KEEPALIVE) {
+@@ -90,7 +91,8 @@ contains(DEFINES, USE_KEEPALIVE) {
+     SOURCES += \
          BackgroundSync.cpp
  
- } else {
+-} else:contains(DEFINES, USE_IPHB) {
++} else {
 +    message("Use libiphb")
      PKGCONFIG += libiphb
  
      HEADERS += \
 diff --git a/msyncd/synchronizer.cpp b/msyncd/synchronizer.cpp
-index 4069bd6..811e523 100644
+index 980385a..5ad06bd 100644
 --- a/msyncd/synchronizer.cpp
 +++ b/msyncd/synchronizer.cpp
 @@ -29,7 +29,9 @@
@@ -1092,7 +906,7 @@ index 4069bd6..811e523 100644
  #include "TransportTracker.h"
  #include "ServerActivator.h"
  
-@@ -130,9 +132,11 @@ bool Synchronizer::initialize()
+@@ -144,9 +146,11 @@ bool Synchronizer::initialize()
      // use queued connection because the profile will be stored after the signal
      connect(&iProfileManager, SIGNAL(signalProfileChanged(QString, int, QString)),
              this, SLOT(slotProfileChanged(QString, int, QString)), Qt::QueuedConnection);
@@ -1106,7 +920,7 @@ index 4069bd6..811e523 100644
      iTransportTracker = new TransportTracker(this);
  
      iServerActivator = new ServerActivator(iProfileManager,
-@@ -288,7 +292,11 @@ bool Synchronizer::startScheduledSync(QString aProfileName)
+@@ -300,7 +304,11 @@ bool Synchronizer::startScheduledSync(QString aProfileName)
      // All scheduled syncs are online syncs
      // Add this to the waiting online syncs and it will be started when we
      // receive a session connection status from the NetworkManager
@@ -1118,7 +932,7 @@ index 4069bd6..811e523 100644
      if (accept) {
          /* Ensure that current time is compatible with sync schedule.
             The Background process may have started a sync in a period
-@@ -306,14 +314,26 @@ bool Synchronizer::startScheduledSync(QString aProfileName)
+@@ -318,14 +326,26 @@ bool Synchronizer::startScheduledSync(QString aProfileName)
              }
          } else {
              qCDebug(lcButeoMsyncd) << "Scheduled sync of" << aProfileName << "accepted with current connection type" <<
@@ -1145,7 +959,7 @@ index 4069bd6..811e523 100644
                       "is of disallowed type. The sync will be postponed until an allowed connection is available.";
          } else {
              qCInfo(lcButeoMsyncd) << "Device offline. Wait for internet connection.";
-@@ -565,7 +585,11 @@ bool Synchronizer::startSyncNow(SyncSession *aSession)
+@@ -577,7 +597,11 @@ bool Synchronizer::startSyncNow(SyncSession *aSession)
              QStringList list;
              list.append("launching");
              QList<QVariant> argumentList;
@@ -1157,7 +971,7 @@ index 4069bd6..811e523 100644
              iSyncUIInterface->asyncCallWithArgumentList(QLatin1String("launch"), argumentList);
          }
  
-@@ -644,7 +668,11 @@ void Synchronizer::onSessionFinished(const QString &aProfileName,
+@@ -656,7 +680,11 @@ void Synchronizer::onSessionFinished(const QString &aProfileName,
              if (session->isScheduled()) {
                  // Calling this multiple times has no effect, even if the
                  // session was not actually opened
@@ -1169,7 +983,7 @@ index 4069bd6..811e523 100644
              }
              cleanupSession(session, aStatus);
              if (iProfilesToRemove.contains(aProfileName)) {
-@@ -905,7 +933,11 @@ bool Synchronizer::updateProfile(QString aProfileAsXml)
+@@ -917,7 +945,11 @@ bool Synchronizer::updateProfile(QString aProfileAsXml)
                  if (!address.isNull()) {
                      if (profile->key(Buteo::KEY_UUID).isEmpty()) {
                          QString uuid = QUuid::createUuid().toString();
@@ -1181,7 +995,7 @@ index 4069bd6..811e523 100644
                          profile->setKey(Buteo::KEY_UUID, uuid);
                      }
                      if (profile->key(Buteo::KEY_REMOTE_NAME).isEmpty()) {
-@@ -1265,10 +1297,10 @@ void Synchronizer::onNewSession(const QString &aDestination)
+@@ -1277,10 +1309,10 @@ void Synchronizer::onNewSession(const QString &aDestination)
  
          if (aDestination.contains("USB")) {
              syncProfiles = iProfileManager.getSyncProfilesByData(
@@ -1194,7 +1008,7 @@ index 4069bd6..811e523 100644
          }
          if (syncProfiles.isEmpty()) {
              qCDebug(lcButeoMsyncd) << "No sync profiles found with a matching destination address";
-@@ -1310,7 +1342,11 @@ void Synchronizer::onNewSession(const QString &aDestination)
+@@ -1322,7 +1354,11 @@ void Synchronizer::onNewSession(const QString &aDestination)
              QStringList list;
              list.append("launching");
              QList<QVariant> argumentList;
@@ -1206,8 +1020,8 @@ index 4069bd6..811e523 100644
              iSyncUIInterface->asyncCallWithArgumentList(QLatin1String("launch"), argumentList);
          }
  
-@@ -1804,7 +1840,11 @@ QStringList Synchronizer::syncProfilesByType(const QString &aType)
-     return iProfileManager.profileNames(aType);
+@@ -1832,7 +1868,11 @@ QStringList Synchronizer::profilesByType(const QString &aType)
+     return profilesAsXml;
  }
  
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -1218,7 +1032,7 @@ index 4069bd6..811e523 100644
  {
      FUNCTION_CALL_TRACE(lcButeoTrace);
      qCDebug(lcButeoMsyncd) << "Network state changed: OnLine:" << aState << " connection type:" <<  type;
-@@ -1814,7 +1854,11 @@ void Synchronizer::onNetworkStateChanged(bool aState, Sync::InternetConnectionTy
+@@ -1842,7 +1882,11 @@ void Synchronizer::onNetworkStateChanged(bool aState, Sync::InternetConnectionTy
          QStringList profiles(iWaitingOnlineSyncs);
          foreach (QString profileName, profiles) {
              SyncProfile *profile = iProfileManager.syncProfile(profileName);
@@ -1230,7 +1044,7 @@ index 4069bd6..811e523 100644
                  // start sync now, we do not need to call 'startScheduledSync' since that function
                  // only checks for internet connection
                  iWaitingOnlineSyncs.removeOne(profileName);
-@@ -1846,7 +1890,7 @@ Profile *Synchronizer::getSyncProfileByRemoteAddress(const QString &aAddress)
+@@ -1874,7 +1918,7 @@ Profile *Synchronizer::getSyncProfileByRemoteAddress(const QString &aAddress)
      QList<SyncProfile *> profiles;
      if ("USB" == aAddress) {
          profiles = iProfileManager.getSyncProfilesByData(
@@ -1239,7 +1053,7 @@ index 4069bd6..811e523 100644
      } else {
          profiles = iProfileManager.getSyncProfilesByData("",
                                                           Buteo::Profile::TYPE_SYNC,
-@@ -1865,7 +1909,11 @@ QString Synchronizer::getValue(const QString &aAddress, const QString &aKey)
+@@ -1893,7 +1937,11 @@ QString Synchronizer::getValue(const QString &aAddress, const QString &aKey)
      QString value;
      if (Buteo::KEY_UUID == aKey) {
          iUUID = QUuid::createUuid().toString();
@@ -1251,7 +1065,7 @@ index 4069bd6..811e523 100644
          value = iUUID;
      }
  
-@@ -1967,11 +2015,18 @@ void Synchronizer::removeExternalSyncStatus(const SyncProfile *aProfile)
+@@ -1995,11 +2043,18 @@ void Synchronizer::removeExternalSyncStatus(const SyncProfile *aProfile)
          }
      }
  }
@@ -1271,7 +1085,7 @@ index 4069bd6..811e523 100644
          qCWarning(lcButeoMsyncd) << "Scheduled sync refused, not connected";
          return false;
      }
-@@ -1980,7 +2035,23 @@ bool Synchronizer::acceptScheduledSync(bool aConnected, Sync::InternetConnection
+@@ -2008,7 +2063,23 @@ bool Synchronizer::acceptScheduledSync(bool aConnected, Sync::InternetConnection
          qCWarning(lcButeoMsyncd) << "Scheduled sync refused, invalid sync profile";
          return false;
      }
@@ -1295,7 +1109,7 @@ index 4069bd6..811e523 100644
      QList<Sync::InternetConnectionType> allowedTypes = aSyncProfile->internetConnectionTypes();
      if (aType != Sync::INTERNET_CONNECTION_UNKNOWN && !allowedTypes.isEmpty()) {
          return allowedTypes.contains(aType);
-@@ -1995,8 +2066,8 @@ bool Synchronizer::acceptScheduledSync(bool aConnected, Sync::InternetConnection
+@@ -2023,8 +2094,8 @@ bool Synchronizer::acceptScheduledSync(bool aConnected, Sync::InternetConnection
          qCInfo(lcButeoMsyncd) << "Allowing sync for cellular/other connection type:" << aType;
          return true;
      }
@@ -1306,10 +1120,10 @@ index 4069bd6..811e523 100644
  }
  
 diff --git a/msyncd/synchronizer.h b/msyncd/synchronizer.h
-index e83ff21..dc641b1 100644
+index b7aa537..534facb 100644
 --- a/msyncd/synchronizer.h
 +++ b/msyncd/synchronizer.h
-@@ -279,9 +279,11 @@ private slots:
+@@ -277,9 +277,11 @@ private slots:
       * @param aProfileName Server profile name
       */
      void stopServer(const QString &aProfileName);
@@ -1323,7 +1137,7 @@ index e83ff21..dc641b1 100644
      /*! \brief call this to request the sync daemon to enable soc
       * for a profile. The sync daemon decides as of now for which storages
       * soc should be enabled
-@@ -397,8 +399,11 @@ private:
+@@ -394,8 +396,11 @@ private slots:
       *
       * @param aType the connection type;
       */
@@ -1336,7 +1150,7 @@ index e83ff21..dc641b1 100644
      /*! \brief Checks the status of external sync for a given profile, when the status
       * changes(or aQuery param is set to true) or the profile is added for the first time 'syncedExternallyStatus' dbus signal
       * will be emitted to notify possible clients.
-@@ -413,7 +418,11 @@ private:
+@@ -410,7 +415,11 @@ private slots:
      QList<QString> iProfilesToRemove;
      QMap<QString, ServerPluginRunner *> iServers;
      QList<QString> iWaitingOnlineSyncs;
@@ -1415,7 +1229,7 @@ index 19517ce..cfe19fa 100644
  
  HEADERS += ButeoPluginIfaceAdaptor.h \
 diff --git a/unittests/dummyplugins/dummyclient/dummyclient.pro b/unittests/dummyplugins/dummyclient/dummyclient.pro
-index 2dffb52..122d70b 100644
+index 3b4201b..2909148 100644
 --- a/unittests/dummyplugins/dummyclient/dummyclient.pro
 +++ b/unittests/dummyplugins/dummyclient/dummyclient.pro
 @@ -8,6 +8,7 @@ INCLUDEPATH += . \
@@ -1425,9 +1239,9 @@ index 2dffb52..122d70b 100644
 +QT += network
  CONFIG += plugin
  
- #input
+ HEADERS += DummyClient.h
 diff --git a/unittests/dummyplugins/dummyserver/dummyserver.pro b/unittests/dummyplugins/dummyserver/dummyserver.pro
-index 91aa4d5..3846563 100644
+index f0d5d9d..119ea3d 100644
 --- a/unittests/dummyplugins/dummyserver/dummyserver.pro
 +++ b/unittests/dummyplugins/dummyserver/dummyserver.pro
 @@ -9,6 +9,7 @@ INCLUDEPATH += . \
@@ -1439,7 +1253,7 @@ index 91aa4d5..3846563 100644
  #input
  HEADERS += DummyServer.h
 diff --git a/unittests/dummyplugins/dummystorage/dummystorage.pro b/unittests/dummyplugins/dummystorage/dummystorage.pro
-index 6d79486..fe48b5d 100644
+index 9125a73..2b62da7 100644
 --- a/unittests/dummyplugins/dummystorage/dummystorage.pro
 +++ b/unittests/dummyplugins/dummystorage/dummystorage.pro
 @@ -9,6 +9,7 @@ INCLUDEPATH += . \
@@ -1454,7 +1268,7 @@ diff --git a/unittests/tests/msyncdtests/SyncSchedulerTest/SyncSchedulerTest.h b
 index 9defd82..2f8da5f 100644
 --- a/unittests/tests/msyncdtests/SyncSchedulerTest/SyncSchedulerTest.h
 +++ b/unittests/tests/msyncdtests/SyncSchedulerTest/SyncSchedulerTest.h
-@@ -60,8 +60,13 @@ public:
+@@ -60,8 +60,13 @@ class SyncProfileStub : public SyncProfile
      QDateTime nextSyncTime() const
      {
          const int HOUR = 3600;
@@ -1659,10 +1473,10 @@ index f4258c7..76ad7f3 100644
      QCOMPARE(p2->isValid(), false);
      // Disabling the profile that requires the removed key makes the profile
 diff --git a/unittests/tests/tests_common.pri b/unittests/tests/tests_common.pri
-index 41ebec9..38de7bf 100644
+index 5e8e206..a11b0fa 100644
 --- a/unittests/tests/tests_common.pri
 +++ b/unittests/tests/tests_common.pri
-@@ -22,8 +22,8 @@ LIBS += -lgcov
+@@ -20,8 +20,8 @@ PKGCONFIG += dbus-1
  
  LIBS += -L$${OUT_PWD}/$${tests_subdir_r}/../../libbuteosyncfw
  
@@ -1673,6 +1487,3 @@ index 41ebec9..38de7bf 100644
  
  # This is needed to avoid adding the /usr/lib link directory before the
  # newer version in the present directories
--- 
-2.42.0
-

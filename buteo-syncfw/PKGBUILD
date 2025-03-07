@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=buteo-syncfw
-pkgver=0.11.3
+pkgver=0.11.9
 pkgrel=1
 pkgdesc="Synchronization backend"
 arch=('x86_64' 'aarch64')
@@ -18,9 +18,9 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	'0001-Allow-build-with-qt6.patch'
 	'0002-disble_docs.patch'
 	)
-sha256sums=('85f73fff0dc80ca76ec8e565e52592c844491d8cbfc8cd1b8a59566e61350952'
+sha256sums=('603b6314ffa52c9a558a0c3b905c27badff5d524dd86fdff25a19b5441c0fbae'
 	'3781f5d9c22f1f8a3c32e30bb6ef7f07371e4b7a9d2c7d20720df338d3cd002e'
-	'eb20eb51d10af8b94d686cf9fc86096fca74c75b0d0abb4f3f4fac5110abe07e'
+	'0afb860b5dd3063ee60ea193b4bf65a02d69932b2b974fc11e2f7562573d0356'
 	'95d7619600de33a675cbdb7a1a185966ba994d09d9b3347e47ee86c8f991a75c'
 )
 
