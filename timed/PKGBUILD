@@ -6,7 +6,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=timed
-pkgver=3.6.22
+pkgver=3.6.23
 pkgrel=1
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
@@ -18,7 +18,7 @@ source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0002-Fixes-access.patch"
 )
 
-sha256sums=('91a54981a8d1afb4c9459d26e847c61d9513feb94a12684dae27dd5ee3e9b406'
+sha256sums=('272852d7676fe474e1c9bfa1e29fd70589fac9390b7bde9001f89879c8d44a72'
 	'cf81d073f2618fd914fbd5f55152580c7e3bf14f53eaf0950cb7998fd9460e02'
 )
 

@@ -1,0 +1,58 @@
+From b42f6c0627cd72e3e4ca04b498de9862ec32a8eb Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 7 Mar 2025 08:57:57 +0000
+Subject: [PATCH] fix deprecated setTimeSpec Qt 6.8
+
+---
+ src/calendareventmodification.cpp | 12 +++++++++++-
+ src/calendarworker.cpp            |  9 +++++++--
+ 2 files changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/src/calendareventmodification.cpp b/src/calendareventmodification.cpp
+index 02bb52c..ac1aad9 100644
+--- a/src/calendareventmodification.cpp
++++ b/src/calendareventmodification.cpp
+@@ -48,9 +48,19 @@ void updateTime(QDateTime *dt, Qt::TimeSpec spec, const QString &timeZone)
+         } else {
+             qWarning() << "Cannot find time zone:" << timeZone;
+         }
+-    } else {
++    }
++#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
++    else if (spec == Qt::UTC) {
++        dt->setTimeZone(QTimeZone::utc());
++    } else if (spec == Qt::LocalTime) {
++        dt->setTimeZone(QTimeZone::systemTimeZone());
++    }
++#else
++    else {
+         dt->setTimeSpec(spec);
+     }
++#endif
++
+ }
+ 
+ }
+diff --git a/src/calendarworker.cpp b/src/calendarworker.cpp
+index a69b70e..3475e0a 100644
+--- a/src/calendarworker.cpp
++++ b/src/calendarworker.cpp
+@@ -261,8 +261,13 @@ CalendarData::Event CalendarWorker::dissociateSingleOccurrence(const QString &in
+     // zone is also an exception when travelling to another time, we use the
+     // LocalTime spec.
+     const QDateTime occurrence = event->allDay()
+-            ? QDateTime(datetime.date(), datetime.time(), Qt::LocalTime)
+-            : datetime;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
++        ? QDateTime(datetime.date(), datetime.time(), QTimeZone::systemTimeZone())
++#else
++        ? QDateTime(datetime.date(), datetime.time(), Qt::LocalTime)
++#endif
++        : datetime;
++
+     KCalendarCore::Incidence::Ptr replacement = mCalendar->dissociateSingleOccurrence(event, occurrence);
+     if (!replacement) {
+         qWarning("Unable to create the replacing occurrence");
+-- 
+2.48.1
+

@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-time
-pkgver=0.1.7
+pkgver=0.1.8
 pkgrel=1
 pkgdesc="Wall clock plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
@@ -14,7 +14,7 @@ license=('BSD')
 depends=('timed' 'nemo-qml-plugin-dbus')
 makedepends=('mce-headers')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('1a4f970f27bdf6e6b3e51865e768a873984438f741ec3b91b2f01febc678bd50')
+sha256sums=('def7d3163da591f752204d55d5c8d7922302fd42fd83725cadf755894cfd1985')
 
 build() {
     cd $pkgname-$pkgver

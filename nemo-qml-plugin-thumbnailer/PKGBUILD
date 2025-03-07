@@ -6,15 +6,15 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=nemo-qml-plugin-thumbnailer
-pkgver=1.0.9
-pkgrel=2
+pkgver=1.0.10
+pkgrel=1
 pkgdesc="Thumbnail provider plugin for Nemo Mobile"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/nemo-qml-plugin-thumbnailer"
 license=('BSD-3-Clause')
 depends=('qt6-declarative' 'mlite6')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('d307493a09c70dab70d03cd092ecb79ba77fda945b02f0e787dcab13e45178cb')
+sha256sums=('e9fcf680041d4aa427a2725f4785aad9837ef0074d08f5e3fc454043a46f9e0e')
 
 build() {
   cd $pkgname-$pkgver
