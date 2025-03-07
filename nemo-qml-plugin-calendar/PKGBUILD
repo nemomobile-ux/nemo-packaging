@@ -14,13 +14,18 @@ depends=('qt6-base'
     'kcalendarcore>=6.0'
     'qt6-declarative')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "0001-fix_with_qt6.patch")
+    "0001-fix_with_qt6.patch"
+    '0002-fix-deprecated-setTimeSpec-Qt-6.8.patch'
+)
 sha256sums=('27fa9f1580bea43e4feafb6512a2979a67d5385ab5081a205ce1b446bc8a5655'
-    'c0a4caf85cb2e8278e442ce75423f83e273f7230e4cff45d53dc5abbfb37d3d3')
+    'c0a4caf85cb2e8278e442ce75423f83e273f7230e4cff45d53dc5abbfb37d3d3'
+    'df413b39b75e78c03e7737e9ee6bb3bc4750d876d1ecdb75b152ddda775fea34'
+)
 
 prepare() {
     cd $pkgname-$pkgver
     patch -p1 --input="${srcdir}/0001-fix_with_qt6.patch"
+    patch -p1 --input="${srcdir}/0002-fix-deprecated-setTimeSpec-Qt-6.8.patch"
 }
 
 build() {
