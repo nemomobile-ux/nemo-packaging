@@ -5,7 +5,7 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=mce
-pkgver=1.115.5
+pkgver=1.116.3
 pkgrel=1
 pkgdesc="Mode Control Entity for Nokia mobile computers"
 arch=('x86_64' 'aarch64')
@@ -23,11 +23,11 @@ makedepends=('doxygen'
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
 	"https://github.com/sailfishos-mirror/dbus-glib/archive/d42176ae4763e5288ef37ea314fe58387faf2005.tar.gz"
 	'0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch'
-	'0002-Handle_KEY_WAKEUP.patch')
-sha256sums=('0df6f670360951d46e9a868c02c5e67a9c8a0eaf3140e73bf88e26e4a79248e5'
+)
+sha256sums=('8502fd89dfd3ca1d31fab6725057924602d7cb2b8ad1dfa07ecff54113245e35'
 	'f4c28d4740ac90863082e81c869e5178d25238b179747984faf0509e40d1afef'
 	'8ed260853165760423b4c6764ae9fb129e0506403d070fced60f576d9185e5f4'
-	'595ddbfda22a802a47f0239b24f53a28aa785abe128ae56cfbdbcac0d0deae2d')
+)
 
 
 prepare() {
@@ -35,7 +35,6 @@ prepare() {
     sed -i "s|libsystemd-daemon|libsystemd|g" ./Makefile
     cp ../dbus-glib-d42176ae4763e5288ef37ea314fe58387faf2005/dbus-gmain.* dbus-gmain/
     patch -p1 --input="${srcdir}/0001-charger-Add-pinephone-charger-detection.-Fixes-JB-49.patch"
-    patch -p1 --input="${srcdir}/0002-Handle_KEY_WAKEUP.patch"
 }
 
 build() {
@@ -48,11 +47,7 @@ package() {
     cd $pkgname-$pkgver
     make DESTDIR="$pkgdir/" install ENABLE_MANPAGE_INSTALL=n
 
-    mv $pkgdir/usr/sbin $pkgdir/usr/bin
-
-    rm $pkgdir/lib/systemd/system/multi-user.target.wants/mce.service
-    rmdir $pkgdir/lib/systemd/system/multi-user.target.wants
-    mv $pkgdir/lib/systemd $pkgdir/usr/lib/systemd
+    mv $pkgdir/usr/sbin $pkgdir/usr/bin # In manjaro is /sbin/ and /bin symlink to same dir
 
     sed -i 's/Before=basic.target//' $pkgdir/usr/lib/systemd/system/mce.service
 
