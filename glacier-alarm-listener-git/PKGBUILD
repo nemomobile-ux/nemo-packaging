@@ -1,18 +1,18 @@
 # $Id$
-
-pkgname=glacier-alarm-listener-git
-pkgver=0.1.2.r0.gb085154
-pkgrel=1
+_basename=glacier-alarm-listener
+pkgname=${_basename}-git
+pkgver=0.2.r0.g4a86dab
+pkgrel=2
 pkgdesc="Nemo alarm events notification popup"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/glacier-alarm-listener"
+url="https://github.com/nemomobile-ux/${_basename}"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app'
 	'timed'
 	'glacier-alarmclock')
 
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
-provides=("${pkgname%-git}")
+provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
