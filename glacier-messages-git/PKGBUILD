@@ -4,12 +4,13 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-pkgname=glacier-messages-git
-pkgver=0.2.8.r0.gfc0f43f
+_basename=glacier-messages
+pkgname=${_basename}-git
+pkgver=0.3.r2.g296adb9
 pkgrel=1
 pkgdesc="QML based messages application for nemomobile"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/glacier-messages"
+url="https://github.com/nemomobile-ux/${_basename}"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app'
         'nemo-qml-plugin-contacts'
@@ -19,7 +20,7 @@ depends=('qt6-glacier-app'
         'libqofono-qt6'
         'glacier-contacts-git')
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
-provides=("${pkgname%-git}")
+provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')

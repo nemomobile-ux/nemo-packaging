@@ -3,7 +3,7 @@
 
 pkgname=nemo-device-pinephone-git
 
-pkgver=0.13.2.r0.g5f414a9
+pkgver=0.14.r1.g92bac87
 pkgrel=1
 pkgdesc="PinePhone specific files for GlacierUX"
 arch=('aarch64')

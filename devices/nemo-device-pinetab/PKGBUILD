@@ -9,7 +9,7 @@ _branch=master
 _gitname=$_basename
 pkgname=nemo-device-pinetab
 
-pkgver=0.11.r14.g75d1281
+pkgver=0.14.r1.g92bac87
 pkgrel=1
 pkgdesc="PineTab specific files for GlacierUX"
 arch=('aarch64')

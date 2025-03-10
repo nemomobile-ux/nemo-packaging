@@ -1,6 +1,6 @@
 # $Id$
 pkgname=maliit-nemo-keyboard-git
-pkgver=0.105.r2.g649035d5
+pkgver=0.106.r0.g010328cd
 pkgrel=1
 pkgdesc="Contains nemoobile mallit keyboard"
 arch=('x86_64' 'aarch64')

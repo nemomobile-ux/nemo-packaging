@@ -1,25 +1,19 @@
 # $Id$
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="github.com"
-_project=nemomobile-ux
 _basename=glacier-packagemanager
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
-pkgver=0.4.1.r3.g3f07e98
+pkgname=${_basename}-git
+pkgver=0.5.r0.gbcfca35
 pkgrel=1
 pkgdesc="Glacier package manager"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/nemomobile-ux/${_basename}"
 license=('LGPL-2.1')
 depends=('libpamac'
     'qt6-glacier-app'
     'glacier-polkit-agent')
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
-provides=("${pkgname%-git}")
+provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')

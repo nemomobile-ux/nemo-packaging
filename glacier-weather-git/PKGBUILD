@@ -1,16 +1,15 @@
 # $Id$
-
-_branch=master
-pkgname=glacier-weather-git
-pkgver=0.1.r20.gc88bed0
+_basename=glacier-weather
+pkgname=${_basename}-git
+pkgver=0.2.r1.gee16c06
 pkgrel=1
 pkgdesc="Nemo weather"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/glacier-weather"
+url="https://github.com/nemomobile-ux/${_basename}"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
 depends=('qt6-glacier-app' 'qt6-positioning')
 makedepends=('git' 'cmake' 'qt6-tools')
-provides=("${pkgname%-git}")
+provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}#branch=$_branch")
 sha256sums=('SKIP')

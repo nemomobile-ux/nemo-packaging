@@ -6,7 +6,7 @@
 
 _branch=master
 pkgname=qt6-lipstick-git
-pkgver=1.1.r1.g1c580f30
+pkgver=1.2.7.r15.g03fa9a24
 pkgrel=1
 pkgdesc="QML toolkit for homescreen creation"
 arch=('x86_64' 'aarch64')
@@ -39,7 +39,7 @@ makedepends=('git'
 	'cmake'
 )
 
-provides=("${pkgname%-git}")
+provides=("qt6-lipstick=${pkgver}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}#branch=${_branch}")
 sha256sums=('SKIP')

@@ -4,17 +4,17 @@
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
-_branch=master
-pkgname=glacier-calc-git
-pkgver=0.3.4.r1.g50544b4
+_basename=glacier-calc
+pkgname=${_basename}-git
+pkgver=0.4.r0.gfedd7eb
 pkgrel=1
 pkgdesc="Nemo calculator"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/glacier-calc#branch=$_branch"
+url="https://github.com/nemomobile-ux/${_basename}"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
 depends=('qt6-glacier-app')
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
-provides=("${pkgname%-git}")
+provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')

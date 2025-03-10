@@ -3,20 +3,19 @@
 # Contributor: Bart Ribbers <bribbers@disroot.org>
 # Contributor: Alexey Andreyev <aa13q@ya.ru>
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
-
-pkgname=glacier-pinquery-git
-pkgver=0.3.5.r1.ge2acd51
-_branch=master
+_basename=glacier-pinquery
+pkgname=${_basename}-git
+pkgver=0.4.r0.g6ae8086
 pkgrel=1
 pkgdesc="QML based PIN query application using libqofono"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/glacier-pinquery"
+url="https://github.com/nemomobile-ux/${_basename}"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app' 'libqofono-qt6')
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
-provides=("${pkgname%-git}")
+provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}#branch=$_branch")
+source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
 pkgver() {

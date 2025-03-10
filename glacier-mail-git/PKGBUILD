@@ -1,23 +1,16 @@
 # $Id$
 
-_host="github.com"
-_project=nemomobile-ux
 _basename=glacier-mail
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
+pkgname=${_basename}-git
 pkgver=0.0.2.r26.gfb55cc4
-
 pkgrel=1
 pkgdesc="Nemo mail client"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/nemomobile-ux/${_basename}"
 license=('BSD-3-Clause' 'LGPL-2.1-only')
 depends=('qt6-glacier-app' 'qt6-webengine' 'nemo-qml-plugin-email')
 makedepends=('git' 'qt6-tools' 'clang')
-provides=("${pkgname%-git}")
+provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')

@@ -1,19 +1,12 @@
 # Maintainer: Chupligin Sergey (NeoChapay) <neochapay@gmail.com>
 
-_host="github.com"
-_project=nemomobile-ux
 _basename=glacier-contacts
-_branch=master
-
-_gitname=$_basename
-pkgname=$_basename-git
-
+pkgname=${_basename}-git
 pkgver=0.9.r0.ga551505
-
 pkgrel=1
 pkgdesc="QML based contacts application for nemomobile"
 arch=('x86_64' 'aarch64')
-url="https://$_host/$_project/$_gitname#branch=$_branch"
+url="https://github.com/nemomobile-ux/${_basename}"
 license=('BSD-3-Clause')
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
 depends=('nemo-qml-plugin-thumbnailer'
@@ -23,7 +16,7 @@ depends=('nemo-qml-plugin-thumbnailer'
         'glacier-filemuncher-git'
         'nemo-qml-plugin-dbus'
         'qt6-glacier-app')
-provides=("${pkgname%-git}")
+provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
 source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
