@@ -10,7 +10,7 @@ pkgver=1.1.1.r2.geccc6f9
 pkgrel=1
 pkgdesc="A nice homescreen for Glacier experience"
 arch=('x86_64' 'aarch64')
-url="https://github.com/nemomobile-ux/${_basename}"
+url="https://github.com/nemomobile-ux/glacier-home"
 license=('BSD-3-Clause AND MIT')
 depends=('qt6-multimedia'
 	'qt6-feedback'
