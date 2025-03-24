@@ -16,7 +16,7 @@ depends=('qt6-glacier-app' 'nemo-qml-plugin-settings' 'nemo-qml-plugin-folderlis
 makedepends=('git' 'cmake' 'qt6-tools' 'clang')
 provides=("${_basename}=${pkgver}")
 conflicts=("${pkgname%-git}")
-source=("${pkgname}::git+${url}#branch=$_branch")
+source=("${pkgname}::git+${url}")
 sha256sums=('SKIP')
 
 pkgver() {

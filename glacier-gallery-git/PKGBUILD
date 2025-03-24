@@ -14,6 +14,8 @@ url="https://github.com/nemomobile-ux/${_basename}"
 license=('BSD-3-Clause')
 depends=('qt6-glacier-app'
         'nemo-qml-plugin-settings'
+        'nemo-qml-plugin-folderlistmodel'
+        'nemo-qml-plugin-models'
         'nemo-qml-plugin-thumbnailer'
         'libresourceqt>=1.32.0'
         'qtdocgallery')
@@ -36,9 +38,9 @@ build() {
         -B "${pkgname}/build" \
         -S "${pkgname}" \
         -DCMAKE_INSTALL_PREFIX:PATH='/usr'
-    make -C "${pkgname}/build" all
+    cmake --build "${pkgname}/build" -v
 }
 
 package() {
-    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
+    DESTDIR="$pkgdir" cmake --install "${pkgname}/build"
 }
