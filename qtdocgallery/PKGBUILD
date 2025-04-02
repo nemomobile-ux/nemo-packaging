@@ -11,7 +11,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/qtdocgallery"
 license=('LGPLv2')
 optdepends=()
-depends=('qt6-declarative' 'tracker3' 'tracker3-miners')
+depends=('qt6-declarative' 'tinysparql' 'localsearch')
 makedepends=('qt6-tools' 'qt6-old-features')
 source=("${url}/archive/refs/tags/mer/$pkgver.tar.gz"
     '0001-workaround-missing-G_BEGIN-END_DECLS-in-tracker.patch'
@@ -30,7 +30,7 @@ prepare() {
 
 build() {
   cd ${pkgname}-mer-$_basever-git$_gitver
-  qmake6 tracker_enabled=yes MODULE_VERSION=5.0.0
+  qmake6 tracker_enabled=no MODULE_VERSION=5.0.0
   make -j1
 }
 
