@@ -3,7 +3,7 @@
 
 pkgname=sensorfw
 pkgver=0.15.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Sensor Framework provides an interface to hardware sensor drivers through logical sensors"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/sensorfw"
@@ -11,13 +11,17 @@ license=('LGPLv2')
 depends=('libngf' 'libiphb' 'mlite6')
 makedepends=('doxygen' 'qt6-base')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-    "sensorfwd.service")
+    "sensorfwd.service"
+    '0001-Explicitly-include-QDebug-to-avoid-compiler-errors.patch'
+    )
 sha256sums=('9b9e08e2877b01b15dc2c09cd0a84b38c854a921d6e9fe937553c59667fed9b6'
     '1fd8fb7c0f073b562957b10ee6351137c612f8250eaf64bffe72328bf60641d3'
+    'eb85fee477ed7ee6c5029519d6c8729d5b369a9e51156e22ca5179d83f3706ef'
 )
 
 prepare() {
     cd $pkgname-$pkgver
+    patch -p1 --input="${srcdir}/0001-Explicitly-include-QDebug-to-avoid-compiler-errors.patch"
     sed "s=@LIB@=lib=g" sensord-qt6.pc.in > sensord-qt6.pc
     sed "s=@LIBDIR@=/usr/lib=g" tests/tests.xml.in > tests/tests.xml
     unset LD_AS_NEEDED

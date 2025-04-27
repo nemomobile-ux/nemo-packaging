@@ -1,0 +1,41 @@
+From 4732e7ceea0432c9e0d27d0deac189134b11b38e Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Sun, 27 Apr 2025 13:06:07 +0000
+Subject: [PATCH] Explicitly include <QDebug> to avoid compiler errors
+
+In file included from socketreader.cpp:27:
+socketreader.h: In member function 'bool SocketReader::read(QVector<T>&)':
+socketreader.h:141:20: error: no match for 'operator<<' (operand types are 'QDebug' and 'const char [57]')
+  141 |         qWarning() << "Too many samples waiting in socket. Flushing it to empty";
+      |                    ^~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                       |
+      |                       const char [57]
+In file included from /usr/include/qt6/QtCore/qstring.h:14,
+                 from /usr/include/qt6/QtCore/qobject.h:11,
+                 from /usr/include/qt6/QtCore/QObject:1,
+                 from socketreader.h:30:
+/usr/include/qt6/QtCore/qchar.h:694:28: note: candidate: 'QDataStream& operator<<(QDataStream&, QChar)'
+  694 | Q_CORE_EXPORT QDataStream &operator<<(QDataStream &, QChar);
+      |                            ^~~~~~~~
+/usr/include/qt6/QtCore/qchar.h:694:39: note:   no known conversion for argument 1 from 'QDebug' to 'QDataStream&'
+  694 | Q_CORE_EXPORT QDataStream &operator<<(QDataStream &, QChar);
+      |                                       ^~~~~~~~~~~~~
+---
+ qt-api/socketreader.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/qt-api/socketreader.h b/qt-api/socketreader.h
+index 9f4d6c7..93d5243 100644
+--- a/qt-api/socketreader.h
++++ b/qt-api/socketreader.h
+@@ -30,6 +30,7 @@
+ #include <QObject>
+ #include <QLocalSocket>
+ #include <QVector>
++#include <QDebug>
+ 
+ /**
+  * @brief Helper class for reading socket datachannel from sensord
+-- 
+2.49.0
+
