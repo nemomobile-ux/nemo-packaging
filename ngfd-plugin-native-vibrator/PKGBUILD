@@ -16,8 +16,16 @@ license=('LGPL-2.1')
 depends=('ngfd')
 makedepends=('cmake' 'glib2')
 conflicts=("ngfd-plugin-droid-vibrator")
-source=("${url}/archive/refs/tags/$pkgver.tar.gz")
-sha256sums=('ecc89eb8e12f0fd53548a86ddf6aebfe64bb8e8951e8c43333f51453042b02c2')
+source=("${url}/archive/refs/tags/$pkgver.tar.gz"
+'0001-Compatibility-with-CMake-3.10-will-be-removed-from-a.patch'
+)
+sha256sums=('ecc89eb8e12f0fd53548a86ddf6aebfe64bb8e8951e8c43333f51453042b02c2'
+    '9976ce6c2d6847a4d9bb597332769e240618feba83d22c8ba34ce4955db262eb')
+
+prepare() {
+    cd $_basename-$pkgver
+    patch -p1 --input="${srcdir}/0001-Compatibility-with-CMake-3.10-will-be-removed-from-a.patch"
+}
 
 build() {
     cd $_basename-$pkgver
