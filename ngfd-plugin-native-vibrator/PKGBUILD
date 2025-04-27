@@ -7,35 +7,26 @@
 _basename=ngfd-plugin-droid-vibrator
 pkgname=ngfd-plugin-native-vibrator
 
-pkgver=1.4.0
+pkgver=1.4.2
 pkgrel=1
 pkgdesc="Vibrator native plugin for ngfd"
 arch=('x86_64' 'aarch64')
 url="https://github.com/mer-hybris/ngfd-plugin-droid-vibrator"
 license=('LGPL-2.1')
 depends=('ngfd')
-makedepends=('cmake' 'glib2')
+makedepends=('cmake' 'ninja' 'glib2')
 conflicts=("ngfd-plugin-droid-vibrator")
-source=("${url}/archive/refs/tags/$pkgver.tar.gz"
-'0001-Compatibility-with-CMake-3.10-will-be-removed-from-a.patch'
-)
-sha256sums=('ecc89eb8e12f0fd53548a86ddf6aebfe64bb8e8951e8c43333f51453042b02c2'
-    '9976ce6c2d6847a4d9bb597332769e240618feba83d22c8ba34ce4955db262eb')
-
-prepare() {
-    cd $_basename-$pkgver
-    patch -p1 --input="${srcdir}/0001-Compatibility-with-CMake-3.10-will-be-removed-from-a.patch"
-}
+source=("${url}/archive/refs/tags/$pkgver.tar.gz")
+sha256sums=('e1f595e2d89e857df4cf00c1c87bd53a89f566506386a8bfa4bd655b0e4082e8')
 
 build() {
-    cd $_basename-$pkgver
-    cmake \
+    cmake -B build -S $_basename-$pkgver -G Ninja \
         -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
         -DNATIVE_VIBRATOR=ON .
-    make  all
+
+    cmake --build build
 }
 
 package() {
-    cd $_basename-$pkgver
-    make DESTDIR="$pkgdir" install
+    DESTDIR="$pkgdir" cmake --install build
 }
