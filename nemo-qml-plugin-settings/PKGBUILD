@@ -12,17 +12,15 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/nemomobile-ux/nemo-qml-plugin-settings"
 license=('LGPL-2.0-or-later')
 depends=('qt6-declarative')
-makedepends=('cmake')
+makedepends=('cmake' 'ninja')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz")
 sha256sums=('d1ab439d71cae94f271bffb21cd46cf65023985a2599bc56983f80367e1f4f63')
 
 build() {
-    cd $pkgname-$pkgver
-    cmake -DCMAKE_INSTALL_PREFIX:PATH='/usr' .
-    make all
+    cmake -B build -S $pkgname-$pkgver -G Ninja -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+    cmake --build build
 }
 
 package() {
-    cd $pkgname-$pkgver
-    make DESTDIR="$pkgdir" install
+    DESTDIR="$pkgdir" cmake --install build
 }
