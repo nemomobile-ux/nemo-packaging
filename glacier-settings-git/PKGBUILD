@@ -6,7 +6,7 @@
 
 _basename=glacier-settings
 pkgname=${_basename}-git
-pkgver=0.8.4.r6.gfca389a
+pkgver=0.8.10.r0.gd5869f1
 pkgrel=1
 pkgdesc="QML based settings application for nemomobile"
 arch=('x86_64' 'aarch64')
@@ -18,6 +18,7 @@ depends=('qt6-glacier-app'
 	'nemo-qml-plugin-settings'
 	'libconnman-qt'
 	'libmce-qt'
+	'bluez-qt>=6.0'
 	'nemo-qml-plugin-connectivity'
 	'nemo-qml-plugin-configuration'
 	'nemo-qml-plugin-models>=0.2.1'
@@ -41,9 +42,9 @@ build() {
         -B "${pkgname}/build" \
         -S "${pkgname}" \
         -DCMAKE_INSTALL_PREFIX:PATH='/usr'
-    make -C "${pkgname}/build" all
+    cmake --build "${pkgname}/build" -v
 }
 
 package() {
-    make -C "${srcdir}/${pkgname}/build" DESTDIR="$pkgdir" install
+    DESTDIR="$pkgdir" cmake --install "${pkgname}/build"
 }
