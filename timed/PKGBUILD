@@ -6,19 +6,19 @@
 # Maintainer: James Kittsmiller (AJSlye) <james@nulogicsystems.com>
 
 pkgname=timed
-pkgver=3.6.23
+pkgver=3.6.24
 pkgrel=1
 pkgdesc="Mer time daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/sailfishos/timed"
 license=('LGPL-2.1-or-later')
-depends=('sailfish-access-control' 'libiodata>=0.19.14' 'tzdata-timed' 'connman' 'ofono' 'pcre' 'libdsme')
+depends=('sailfish-access-control' 'libiodata>=0.19.14' 'tzdata-timed' 'connman' 'ofono' 'libdsme')
 makedepends=('qt6-tools')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     "0002-Fixes-access.patch"
 )
 
-sha256sums=('272852d7676fe474e1c9bfa1e29fd70589fac9390b7bde9001f89879c8d44a72'
+sha256sums=('26b6833507c16af3259a02bc037ce128664b86c174a9e6d9e32571c0ce23301e'
 	'cf81d073f2618fd914fbd5f55152580c7e3bf14f53eaf0950cb7998fd9460e02'
 )
 
