@@ -19,9 +19,11 @@ depends=('libpulse'
 makedepends=('git' 'doxygen' 'check')
 source=("${url}/archive/refs/tags/$pkgver.tar.gz"
     '0002-remove_ohm.patch'
+    '0003-Fix-interface.patch'
 )
 sha256sums=('37a0cf47113340c2abd44da32b44697fd71a720e7cbd716c1bb298bd1761d253'
     '591cf1a0e37da056d3832c81f0114692df02910060755ace34f4dc6391edea7c'
+    '81ef8c3a92ed1a45003269a9d356ed996782938298d9cea64c8d81440fce4ff3'
 )
 
 prepare() {
@@ -33,6 +35,7 @@ prepare() {
     cd ..
 
     patch -p1 --input="${srcdir}/0002-remove_ohm.patch"
+    patch -p1 --input="${srcdir}/0003-Fix-interface.patch"
 }
 
 

@@ -1,0 +1,41 @@
+From c82f64f4897d74581f454a1713d32ff0f63884ff Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jozef.mlich@greycortex.com>
+Date: Sun, 15 Jun 2025 12:02:57 +0200
+Subject: [PATCH] Fix interface
+
+---
+ tests/test-plugin.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/tests/test-plugin.c b/tests/test-plugin.c
+index 89b752a..a43781c 100644
+--- a/tests/test-plugin.c
++++ b/tests/test-plugin.c
+@@ -52,15 +52,19 @@ START_TEST (test_get_params)
+ }
+ END_TEST
+ 
+-static int
+-plugin_play ()
++
++static int plugin_play(NSinkInterface *iface, NRequest *request)
+ {
++    (void)iface;
++    (void)request;
+     return TRUE;
+ }
+ 
+-static void
+-plugin_stop ()
+-{}
++static void plugin_stop(NSinkInterface *iface, NRequest *request)
++{
++    (void)iface;
++    (void)request;
++}
+ 
+ START_TEST (test_register_sink)
+ {
+-- 
+2.49.0
+
