@@ -4,7 +4,7 @@ pkgname=maliit-input-context-gtk
 gitname=inputcontext-gtk
 _commit=72d75769b6763391ae30e51ef2178fb294fdb2b7
 pkgver=0.99.2
-pkgrel=1
+pkgrel=2
 pkgdesc="The GTK+ input context for Maliit."
 arch=('x86_64' 'aarch64')
 url="https://github.com/maliit/inputcontext-gtk"
@@ -27,7 +27,8 @@ build() {
     cmake \
         -B "${gitname}-${_commit}/build" \
         -S "${gitname}-${_commit}" \
-        -DCMAKE_INSTALL_PREFIX:PATH='/usr'
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     make -C "${gitname}-${_commit}/build" all
 }
 
