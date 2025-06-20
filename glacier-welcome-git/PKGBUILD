@@ -6,7 +6,7 @@
 
 _basename=glacier-welcome
 pkgname=${_basename}-git
-pkgver=r1.d010eec
+pkgver=0.0.1.r0.g9720703
 pkgrel=1
 pkgdesc="The Glacier welcome app"
 arch=('x86_64' 'aarch64')
