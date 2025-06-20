@@ -1,0 +1,31 @@
+From 970d3db99391e7d266ae7a7d8b49d4f766927f69 Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jmlich83@gmail.com>
+Date: Fri, 20 Jun 2025 16:48:26 +0300
+Subject: [PATCH 4/4] fix linker errors
+
+g++ -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs -flto=auto -Wl,-rpath,/usr/lib -Wl,-rpath-link,/usr/lib -o fingerterm  main.o terminal.o textrender.o ptyiface.o util.o keyloader.o qrc_resources.o moc_ptyiface.o moc_terminal.o moc_textrender.o moc_util.o moc_keyloader.o   -lutil /usr/lib/libQt6Quick.so /usr/lib/libQt6OpenGL.so /usr/lib/libQt6Gui.so /usr/lib/libGLX.so /usr/lib/libOpenGL.so /usr/lib/libQt6QmlMeta.so /usr/lib/libQt6QmlModels.so /usr/lib/libQt6QmlWorkerScript.so /usr/lib/libQt6Qml.so /usr/lib/libQt6Network.so /usr/lib/libQt6Core5Compat.so /usr/lib/libQt6Core.so -lpthread -lGLX -lOpenGL
+/usr/bin/ld: /tmp/ccnboAap.ltrans0.ltrans.o: in function `Terminal::keyPress(int, int, QString const&)':
+<artificial>:(.text+0x24f2): undefined reference to `Terminal::ch_ESC'
+/usr/bin/ld: <artificial>:(.text+0x256b): undefined reference to `Terminal::ch_ESC'
+/usr/bin/ld: <artificial>:(.text+0x25f3): undefined reference to `Terminal::ch_ESC'
+/usr/bin/ld: <artificial>:(.text+0x284f): undefined reference to `Terminal::ch_ESC'
+---
+ terminal.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/terminal.cpp b/terminal.cpp
+index d7fe75e..1877575 100644
+--- a/terminal.cpp
++++ b/terminal.cpp
+@@ -26,6 +26,8 @@
+ #include "textrender.h"
+ #include "util.h"
+ 
++const char Terminal::ch_ESC;
++
+ static bool charIsHexDigit(QChar ch)
+ {
+     if (ch.isDigit()) // 0-9
+-- 
+2.49.0
+

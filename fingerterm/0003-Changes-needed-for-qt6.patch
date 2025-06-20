@@ -1,7 +1,7 @@
-From a57edc9609945def90f016177cd64b3a1d1fc921 Mon Sep 17 00:00:00 2001
+From 3dcbb7218eb43414451353f2931b5da6f91cc0ed Mon Sep 17 00:00:00 2001
 From: Jozef Mlich <jmlich83@gmail.com>
 Date: Mon, 31 Jul 2023 19:02:04 +0000
-Subject: [PATCH 3/3] Changes needed for qt6
+Subject: [PATCH 3/4] Changes needed for qt6
 
 ---
  qml/MenuFingerterm.qml | 10 +++++-----
@@ -10,7 +10,7 @@ Subject: [PATCH 3/3] Changes needed for qt6
  3 files changed, 11 insertions(+), 5 deletions(-)
 
 diff --git a/qml/MenuFingerterm.qml b/qml/MenuFingerterm.qml
-index 1baa05c..1b290d8 100644
+index 7e9f34a..7d82590 100644
 --- a/qml/MenuFingerterm.qml
 +++ b/qml/MenuFingerterm.qml
 @@ -18,7 +18,7 @@
@@ -22,7 +22,7 @@ index 1baa05c..1b290d8 100644
  import FingerTerm 1.0
  
  Item {
-@@ -62,12 +62,12 @@ Item {
+@@ -60,12 +60,12 @@ Item {
  
          XmlListModel {
              id: xmlModel
@@ -40,7 +40,7 @@ index 1baa05c..1b290d8 100644
  
          Component {
 diff --git a/terminal.cpp b/terminal.cpp
-index c3869b1..758ea84 100644
+index d44d00a..d7fe75e 100644
 --- a/terminal.cpp
 +++ b/terminal.cpp
 @@ -1355,6 +1355,11 @@ const QStringList Terminal::grabURLsFromBuffer()
@@ -68,5 +68,5 @@ index c470b58..c6417dc 100644
      void scrollBackBufferFwd(int lines);
      void scrollBackBufferBack(int lines);
 -- 
-2.41.0
+2.49.0
 
